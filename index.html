@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#6b3a1e">
+
+  <title>Gestão TUFRA</title>
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+
+<body>
+  <div class="app">
+
+    <header class="cabecalho">
+      <div>
+        <p class="nome-instituicao">
+          Tenda de Umbanda Francisco de Assis
+        </p>
+
+        <h1>Gestão TUFRA</h1>
+      </div>
+
+      <button
+        class="botao-icone"
+        type="button"
+        aria-label="Configurações"
+      >
+        ⚙️
+      </button>
+    </header>
+
+    <main class="conteudo">
+
+      <section class="resumo">
+        <div class="cartao-resumo">
+          <span>Total de associados</span>
+          <strong id="totalAssociados">0</strong>
+        </div>
+
+        <div class="cartao-resumo">
+          <span>Associados ativos</span>
+          <strong id="totalAtivos">0</strong>
+        </div>
+      </section>
+
+      <section class="secao-associados">
+
+        <div class="titulo-secao">
+          <div>
+            <p class="legenda">Módulo 1</p>
+            <h2>Associados</h2>
+          </div>
+
+          <button
+            id="botaoNovoAssociado"
+            class="botao-principal"
+            type="button"
+          >
+            + Novo
+          </button>
+        </div>
+
+        <label class="campo-pesquisa">
+          <span aria-hidden="true">🔍</span>
+
+          <input
+            id="campoPesquisa"
+            type="search"
+            placeholder="Pesquisar associado"
+            autocomplete="off"
+          >
+        </label>
+
+        <div id="listaAssociados" class="lista-associados">
+
+          <div class="estado-vazio">
+            <div class="icone-vazio">👥</div>
+
+            <h3>Nenhum associado cadastrado</h3>
+
+            <p>
+              Toque no botão “Novo” para realizar o primeiro cadastro.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <nav class="menu-inferior">
+      <button class="menu-item ativo" type="button">
+        <span>🏠</span>
+        <small>Início</small>
+      </button>
+
+      <button class="menu-item" type="button">
+        <span>👥</span>
+        <small>Associados</small>
+      </button>
+
+      <button class="menu-item" type="button">
+        <span>⚙️</span>
+        <small>Ajustes</small>
+      </button>
+    </nav>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
