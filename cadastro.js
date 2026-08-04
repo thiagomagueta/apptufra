@@ -54,6 +54,7 @@ campoTelefone.addEventListener("input", () => {
     campoTelefone.value
   );
 });
+
 const formularioDadosPessoais = document.getElementById(
   "formularioDadosPessoais"
 );
