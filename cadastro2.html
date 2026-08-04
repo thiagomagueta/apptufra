@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#651b1d">
+
+  <title>Dados de Acesso | TUFRA</title>
+
+  <link rel="stylesheet" href="style.css?v=5">
+</head>
+
+<body>
+  <main class="tela-cadastro">
+
+    <section class="cartao-cadastro">
+
+      <header class="cabecalho-cadastro">
+
+        <a
+          class="botao-voltar"
+          href="cadastro.html"
+        >
+          Voltar
+        </a>
+
+        <img
+          class="logo-cadastro"
+          src="logo-tufra.png"
+          alt="Logo da Tenda de Umbanda Francisco de Assis"
+        >
+
+        <h1>Cadastro de Usuário</h1>
+
+        <p>Dados de acesso</p>
+
+        <div class="progresso-cadastro">
+          <div class="progresso-preenchido progresso-completo"></div>
+        </div>
+
+        <small>Passo 2 de 2</small>
+
+      </header>
+
+      <form
+        id="formularioDadosAcesso"
+        class="formulario-cadastro"
+        novalidate
+      >
+
+        <div class="grupo-campo">
+          <label for="nomeUsuario">Nome de usuário</label>
+
+          <input
+            id="nomeUsuario"
+            name="nomeUsuario"
+            type="text"
+            placeholder="Escolha seu nome de usuário"
+            autocomplete="username"
+            required
+          >
+
+          <small
+            id="erroUsuario"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="novaSenha">🔒 Senha</label>
+
+          <div class="campo-senha">
+            <input
+              id="novaSenha"
+              name="novaSenha"
+              type="password"
+              placeholder="Digite sua senha"
+              autocomplete="new-password"
+              required
+            >
+
+            <button
+              id="mostrarNovaSenha"
+              class="botao-mostrar-senha"
+              type="button"
+              aria-label="Mostrar senha"
+            >
+              👁
+            </button>
+          </div>
+
+          <small
+            id="erroSenha"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="confirmarSenha">🔒 Confirmar senha</label>
+
+          <div class="campo-senha">
+            <input
+              id="confirmarSenha"
+              name="confirmarSenha"
+              type="password"
+              placeholder="Digite novamente sua senha"
+              autocomplete="new-password"
+              required
+            >
+
+            <button
+              id="mostrarConfirmacaoSenha"
+              class="botao-mostrar-senha"
+              type="button"
+              aria-label="Mostrar confirmação da senha"
+            >
+              👁
+            </button>
+          </div>
+
+          <small
+            id="erroConfirmacao"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <label class="aceite-termos">
+          <input
+            id="aceiteTermos"
+            name="aceiteTermos"
+            type="checkbox"
+          >
+
+          <span>
+            Li e aceito os
+            <a href="#" id="linkTermos">Termos de Uso</a>
+            e a
+            <a href="#" id="linkPrivacidade">Política de Privacidade</a>.
+          </span>
+        </label>
+
+        <small
+          id="erroTermos"
+          class="mensagem-campo mensagem-termos"
+        ></small>
+
+        <div class="acoes-cadastro">
+          <a
+            class="botao-anterior"
+            href="cadastro.html"
+          >
+            Anterior
+          </a>
+
+          <button
+            class="botao-solicitar"
+            type="submit"
+          >
+            Solicitar acesso
+          </button>
+        </div>
+
+      </form>
+
+    </section>
+
+  </main>
+
+  <script src="cadastro2.js?v=1"></script>
+</body>
+</html>
