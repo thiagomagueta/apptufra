@@ -27,7 +27,7 @@
           href="index.html"
           aria-label="Voltar para o login"
         >
-          ←
+          Voltar
         </a>
 
         <img
@@ -98,7 +98,11 @@
           <input
             id="dataNascimento"
             name="dataNascimento"
-            type="date"
+            type="text"
+            placeholder="00/00/0000"
+            inputmode="numeric"
+            maxlength="10"
+            autocomplete="bday"
             required
           >
 
@@ -116,7 +120,7 @@
             name="telefone"
             type="tel"
             placeholder="(00) 00000-0000"
-            inputmode="tel"
+            inputmode="numeric"
             maxlength="15"
             autocomplete="tel"
             required
