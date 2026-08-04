@@ -282,13 +282,14 @@ a {
   left: 0;
   display: grid;
   place-items: center;
-  width: 44px;
+  min-width: 76px;
   height: 44px;
   border-radius: 14px;
   background: rgba(101, 27, 29, 0.08);
   color: #651b1d;
-  font-size: 25px;
+  font-size: 14px;
   font-weight: 700;
+  padding:0 14px;
   text-decoration: none;
 }
 
