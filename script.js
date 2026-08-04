@@ -6,7 +6,6 @@ const campoSenha = document.getElementById("senha");
 const botaoMostrarSenha = document.getElementById("botaoMostrarSenha");
 const mensagemLogin = document.getElementById("mensagemLogin");
 const linkEsqueciSenha = document.getElementById("linkEsqueciSenha");
-const linkCadastrar = document.getElementById("linkCadastrar");
 
 function limparMensagem() {
   mensagemLogin.textContent = "";
@@ -68,14 +67,6 @@ function abrirRecuperacaoSenha(evento) {
   );
 }
 
-function abrirCadastro(evento) {
-  evento.preventDefault();
-
-  alert(
-    "A tela para criar um novo cadastro será desenvolvida depois da tela de login."
-  );
-}
-
 botaoMostrarSenha.addEventListener(
   "click",
   alternarVisibilidadeSenha
@@ -89,11 +80,6 @@ formularioLogin.addEventListener(
 linkEsqueciSenha.addEventListener(
   "click",
   abrirRecuperacaoSenha
-);
-
-linkCadastrar.addEventListener(
-  "click",
-  abrirCadastro
 );
 
 campoLogin.addEventListener("input", limparMensagem);
