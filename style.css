@@ -72,8 +72,8 @@ a {
 
 .logo-tufra {
   display: block;
-  width: 195px;
-  height: 195px;
+  width: 230px;
+  height: 230px;
   margin: 0 auto 8px;
   object-fit: contain;
   border-radius: 50%;
@@ -230,11 +230,6 @@ a {
 @media (max-height: 720px) {
   .tela-login {
     align-items: flex-start;
-  }
-
-  .logo-tufra {
-    width: 154px;
-    height: 154px;
   }
 
   .cartao-login {
