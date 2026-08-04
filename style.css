@@ -2,7 +2,7 @@
   --vinho: #651b1d;
   --vinho-escuro: #421012;
   --vinho-claro: #8a3436;
-  --fundo: #f6f1ed;
+  --fundo: #efe6dc;
   --branco: #ffffff;
   --texto: #2f2927;
   --texto-suave: #756966;
@@ -72,9 +72,9 @@ a {
 
 .logo-tufra {
   display: block;
-  width: 150px;
-  height: 150px;
-  margin: 0 auto 14px;
+  width: 195px;
+  height: 195px;
+  margin: 0 auto 8px;
   object-fit: contain;
   border-radius: 50%;
 }
