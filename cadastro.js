@@ -54,3 +54,25 @@ campoTelefone.addEventListener("input", () => {
     campoTelefone.value
   );
 });
+const formularioDadosPessoais = document.getElementById(
+  "formularioDadosPessoais"
+);
+
+formularioDadosPessoais.addEventListener("submit", (evento) => {
+  evento.preventDefault();
+
+  const dadosPessoais = {
+    nomeCompleto: document.getElementById("nomeCompleto").value.trim(),
+    cpf: campoCPF.value,
+    dataNascimento: campoDataNascimento.value,
+    telefone: campoTelefone.value,
+    email: document.getElementById("email").value.trim()
+  };
+
+  sessionStorage.setItem(
+    "tufra_dados_pessoais",
+    JSON.stringify(dadosPessoais)
+  );
+
+  window.location.href = "cadastro2.html";
+});
