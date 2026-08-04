@@ -65,15 +65,54 @@ Permitir que um usuário informe suas credenciais para acessar o sistema.
 
 ## Status
 
-Próxima tela a ser desenvolvida.
+Requisitos definidos.
+
+Próxima etapa: criação do layout da tela.
 
 ## Objetivo
 
-Permitir que uma pessoa solicite acesso ao aplicativo.
+Permitir que qualquer pessoa solicite acesso ao aplicativo.
 
-Neste momento, não haverá separação entre cadastro de usuário e cadastro de associado.
+O usuário deverá preencher o próprio cadastro. O administrador não precisará realizar o cadastro manualmente.
 
-## Campos iniciais
+## Fluxo
+
+1. O usuário abre a tela de login.
+2. Toca em `Criar cadastro`.
+3. Preenche os dados pessoais e os dados da conta.
+4. Envia a solicitação de acesso.
+5. O sistema registra o cadastro com a situação `Aguardando aprovação`.
+6. O usuário visualiza uma mensagem informando que a solicitação foi enviada.
+7. Um administrador analisa a solicitação.
+8. O administrador poderá aprovar ou reprovar o cadastro.
+9. No momento da aprovação, o administrador deverá definir o perfil de acesso.
+10. Após a aprovação, o usuário poderá acessar o sistema.
+
+## Organização do cadastro
+
+O sistema terá um único cadastro de usuário, organizado internamente em dois grupos de informações.
+
+### Dados pessoais
+
+- Nome completo
+- CPF
+- Data de nascimento
+- Telefone celular
+- E-mail
+
+### Dados da conta
+
+- Usuário
+- Senha
+- Confirmação da senha
+- Status
+- Perfil de acesso
+- Data e hora da solicitação
+- Data e hora da aprovação
+- Usuário responsável pela aprovação
+- Data e hora do último acesso
+
+## Campos visíveis na tela de cadastro
 
 - Nome completo
 - CPF
@@ -85,28 +124,87 @@ Neste momento, não haverá separação entre cadastro de usuário e cadastro de
 - Confirmar senha
 - Aceite dos termos de uso e privacidade
 
-## Situação do cadastro
+## Campos gerados automaticamente
 
-Todo novo cadastro deverá receber automaticamente a situação:
+Os campos abaixo não serão preenchidos pelo usuário:
 
-`Aguardando aprovação`
+- Status
+- Data e hora da solicitação
+- Data e hora da aprovação
+- Usuário responsável pela aprovação
+- Data e hora do último acesso
+- Perfil de acesso
 
-## Possíveis situações
+## Situações possíveis
 
 - Aguardando aprovação
-- Aprovado
+- Ativo
 - Reprovado
 - Bloqueado
 
-## Regras de aprovação
+## Regras de acesso
 
-- O usuário poderá preencher e enviar seu cadastro.
-- O cadastro não dará acesso imediato ao sistema.
-- Após o envio, aparecerá uma mensagem informando que o pedido está aguardando aprovação.
-- Somente um administrador poderá aprovar o cadastro.
-- Enquanto estiver aguardando aprovação, o usuário não poderá acessar o Dashboard.
-- Um cadastro reprovado também não poderá acessar o sistema.
-- Um usuário bloqueado perderá o acesso até ser liberado novamente.
+### Aguardando aprovação
+
+- Não poderá acessar o Dashboard.
+- Deverá receber uma mensagem informando que o cadastro ainda está em análise.
+
+### Ativo
+
+- Poderá acessar o sistema de acordo com o perfil definido.
+
+### Reprovado
+
+- Não poderá acessar o sistema.
+- Deverá receber uma mensagem informando que a solicitação não foi aprovada.
+
+### Bloqueado
+
+- Não poderá acessar o sistema.
+- Deverá receber uma mensagem informando que o acesso está bloqueado.
+
+## Tela de aprovação
+
+A tela de aprovação deverá mostrar:
+
+- Nome completo
+- CPF
+- Telefone
+- E-mail
+- Data e hora da solicitação
+- Status atual
+- Campo para escolha do perfil
+- Campo de observações
+- Botão Reprovar
+- Botão Aprovar
+
+## Perfis previstos
+
+Os perfis serão implementados posteriormente.
+
+- Associado
+- Pai Pequeno
+- Secretaria
+- Tesoureiro
+- Administrador
+
+Ao aprovar o cadastro, o administrador deverá selecionar um perfil.
+
+## Alteração dos próprios dados
+
+O usuário poderá alterar os próprios dados sem depender de aprovação de um administrador.
+
+Isso inclui:
+
+- Nome completo
+- CPF
+- Data de nascimento
+- Telefone celular
+- E-mail
+- Usuário
+- Senha
+
+O perfil de acesso e o status continuarão sendo definidos pela administração.
 
 ## Validações previstas
 
@@ -117,9 +215,17 @@ Todo novo cadastro deverá receber automaticamente a situação:
 - O usuário não poderá ser repetido.
 - O CPF não poderá ser repetido.
 - O e-mail não poderá ser repetido.
-- A senha deverá possuir um tamanho mínimo, a ser definido.
+- O aceite dos termos deverá ser obrigatório.
+- O tamanho mínimo da senha será definido antes da programação.
 
----
+## Registros administrativos
+
+O sistema deverá registrar automaticamente:
+
+- Data e hora da solicitação
+- Data e hora da aprovação
+- Usuário responsável pela aprovação
+- Data e hora do último acesso
 
 # Tela 03 — Dashboard
 
