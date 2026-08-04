@@ -8,112 +8,110 @@
     content="width=device-width, initial-scale=1, viewport-fit=cover"
   >
 
-  <meta name="theme-color" content="#6b3a1e">
+  <meta name="theme-color" content="#651b1d">
 
-  <title>Gestão TUFRA</title>
+  <title>Login | Gestão TUFRA</title>
 
   <link rel="stylesheet" href="style.css">
-  <link rel="manifest" href="manifest.json">
 </head>
 
 <body>
-  <div class="app">
+  <main class="tela-login">
 
-    <header class="cabecalho">
-      <div>
-        <p class="nome-instituicao">
-          Tenda de Umbanda Francisco de Assis
-        </p>
+    <section class="cartao-login">
+
+      <header class="cabecalho-login">
+        <img
+          class="logo-tufra"
+          src="logo-tufra.png"
+          alt="Logo da Tenda de Umbanda Francisco de Assis"
+        >
 
         <h1>Gestão TUFRA</h1>
-      </div>
 
-      <button
-        class="botao-icone"
-        type="button"
-        aria-label="Configurações"
-      >
-        ⚙️
-      </button>
-    </header>
+        <p>
+          Sistema Administrativo da<br>
+          Tenda de Umbanda Francisco de Assis
+        </p>
+      </header>
 
-    <main class="conteudo">
+      <form id="formularioLogin" class="formulario-login">
 
-      <section class="resumo">
-        <div class="cartao-resumo">
-          <span>Total de associados</span>
-          <strong id="totalAssociados">0</strong>
-        </div>
-
-        <div class="cartao-resumo">
-          <span>Associados ativos</span>
-          <strong id="totalAtivos">0</strong>
-        </div>
-      </section>
-
-      <section class="secao-associados">
-
-        <div class="titulo-secao">
-          <div>
-            <p class="legenda">Módulo 1</p>
-            <h2>Associados</h2>
-          </div>
-
-          <button
-            id="botaoNovoAssociado"
-            class="botao-principal"
-            type="button"
-          >
-            + Novo
-          </button>
-        </div>
-
-        <label class="campo-pesquisa">
-          <span aria-hidden="true">🔍</span>
+        <div class="grupo-campo">
+          <label for="login">E-mail ou CPF</label>
 
           <input
-            id="campoPesquisa"
-            type="search"
-            placeholder="Pesquisar associado"
-            autocomplete="off"
+            id="login"
+            name="login"
+            type="text"
+            placeholder="Digite seu e-mail ou CPF"
+            autocomplete="username"
+            required
           >
-        </label>
-
-        <div id="listaAssociados" class="lista-associados">
-
-          <div class="estado-vazio">
-            <div class="icone-vazio">👥</div>
-
-            <h3>Nenhum associado cadastrado</h3>
-
-            <p>
-              Toque no botão “Novo” para realizar o primeiro cadastro.
-            </p>
-          </div>
-
         </div>
-      </section>
 
-    </main>
+        <div class="grupo-campo">
+          <label for="senha">Senha</label>
 
-    <nav class="menu-inferior">
-      <button class="menu-item ativo" type="button">
-        <span>🏠</span>
-        <small>Início</small>
-      </button>
+          <div class="campo-senha">
+            <input
+              id="senha"
+              name="senha"
+              type="password"
+              placeholder="Digite sua senha"
+              autocomplete="current-password"
+              required
+            >
 
-      <button class="menu-item" type="button">
-        <span>👥</span>
-        <small>Associados</small>
-      </button>
+            <button
+              id="botaoMostrarSenha"
+              class="botao-mostrar-senha"
+              type="button"
+              aria-label="Mostrar senha"
+            >
+              👁
+            </button>
+          </div>
+        </div>
 
-      <button class="menu-item" type="button">
-        <span>⚙️</span>
-        <small>Ajustes</small>
-      </button>
-    </nav>
+        <div
+          id="mensagemLogin"
+          class="mensagem-login"
+          role="alert"
+          aria-live="polite"
+        ></div>
 
-  </div>
+        <a
+          id="linkEsqueciSenha"
+          class="link-esqueci-senha"
+          href="#"
+        >
+          Esqueci minha senha
+        </a>
+
+        <button
+          class="botao-entrar"
+          type="submit"
+        >
+          Entrar
+        </button>
+
+      </form>
+
+      <footer class="rodape-login">
+        <p>Ainda não possui acesso?</p>
+
+        <a
+          id="linkCadastrar"
+          href="#"
+        >
+          Criar cadastro
+        </a>
+      </footer>
+
+    </section>
+
+  </main>
 
   <script src="script.js"></script>
 </body>
