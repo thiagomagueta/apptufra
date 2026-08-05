@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#651b1d">
+
+  <title>Aprovação de usuário | TUFRA</title>
+
+  <link rel="stylesheet" href="style.css?v=8">
+</head>
+
+<body>
+  <main class="tela-aprovacao">
+
+    <section class="cartao-aprovacao">
+
+      <header class="cabecalho-aprovacao">
+        <img
+          class="logo-aprovacao"
+          src="logo-tufra.png"
+          alt="Logo da TUFRA"
+        >
+
+        <h1>Aprovação de usuário</h1>
+
+        <p>Analise os dados e marque as funções da pessoa.</p>
+      </header>
+
+      <section class="dados-solicitante">
+
+        <div class="linha-dado">
+          <span>Nome completo</span>
+          <strong id="nomeSolicitante">João da Silva</strong>
+        </div>
+
+        <div class="linha-dado">
+          <span>CPF</span>
+          <strong id="cpfSolicitante">123.456.789-00</strong>
+        </div>
+
+        <div class="linha-dado">
+          <span>Telefone</span>
+          <strong id="telefoneSolicitante">(15) 99999-9999</strong>
+        </div>
+
+        <div class="linha-dado">
+          <span>E-mail</span>
+          <strong id="emailSolicitante">joao@email.com</strong>
+        </div>
+
+        <div class="linha-dado">
+          <span>Data da solicitação</span>
+          <strong id="dataSolicitacao">05/08/2026 às 18:30</strong>
+        </div>
+
+        <div class="linha-dado">
+          <span>Status</span>
+          <strong class="status-aguardando">
+            Aguardando aprovação
+          </strong>
+        </div>
+
+      </section>
+
+      <section class="secao-funcoes">
+
+        <h2>Funções na TUFRA</h2>
+
+        <p class="orientacao-funcoes">
+          Selecione uma ou mais opções.
+        </p>
+
+        <div class="lista-funcoes">
+
+          <label class="opcao-funcao">
+            <input
+              type="checkbox"
+              name="funcoes"
+              value="Sacerdote"
+            >
+            <span>Sacerdote</span>
+          </label>
+
+          <label class="opcao-funcao">
+            <input
+              type="checkbox"
+              name="funcoes"
+              value="Pai Pequeno"
+            >
+            <span>Pai Pequeno</span>
+          </label>
+
+          <label class="opcao-funcao">
+            <input
+              type="checkbox"
+              name="funcoes"
+              value="Médium Principal"
+            >
+            <span>Médium Principal</span>
+          </label>
+
+          <div class="grupo-funcao">
+
+            <label class="opcao-funcao">
+              <input
+                id="funcaoMediumDesenvolvimento"
+                type="checkbox"
+                name="funcoes"
+                value="Médium em Desenvolvimento"
+              >
+              <span>Médium em Desenvolvimento</span>
+            </label>
+
+            <div
+              id="subopcoesMedium"
+              class="subopcoes-funcao"
+              hidden
+            >
+
+              <label class="opcao-subfuncao">
+                <input
+                  type="checkbox"
+                  name="mediumDesenvolvimento"
+                  value="Corrente"
+                >
+                <span>Corrente</span>
+              </label>
+
+              <label class="opcao-subfuncao">
+                <input
+                  type="checkbox"
+                  name="mediumDesenvolvimento"
+                  value="Banco"
+                >
+                <span>Banco</span>
+              </label>
+
+            </div>
+
+          </div>
+
+          <label class="opcao-funcao">
+            <input
+              type="checkbox"
+              name="funcoes"
+              value="Assistência"
+            >
+            <span>Assistência</span>
+          </label>
+
+          <label class="opcao-funcao">
+            <input
+              type="checkbox"
+              name="funcoes"
+              value="Ogam"
+            >
+            <span>Ogam</span>
+          </label>
+
+          <div class="grupo-funcao">
+
+            <label class="opcao-funcao">
+              <input
+                id="funcaoCambone"
+                type="checkbox"
+                name="funcoes"
+                value="Cambone"
+              >
+              <span>Cambone</span>
+            </label>
+
+            <div
+              id="subopcoesCambone"
+              class="subopcoes-funcao"
+              hidden
+            >
+
+              <label class="opcao-subfuncao">
+                <input
+                  type="checkbox"
+                  name="cambone"
+                  value="Corrente"
+                >
+                <span>Corrente</span>
+              </label>
+
+              <label class="opcao-subfuncao">
+                <input
+                  type="checkbox"
+                  name="cambone"
+                  value="Assistência"
+                >
+                <span>Assistência</span>
+              </label>
+
+              <label class="opcao-subfuncao">
+                <input
+                  type="checkbox"
+                  name="cambone"
+                  value="Acolhimento"
+                >
+                <span>Acolhimento</span>
+              </label>
+
+              <label class="opcao-subfuncao">
+                <input
+                  type="checkbox"
+                  name="cambone"
+                  value="Monitor de Saída"
+                >
+                <span>Monitor de Saída</span>
+              </label>
+
+            </div>
+
+          </div>
+
+          <label class="opcao-funcao">
+            <input
+              type="checkbox"
+              name="funcoes"
+              value="Cantina"
+            >
+            <span>Cantina</span>
+          </label>
+
+        </div>
+
+        <small
+          id="erroFuncoes"
+          class="mensagem-campo"
+        ></small>
+
+      </section>
+
+      <div class="grupo-observacao">
+        <label for="observacaoAprovacao">
+          Observações
+        </label>
+
+        <textarea
+          id="observacaoAprovacao"
+          rows="4"
+          placeholder="Digite uma observação, se necessário"
+        ></textarea>
+      </div>
+
+      <div
+        id="mensagemAprovacao"
+        class="mensagem-aprovacao"
+        aria-live="polite"
+      ></div>
+
+      <div class="acoes-aprovacao">
+
+        <button
+          id="botaoReprovar"
+          class="botao-reprovar"
+          type="button"
+        >
+          Reprovar
+        </button>
+
+        <button
+          id="botaoAprovar"
+          class="botao-aprovar"
+          type="button"
+        >
+          Aprovar
+        </button>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="aprovacao.js?v=1"></script>
+</body>
+</html>
