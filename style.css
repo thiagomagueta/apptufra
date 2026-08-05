@@ -895,3 +895,36 @@ a {
 .botao-aprovar:active {
   transform: scale(0.985);
 }
+
+.progresso-associado-1 {
+  width: 25%;
+}
+
+.progresso-associado-2 {
+  width: 50%;
+}
+
+.mensagem-busca-cep {
+  min-height: 18px;
+  margin: -6px 3px 10px;
+  color: #756966;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.formulario-cadastro select {
+  width: 100%;
+  height: 54px;
+  padding: 0 16px;
+  border: 1px solid #dfd3cd;
+  border-radius: 15px;
+  outline: none;
+  background: #fffdfc;
+  color: #2f2927;
+  font-size: 16px;
+}
+
+.formulario-cadastro select:focus {
+  border-color: #651b1d;
+  box-shadow: 0 0 0 4px rgba(101, 27, 29, 0.11);
+}
