@@ -34,6 +34,15 @@ function formatarCPF(valor) {
     .replace(/\.(\d{3})(\d)/, ".$1-$2");
 }
 
+function formatarTelefone(valor) {
+  const numeros = somenteNumeros(valor).slice(0, 11);
+
+  if (numeros.length <= 10) {
+    return numeros
+      .replace(/^(\d{2})(\d)/, "($1) $2")
+      .replace(/(\d{4})(\d)/, "$1-$2");
+  }
+
 function formatarData(valor) {
   const numeros = somenteNumeros(valor).slice(0, 8);
 
