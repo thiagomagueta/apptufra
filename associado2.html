@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#651b1d">
+
+  <title>Endereço e contato | TUFRA</title>
+
+  <link rel="stylesheet" href="style.css?v=10">
+</head>
+
+<body>
+  <main class="tela-cadastro">
+
+    <section class="cartao-cadastro">
+
+      <header class="cabecalho-cadastro">
+
+        <img
+          class="logo-cadastro"
+          src="logo-tufra.png"
+          alt="Logo da Tenda de Umbanda Francisco de Assis"
+        >
+
+        <h1>Ficha do Associado</h1>
+
+        <p>Endereço e contato</p>
+
+        <div class="progresso-cadastro">
+          <div
+            class="progresso-preenchido progresso-associado-2"
+          ></div>
+        </div>
+
+        <small>Passo 2 de 4</small>
+
+      </header>
+
+      <form
+        id="formularioAssociado2"
+        class="formulario-cadastro"
+        novalidate
+      >
+
+        <div class="grupo-campo">
+          <label for="cepAssociado">CEP *</label>
+
+          <input
+            id="cepAssociado"
+            name="cepAssociado"
+            type="text"
+            placeholder="00000-000"
+            inputmode="numeric"
+            maxlength="9"
+            autocomplete="postal-code"
+            required
+          >
+
+          <small
+            id="erroCepAssociado"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <div
+          id="mensagemBuscaCep"
+          class="mensagem-busca-cep"
+          aria-live="polite"
+        ></div>
+
+        <div class="grupo-campo">
+          <label for="enderecoAssociado">Endereço *</label>
+
+          <input
+            id="enderecoAssociado"
+            name="enderecoAssociado"
+            type="text"
+            placeholder="Rua, avenida ou estrada"
+            autocomplete="address-line1"
+            required
+          >
+
+          <small
+            id="erroEnderecoAssociado"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="numeroAssociado">Número *</label>
+
+          <input
+            id="numeroAssociado"
+            name="numeroAssociado"
+            type="text"
+            placeholder="Digite o número"
+            inputmode="numeric"
+            autocomplete="address-line2"
+            required
+          >
+
+          <small
+            id="erroNumeroAssociado"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="complementoAssociado">
+            Complemento
+          </label>
+
+          <input
+            id="complementoAssociado"
+            name="complementoAssociado"
+            type="text"
+            placeholder="Casa, apartamento, bloco..."
+            autocomplete="address-line2"
+          >
+        </div>
+
+        <div class="grupo-campo">
+          <label for="bairroAssociado">Bairro *</label>
+
+          <input
+            id="bairroAssociado"
+            name="bairroAssociado"
+            type="text"
+            placeholder="Digite o bairro"
+            required
+          >
+
+          <small
+            id="erroBairroAssociado"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="cidadeAssociado">Cidade *</label>
+
+          <input
+            id="cidadeAssociado"
+            name="cidadeAssociado"
+            type="text"
+            placeholder="Digite a cidade"
+            autocomplete="address-level2"
+            required
+          >
+
+          <small
+            id="erroCidadeAssociado"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="estadoAssociado">Estado *</label>
+
+          <select
+            id="estadoAssociado"
+            name="estadoAssociado"
+            autocomplete="address-level1"
+            required
+          >
+            <option value="">Selecione</option>
+            <option value="AC">Acre</option>
+            <option value="AL">Alagoas</option>
+            <option value="AP">Amapá</option>
+            <option value="AM">Amazonas</option>
+            <option value="BA">Bahia</option>
+            <option value="CE">Ceará</option>
+            <option value="DF">Distrito Federal</option>
+            <option value="ES">Espírito Santo</option>
+            <option value="GO">Goiás</option>
+            <option value="MA">Maranhão</option>
+            <option value="MT">Mato Grosso</option>
+            <option value="MS">Mato Grosso do Sul</option>
+            <option value="MG">Minas Gerais</option>
+            <option value="PA">Pará</option>
+            <option value="PB">Paraíba</option>
+            <option value="PR">Paraná</option>
+            <option value="PE">Pernambuco</option>
+            <option value="PI">Piauí</option>
+            <option value="RJ">Rio de Janeiro</option>
+            <option value="RN">Rio Grande do Norte</option>
+            <option value="RS">Rio Grande do Sul</option>
+            <option value="RO">Rondônia</option>
+            <option value="RR">Roraima</option>
+            <option value="SC">Santa Catarina</option>
+            <option value="SP">São Paulo</option>
+            <option value="SE">Sergipe</option>
+            <option value="TO">Tocantins</option>
+          </select>
+
+          <small
+            id="erroEstadoAssociado"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="telefoneFixoAssociado">
+            Telefone fixo *
+          </label>
+
+          <input
+            id="telefoneFixoAssociado"
+            name="telefoneFixoAssociado"
+            type="tel"
+            placeholder="(00) 0000-0000"
+            inputmode="numeric"
+            maxlength="14"
+            autocomplete="tel"
+            required
+          >
+
+          <small
+            id="erroTelefoneFixoAssociado"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="celularAssociado">Celular *</label>
+
+          <input
+            id="celularAssociado"
+            name="celularAssociado"
+            type="tel"
+            placeholder="(00) 00000-0000"
+            inputmode="numeric"
+            maxlength="15"
+            autocomplete="tel"
+            required
+          >
+
+          <small
+            id="erroCelularAssociado"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="emailAssociado">E-mail *</label>
+
+          <input
+            id="emailAssociado"
+            name="emailAssociado"
+            type="email"
+            placeholder="Digite seu e-mail"
+            autocomplete="email"
+            required
+          >
+
+          <small
+            id="erroEmailAssociado"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <div class="acoes-cadastro">
+
+          <a
+            class="botao-anterior"
+            href="associado1.html"
+          >
+            Anterior
+          </a>
+
+          <button
+            class="botao-solicitar"
+            type="submit"
+          >
+            Próximo
+          </button>
+
+        </div>
+
+      </form>
+
+    </section>
+
+  </main>
+
+  <script src="associado.js?v=3"></script>
+</body>
+</html>
