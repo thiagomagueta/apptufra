@@ -359,3 +359,159 @@ formularioAssociado1.addEventListener(
 );
 
 preencherDadosAnteriores();
+
+/* =====================================================
+   ETAPA 2 - ENDEREÇO E CONTATO
+===================================================== */
+
+const formularioAssociado2 =
+    document.getElementById("formularioAssociado2");
+
+if (formularioAssociado2) {
+
+    const ficha = obterFichaAtual();
+    const cadastroUsuario = carregarObjeto(CHAVE_CADASTRO_USUARIO);
+
+    const endereco = ficha.enderecoContato ?? {};
+
+    function preencherEndereco() {
+
+        document.getElementById("cepAssociado").value =
+            endereco.cep ?? "";
+
+        document.getElementById("enderecoAssociado").value =
+            endereco.endereco ?? "";
+
+        document.getElementById("numeroAssociado").value =
+            endereco.numero ?? "";
+
+        document.getElementById("complementoAssociado").value =
+            endereco.complemento ?? "";
+
+        document.getElementById("bairroAssociado").value =
+            endereco.bairro ?? "";
+
+        document.getElementById("cidadeAssociado").value =
+            endereco.cidade ?? "";
+
+        document.getElementById("estadoAssociado").value =
+            endereco.estado ?? "";
+
+        document.getElementById("telefoneFixoAssociado").value =
+            endereco.telefoneFixo ?? "";
+
+        document.getElementById("celularAssociado").value =
+            endereco.celular ??
+            cadastroUsuario.telefone ??
+            "";
+
+        document.getElementById("emailAssociado").value =
+            endereco.email ??
+            cadastroUsuario.email ??
+            "";
+    }
+
+    preencherEndereco();
+
+    const campoCep =
+        document.getElementById("cepAssociado");
+
+    const campoTelefoneFixo =
+        document.getElementById("telefoneFixoAssociado");
+
+    const campoCelular =
+        document.getElementById("celularAssociado");
+
+    campoCep.addEventListener("input", () => {
+
+        let valor = somenteNumeros(campoCep.value)
+            .slice(0,8);
+
+        valor = valor.replace(
+            /^(\d{5})(\d)/,
+            "$1-$2"
+        );
+
+        campoCep.value = valor;
+
+    });
+
+    campoTelefoneFixo.addEventListener("input", () => {
+
+        let valor = somenteNumeros(
+            campoTelefoneFixo.value
+        ).slice(0,10);
+
+        valor = valor
+            .replace(
+                /^(\d{2})(\d)/,
+                "($1) $2"
+            )
+            .replace(
+                /(\d{4})(\d)/,
+                "$1-$2"
+            );
+
+        campoTelefoneFixo.value = valor;
+
+    });
+
+    campoCelular.addEventListener("input", () => {
+
+        campoCelular.value =
+            formatarTelefone(
+                campoCelular.value
+            );
+
+    });
+
+    formularioAssociado2.addEventListener(
+        "submit",
+        function(evento){
+
+            evento.preventDefault();
+
+            ficha.enderecoContato = {
+
+                cep:
+                    document.getElementById("cepAssociado").value,
+
+                endereco:
+                    document.getElementById("enderecoAssociado").value,
+
+                numero:
+                    document.getElementById("numeroAssociado").value,
+
+                complemento:
+                    document.getElementById("complementoAssociado").value,
+
+                bairro:
+                    document.getElementById("bairroAssociado").value,
+
+                cidade:
+                    document.getElementById("cidadeAssociado").value,
+
+                estado:
+                    document.getElementById("estadoAssociado").value,
+
+                telefoneFixo:
+                    document.getElementById("telefoneFixoAssociado").value,
+
+                celular:
+                    document.getElementById("celularAssociado").value,
+
+                email:
+                    document.getElementById("emailAssociado").value
+
+            };
+
+            salvarFicha(ficha);
+
+            window.location.href =
+                "associado3.html";
+
+        }
+
+    );
+
+}
