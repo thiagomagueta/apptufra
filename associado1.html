@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#651b1d">
+
+  <title>Dados pessoais | TUFRA</title>
+
+  <link rel="stylesheet" href="style.css?v=9">
+</head>
+
+<body>
+  <main class="tela-cadastro">
+
+    <section class="cartao-cadastro">
+
+      <header class="cabecalho-cadastro">
+
+        <img
+          class="logo-cadastro"
+          src="logo-tufra.png"
+          alt="Logo da Tenda de Umbanda Francisco de Assis"
+        >
+
+        <h1>Ficha do Associado</h1>
+
+        <p>Dados pessoais</p>
+
+        <div class="progresso-cadastro">
+          <div
+            class="progresso-preenchido progresso-associado-1"
+          ></div>
+        </div>
+
+        <small>Passo 1 de 4</small>
+
+      </header>
+
+      <form
+        id="formularioAssociado1"
+        class="formulario-cadastro"
+        novalidate
+      >
+
+        <div class="grupo-campo">
+          <label for="associadoNome">Nome completo *</label>
+
+          <input
+            id="associadoNome"
+            name="associadoNome"
+            type="text"
+            placeholder="Digite seu nome completo"
+            autocomplete="name"
+            required
+          >
+
+          <small
+            id="erroAssociadoNome"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="associadoNascimento">
+            Data de nascimento *
+          </label>
+
+          <input
+            id="associadoNascimento"
+            name="associadoNascimento"
+            type="text"
+            placeholder="00/00/0000"
+            inputmode="numeric"
+            maxlength="10"
+            autocomplete="bday"
+            required
+          >
+
+          <small
+            id="erroAssociadoNascimento"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="cidadeNascimento">
+            Cidade de nascimento *
+          </label>
+
+          <input
+            id="cidadeNascimento"
+            name="cidadeNascimento"
+            type="text"
+            placeholder="Digite a cidade"
+            autocomplete="address-level2"
+            required
+          >
+
+          <small
+            id="erroCidadeNascimento"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="estadoNascimento">
+            Estado de nascimento *
+          </label>
+
+          <select
+            id="estadoNascimento"
+            name="estadoNascimento"
+            required
+          >
+            <option value="">Selecione</option>
+            <option value="AC">Acre</option>
+            <option value="AL">Alagoas</option>
+            <option value="AP">Amapá</option>
+            <option value="AM">Amazonas</option>
+            <option value="BA">Bahia</option>
+            <option value="CE">Ceará</option>
+            <option value="DF">Distrito Federal</option>
+            <option value="ES">Espírito Santo</option>
+            <option value="GO">Goiás</option>
+            <option value="MA">Maranhão</option>
+            <option value="MT">Mato Grosso</option>
+            <option value="MS">Mato Grosso do Sul</option>
+            <option value="MG">Minas Gerais</option>
+            <option value="PA">Pará</option>
+            <option value="PB">Paraíba</option>
+            <option value="PR">Paraná</option>
+            <option value="PE">Pernambuco</option>
+            <option value="PI">Piauí</option>
+            <option value="RJ">Rio de Janeiro</option>
+            <option value="RN">Rio Grande do Norte</option>
+            <option value="RS">Rio Grande do Sul</option>
+            <option value="RO">Rondônia</option>
+            <option value="RR">Roraima</option>
+            <option value="SC">Santa Catarina</option>
+            <option value="SP">São Paulo</option>
+            <option value="SE">Sergipe</option>
+            <option value="TO">Tocantins</option>
+          </select>
+
+          <small
+            id="erroEstadoNascimento"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="idadeAssociado">Idade</label>
+
+          <input
+            id="idadeAssociado"
+            name="idadeAssociado"
+            type="text"
+            placeholder="Calculada automaticamente"
+            readonly
+          >
+        </div>
+
+        <div class="grupo-campo">
+          <label for="generoAssociado">Gênero *</label>
+
+          <select
+            id="generoAssociado"
+            name="generoAssociado"
+            required
+          >
+            <option value="">Selecione</option>
+            <option value="Feminino">Feminino</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Prefiro não informar">
+              Prefiro não informar
+            </option>
+            <option value="Outro / Autodeclarado">
+              Outro / Autodeclarado
+            </option>
+          </select>
+
+          <small
+            id="erroGeneroAssociado"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <div
+          id="campoGeneroOutro"
+          class="grupo-campo"
+          hidden
+        >
+          <label for="generoAutodeclarado">
+            Informe como se autodeclara *
+          </label>
+
+          <input
+            id="generoAutodeclarado"
+            name="generoAutodeclarado"
+            type="text"
+            placeholder="Digite aqui"
+          >
+
+          <small
+            id="erroGeneroOutro"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="nacionalidadeAssociado">
+            Nacionalidade *
+          </label>
+
+          <input
+            id="nacionalidadeAssociado"
+            name="nacionalidadeAssociado"
+            type="text"
+            placeholder="Digite sua nacionalidade"
+            required
+          >
+
+          <small
+            id="erroNacionalidadeAssociado"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="rgAssociado">RG *</label>
+
+          <input
+            id="rgAssociado"
+            name="rgAssociado"
+            type="text"
+            placeholder="Digite seu RG"
+            autocomplete="off"
+            required
+          >
+
+          <small
+            id="erroRgAssociado"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="cpfAssociado">CPF *</label>
+
+          <input
+            id="cpfAssociado"
+            name="cpfAssociado"
+            type="text"
+            placeholder="000.000.000-00"
+            inputmode="numeric"
+            maxlength="14"
+            autocomplete="off"
+            required
+          >
+
+          <small
+            id="erroCpfAssociado"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <div class="acoes-cadastro">
+
+          <a
+            class="botao-anterior"
+            href="index.html"
+          >
+            Sair
+          </a>
+
+          <button
+            class="botao-solicitar"
+            type="submit"
+          >
+            Próximo
+          </button>
+
+        </div>
+
+      </form>
+
+    </section>
+
+  </main>
+
+  <script src="associado.js?v=1"></script>
+</body>
+</html>
