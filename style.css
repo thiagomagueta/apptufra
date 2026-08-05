@@ -652,3 +652,246 @@ a {
 .botao-voltar-login:active {
   transform: scale(0.985);
 }
+
+/* ==========================================
+   TELA 03 — APROVAÇÃO DE USUÁRIO
+========================================== */
+
+.tela-aprovacao {
+  min-height: 100vh;
+  padding:
+    calc(18px + env(safe-area-inset-top))
+    16px
+    calc(24px + env(safe-area-inset-bottom));
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(101, 27, 29, 0.12),
+      transparent 34%
+    ),
+    #efe6dc;
+}
+
+.cartao-aprovacao {
+  width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  padding: 22px 20px 26px;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(101, 27, 29, 0.10);
+  border-radius: 28px;
+  box-shadow: 0 18px 45px rgba(66, 16, 18, 0.14);
+}
+
+.cabecalho-aprovacao {
+  text-align: center;
+}
+
+.logo-aprovacao {
+  display: block;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 10px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.cabecalho-aprovacao h1 {
+  margin-bottom: 7px;
+  color: #651b1d;
+  font-size: 24px;
+}
+
+.cabecalho-aprovacao p {
+  color: #756966;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.dados-solicitante {
+  margin-top: 24px;
+  padding: 8px 16px;
+  background: #faf5f1;
+  border: 1px solid #eaded7;
+  border-radius: 18px;
+}
+
+.linha-dado {
+  padding: 11px 0;
+  border-bottom: 1px solid #eaded7;
+}
+
+.linha-dado:last-child {
+  border-bottom: none;
+}
+
+.linha-dado span {
+  display: block;
+  margin-bottom: 3px;
+  color: #756966;
+  font-size: 12px;
+}
+
+.linha-dado strong {
+  color: #2f2927;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.status-aguardando {
+  color: #9a6500 !important;
+}
+
+.secao-funcoes {
+  margin-top: 26px;
+}
+
+.secao-funcoes h2 {
+  margin-bottom: 5px;
+  color: #651b1d;
+  font-size: 20px;
+}
+
+.orientacao-funcoes {
+  margin-bottom: 14px;
+  color: #756966;
+  font-size: 13px;
+}
+
+.lista-funcoes {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.opcao-funcao,
+.opcao-subfuncao {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 48px;
+  padding: 10px 13px;
+  background: #fffdfc;
+  border: 1px solid #dfd3cd;
+  border-radius: 14px;
+  color: #2f2927;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.opcao-funcao input,
+.opcao-subfuncao input {
+  width: 20px;
+  height: 20px;
+  accent-color: #651b1d;
+  flex-shrink: 0;
+}
+
+.grupo-funcao {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.subopcoes-funcao {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-left: 22px;
+  padding-left: 12px;
+  border-left: 3px solid #d8c0b5;
+}
+
+.subopcoes-funcao[hidden] {
+  display: none;
+}
+
+.opcao-subfuncao {
+  min-height: 44px;
+  background: #faf5f1;
+  font-weight: 600;
+}
+
+.grupo-observacao {
+  margin-top: 24px;
+}
+
+.grupo-observacao label {
+  display: block;
+  margin: 0 0 7px 3px;
+  color: #2f2927;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.grupo-observacao textarea {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #dfd3cd;
+  border-radius: 15px;
+  outline: none;
+  background: #fffdfc;
+  color: #2f2927;
+  font: inherit;
+  resize: vertical;
+}
+
+.grupo-observacao textarea:focus {
+  border-color: #651b1d;
+  box-shadow: 0 0 0 4px rgba(101, 27, 29, 0.11);
+}
+
+.mensagem-aprovacao {
+  min-height: 22px;
+  margin-top: 16px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.mensagem-aprovada {
+  color: #2f7d4a;
+}
+
+.mensagem-reprovada {
+  color: #b3261e;
+}
+
+.acoes-aprovacao {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.botao-reprovar,
+.botao-aprovar {
+  height: 56px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.botao-reprovar {
+  border: 1px solid #b3261e;
+  background: #ffffff;
+  color: #b3261e;
+}
+
+.botao-aprovar {
+  border: none;
+  background: linear-gradient(
+    135deg,
+    #8a3436,
+    #421012
+  );
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(101, 27, 29, 0.24);
+}
+
+.botao-reprovar:active,
+.botao-aprovar:active {
+  transform: scale(0.985);
+}
