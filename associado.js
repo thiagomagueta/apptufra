@@ -346,14 +346,28 @@ function salvarPrimeiraEtapa(evento) {
 }
 
 if (formularioAssociado1) {
-  campoNascimento.addEventListener("input", () => {
-    campoNascimento.value = formatarData(
-      campoNascimento.value
-    );
+ function tratarDataNascimento() {
+  campoNascimento.value = formatarData(
+    campoNascimento.value
+  );
 
-    atualizarIdade();
-  });
+  atualizarIdade();
+}
 
+campoNascimento.addEventListener(
+  "input",
+  tratarDataNascimento
+);
+
+campoNascimento.addEventListener(
+  "change",
+  tratarDataNascimento
+);
+
+campoNascimento.addEventListener(
+  "blur",
+  tratarDataNascimento
+);
   campoCPF.addEventListener("input", () => {
     campoCPF.value = formatarCPF(campoCPF.value);
   });
