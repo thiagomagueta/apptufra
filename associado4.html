@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#651b1d">
+
+  <title>Revisão da ficha | TUFRA</title>
+
+  <link rel="stylesheet" href="style.css?v=12">
+</head>
+
+<body>
+  <main class="tela-cadastro">
+
+    <section class="cartao-cadastro">
+
+      <header class="cabecalho-cadastro">
+
+        <img
+          class="logo-cadastro"
+          src="logo-tufra.png"
+          alt="Logo da Tenda de Umbanda Francisco de Assis"
+        >
+
+        <h1>Ficha do Associado</h1>
+
+        <p>Revisão das informações</p>
+
+        <div class="progresso-cadastro">
+          <div
+            class="progresso-preenchido progresso-associado-4"
+          ></div>
+        </div>
+
+        <small>Passo 4 de 4</small>
+
+      </header>
+
+      <div
+        id="mensagemFichaIncompleta"
+        class="aviso-ficha"
+        hidden
+      >
+        Algumas etapas da ficha ainda não foram preenchidas.
+      </div>
+
+      <section class="secao-revisao">
+
+        <div class="titulo-revisao">
+          <h2>Dados pessoais</h2>
+
+          <a href="associado1.html">
+            Editar
+          </a>
+        </div>
+
+        <div
+          id="revisaoDadosPessoais"
+          class="lista-revisao"
+        ></div>
+
+      </section>
+
+      <section class="secao-revisao">
+
+        <div class="titulo-revisao">
+          <h2>Endereço e contato</h2>
+
+          <a href="associado2.html">
+            Editar
+          </a>
+        </div>
+
+        <div
+          id="revisaoEnderecoContato"
+          class="lista-revisao"
+        ></div>
+
+      </section>
+
+      <section class="secao-revisao">
+
+        <div class="titulo-revisao">
+          <h2>Histórico na Umbanda</h2>
+
+          <a href="associado3.html">
+            Editar
+          </a>
+        </div>
+
+        <div
+          id="revisaoHistoricoUmbanda"
+          class="lista-revisao"
+        ></div>
+
+      </section>
+
+      <label class="confirmacao-dados">
+        <input
+          id="confirmarDados"
+          type="checkbox"
+        >
+
+        <span>
+          Confirmo que revisei as informações e que os dados
+          preenchidos estão corretos.
+        </span>
+      </label>
+
+      <small
+        id="erroConfirmacaoDados"
+        class="mensagem-campo mensagem-termos"
+      ></small>
+
+      <div class="acoes-cadastro">
+
+        <a
+          class="botao-anterior"
+          href="associado3.html"
+        >
+          Anterior
+        </a>
+
+        <button
+          id="botaoFinalizarFicha"
+          class="botao-solicitar"
+          type="button"
+          disabled
+        >
+          Finalizar cadastro
+        </button>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="associado4.js?v=1"></script>
+</body>
+</html>
