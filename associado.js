@@ -49,6 +49,7 @@ function formatarTelefone(valor) {
 }
 
 function formatarData(valor) {
+function formatarData(valor) {
   const numeros = somenteNumeros(valor).slice(0, 8);
 
   return numeros
