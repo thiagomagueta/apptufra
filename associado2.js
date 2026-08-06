@@ -169,10 +169,10 @@ function preencherDadosAnteriores() {
   campoEstado.value = dados.estado ?? "";
   campoTelefoneFixo.value = dados.telefoneFixo ?? "";
 
-  campoCelular.value =
-    dados.celular ??
-    usuario.telefone ??
-    "";
+campoCelular.value =
+  dados.celular ||
+  usuario.telefone ||
+  "";
 
 campoEmail.value =
   dados.email ||
