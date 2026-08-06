@@ -6,7 +6,9 @@ const formularioDadosAcesso = document.getElementById(
 
 const campoNomeUsuario = document.getElementById("nomeUsuario");
 const campoNovaSenha = document.getElementById("novaSenha");
-const campoConfirmarSenha = document.getElementById("confirmarSenha");
+const campoConfirmarSenha = document.getElementById(
+  "confirmarSenha"
+);
 
 const botaoMostrarNovaSenha = document.getElementById(
   "mostrarNovaSenha"
@@ -20,17 +22,25 @@ const aceiteTermos = document.getElementById("aceiteTermos");
 
 const erroUsuario = document.getElementById("erroUsuario");
 const erroSenha = document.getElementById("erroSenha");
-const erroConfirmacao = document.getElementById("erroConfirmacao");
+const erroConfirmacao = document.getElementById(
+  "erroConfirmacao"
+);
 const erroTermos = document.getElementById("erroTermos");
 
-const botaoSolicitar = document.querySelector(".botao-solicitar");
+const botaoSolicitar = document.querySelector(
+  ".botao-solicitar"
+);
 
 function limparMensagem(elemento) {
-  elemento.textContent = "";
+  if (elemento) {
+    elemento.textContent = "";
+  }
 }
 
 function mostrarMensagem(elemento, texto) {
-  elemento.textContent = texto;
+  if (elemento) {
+    elemento.textContent = texto;
+  }
 }
 
 function alternarSenha(campo, botao) {
@@ -51,7 +61,11 @@ function validarNomeUsuario() {
   limparMensagem(erroUsuario);
 
   if (!nomeUsuario) {
-    mostrarMensagem(erroUsuario, "Informe um nome de usuário.");
+    mostrarMensagem(
+      erroUsuario,
+      "Informe um nome de usuário."
+    );
+
     return false;
   }
 
@@ -60,6 +74,16 @@ function validarNomeUsuario() {
       erroUsuario,
       "O nome de usuário não pode conter espaços."
     );
+
+    return false;
+  }
+
+  if (nomeUsuario.length < 3) {
+    mostrarMensagem(
+      erroUsuario,
+      "O nome de usuário deve possuir pelo menos 3 caracteres."
+    );
+
     return false;
   }
 
@@ -81,6 +105,7 @@ function validarSenha() {
       erroSenha,
       "A senha deve possuir pelo menos 6 caracteres."
     );
+
     return false;
   }
 
@@ -92,12 +117,14 @@ function validarConfirmacaoSenha() {
   const confirmacao = campoConfirmarSenha.value;
 
   limparMensagem(erroConfirmacao);
+  erroConfirmacao.classList.remove("mensagem-sucesso");
 
   if (!confirmacao) {
     mostrarMensagem(
       erroConfirmacao,
       "Confirme a senha."
     );
+
     return false;
   }
 
@@ -106,6 +133,7 @@ function validarConfirmacaoSenha() {
       erroConfirmacao,
       "As senhas são diferentes."
     );
+
     return false;
   }
 
@@ -127,6 +155,7 @@ function validarTermos() {
       erroTermos,
       "Você precisa aceitar os termos."
     );
+
     return false;
   }
 
@@ -137,7 +166,84 @@ function atualizarEstadoBotao() {
   botaoSolicitar.disabled = !aceiteTermos.checked;
 }
 
-function enviarSolicitacao(evento) {
+function obterDadosPessoais() {
+  try {
+    const dadosSalvos = sessionStorage.getItem(
+      "tufra_dados_pessoais"
+    );
+
+    return dadosSalvos
+      ? JSON.parse(dadosSalvos)
+      : null;
+  } catch (erro) {
+    console.error(
+      "Erro ao carregar os dados pessoais:",
+      erro
+    );
+
+    return null;
+  }
+}
+
+function traduzirErroCadastro(mensagem) {
+  const texto = String(mensagem || "").toLowerCase();
+
+  if (
+    texto.includes("already registered") ||
+    texto.includes("already exists") ||
+    texto.includes("user already registered")
+  ) {
+    return "Este e-mail já possui um cadastro.";
+  }
+
+  if (
+    texto.includes("password") &&
+    texto.includes("characters")
+  ) {
+    return "A senha não atende aos requisitos mínimos.";
+  }
+
+  if (
+    texto.includes("invalid email") ||
+    texto.includes("email address")
+  ) {
+    return "Informe um e-mail válido.";
+  }
+
+  if (
+    texto.includes("duplicate") ||
+    texto.includes("unique")
+  ) {
+    return "Já existe um cadastro com este e-mail ou CPF.";
+  }
+
+  if (
+    texto.includes("database error") ||
+    texto.includes("saving new user")
+  ) {
+    return (
+      "Não foi possível concluir o cadastro no banco. " +
+      "Confira se o e-mail ou CPF já estão cadastrados."
+    );
+  }
+
+  return (
+    "Não foi possível concluir o cadastro. " +
+    "Tente novamente."
+  );
+}
+
+function bloquearFormulario() {
+  botaoSolicitar.disabled = true;
+  botaoSolicitar.textContent = "ENVIANDO...";
+}
+
+function liberarFormulario() {
+  botaoSolicitar.textContent = "SOLICITAR CADASTRO";
+  atualizarEstadoBotao();
+}
+
+async function enviarSolicitacao(evento) {
   evento.preventDefault();
 
   erroConfirmacao.classList.remove("mensagem-sucesso");
@@ -156,28 +262,100 @@ function enviarSolicitacao(evento) {
     return;
   }
 
-  const dadosPessoaisSalvos = sessionStorage.getItem(
-    "tufra_dados_pessoais"
-  );
+  const dadosPessoais = obterDadosPessoais();
 
-  const dadosPessoais = dadosPessoaisSalvos
-    ? JSON.parse(dadosPessoaisSalvos)
-    : {};
+  if (
+    !dadosPessoais ||
+    !dadosPessoais.nomeCompleto ||
+    !dadosPessoais.email ||
+    !dadosPessoais.cpf
+  ) {
+    mostrarMensagem(
+      erroUsuario,
+      "Os dados da primeira etapa não foram encontrados. Volte e preencha novamente."
+    );
 
-  const cadastroCompleto = {
-    ...dadosPessoais,
-    nomeUsuario: campoNomeUsuario.value.trim(),
-    senha: campoNovaSenha.value,
-    status: "Aguardando aprovação",
-    dataSolicitacao: new Date().toISOString()
-  };
+    return;
+  }
 
-  sessionStorage.setItem(
-    "tufra_cadastro_completo",
-    JSON.stringify(cadastroCompleto)
-  );
+  if (!window.supabaseClient) {
+    mostrarMensagem(
+      erroUsuario,
+      "Não foi possível conectar ao banco de dados."
+    );
 
-  window.location.href = "cadastro-sucesso.html";
+    console.error(
+      "O cliente do Supabase não foi inicializado."
+    );
+
+    return;
+  }
+
+  bloquearFormulario();
+
+  try {
+    const nomeUsuario = campoNomeUsuario.value
+      .trim()
+      .toLowerCase();
+
+    const senha = campoNovaSenha.value;
+
+    const resultado = await window.supabaseClient.auth.signUp({
+      email: dadosPessoais.email.trim().toLowerCase(),
+      password: senha,
+
+      options: {
+        data: {
+          nome_completo: dadosPessoais.nomeCompleto,
+          cpf: dadosPessoais.cpf,
+          telefone: dadosPessoais.telefone || "",
+          data_nascimento:
+            dadosPessoais.dataNascimento || "",
+          nome_usuario: nomeUsuario
+        }
+      }
+    });
+
+    if (resultado.error) {
+      throw resultado.error;
+    }
+
+    if (!resultado.data.user) {
+      throw new Error(
+        "O Supabase não retornou o usuário criado."
+      );
+    }
+
+    const cadastroCompleto = {
+      ...dadosPessoais,
+      nomeUsuario,
+      status: "Aguardando aprovação",
+      dataSolicitacao: new Date().toISOString(),
+      authId: resultado.data.user.id
+    };
+
+    /*
+      A senha não é armazenada no navegador.
+      Ela fica protegida exclusivamente no Supabase Auth.
+    */
+    sessionStorage.setItem(
+      "tufra_cadastro_completo",
+      JSON.stringify(cadastroCompleto)
+    );
+
+    sessionStorage.removeItem("tufra_dados_pessoais");
+
+    window.location.href = "cadastro-sucesso.html";
+  } catch (erro) {
+    console.error("Erro ao criar cadastro:", erro);
+
+    mostrarMensagem(
+      erroUsuario,
+      traduzirErroCadastro(erro.message)
+    );
+
+    liberarFormulario();
+  }
 }
 
 botaoMostrarNovaSenha.addEventListener("click", () => {
@@ -201,12 +379,18 @@ campoNomeUsuario.addEventListener("input", () => {
 campoNovaSenha.addEventListener("input", () => {
   limparMensagem(erroSenha);
   limparMensagem(erroConfirmacao);
-  erroConfirmacao.classList.remove("mensagem-sucesso");
+
+  erroConfirmacao.classList.remove(
+    "mensagem-sucesso"
+  );
 });
 
 campoConfirmarSenha.addEventListener("input", () => {
   limparMensagem(erroConfirmacao);
-  erroConfirmacao.classList.remove("mensagem-sucesso");
+
+  erroConfirmacao.classList.remove(
+    "mensagem-sucesso"
+  );
 
   if (
     campoConfirmarSenha.value &&
@@ -217,7 +401,9 @@ campoConfirmarSenha.addEventListener("input", () => {
       "As senhas coincidem."
     );
 
-    erroConfirmacao.classList.add("mensagem-sucesso");
+    erroConfirmacao.classList.add(
+      "mensagem-sucesso"
+    );
   }
 });
 
