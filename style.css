@@ -1003,3 +1003,103 @@ a {
   color: #b3261e;
   font-weight: 700;
 }
+/* ==========================================
+   ETAPA 4 — REVISÃO DA FICHA
+========================================== */
+
+.progresso-associado-4 {
+  width: 100%;
+}
+
+.aviso-ficha {
+  margin-top: 20px;
+  padding: 14px;
+  border: 1px solid #d8a330;
+  border-radius: 14px;
+  background: #fff7df;
+  color: #7a5100;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.secao-revisao {
+  margin-top: 24px;
+  overflow: hidden;
+  border: 1px solid #eaded7;
+  border-radius: 18px;
+  background: #fffdfc;
+}
+
+.titulo-revisao {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #faf5f1;
+  border-bottom: 1px solid #eaded7;
+}
+
+.titulo-revisao h2 {
+  margin: 0;
+  color: #651b1d;
+  font-size: 17px;
+}
+
+.titulo-revisao a {
+  color: #651b1d;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.lista-revisao {
+  padding: 4px 16px;
+}
+
+.item-revisao {
+  padding: 12px 0;
+  border-bottom: 1px solid #eee4df;
+}
+
+.item-revisao:last-child {
+  border-bottom: none;
+}
+
+.item-revisao span {
+  display: block;
+  margin-bottom: 4px;
+  color: #756966;
+  font-size: 12px;
+}
+
+.item-revisao strong {
+  display: block;
+  color: #2f2927;
+  font-size: 14px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.confirmacao-dados {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  margin-top: 24px;
+  padding: 14px;
+  border: 1px solid #dfd3cd;
+  border-radius: 15px;
+  background: #fffdfc;
+  color: #4f4541;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.confirmacao-dados input {
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  accent-color: #651b1d;
+  flex-shrink: 0;
+}
