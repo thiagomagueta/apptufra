@@ -43,6 +43,11 @@ function formatarTelefone(valor) {
       .replace(/(\d{4})(\d)/, "$1-$2");
   }
 
+  return numeros
+    .replace(/^(\d{2})(\d)/, "($1) $2")
+    .replace(/(\d{5})(\d)/, "$1-$2");
+}
+
 function formatarData(valor) {
   const numeros = somenteNumeros(valor).slice(0, 8);
 
@@ -50,7 +55,6 @@ function formatarData(valor) {
     .replace(/^(\d{2})(\d)/, "$1/$2")
     .replace(/^(\d{2})\/(\d{2})(\d)/, "$1/$2/$3");
 }
-
 function converterDataBrasileira(valor) {
   const partes = String(valor).split("/");
 
