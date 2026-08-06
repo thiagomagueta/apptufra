@@ -2,15 +2,154 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
   >
-  <title>Teste do Calendário</title>
+
+  <meta name="theme-color" content="#651b1d">
+
+  <title>Calendário | TUFRA</title>
+
+  <link rel="stylesheet" href="layout.css?v=2">
 </head>
 
 <body>
-  <h1>Calendário TUFRA</h1>
-  <p>Página temporária para teste de publicação.</p>
+
+  <main class="app">
+
+    <div class="conteudo-app">
+
+      <header class="cabecalho-app">
+
+        <img
+          class="logo-app"
+          src="logo-tufra.png"
+          alt="Logo da TUFRA"
+        >
+
+        <div class="identidade-app">
+          <strong>TUFRA</strong>
+          <span>Tenda de Umbanda Francisco de Assis</span>
+        </div>
+
+      </header>
+
+      <section>
+        <h1 class="titulo-pagina">
+          Calendário
+        </h1>
+
+        <p class="subtitulo-pagina">
+          Consulte as giras e demais atividades da TUFRA.
+        </p>
+      </section>
+
+      <section class="cartao-app">
+
+        <div class="controle-mes">
+
+          <button
+            id="mesAnterior"
+            class="botao-mes"
+            type="button"
+            aria-label="Ver mês anterior"
+          >
+            ‹
+          </button>
+
+          <h2 id="tituloMes">
+            Agosto de 2026
+          </h2>
+
+          <button
+            id="mesSeguinte"
+            class="botao-mes"
+            type="button"
+            aria-label="Ver próximo mês"
+          >
+            ›
+          </button>
+
+        </div>
+
+        <button
+          id="voltarMesAtual"
+          class="botao-mes-atual"
+          type="button"
+        >
+          Voltar para o mês atual
+        </button>
+
+      </section>
+
+      <section class="cartao-app">
+
+        <h2>Atividades do mês</h2>
+
+        <div
+          id="listaCalendario"
+          class="lista-atividades"
+        ></div>
+
+        <div
+          id="mensagemSemAtividades"
+          class="mensagem-sem-atividades"
+          hidden
+        >
+          Nenhuma atividade cadastrada para este mês.
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <nav
+    class="menu-inferior"
+    aria-label="Navegação principal"
+  >
+
+    <div class="menu-inferior-conteudo">
+
+      <a
+        class="item-menu"
+        href="dashboard.html"
+      >
+        <span class="icone-menu">⌂</span>
+        <span class="texto-menu">Início</span>
+      </a>
+
+      <a
+        class="item-menu ativo"
+        href="calendario.html"
+      >
+        <span class="icone-menu">📅</span>
+        <span class="texto-menu">Calendário</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="minha-ficha.html"
+      >
+        <span class="icone-menu">👤</span>
+        <span class="texto-menu">Minha ficha</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="mais.html"
+      >
+        <span class="icone-menu">☰</span>
+        <span class="texto-menu">Mais</span>
+      </a>
+
+    </div>
+
+  </nav>
+
+<script src="calendario.js?v=2"></script>
 </body>
 </html>
