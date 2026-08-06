@@ -221,16 +221,25 @@ async function validarLogin(evento) {
       return;
     }
 
-    sessionStorage.setItem(
-      "tufra_usuario_logado",
-      JSON.stringify({
-        authId: usuarioAuth.id,
-        nomeCompleto: cadastro.nome_completo,
-        status: cadastro.status,
-        fichaConcluida:
-          cadastro.ficha_concluida
-      })
-    );
+const metadados = usuarioAuth.user_metadata || {};
+
+sessionStorage.setItem(
+  "tufra_usuario_logado",
+  JSON.stringify({
+    authId: usuarioAuth.id,
+    nomeCompleto: cadastro.nome_completo,
+    cpf: metadados.cpf || "",
+    telefone: metadados.telefone || "",
+    dataNascimento:
+      metadados.data_nascimento || "",
+    email: usuarioAuth.email || "",
+    nomeUsuario:
+      metadados.nome_usuario || "",
+    status: cadastro.status,
+    fichaConcluida:
+      cadastro.ficha_concluida
+  })
+);
 
     if (!cadastro.ficha_concluida) {
       window.location.href = "associado1.html";
