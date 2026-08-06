@@ -579,6 +579,7 @@ for (let dia = 1; dia <= 31; dia++) {
     opcao.value = dia;
 
     opcao.textContent =
+          "Dia " +
         dia.toString().padStart(2, "0");
 
     campoMelhorDia.appendChild(opcao);
