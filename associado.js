@@ -57,14 +57,12 @@ function formatarTelefone(valor) {
 }
 
 function formatarData(valor) {
-function formatarData(valor) {
   const numeros = somenteNumeros(valor).slice(0, 8);
 
   return numeros
     .replace(/^(\d{2})(\d)/, "$1/$2")
     .replace(/^(\d{2})\/(\d{2})(\d)/, "$1/$2/$3");
-}
-function converterDataBrasileira(valor) {
+}function converterDataBrasileira(valor) {
   const partes = String(valor).split("/");
 
   if (partes.length !== 3) {
