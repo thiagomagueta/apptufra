@@ -214,11 +214,7 @@ function validarFormulario() {
     [campoBairro, "erroBairroAssociado", "Informe o bairro."],
     [campoCidade, "erroCidadeAssociado", "Informe a cidade."],
     [campoEstado, "erroEstadoAssociado", "Selecione o estado."],
-    [
-      campoTelefoneFixo,
-      "erroTelefoneFixoAssociado",
-      "Informe o telefone fixo."
-    ],
+  
     [campoCelular, "erroCelularAssociado", "Informe o celular."],
     [campoEmail, "erroEmailAssociado", "Informe o e-mail."]
   ];
