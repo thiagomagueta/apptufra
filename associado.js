@@ -599,6 +599,7 @@ if (formularioAssociado3) {
 const campoMelhorDia =
     document.getElementById("melhorDiaPagamento");
 
+      
 for (let dia = 1; dia <= 31; dia++) {
 
     const opcao = document.createElement("option");
@@ -610,6 +611,8 @@ for (let dia = 1; dia <= 31; dia++) {
         dia.toString().padStart(2, "0");
 
     campoMelhorDia.appendChild(opcao);
+}
+  
 /* ==========================================
    CARREGAMENTO E SALVAMENTO DA ETAPA 3
 ========================================== */
