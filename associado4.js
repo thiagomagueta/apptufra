@@ -298,8 +298,9 @@ function finalizarFicha() {
     return;
   }
 
-  ficha.statusFicha = "Concluída";
-  ficha.dataConclusao = new Date().toISOString();
+ficha.statusFicha = "Concluída";
+ficha.statusUsuario = "Ativo";
+ficha.dataConclusao = new Date().toISOString();
 
   sessionStorage.setItem(
     CHAVE_FICHA,
