@@ -345,30 +345,31 @@ function salvarPrimeiraEtapa(evento) {
   window.location.href = "associado2.html";
 }
 
-campoNascimento.addEventListener("input", () => {
-  campoNascimento.value = formatarData(
-    campoNascimento.value
+if (formularioAssociado1) {
+  campoNascimento.addEventListener("input", () => {
+    campoNascimento.value = formatarData(
+      campoNascimento.value
+    );
+
+    atualizarIdade();
+  });
+
+  campoCPF.addEventListener("input", () => {
+    campoCPF.value = formatarCPF(campoCPF.value);
+  });
+
+  campoGenero.addEventListener(
+    "change",
+    controlarGeneroOutro
   );
 
-  atualizarIdade();
-});
+  formularioAssociado1.addEventListener(
+    "submit",
+    salvarPrimeiraEtapa
+  );
 
-campoCPF.addEventListener("input", () => {
-  campoCPF.value = formatarCPF(campoCPF.value);
-});
-
-campoGenero.addEventListener(
-  "change",
-  controlarGeneroOutro
-);
-
-formularioAssociado1.addEventListener(
-  "submit",
-  salvarPrimeiraEtapa
-);
-
-preencherDadosAnteriores();
-
+  preencherDadosAnteriores();
+}
 /* =====================================================
    ETAPA 2 - ENDEREÇO E CONTATO
 ===================================================== */
