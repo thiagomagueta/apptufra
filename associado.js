@@ -525,3 +525,78 @@ if (formularioAssociado2) {
     );
 
 }
+
+/* =====================================================
+   ETAPA 3 - CONTROLES VISUAIS
+===================================================== */
+
+const formularioAssociado3 =
+    document.getElementById("formularioAssociado3");
+
+if (formularioAssociado3) {
+
+    const areaQuantidadeTerreiros =
+        document.getElementById(
+            "areaQuantidadeTerreiros"
+        );
+
+    const areaDadosBatismo =
+        document.getElementById(
+            "areaDadosBatismo"
+        );
+
+    const radiosOutrosTerreiros =
+        document.querySelectorAll(
+            'input[name="participouOutrosTerreiros"]'
+        );
+
+    const radiosBatizado =
+        document.querySelectorAll(
+            'input[name="batizadoUmbanda"]'
+        );
+
+    function atualizarOutrosTerreiros() {
+
+        const selecionado =
+            document.querySelector(
+                'input[name="participouOutrosTerreiros"]:checked'
+            );
+
+        areaQuantidadeTerreiros.hidden =
+            !(selecionado &&
+              selecionado.value === "Sim");
+
+    }
+
+    function atualizarBatismo() {
+
+        const selecionado =
+            document.querySelector(
+                'input[name="batizadoUmbanda"]:checked'
+            );
+
+        areaDadosBatismo.hidden =
+            !(selecionado &&
+              selecionado.value === "Sim");
+
+    }
+
+    radiosOutrosTerreiros.forEach(function(radio){
+
+        radio.addEventListener(
+            "change",
+            atualizarOutrosTerreiros
+        );
+
+    });
+
+    radiosBatizado.forEach(function(radio){
+
+        radio.addEventListener(
+            "change",
+            atualizarBatismo
+        );
+
+    });
+
+}
