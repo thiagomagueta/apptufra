@@ -174,10 +174,10 @@ function preencherDadosAnteriores() {
     usuario.telefone ??
     "";
 
-  campoEmail.value =
-    dados.email ??
-    usuario.email ??
-    "";
+campoEmail.value =
+  dados.email ||
+  usuario.email ||
+  "";
 
   campoCEP.value = formatarCEP(campoCEP.value);
   campoTelefoneFixo.value = formatarTelefoneFixo(
