@@ -137,7 +137,7 @@ textarea {
 
 .menu-inferior-conteudo {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   width: 100%;
   max-width: 520px;
   margin: 0 auto;
