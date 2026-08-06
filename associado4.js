@@ -283,7 +283,7 @@ function atualizarBotaoFinalizar() {
   erroConfirmacao.textContent = "";
 }
 
-function finalizarFicha() {
+async function finalizarFicha() {
   if (!campoConfirmacao.checked) {
     erroConfirmacao.textContent =
       "Confirme que revisou os dados.";
@@ -298,17 +298,66 @@ function finalizarFicha() {
     return;
   }
 
-ficha.statusFicha = "Concluída";
-ficha.statusUsuario = "Ativo";
-ficha.dataConclusao = new Date().toISOString();
+  if (!window.supabaseClient) {
+    erroConfirmacao.textContent =
+      "Não foi possível conectar ao banco de dados.";
 
-  sessionStorage.setItem(
-    CHAVE_FICHA,
-    JSON.stringify(ficha)
-  );
+    return;
+  }
 
-  window.location.href =
-    "associado-sucesso.html";
+  botaoFinalizar.disabled = true;
+  botaoFinalizar.textContent = "FINALIZANDO...";
+
+  try {
+    const resultado =
+      await window.supabaseClient.rpc(
+        "finalizar_ficha_tufra"
+      );
+
+    if (resultado.error) {
+      throw resultado.error;
+    }
+
+    ficha.statusFicha = "Concluída";
+    ficha.statusUsuario = "Ativo";
+    ficha.dataConclusao = new Date().toISOString();
+
+    sessionStorage.setItem(
+      CHAVE_FICHA,
+      JSON.stringify(ficha)
+    );
+
+    const usuarioSalvo = sessionStorage.getItem(
+      "tufra_usuario_logado"
+    );
+
+    if (usuarioSalvo) {
+      const usuario = JSON.parse(usuarioSalvo);
+
+      usuario.status = "ativo";
+      usuario.fichaConcluida = true;
+
+      sessionStorage.setItem(
+        "tufra_usuario_logado",
+        JSON.stringify(usuario)
+      );
+    }
+
+    window.location.href =
+      "associado-sucesso.html";
+  } catch (erro) {
+    console.error(
+      "Erro ao finalizar a ficha:",
+      erro
+    );
+
+    erroConfirmacao.textContent =
+      "Não foi possível finalizar o cadastro. Tente novamente.";
+
+    botaoFinalizar.disabled = false;
+    botaoFinalizar.textContent =
+      "Finalizar cadastro";
+  }
 }
 
 campoConfirmacao.addEventListener(
