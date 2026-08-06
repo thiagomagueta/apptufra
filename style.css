@@ -994,3 +994,12 @@ a {
   border-color: #651b1d;
   box-shadow: 0 0 0 4px rgba(101, 27, 29, 0.11);
 }
+.mensagem-cep-sucesso {
+  color: #2f7d4a;
+  font-weight: 700;
+}
+
+.mensagem-cep-erro {
+  color: #b3261e;
+  font-weight: 700;
+}
