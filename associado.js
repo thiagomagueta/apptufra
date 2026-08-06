@@ -20,6 +20,7 @@ const campoGeneroOutro = document.getElementById(
   "generoAutodeclarado"
 );
 const campoCPF = document.getElementById("cpfAssociado");
+const campoRG = document.getElementById("rgAssociado");
 
 function somenteNumeros(valor) {
   return String(valor ?? "").replace(/\D/g, "");
@@ -32,6 +33,13 @@ function formatarCPF(valor) {
     .replace(/^(\d{3})(\d)/, "$1.$2")
     .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
     .replace(/\.(\d{3})(\d)/, ".$1-$2");
+}
+
+function formatarRG(valor) {
+  return String(valor ?? "")
+    .toUpperCase()
+    .replace(/[^0-9A-Z.\-\s]/g, "")
+    .slice(0, 20);
 }
 
 function formatarTelefone(valor) {
@@ -358,7 +366,9 @@ if (formularioAssociado1) {
 
   atualizarIdade();
 }
-
+campoRG.addEventListener("input", () => {
+  campoRG.value = formatarRG(campoRG.value);
+});
 campoNascimento.addEventListener(
   "input",
   tratarDataNascimento
