@@ -266,3 +266,76 @@ textarea {
     font-size: 10px;
   }
 }
+/* ==========================================
+   CALENDÁRIO
+========================================== */
+
+.controle-mes {
+  display: grid;
+  grid-template-columns: 46px 1fr 46px;
+  align-items: center;
+  gap: 10px;
+}
+
+.controle-mes h2 {
+  margin: 0;
+  text-align: center;
+}
+
+.botao-mes {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 1px solid var(--cor-borda);
+  border-radius: 14px;
+  background: #ffffff;
+  color: var(--cor-principal);
+  cursor: pointer;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.botao-mes:active {
+  transform: scale(0.96);
+}
+
+.botao-mes-atual {
+  display: block;
+  margin: 14px auto 0;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--cor-principal);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.item-calendario {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 13px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 17px;
+  background: #ffffff;
+}
+
+.descricao-atividade {
+  margin-top: 8px !important;
+  color: var(--cor-texto-suave) !important;
+  font-size: 12px !important;
+  line-height: 1.45 !important;
+}
+
+.mensagem-sem-atividades {
+  padding: 20px 12px;
+  color: var(--cor-texto-suave);
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+}
