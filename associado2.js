@@ -1,7 +1,7 @@
 "use strict";
 
 const CHAVE_FICHA = "tufra_ficha_associado";
-const CHAVE_USUARIO = "tufra_cadastro_completo";
+const CHAVE_USUARIO = "tufra_usuario_logado";
 
 const formulario = document.getElementById("formularioAssociado2");
 
