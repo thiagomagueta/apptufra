@@ -928,3 +928,69 @@ a {
   border-color: #651b1d;
   box-shadow: 0 0 0 4px rgba(101, 27, 29, 0.11);
 }
+
+.progresso-associado-3 {
+  width: 75%;
+}
+
+.grupo-opcoes {
+  margin: 0 0 18px;
+  padding: 14px;
+  border: 1px solid #dfd3cd;
+  border-radius: 15px;
+  background: #fffdfc;
+}
+
+.grupo-opcoes legend {
+  padding: 0 5px;
+  color: #2f2927;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.opcao-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 9px 18px 4px 0;
+  color: #2f2927;
+  font-size: 15px;
+}
+
+.opcao-radio input {
+  width: 20px;
+  height: 20px;
+  accent-color: #651b1d;
+}
+
+.area-condicional,
+.campo-condicional {
+  margin-bottom: 18px;
+  padding: 15px;
+  border-left: 4px solid #8a3436;
+  border-radius: 0 15px 15px 0;
+  background: #faf5f1;
+}
+
+.area-condicional[hidden],
+.campo-condicional[hidden] {
+  display: none;
+}
+
+.formulario-cadastro textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #dfd3cd;
+  border-radius: 15px;
+  outline: none;
+  background: #fffdfc;
+  color: #2f2927;
+  font: inherit;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.formulario-cadastro textarea:focus {
+  border-color: #651b1d;
+  box-shadow: 0 0 0 4px rgba(101, 27, 29, 0.11);
+}
