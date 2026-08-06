@@ -1,8 +1,12 @@
-const SUPABASE_URL = "https://SEU-PROJETO.supabase.co";
+"use strict";
 
-const SUPABASE_KEY = "SUA_CHAVE_PUBLICA";
+const SUPABASE_URL =
+  "https://nolfvhjtzfpwajxrzvrd.supabase.co";
 
-const supabase = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_-hDq7hg7JhajyrFi7rBHPA_eQZNsdLc";
+
+window.supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
 );
