@@ -583,7 +583,321 @@ for (let dia = 1; dia <= 31; dia++) {
         dia.toString().padStart(2, "0");
 
     campoMelhorDia.appendChild(opcao);
+/* ==========================================
+   CARREGAMENTO E SALVAMENTO DA ETAPA 3
+========================================== */
 
+const fichaEtapa3 = obterFichaAtual();
+const historicoSalvo = fichaEtapa3.historicoUmbanda ?? {};
+
+const campoTempoUmbanda =
+  document.getElementById("tempoUmbanda");
+
+const campoQuantidadeTerreiros =
+  document.getElementById("quantidadeTerreiros");
+
+const campoReligiaoBatismo =
+  document.getElementById("religiaoBatismo");
+
+const campoComoChegou =
+  document.getElementById("comoChegouUmbanda");
+
+const campoTerreiroBatismo =
+  document.getElementById("terreiroBatismo");
+
+const campoDataBatismo =
+  document.getElementById("dataBatismoAnterior");
+
+const campoCidadeBatismo =
+  document.getElementById("cidadeBatismo");
+
+const campoEstadoBatismo =
+  document.getElementById("estadoBatismo");
+
+const campoOrixaFrente =
+  document.getElementById("orixaFrente");
+
+const campoOrixaAdjunto =
+  document.getElementById("orixaAdjunto");
+
+function selecionarRadio(nome, valor) {
+  if (!valor) {
+    return;
+  }
+
+  const radio = document.querySelector(
+    `input[name="${nome}"][value="${valor}"]`
+  );
+
+  if (radio) {
+    radio.checked = true;
+  }
+}
+
+function preencherHistoricoSalvo() {
+  campoTempoUmbanda.value =
+    historicoSalvo.tempoUmbanda ?? "";
+
+  selecionarRadio(
+    "participouOutrosTerreiros",
+    historicoSalvo.participouOutrosTerreiros
+  );
+
+  campoQuantidadeTerreiros.value =
+    historicoSalvo.quantidadeTerreiros ?? "";
+
+  campoReligiaoBatismo.value =
+    historicoSalvo.religiaoBatismo ?? "";
+
+  campoComoChegou.value =
+    historicoSalvo.comoChegouUmbanda ?? "";
+
+  selecionarRadio(
+    "batizadoUmbanda",
+    historicoSalvo.batizadoUmbanda
+  );
+
+  campoTerreiroBatismo.value =
+    historicoSalvo.terreiroBatismo ?? "";
+
+  campoDataBatismo.value =
+    historicoSalvo.dataBatismo ?? "";
+
+  campoCidadeBatismo.value =
+    historicoSalvo.cidadeBatismo ?? "";
+
+  campoEstadoBatismo.value =
+    historicoSalvo.estadoBatismo ?? "";
+
+  campoOrixaFrente.value =
+    historicoSalvo.orixaFrente ?? "";
+
+  campoOrixaAdjunto.value =
+    historicoSalvo.orixaAdjunto ?? "";
+
+  campoMelhorDia.value =
+    historicoSalvo.melhorDiaPagamento ?? "";
+
+  atualizarOutrosTerreiros();
+  atualizarBatismo();
+}
+
+function obterRadioSelecionado(nome) {
+  const selecionado = document.querySelector(
+    `input[name="${nome}"]:checked`
+  );
+
+  return selecionado ? selecionado.value : "";
+}
+
+function limparErrosEtapa3() {
+  formularioAssociado3
+    .querySelectorAll(".mensagem-campo")
+    .forEach((elemento) => {
+      elemento.textContent = "";
+    });
+}
+
+function exibirErroEtapa3(id, mensagem) {
+  document.getElementById(id).textContent = mensagem;
+}
+
+function validarEtapa3() {
+  limparErrosEtapa3();
+
+  let valido = true;
+
+  const participouOutros =
+    obterRadioSelecionado(
+      "participouOutrosTerreiros"
+    );
+
+  const batizado =
+    obterRadioSelecionado("batizadoUmbanda");
+
+  if (!campoTempoUmbanda.value) {
+    exibirErroEtapa3(
+      "erroTempoUmbanda",
+      "Selecione há quanto tempo é umbandista."
+    );
+    valido = false;
+  }
+
+  if (!participouOutros) {
+    exibirErroEtapa3(
+      "erroOutrosTerreiros",
+      "Selecione Sim ou Não."
+    );
+    valido = false;
+  }
+
+  if (
+    participouOutros === "Sim" &&
+    (
+      !campoQuantidadeTerreiros.value ||
+      Number(campoQuantidadeTerreiros.value) < 1
+    )
+  ) {
+    exibirErroEtapa3(
+      "erroQuantidadeTerreiros",
+      "Informe a quantidade de terreiros."
+    );
+    valido = false;
+  }
+
+  if (!campoReligiaoBatismo.value.trim()) {
+    exibirErroEtapa3(
+      "erroReligiaoBatismo",
+      "Informe sua religião de batismo."
+    );
+    valido = false;
+  }
+
+  if (!campoComoChegou.value.trim()) {
+    exibirErroEtapa3(
+      "erroComoChegouUmbanda",
+      "Conte como chegou à Umbanda."
+    );
+    valido = false;
+  }
+
+  if (!batizado) {
+    exibirErroEtapa3(
+      "erroBatizadoUmbanda",
+      "Selecione Sim ou Não."
+    );
+    valido = false;
+  }
+
+  if (batizado === "Sim") {
+    if (!campoTerreiroBatismo.value.trim()) {
+      exibirErroEtapa3(
+        "erroTerreiroBatismo",
+        "Informe o nome do terreiro."
+      );
+      valido = false;
+    }
+
+    if (
+      !campoDataBatismo.value ||
+      !converterDataBrasileira(
+        campoDataBatismo.value
+      )
+    ) {
+      exibirErroEtapa3(
+        "erroDataBatismo",
+        "Informe uma data válida."
+      );
+      valido = false;
+    }
+
+    if (!campoCidadeBatismo.value.trim()) {
+      exibirErroEtapa3(
+        "erroCidadeBatismo",
+        "Informe a cidade do batismo."
+      );
+      valido = false;
+    }
+
+    if (!campoEstadoBatismo.value) {
+      exibirErroEtapa3(
+        "erroEstadoBatismo",
+        "Selecione o estado do batismo."
+      );
+      valido = false;
+    }
+  }
+
+  if (!campoMelhorDia.value) {
+    exibirErroEtapa3(
+      "erroMelhorDiaPagamento",
+      "Selecione o melhor dia para pagamento."
+    );
+    valido = false;
+  }
+
+  return valido;
+}
+
+campoDataBatismo.addEventListener("input", () => {
+  campoDataBatismo.value = formatarData(
+    campoDataBatismo.value
+  );
+});
+
+formularioAssociado3.addEventListener(
+  "submit",
+  (evento) => {
+    evento.preventDefault();
+
+    if (!validarEtapa3()) {
+      return;
+    }
+
+    const participouOutros =
+      obterRadioSelecionado(
+        "participouOutrosTerreiros"
+      );
+
+    const batizado =
+      obterRadioSelecionado("batizadoUmbanda");
+
+    fichaEtapa3.historicoUmbanda = {
+      tempoUmbanda: campoTempoUmbanda.value,
+
+      participouOutrosTerreiros:
+        participouOutros,
+
+      quantidadeTerreiros:
+        participouOutros === "Sim"
+          ? Number(campoQuantidadeTerreiros.value)
+          : 0,
+
+      religiaoBatismo:
+        campoReligiaoBatismo.value.trim(),
+
+      comoChegouUmbanda:
+        campoComoChegou.value.trim(),
+
+      batizadoUmbanda: batizado,
+
+      terreiroBatismo:
+        batizado === "Sim"
+          ? campoTerreiroBatismo.value.trim()
+          : "",
+
+      dataBatismo:
+        batizado === "Sim"
+          ? campoDataBatismo.value
+          : "",
+
+      cidadeBatismo:
+        batizado === "Sim"
+          ? campoCidadeBatismo.value.trim()
+          : "",
+
+      estadoBatismo:
+        batizado === "Sim"
+          ? campoEstadoBatismo.value
+          : "",
+
+      orixaFrente:
+        campoOrixaFrente.value.trim(),
+
+      orixaAdjunto:
+        campoOrixaAdjunto.value.trim(),
+
+      melhorDiaPagamento:
+        Number(campoMelhorDia.value)
+    };
+
+    salvarFicha(fichaEtapa3);
+
+    window.location.href = "associado4.html";
+  }
+);
+
+preencherHistoricoSalvo();
 }
     }
 
