@@ -273,16 +273,14 @@ function validarFormulario() {
   return valido;
 }
 
-function salvarEtapa(evento) {
+async function salvarEtapa(evento) {
   evento.preventDefault();
 
   if (!validarFormulario()) {
     return;
   }
 
-  const ficha = carregarObjeto(CHAVE_FICHA);
-
-  ficha.enderecoContato = {
+  const enderecoContato = {
     cep: campoCEP.value,
     endereco: campoEndereco.value.trim(),
     numero: campoNumero.value.trim(),
@@ -295,12 +293,53 @@ function salvarEtapa(evento) {
     email: campoEmail.value.trim()
   };
 
+  const ficha = carregarObjeto(CHAVE_FICHA);
+
+  ficha.enderecoContato = enderecoContato;
+
   sessionStorage.setItem(
     CHAVE_FICHA,
     JSON.stringify(ficha)
   );
 
-  window.location.href = "associado3.html";
+  const modoEdicao =
+    window.fichaTufra?.estaEmModoEdicao();
+
+  if (!modoEdicao) {
+    window.location.href = "associado3.html";
+    return;
+  }
+
+  const botaoSalvar = formulario.querySelector(
+    'button[type="submit"]'
+  );
+
+  botaoSalvar.disabled = true;
+  botaoSalvar.textContent = "SALVANDO...";
+
+  try {
+    await window.fichaTufra.salvarSecaoFicha(
+      "endereco_contato",
+      enderecoContato
+    );
+
+    window.location.href =
+      "cadastro-atualizado.html";
+  } catch (erro) {
+    console.error(
+      "Erro ao atualizar endereço e contato:",
+      erro
+    );
+
+    mostrarErro(
+      "erroEnderecoAssociado",
+      "Não foi possível salvar as alterações. Tente novamente."
+    );
+
+    botaoSalvar.disabled = false;
+    botaoSalvar.textContent =
+      "Salvar alterações";
+  }
 }
 
 campoCEP.addEventListener("input", () => {
