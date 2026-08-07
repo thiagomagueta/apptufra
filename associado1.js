@@ -189,7 +189,7 @@ function preencherDados() {
   campoIdade.value = calcularIdade(campoNascimento.value);
 }
 
-function salvarEtapa(evento) {
+async function salvarEtapa(evento) {
   evento.preventDefault();
 
   if (!formulario.checkValidity()) {
@@ -198,38 +198,91 @@ function salvarEtapa(evento) {
   }
 
   if (!converterData(campoNascimento.value)) {
-    document.getElementById("erroAssociadoNascimento").textContent =
-      "Informe uma data válida.";
+    document.getElementById(
+      "erroAssociadoNascimento"
+    ).textContent = "Informe uma data válida.";
+
     return;
   }
 
-  if (somenteNumeros(campoCPF.value).length !== 11) {
-    document.getElementById("erroCpfAssociado").textContent =
+  if (
+    somenteNumeros(campoCPF.value).length !== 11
+  ) {
+    document.getElementById(
+      "erroCpfAssociado"
+    ).textContent =
       "O CPF deve possuir 11 números.";
+
     return;
   }
 
-  const ficha = carregarObjeto(CHAVE_FICHA);
-
-  ficha.dadosPessoais = {
+  const dadosPessoais = {
     nome: campoNome.value.trim(),
     nascimento: campoNascimento.value,
     idade: Number(campoIdade.value),
-    cidadeNascimento: campoCidadeNascimento.value.trim(),
-    estadoNascimento: campoEstadoNascimento.value,
+    cidadeNascimento:
+      campoCidadeNascimento.value.trim(),
+    estadoNascimento:
+      campoEstadoNascimento.value,
     genero: campoGenero.value,
     generoAutodeclarado:
-      campoGenero.value === "Outro / Autodeclarado"
+      campoGenero.value ===
+      "Outro / Autodeclarado"
         ? campoGeneroOutro.value.trim()
         : "",
-    nacionalidade: campoNacionalidade.value.trim(),
+    nacionalidade:
+      campoNacionalidade.value.trim(),
     rg: campoRG.value.trim(),
     cpf: campoCPF.value
   };
 
-  sessionStorage.setItem(CHAVE_FICHA, JSON.stringify(ficha));
+  const ficha = carregarObjeto(CHAVE_FICHA);
 
-  window.location.href = "associado2.html";
+  ficha.dadosPessoais = dadosPessoais;
+
+  sessionStorage.setItem(
+    CHAVE_FICHA,
+    JSON.stringify(ficha)
+  );
+
+  const modoEdicao =
+    window.fichaTufra?.estaEmModoEdicao();
+
+  if (!modoEdicao) {
+    window.location.href = "associado2.html";
+    return;
+  }
+
+  const botaoSalvar = formulario.querySelector(
+    'button[type="submit"]'
+  );
+
+  botaoSalvar.disabled = true;
+  botaoSalvar.textContent = "SALVANDO...";
+
+  try {
+    await window.fichaTufra.salvarSecaoFicha(
+      "dados_pessoais",
+      dadosPessoais
+    );
+
+    window.location.href =
+      "cadastro-atualizado.html";
+  } catch (erro) {
+    console.error(
+      "Erro ao atualizar dados pessoais:",
+      erro
+    );
+
+    document.getElementById(
+      "erroAssociadoNome"
+    ).textContent =
+      "Não foi possível salvar as alterações. Tente novamente.";
+
+    botaoSalvar.disabled = false;
+    botaoSalvar.textContent =
+      "Salvar alterações";
+  }
 }
 
 campoNascimento.addEventListener("input", atualizarNascimento);
@@ -247,24 +300,27 @@ campoGenero.addEventListener("change", controlarGeneroOutro);
 formulario.addEventListener("submit", salvarEtapa);
 
 function configurarBotaoVoltarOuSair() {
-  const botao = document.getElementById(
+  const botaoAnterior = document.getElementById(
     "botaoVoltarOuSair"
   );
 
-  if (!botao) {
+  const botaoProximo = formulario.querySelector(
+    'button[type="submit"]'
+  );
+
+  if (!botaoAnterior || !botaoProximo) {
     return;
   }
 
-  const parametros = new URLSearchParams(
-    window.location.search
-  );
-
   const modoEdicao =
-    parametros.get("modo") === "edicao";
+    window.fichaTufra?.estaEmModoEdicao();
 
   if (modoEdicao) {
-    botao.textContent = "Voltar";
-    botao.href = "minha-ficha.html";
+    botaoAnterior.textContent = "Voltar";
+    botaoAnterior.href = "minha-ficha.html";
+
+    botaoProximo.textContent =
+      "Salvar alterações";
   }
 }
 
