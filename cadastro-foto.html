@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1, viewport-fit=cover"
+>
+
+<meta name="theme-color" content="#651b1d">
+
+<title>Foto | TUFRA</title>
+
+<link rel="stylesheet" href="style.css?v=15">
+
+</head>
+
+<body>
+
+<main class="tela-cadastro">
+
+<section class="cartao-cadastro">
+
+<header class="cabecalho-cadastro">
+
+<img
+class="logo-cadastro"
+src="logo-tufra.png"
+alt="Logo da TUFRA"
+>
+
+<h1>Foto para identificação</h1>
+
+<p>
+
+Precisamos de uma foto recente para que a administração consiga identificar você.
+
+</p>
+
+</header>
+
+<div class="area-camera">
+
+<video
+id="camera"
+autoplay
+playsinline
+muted
+></video>
+
+<canvas
+id="fotoCapturada"
+hidden
+></canvas>
+
+</div>
+
+<div class="acoes-cadastro">
+
+<button
+id="botaoAbrirCamera"
+class="botao-anterior"
+type="button"
+>
+
+Abrir câmera
+
+</button>
+
+<button
+id="botaoCapturar"
+class="botao-solicitar"
+type="button"
+disabled
+>
+
+Capturar foto
+
+</button>
+
+</div>
+
+<div
+id="areaEnviar"
+hidden
+class="acoes-cadastro"
+>
+
+<button
+id="botaoNovaFoto"
+class="botao-anterior"
+type="button"
+>
+
+Tirar novamente
+
+</button>
+
+<button
+id="botaoEnviarCadastro"
+class="botao-solicitar"
+type="button"
+>
+
+Solicitar cadastro
+
+</button>
+
+</div>
+
+</section>
+
+</main>
+
+<script src="cadastro-foto.js?v=1"></script>
+
+</body>
+
+</html>
