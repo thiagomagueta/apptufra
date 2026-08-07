@@ -558,5 +558,11 @@ function configurarModoEdicao() {
       "Salvar alterações";
   }
 }
+formulario.addEventListener(
+  "submit",
+  salvarEtapa
+);
+
+configurarModoEdicao();
 criarDiasPagamento();
 preencherDadosSalvos();
