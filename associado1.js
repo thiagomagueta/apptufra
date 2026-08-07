@@ -246,4 +246,28 @@ campoRG.addEventListener("input", () => {
 campoGenero.addEventListener("change", controlarGeneroOutro);
 formulario.addEventListener("submit", salvarEtapa);
 
+function configurarBotaoVoltarOuSair() {
+  const botao = document.getElementById(
+    "botaoVoltarOuSair"
+  );
+
+  if (!botao) {
+    return;
+  }
+
+  const parametros = new URLSearchParams(
+    window.location.search
+  );
+
+  const modoEdicao =
+    parametros.get("modo") === "edicao";
+
+  if (modoEdicao) {
+    botao.textContent = "Voltar";
+    botao.href = "minha-ficha.html";
+  }
+}
+
+configurarBotaoVoltarOuSair();
+
 preencherDados();
