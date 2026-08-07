@@ -368,4 +368,29 @@ campoCelular.addEventListener("input", () => {
 
 formulario.addEventListener("submit", salvarEtapa);
 
+function configurarModoEdicao() {
+  const botaoAnterior = document.getElementById(
+    "botaoAnteriorAssociado2"
+  );
+
+  const botaoProximo = formulario.querySelector(
+    'button[type="submit"]'
+  );
+
+  if (!botaoAnterior || !botaoProximo) {
+    return;
+  }
+
+  const modoEdicao =
+    window.fichaTufra?.estaEmModoEdicao();
+
+  if (modoEdicao) {
+    botaoAnterior.textContent = "Voltar";
+    botaoAnterior.href = "minha-ficha.html";
+
+    botaoProximo.textContent =
+      "Salvar alterações";
+  }
+}
+
 preencherDadosAnteriores();
