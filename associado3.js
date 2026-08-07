@@ -395,14 +395,12 @@ function validarFormulario() {
   return valido;
 }
 
-function salvarEtapa(evento) {
+async function salvarEtapa(evento) {
   evento.preventDefault();
 
   if (!validarFormulario()) {
     return;
   }
-
-  const ficha = carregarFicha();
 
   const participouOutros = obterRadioSelecionado(
     "participouOutrosTerreiros"
@@ -412,7 +410,7 @@ function salvarEtapa(evento) {
     "batizadoUmbanda"
   );
 
-  ficha.historicoUmbanda = {
+  const historicoUmbanda = {
     tempoUmbanda: campoTempoUmbanda.value,
 
     participouOutrosTerreiros:
@@ -461,9 +459,50 @@ function salvarEtapa(evento) {
       Number(campoMelhorDia.value)
   };
 
+  const ficha = carregarFicha();
+
+  ficha.historicoUmbanda = historicoUmbanda;
+
   salvarFicha(ficha);
 
-  window.location.href = "associado4.html";
+  const modoEdicao =
+    window.fichaTufra?.estaEmModoEdicao();
+
+  if (!modoEdicao) {
+    window.location.href = "associado4.html";
+    return;
+  }
+
+  const botaoSalvar = formulario.querySelector(
+    'button[type="submit"]'
+  );
+
+  botaoSalvar.disabled = true;
+  botaoSalvar.textContent = "SALVANDO...";
+
+  try {
+    await window.fichaTufra.salvarSecaoFicha(
+      "historico_umbanda",
+      historicoUmbanda
+    );
+
+    window.location.href =
+      "cadastro-atualizado.html";
+  } catch (erro) {
+    console.error(
+      "Erro ao atualizar histórico na Umbanda:",
+      erro
+    );
+
+    mostrarErro(
+      "erroTempoUmbanda",
+      "Não foi possível salvar as alterações. Tente novamente."
+    );
+
+    botaoSalvar.disabled = false;
+    botaoSalvar.textContent =
+      "Salvar alterações";
+  }
 }
 
 document
@@ -495,6 +534,29 @@ campoDataBatismo.addEventListener("input", () => {
 });
 
 formulario.addEventListener("submit", salvarEtapa);
+function configurarModoEdicao() {
+  const botaoAnterior = document.getElementById(
+    "botaoAnteriorAssociado3"
+  );
 
+  const botaoProximo = formulario.querySelector(
+    'button[type="submit"]'
+  );
+
+  if (!botaoAnterior || !botaoProximo) {
+    return;
+  }
+
+  const modoEdicao =
+    window.fichaTufra?.estaEmModoEdicao();
+
+  if (modoEdicao) {
+    botaoAnterior.textContent = "Voltar";
+    botaoAnterior.href = "minha-ficha.html";
+
+    botaoProximo.textContent =
+      "Salvar alterações";
+  }
+}
 criarDiasPagamento();
 preencherDadosSalvos();
