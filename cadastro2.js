@@ -339,13 +339,11 @@ async function enviarSolicitacao(evento) {
       Ela fica protegida exclusivamente no Supabase Auth.
     */
     sessionStorage.setItem(
-      "tufra_cadastro_completo",
-      JSON.stringify(cadastroCompleto)
-    );
+  "tufra_cadastro_completo",
+  JSON.stringify(cadastroCompleto)
+);
 
-    sessionStorage.removeItem("tufra_dados_pessoais");
-
-    window.location.href = "cadastro-sucesso.html";
+window.location.href = "cadastro-foto.html";
   } catch (erro) {
     console.error("Erro ao criar cadastro:", erro);
 
