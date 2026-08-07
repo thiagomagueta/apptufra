@@ -308,27 +308,70 @@ async function finalizarFicha() {
   botaoFinalizar.disabled = true;
   botaoFinalizar.textContent = "FINALIZANDO...";
 
-  try {
-    const resultado =
-      await window.supabaseClient.rpc(
-        "finalizar_ficha_tufra"
+try {
+  const usuarioSalvo = sessionStorage.getItem(
+    "tufra_usuario_logado"
+  );
+
+  if (!usuarioSalvo) {
+    throw new Error(
+      "Usuário logado não encontrado."
+    );
+  }
+
+  const usuario = JSON.parse(usuarioSalvo);
+
+  const resultadoUsuario =
+    await window.supabaseClient
+      .from("usuarios")
+      .select("id")
+      .eq("auth_id", usuario.authId)
+      .single();
+
+  if (resultadoUsuario.error) {
+    throw resultadoUsuario.error;
+  }
+
+  const resultadoFicha =
+    await window.supabaseClient
+      .from("fichas_associados")
+      .upsert(
+        {
+          usuario_id: resultadoUsuario.data.id,
+          dados_pessoais:
+            ficha.dadosPessoais,
+          endereco_contato:
+            ficha.enderecoContato,
+          historico_umbanda:
+            ficha.historicoUmbanda,
+          atualizado_em:
+            new Date().toISOString()
+        },
+        {
+          onConflict: "usuario_id"
+        }
       );
 
-    if (resultado.error) {
-      throw resultado.error;
-    }
+  if (resultadoFicha.error) {
+    throw resultadoFicha.error;
+  }
 
-    ficha.statusFicha = "Concluída";
+  const resultado =
+    await window.supabaseClient.rpc(
+      "finalizar_ficha_tufra"
+    );
+
+  if (resultado.error) {
+    throw resultado.error;
+  }
+
+  ficha.statusFicha = "Concluída";
     ficha.statusUsuario = "Ativo";
     ficha.dataConclusao = new Date().toISOString();
 
     sessionStorage.setItem(
       CHAVE_FICHA,
       JSON.stringify(ficha)
-    );
-
-    const usuarioSalvo = sessionStorage.getItem(
-      "tufra_usuario_logado"
     );
 
     if (usuarioSalvo) {
