@@ -387,10 +387,11 @@ function configurarModoEdicao() {
   if (modoEdicao) {
     botaoAnterior.textContent = "Voltar";
     botaoAnterior.href = "minha-ficha.html";
-
-    botaoProximo.textContent =
-      "Salvar alterações";
+    botaoProximo.textContent = "Salvar alterações";
   }
 }
 
+formulario.addEventListener("submit", salvarEtapa);
+
+configurarModoEdicao();
 preencherDadosAnteriores();
