@@ -10,13 +10,12 @@
 
   <meta name="theme-color" content="#651b1d">
 
-  <title>Foto | TUFRA</title>
+  <title>Dados de Acesso | TUFRA</title>
 
-  <link rel="stylesheet" href="style.css?v=16">
+  <link rel="stylesheet" href="style.css?v=6">
 </head>
 
 <body>
-
   <main class="tela-cadastro">
 
     <section class="cartao-cadastro">
@@ -26,126 +25,163 @@
         <img
           class="logo-cadastro"
           src="logo-tufra.png"
-          alt="Logo da TUFRA"
+          alt="Logo da Tenda de Umbanda Francisco de Assis"
         >
 
         <h1>Cadastro de Usuário</h1>
 
-        <p>Foto para identificação</p>
+        <p>Dados de acesso</p>
 
         <div class="progresso-cadastro">
           <div class="progresso-preenchido progresso-completo"></div>
         </div>
 
-        <small>Passo 3 de 3</small>
+        <small>Passo 2 de 3</small>
 
       </header>
 
-      <section class="area-foto-cadastro">
+      <form
+        id="formularioDadosAcesso"
+        class="formulario-cadastro"
+        novalidate
+      >
 
-        <p class="texto-foto-cadastro">
-          Tire uma foto recente, de frente, para que a
-          administração da TUFRA possa identificar você.
-        </p>
+        <div class="grupo-campo">
+          <label for="nomeUsuario">
+            Nome de usuário
+          </label>
 
-        <div
-          id="molduraCamera"
-          class="moldura-camera"
-        >
-
-          <div
-            id="estadoInicialCamera"
-            class="estado-inicial-camera"
+          <input
+            id="nomeUsuario"
+            name="nomeUsuario"
+            type="text"
+            placeholder="Escolha seu nome de usuário"
+            autocomplete="username"
+            required
           >
-            <span class="icone-camera-cadastro">📷</span>
-            <span>Sua foto aparecerá aqui</span>
+
+          <small
+            id="erroUsuario"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <div class="grupo-campo">
+          <label for="novaSenha">
+            🔒 Senha
+          </label>
+
+          <div class="campo-senha">
+
+            <input
+              id="novaSenha"
+              name="novaSenha"
+              type="password"
+              placeholder="Digite sua senha"
+              autocomplete="new-password"
+              required
+            >
+
+            <button
+              id="mostrarNovaSenha"
+              class="botao-mostrar-senha"
+              type="button"
+              aria-label="Mostrar senha"
+            >
+              👁
+            </button>
+
           </div>
 
-          <video
-            id="camera"
-            class="camera-video"
-            autoplay
-            playsinline
-            muted
-            hidden
-          ></video>
+          <small
+            id="erroSenha"
+            class="mensagem-campo"
+          ></small>
+        </div>
 
-          <canvas
-            id="fotoCapturada"
-            hidden
-          ></canvas>
+        <div class="grupo-campo">
+          <label for="confirmarSenha">
+            🔒 Confirmar senha
+          </label>
 
-          <img
-            id="fotoPreview"
-            class="camera-video"
-            alt="Prévia da foto capturada"
-            hidden
+          <div class="campo-senha">
+
+            <input
+              id="confirmarSenha"
+              name="confirmarSenha"
+              type="password"
+              placeholder="Digite novamente sua senha"
+              autocomplete="new-password"
+              required
+            >
+
+            <button
+              id="mostrarConfirmacaoSenha"
+              class="botao-mostrar-senha"
+              type="button"
+              aria-label="Mostrar confirmação da senha"
+            >
+              👁
+            </button>
+
+          </div>
+
+          <small
+            id="erroConfirmacao"
+            class="mensagem-campo"
+          ></small>
+        </div>
+
+        <label class="aceite-termos">
+
+          <input
+            id="aceiteTermos"
+            name="aceiteTermos"
+            type="checkbox"
           >
 
-        </div>
+          <span>
+            Li e aceito os
+            <a href="#" id="linkTermos">
+              Termos de Uso
+            </a>
+            e a
+            <a href="#" id="linkPrivacidade">
+              Política de Privacidade
+            </a>.
+          </span>
+
+        </label>
 
         <small
-          id="mensagemCamera"
-          class="mensagem-campo"
+          id="erroTermos"
+          class="mensagem-campo mensagem-termos"
         ></small>
 
-        <div
-          id="acoesCameraInicial"
-          class="acoes-foto"
-        >
-          <button
-            id="botaoAbrirCamera"
-            class="botao-solicitar"
-            type="button"
-          >
-            Abrir câmera
-          </button>
-        </div>
+        <div class="acoes-cadastro">
 
-        <div
-          id="acoesCameraAberta"
-          class="acoes-foto"
-          hidden
-        >
-          <button
-            id="botaoCapturar"
-            class="botao-solicitar"
-            type="button"
-          >
-            Capturar foto
-          </button>
-        </div>
-
-        <div
-          id="acoesFotoCapturada"
-          class="acoes-foto-dupla"
-          hidden
-        >
-
-          <button
-            id="botaoNovaFoto"
+          <a
             class="botao-anterior"
-            type="button"
+            href="cadastro.html"
           >
-            Tirar novamente
-          </button>
+            Anterior
+          </a>
 
           <button
-            id="botaoEnviarCadastro"
             class="botao-solicitar"
-            type="button"
+            type="submit"
           >
-            Solicitar cadastro
+            Próximo
           </button>
 
         </div>
 
-      </section>
+      </form>
 
     </section>
 
   </main>
 
-  <script src="cadastro-foto.js?v=2"></script>
+  <script src="cadastro2.js?v=5"></script>
 </body>
 </html>
