@@ -2,99 +2,209 @@
 
 const video = document.getElementById("camera");
 const canvas = document.getElementById("fotoCapturada");
+const fotoPreview = document.getElementById("fotoPreview");
 
-const botaoAbrirCamera =
-  document.getElementById("botaoAbrirCamera");
+const estadoInicialCamera = document.getElementById(
+  "estadoInicialCamera"
+);
 
-const botaoCapturar =
-  document.getElementById("botaoCapturar");
+const mensagemCamera = document.getElementById(
+  "mensagemCamera"
+);
 
-const botaoNovaFoto =
-  document.getElementById("botaoNovaFoto");
+const acoesCameraInicial = document.getElementById(
+  "acoesCameraInicial"
+);
 
-const areaEnviar =
-  document.getElementById("areaEnviar");
+const acoesCameraAberta = document.getElementById(
+  "acoesCameraAberta"
+);
+
+const acoesFotoCapturada = document.getElementById(
+  "acoesFotoCapturada"
+);
+
+const botaoAbrirCamera = document.getElementById(
+  "botaoAbrirCamera"
+);
+
+const botaoCapturar = document.getElementById(
+  "botaoCapturar"
+);
+
+const botaoNovaFoto = document.getElementById(
+  "botaoNovaFoto"
+);
+
+const botaoEnviarCadastro = document.getElementById(
+  "botaoEnviarCadastro"
+);
 
 let streamCamera = null;
 
+function esconder(elemento) {
+  if (elemento) {
+    elemento.style.display = "none";
+  }
+}
+
+function mostrar(elemento, tipo = "block") {
+  if (elemento) {
+    elemento.style.display = tipo;
+  }
+}
+
+function mostrarMensagem(texto) {
+  if (mensagemCamera) {
+    mensagemCamera.textContent = texto;
+  }
+}
+
+function pararCamera() {
+  if (!streamCamera) {
+    return;
+  }
+
+  streamCamera
+    .getTracks()
+    .forEach((track) => track.stop());
+
+  streamCamera = null;
+  video.srcObject = null;
+}
+
+function mostrarEstadoInicial() {
+  pararCamera();
+
+  mostrar(estadoInicialCamera, "flex");
+
+  esconder(video);
+  esconder(fotoPreview);
+
+  mostrar(acoesCameraInicial);
+  esconder(acoesCameraAberta);
+  esconder(acoesFotoCapturada);
+
+  mostrarMensagem("");
+}
+
 async function abrirCamera() {
+  mostrarMensagem("Abrindo câmera...");
+
+  if (
+    !navigator.mediaDevices ||
+    !navigator.mediaDevices.getUserMedia
+  ) {
+    mostrarMensagem(
+      "Este aparelho ou navegador não permite abrir a câmera."
+    );
+    return;
+  }
 
   try {
-
     streamCamera =
       await navigator.mediaDevices.getUserMedia({
-
         video: {
           facingMode: "user"
         },
-
         audio: false
-
       });
 
     video.srcObject = streamCamera;
 
-    botaoCapturar.disabled = false;
+    await video.play();
 
+    esconder(estadoInicialCamera);
+    esconder(fotoPreview);
+
+    mostrar(video);
+
+    esconder(acoesCameraInicial);
+    mostrar(acoesCameraAberta);
+    esconder(acoesFotoCapturada);
+
+    mostrarMensagem("");
   } catch (erro) {
-
-    alert(
-      "Não foi possível acessar a câmera."
+    console.error(
+      "Erro ao abrir a câmera:",
+      erro
     );
 
-    console.error(erro);
-
+    mostrarMensagem(
+      "Não foi possível acessar a câmera. Verifique a permissão do navegador."
+    );
   }
-
 }
 
 function capturarFoto() {
+  if (!video.videoWidth || !video.videoHeight) {
+    mostrarMensagem(
+      "A câmera ainda está carregando. Aguarde um instante."
+    );
+    return;
+  }
 
   const contexto = canvas.getContext("2d");
 
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
+  const tamanho = Math.min(
+    video.videoWidth,
+    video.videoHeight
+  );
+
+  const origemX =
+    (video.videoWidth - tamanho) / 2;
+
+  const origemY =
+    (video.videoHeight - tamanho) / 2;
+
+  canvas.width = 800;
+  canvas.height = 800;
 
   contexto.drawImage(
     video,
+    origemX,
+    origemY,
+    tamanho,
+    tamanho,
     0,
     0,
-    canvas.width,
-    canvas.height
+    800,
+    800
   );
 
-  video.style.display = "none";
+  fotoPreview.src =
+    canvas.toDataURL(
+      "image/jpeg",
+      0.85
+    );
 
-  canvas.hidden = false;
+  pararCamera();
 
-  botaoAbrirCamera.hidden = true;
-  botaoCapturar.hidden = true;
+  esconder(estadoInicialCamera);
+  esconder(video);
 
-  areaEnviar.hidden = false;
+  mostrar(fotoPreview);
 
-  if (streamCamera) {
+  esconder(acoesCameraInicial);
+  esconder(acoesCameraAberta);
+  mostrar(acoesFotoCapturada, "grid");
 
-    streamCamera
-      .getTracks()
-      .forEach((track) => track.stop());
-
-  }
-
+  mostrarMensagem("");
 }
 
 function tirarNovamente() {
-
-  canvas.hidden = true;
-
-  video.style.display = "block";
-
-  areaEnviar.hidden = true;
-
-  botaoAbrirCamera.hidden = false;
-  botaoCapturar.hidden = false;
-
+  fotoPreview.src = "";
   abrirCamera();
+}
 
+function solicitarCadastro() {
+  mostrarMensagem(
+    "Foto capturada com sucesso."
+  );
+
+  console.log(
+    "Foto pronta para envio ao Supabase."
+  );
 }
 
 botaoAbrirCamera.addEventListener(
@@ -111,3 +221,15 @@ botaoNovaFoto.addEventListener(
   "click",
   tirarNovamente
 );
+
+botaoEnviarCadastro.addEventListener(
+  "click",
+  solicitarCadastro
+);
+
+window.addEventListener(
+  "pagehide",
+  pararCamera
+);
+
+mostrarEstadoInicial();
