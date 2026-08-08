@@ -1185,10 +1185,6 @@ a {
   transform: scaleX(-1);
 }
 
-#fotoPreview {
-  display: block;
-}
-
 .acoes-foto {
   margin-top: 18px;
 }
@@ -1214,4 +1210,7 @@ a {
   .acoes-foto-dupla {
     grid-template-columns: 1fr;
   }
+}
+[hidden] {
+  display: none !important;
 }
