@@ -44,13 +44,13 @@ let streamCamera = null;
 
 function esconder(elemento) {
   if (elemento) {
-    elemento.style.display = "none";
+    elemento.hidden = true;
   }
 }
 
-function mostrar(elemento, tipo = "block") {
+function mostrar(elemento) {
   if (elemento) {
-    elemento.style.display = tipo;
+    elemento.hidden = false;
   }
 }
 
@@ -76,7 +76,7 @@ function pararCamera() {
 function mostrarEstadoInicial() {
   pararCamera();
 
-  mostrar(estadoInicialCamera, "flex");
+mostrar(estadoInicialCamera);
 
   esconder(video);
   esconder(fotoPreview);
@@ -187,7 +187,7 @@ function capturarFoto() {
 
   esconder(acoesCameraInicial);
   esconder(acoesCameraAberta);
-  mostrar(acoesFotoCapturada, "grid");
+mostrar(acoesFotoCapturada);
 
   mostrarMensagem("");
 }
