@@ -197,14 +197,133 @@ function tirarNovamente() {
   abrirCamera();
 }
 
-function solicitarCadastro() {
-  mostrarMensagem(
-    "Foto capturada com sucesso."
-  );
+async function solicitarCadastro() {
 
-  console.log(
-    "Foto pronta para envio ao Supabase."
-  );
+  mostrarMensagem("");
+
+  const dadosSalvos =
+    sessionStorage.getItem(
+      "tufra_cadastro_pendente"
+    );
+
+  if (!dadosSalvos) {
+    mostrarMensagem(
+      "Os dados do cadastro não foram encontrados."
+    );
+    return;
+  }
+
+  const dados =
+    JSON.parse(dadosSalvos);
+
+  botaoEnviarCadastro.disabled = true;
+  botaoNovaFoto.disabled = true;
+
+  botaoEnviarCadastro.textContent =
+    "Enviando...";
+
+  try {
+
+    const resultado =
+      await window.supabaseClient.auth.signUp({
+
+        email:
+          dados.email
+            .trim()
+            .toLowerCase(),
+
+        password:
+          dados.senha,
+
+        options: {
+
+          data: {
+
+            nome_completo:
+              dados.nomeCompleto,
+
+            cpf:
+              dados.cpf,
+
+            telefone:
+              dados.telefone || "",
+
+            data_nascimento:
+              dados.dataNascimento || "",
+
+            nome_usuario:
+              dados.nomeUsuario,
+
+            foto_token:
+              dados.fotoToken
+
+          }
+
+        }
+
+      });
+
+    if (resultado.error) {
+      throw resultado.error;
+    }
+
+    if (!resultado.data.user) {
+      throw new Error(
+        "Usuário não criado."
+      );
+    }
+
+    sessionStorage.setItem(
+
+      "tufra_cadastro_completo",
+
+      JSON.stringify({
+
+        ...dados,
+
+        authId:
+          resultado.data.user.id,
+
+        status:
+          "Aguardando aprovação",
+
+        dataSolicitacao:
+          new Date().toISOString()
+
+      })
+
+    );
+
+    sessionStorage.removeItem(
+      "tufra_cadastro_pendente"
+    );
+
+    sessionStorage.removeItem(
+      "tufra_dados_pessoais"
+    );
+
+    window.location.href =
+      "cadastro-sucesso.html";
+
+  }
+
+  catch (erro) {
+
+    console.error(erro);
+
+    mostrarMensagem(
+      erro.message ||
+      "Não foi possível concluir o cadastro."
+    );
+
+    botaoEnviarCadastro.disabled = false;
+    botaoNovaFoto.disabled = false;
+
+    botaoEnviarCadastro.textContent =
+      "Solicitar cadastro";
+
+  }
+
 }
 
 botaoAbrirCamera.addEventListener(
