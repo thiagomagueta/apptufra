@@ -1,209 +1,373 @@
 "use strict";
 
-const video = document.getElementById("camera");
-const canvas = document.getElementById("fotoCapturada");
-const fotoPreview = document.getElementById("fotoPreview");
-
-const estadoInicialCamera = document.getElementById(
-  "estadoInicialCamera"
+const formularioDadosAcesso = document.getElementById(
+  "formularioDadosAcesso"
 );
 
-const mensagemCamera = document.getElementById(
-  "mensagemCamera"
+const campoNomeUsuario = document.getElementById(
+  "nomeUsuario"
 );
 
-const acoesCameraInicial = document.getElementById(
-  "acoesCameraInicial"
+const campoNovaSenha = document.getElementById(
+  "novaSenha"
 );
 
-const acoesCameraAberta = document.getElementById(
-  "acoesCameraAberta"
+const campoConfirmarSenha = document.getElementById(
+  "confirmarSenha"
 );
 
-const acoesFotoCapturada = document.getElementById(
-  "acoesFotoCapturada"
+const botaoMostrarNovaSenha = document.getElementById(
+  "mostrarNovaSenha"
 );
 
-const botaoAbrirCamera = document.getElementById(
-  "botaoAbrirCamera"
+const botaoMostrarConfirmacao = document.getElementById(
+  "mostrarConfirmacaoSenha"
 );
 
-const botaoCapturar = document.getElementById(
-  "botaoCapturar"
+const aceiteTermos = document.getElementById(
+  "aceiteTermos"
 );
 
-const botaoNovaFoto = document.getElementById(
-  "botaoNovaFoto"
+const erroUsuario = document.getElementById(
+  "erroUsuario"
 );
 
-const botaoEnviarCadastro = document.getElementById(
-  "botaoEnviarCadastro"
+const erroSenha = document.getElementById(
+  "erroSenha"
 );
 
-let streamCamera = null;
+const erroConfirmacao = document.getElementById(
+  "erroConfirmacao"
+);
 
-function mostrarMensagem(texto) {
-  mensagemCamera.textContent = texto;
-}
+const erroTermos = document.getElementById(
+  "erroTermos"
+);
 
-function pararCamera() {
-  if (!streamCamera) {
-    return;
+const botaoSolicitar = document.querySelector(
+  ".botao-solicitar"
+);
+
+function limparMensagem(elemento) {
+  if (elemento) {
+    elemento.textContent = "";
   }
-
-  streamCamera
-    .getTracks()
-    .forEach((track) => track.stop());
-
-  streamCamera = null;
-  video.srcObject = null;
 }
 
-function mostrarEstadoInicial() {
-  pararCamera();
-
-  estadoInicialCamera.hidden = false;
-  video.hidden = true;
-  fotoPreview.hidden = true;
-
-  acoesCameraInicial.hidden = false;
-  acoesCameraAberta.hidden = true;
-  acoesFotoCapturada.hidden = true;
-
-  mostrarMensagem("");
+function mostrarMensagem(elemento, texto) {
+  if (elemento) {
+    elemento.textContent = texto;
+  }
 }
 
-async function abrirCamera() {
-  mostrarMensagem("");
+function alternarSenha(campo, botao) {
+  const senhaOculta =
+    campo.type === "password";
 
-  if (
-    !navigator.mediaDevices ||
-    !navigator.mediaDevices.getUserMedia
-  ) {
+  campo.type =
+    senhaOculta ? "text" : "password";
+
+  botao.textContent =
+    senhaOculta ? "🙈" : "👁";
+
+  botao.setAttribute(
+    "aria-label",
+    senhaOculta
+      ? "Ocultar senha"
+      : "Mostrar senha"
+  );
+}
+
+function validarNomeUsuario() {
+  const nomeUsuario =
+    campoNomeUsuario.value.trim();
+
+  limparMensagem(erroUsuario);
+
+  if (!nomeUsuario) {
     mostrarMensagem(
-      "Este aparelho ou navegador não permite abrir a câmera."
+      erroUsuario,
+      "Informe um nome de usuário."
     );
-    return;
+
+    return false;
   }
 
+  if (nomeUsuario.includes(" ")) {
+    mostrarMensagem(
+      erroUsuario,
+      "O nome de usuário não pode conter espaços."
+    );
+
+    return false;
+  }
+
+  if (nomeUsuario.length < 3) {
+    mostrarMensagem(
+      erroUsuario,
+      "O nome de usuário deve possuir pelo menos 3 caracteres."
+    );
+
+    return false;
+  }
+
+  return true;
+}
+
+function validarSenha() {
+  const senha = campoNovaSenha.value;
+
+  limparMensagem(erroSenha);
+
+  if (!senha) {
+    mostrarMensagem(
+      erroSenha,
+      "Informe uma senha."
+    );
+
+    return false;
+  }
+
+  if (senha.length < 6) {
+    mostrarMensagem(
+      erroSenha,
+      "A senha deve possuir pelo menos 6 caracteres."
+    );
+
+    return false;
+  }
+
+  return true;
+}
+
+function validarConfirmacaoSenha() {
+  const senha = campoNovaSenha.value;
+  const confirmacao =
+    campoConfirmarSenha.value;
+
+  limparMensagem(erroConfirmacao);
+
+  erroConfirmacao.classList.remove(
+    "mensagem-sucesso"
+  );
+
+  if (!confirmacao) {
+    mostrarMensagem(
+      erroConfirmacao,
+      "Confirme a senha."
+    );
+
+    return false;
+  }
+
+  if (senha !== confirmacao) {
+    mostrarMensagem(
+      erroConfirmacao,
+      "As senhas são diferentes."
+    );
+
+    return false;
+  }
+
+  mostrarMensagem(
+    erroConfirmacao,
+    "As senhas coincidem."
+  );
+
+  erroConfirmacao.classList.add(
+    "mensagem-sucesso"
+  );
+
+  return true;
+}
+
+function validarTermos() {
+  limparMensagem(erroTermos);
+
+  if (!aceiteTermos.checked) {
+    mostrarMensagem(
+      erroTermos,
+      "Você precisa aceitar os termos."
+    );
+
+    return false;
+  }
+
+  return true;
+}
+
+function atualizarEstadoBotao() {
+  botaoSolicitar.disabled =
+    !aceiteTermos.checked;
+}
+
+function obterDadosPessoais() {
   try {
-    streamCamera =
-      await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: "user"
-        },
-        audio: false
-      });
+    const dadosSalvos =
+      sessionStorage.getItem(
+        "tufra_dados_pessoais"
+      );
 
-    video.srcObject = streamCamera;
-
-    estadoInicialCamera.hidden = true;
-    fotoPreview.hidden = true;
-    video.hidden = false;
-
-    acoesCameraInicial.hidden = true;
-    acoesCameraAberta.hidden = false;
-    acoesFotoCapturada.hidden = true;
+    return dadosSalvos
+      ? JSON.parse(dadosSalvos)
+      : null;
   } catch (erro) {
     console.error(
-      "Erro ao abrir a câmera:",
+      "Erro ao carregar os dados pessoais:",
       erro
     );
 
-    mostrarMensagem(
-      "Não foi possível acessar a câmera. Verifique a permissão do navegador."
-    );
+    return null;
   }
 }
 
-function capturarFoto() {
-  if (!video.videoWidth || !video.videoHeight) {
-    mostrarMensagem(
-      "A câmera ainda está carregando. Tente novamente."
-    );
+function enviarSolicitacao(evento) {
+  evento.preventDefault();
+
+  erroConfirmacao.classList.remove(
+    "mensagem-sucesso"
+  );
+
+  const usuarioValido =
+    validarNomeUsuario();
+
+  const senhaValida =
+    validarSenha();
+
+  const confirmacaoValida =
+    validarConfirmacaoSenha();
+
+  const termosValidos =
+    validarTermos();
+
+  if (
+    !usuarioValido ||
+    !senhaValida ||
+    !confirmacaoValida ||
+    !termosValidos
+  ) {
     return;
   }
 
-  const contexto = canvas.getContext("2d");
+  const dadosPessoais =
+    obterDadosPessoais();
 
-  const tamanho = Math.min(
-    video.videoWidth,
-    video.videoHeight
+  if (
+    !dadosPessoais ||
+    !dadosPessoais.nomeCompleto ||
+    !dadosPessoais.email ||
+    !dadosPessoais.cpf
+  ) {
+    mostrarMensagem(
+      erroUsuario,
+      "Os dados da primeira etapa não foram encontrados. Volte e preencha novamente."
+    );
+
+    return;
+  }
+
+  const nomeUsuario =
+    campoNomeUsuario.value
+      .trim()
+      .toLowerCase();
+
+  const cadastroPendente = {
+    ...dadosPessoais,
+
+    nomeUsuario,
+
+    senha:
+      campoNovaSenha.value,
+
+    fotoToken:
+      crypto.randomUUID()
+  };
+
+  sessionStorage.setItem(
+    "tufra_cadastro_pendente",
+    JSON.stringify(cadastroPendente)
   );
 
-  const origemX =
-    (video.videoWidth - tamanho) / 2;
-
-  const origemY =
-    (video.videoHeight - tamanho) / 2;
-
-  canvas.width = 800;
-  canvas.height = 800;
-
-  contexto.drawImage(
-    video,
-    origemX,
-    origemY,
-    tamanho,
-    tamanho,
-    0,
-    0,
-    800,
-    800
-  );
-
-  fotoPreview.src =
-    canvas.toDataURL("image/jpeg", 0.85);
-
-  pararCamera();
-
-  estadoInicialCamera.hidden = true;
-  video.hidden = true;
-  fotoPreview.hidden = false;
-
-  acoesCameraInicial.hidden = true;
-  acoesCameraAberta.hidden = true;
-  acoesFotoCapturada.hidden = false;
-
-  mostrarMensagem("");
+  window.location.href =
+    "cadastro-foto.html";
 }
 
-function tirarNovamente() {
-  fotoPreview.src = "";
-  abrirCamera();
-}
-
-function solicitarCadastro() {
-  console.log("Foto pronta para envio.");
-
-  mostrarMensagem(
-    "Foto capturada com sucesso. Na próxima etapa vamos enviá-la ao cadastro."
-  );
-}
-
-botaoAbrirCamera.addEventListener(
+botaoMostrarNovaSenha.addEventListener(
   "click",
-  abrirCamera
+  () => {
+    alternarSenha(
+      campoNovaSenha,
+      botaoMostrarNovaSenha
+    );
+  }
 );
 
-botaoCapturar.addEventListener(
+botaoMostrarConfirmacao.addEventListener(
   "click",
-  capturarFoto
+  () => {
+    alternarSenha(
+      campoConfirmarSenha,
+      botaoMostrarConfirmacao
+    );
+  }
 );
 
-botaoNovaFoto.addEventListener(
-  "click",
-  tirarNovamente
+campoNomeUsuario.addEventListener(
+  "input",
+  () => {
+    limparMensagem(erroUsuario);
+  }
 );
 
-botaoEnviarCadastro.addEventListener(
-  "click",
-  solicitarCadastro
+campoNovaSenha.addEventListener(
+  "input",
+  () => {
+    limparMensagem(erroSenha);
+    limparMensagem(erroConfirmacao);
+
+    erroConfirmacao.classList.remove(
+      "mensagem-sucesso"
+    );
+  }
 );
 
-window.addEventListener(
-  "pagehide",
-  pararCamera
+campoConfirmarSenha.addEventListener(
+  "input",
+  () => {
+    limparMensagem(erroConfirmacao);
+
+    erroConfirmacao.classList.remove(
+      "mensagem-sucesso"
+    );
+
+    if (
+      campoConfirmarSenha.value &&
+      campoNovaSenha.value ===
+        campoConfirmarSenha.value
+    ) {
+      mostrarMensagem(
+        erroConfirmacao,
+        "As senhas coincidem."
+      );
+
+      erroConfirmacao.classList.add(
+        "mensagem-sucesso"
+      );
+    }
+  }
 );
 
-mostrarEstadoInicial();
+aceiteTermos.addEventListener(
+  "change",
+  () => {
+    limparMensagem(erroTermos);
+    atualizarEstadoBotao();
+  }
+);
+
+formularioDadosAcesso.addEventListener(
+  "submit",
+  enviarSolicitacao
+);
+
+atualizarEstadoBotao();
