@@ -431,7 +431,8 @@ async function solicitarCadastro() {
   } catch (erro) {
     console.error(
       "Erro ao concluir cadastro:",
-      erro
+      erro,
+      erro?context
     );
 
     mostrarMensagem(
