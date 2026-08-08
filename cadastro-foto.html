@@ -1,123 +1,159 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <meta charset="UTF-8">
 
-<meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1, viewport-fit=cover"
->
+  <meta name="theme-color" content="#651b1d">
 
-<meta name="theme-color" content="#651b1d">
+  <title>Foto | TUFRA</title>
 
-<title>Foto | TUFRA</title>
-
-<link rel="stylesheet" href="style.css?v=17">
-
+  <link rel="stylesheet" href="style.css?v=17">
 </head>
 
 <body>
 
-<main class="tela-cadastro">
+  <main class="tela-cadastro">
 
-<section class="cartao-cadastro">
+    <section class="cartao-cadastro">
 
-<header class="cabecalho-cadastro">
+      <header class="cabecalho-cadastro">
 
-<img
-class="logo-cadastro"
-src="logo-tufra.png"
-alt="Logo da TUFRA"
->
+        <img
+          class="logo-cadastro"
+          src="logo-tufra.png"
+          alt="Logo da TUFRA"
+        >
 
-<h1>Foto para identificação</h1>
+        <h1>Cadastro de Usuário</h1>
 
-<p>
+        <p>Foto para identificação</p>
 
-Precisamos de uma foto recente para que a administração consiga identificar você.
+        <div class="progresso-cadastro">
+          <div
+            class="progresso-preenchido progresso-completo"
+          ></div>
+        </div>
 
-</p>
+        <small>Passo 3 de 3</small>
 
-</header>
+      </header>
 
-<div class="area-camera">
+      <section class="area-foto-cadastro">
 
-<video
-id="camera"
-autoplay
-playsinline
-muted
-class="camera-video"
-></video>
+        <p class="texto-foto-cadastro">
+          Tire uma foto recente, de frente, para que a
+          administração da TUFRA possa identificar você.
+        </p>
 
-<canvas
-id="fotoCapturada"
-class="camera-video"
-hidden
-></canvas>
+        <div
+          id="molduraCamera"
+          class="moldura-camera"
+        >
 
-</div>
+          <div
+            id="estadoInicialCamera"
+            class="estado-inicial-camera"
+          >
+            <span class="icone-camera-cadastro">
+              📷
+            </span>
 
-<div class="acoes-cadastro">
+            <span>
+              Sua foto aparecerá aqui
+            </span>
+          </div>
 
-<button
-id="botaoAbrirCamera"
-class="botao-anterior"
-type="button"
->
+          <video
+            id="camera"
+            class="camera-video"
+            autoplay
+            playsinline
+            muted
+            hidden
+          ></video>
 
-Abrir câmera
+          <canvas
+            id="fotoCapturada"
+            hidden
+          ></canvas>
 
-</button>
+          <img
+            id="fotoPreview"
+            class="camera-video"
+            alt="Prévia da foto capturada"
+            hidden
+          >
 
-<button
-id="botaoCapturar"
-class="botao-solicitar"
-type="button"
-disabled
->
+        </div>
 
-Capturar foto
+        <small
+          id="mensagemCamera"
+          class="mensagem-campo"
+        ></small>
 
-</button>
+        <div
+          id="acoesCameraInicial"
+          class="acoes-foto"
+        >
+          <button
+            id="botaoAbrirCamera"
+            class="botao-solicitar"
+            type="button"
+          >
+            Abrir câmera
+          </button>
+        </div>
 
-</div>
+        <div
+          id="acoesCameraAberta"
+          class="acoes-foto"
+          hidden
+        >
+          <button
+            id="botaoCapturar"
+            class="botao-solicitar"
+            type="button"
+          >
+            Capturar foto
+          </button>
+        </div>
 
-<div
-id="areaEnviar"
-hidden
-class="acoes-cadastro"
->
+        <div
+          id="acoesFotoCapturada"
+          class="acoes-foto-dupla"
+          hidden
+        >
 
-<button
-id="botaoNovaFoto"
-class="botao-anterior"
-type="button"
->
+          <button
+            id="botaoNovaFoto"
+            class="botao-anterior"
+            type="button"
+          >
+            Tirar novamente
+          </button>
 
-Tirar novamente
+          <button
+            id="botaoEnviarCadastro"
+            class="botao-solicitar"
+            type="button"
+          >
+            Solicitar cadastro
+          </button>
 
-</button>
+        </div>
 
-<button
-id="botaoEnviarCadastro"
-class="botao-solicitar"
-type="button"
->
+      </section>
 
-Solicitar cadastro
+    </section>
 
-</button>
+  </main>
 
-</div>
-
-</section>
-
-</main>
-
-<script src="cadastro-foto.js?v=5"></script>
+  <script src="cadastro-foto.js?v=5"></script>
 
 </body>
-
 </html>
