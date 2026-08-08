@@ -1,418 +1,209 @@
 "use strict";
 
-const formularioDadosAcesso = document.getElementById(
-  "formularioDadosAcesso"
+const video = document.getElementById("camera");
+const canvas = document.getElementById("fotoCapturada");
+const fotoPreview = document.getElementById("fotoPreview");
+
+const estadoInicialCamera = document.getElementById(
+  "estadoInicialCamera"
 );
 
-const campoNomeUsuario = document.getElementById("nomeUsuario");
-const campoNovaSenha = document.getElementById("novaSenha");
-const campoConfirmarSenha = document.getElementById(
-  "confirmarSenha"
+const mensagemCamera = document.getElementById(
+  "mensagemCamera"
 );
 
-const botaoMostrarNovaSenha = document.getElementById(
-  "mostrarNovaSenha"
+const acoesCameraInicial = document.getElementById(
+  "acoesCameraInicial"
 );
 
-const botaoMostrarConfirmacao = document.getElementById(
-  "mostrarConfirmacaoSenha"
+const acoesCameraAberta = document.getElementById(
+  "acoesCameraAberta"
 );
 
-const aceiteTermos = document.getElementById("aceiteTermos");
-
-const erroUsuario = document.getElementById("erroUsuario");
-const erroSenha = document.getElementById("erroSenha");
-const erroConfirmacao = document.getElementById(
-  "erroConfirmacao"
-);
-const erroTermos = document.getElementById("erroTermos");
-
-const botaoSolicitar = document.querySelector(
-  ".botao-solicitar"
+const acoesFotoCapturada = document.getElementById(
+  "acoesFotoCapturada"
 );
 
-function limparMensagem(elemento) {
-  if (elemento) {
-    elemento.textContent = "";
+const botaoAbrirCamera = document.getElementById(
+  "botaoAbrirCamera"
+);
+
+const botaoCapturar = document.getElementById(
+  "botaoCapturar"
+);
+
+const botaoNovaFoto = document.getElementById(
+  "botaoNovaFoto"
+);
+
+const botaoEnviarCadastro = document.getElementById(
+  "botaoEnviarCadastro"
+);
+
+let streamCamera = null;
+
+function mostrarMensagem(texto) {
+  mensagemCamera.textContent = texto;
+}
+
+function pararCamera() {
+  if (!streamCamera) {
+    return;
   }
+
+  streamCamera
+    .getTracks()
+    .forEach((track) => track.stop());
+
+  streamCamera = null;
+  video.srcObject = null;
 }
 
-function mostrarMensagem(elemento, texto) {
-  if (elemento) {
-    elemento.textContent = texto;
-  }
+function mostrarEstadoInicial() {
+  pararCamera();
+
+  estadoInicialCamera.hidden = false;
+  video.hidden = true;
+  fotoPreview.hidden = true;
+
+  acoesCameraInicial.hidden = false;
+  acoesCameraAberta.hidden = true;
+  acoesFotoCapturada.hidden = true;
+
+  mostrarMensagem("");
 }
 
-function alternarSenha(campo, botao) {
-  const senhaOculta = campo.type === "password";
+async function abrirCamera() {
+  mostrarMensagem("");
 
-  campo.type = senhaOculta ? "text" : "password";
-  botao.textContent = senhaOculta ? "🙈" : "👁";
-
-  botao.setAttribute(
-    "aria-label",
-    senhaOculta ? "Ocultar senha" : "Mostrar senha"
-  );
-}
-
-function validarNomeUsuario() {
-  const nomeUsuario = campoNomeUsuario.value.trim();
-
-  limparMensagem(erroUsuario);
-
-  if (!nomeUsuario) {
+  if (
+    !navigator.mediaDevices ||
+    !navigator.mediaDevices.getUserMedia
+  ) {
     mostrarMensagem(
-      erroUsuario,
-      "Informe um nome de usuário."
+      "Este aparelho ou navegador não permite abrir a câmera."
     );
-
-    return false;
+    return;
   }
 
-  if (nomeUsuario.includes(" ")) {
-    mostrarMensagem(
-      erroUsuario,
-      "O nome de usuário não pode conter espaços."
-    );
-
-    return false;
-  }
-
-  if (nomeUsuario.length < 3) {
-    mostrarMensagem(
-      erroUsuario,
-      "O nome de usuário deve possuir pelo menos 3 caracteres."
-    );
-
-    return false;
-  }
-
-  return true;
-}
-
-function validarSenha() {
-  const senha = campoNovaSenha.value;
-
-  limparMensagem(erroSenha);
-
-  if (!senha) {
-    mostrarMensagem(erroSenha, "Informe uma senha.");
-    return false;
-  }
-
-  if (senha.length < 6) {
-    mostrarMensagem(
-      erroSenha,
-      "A senha deve possuir pelo menos 6 caracteres."
-    );
-
-    return false;
-  }
-
-  return true;
-}
-
-function validarConfirmacaoSenha() {
-  const senha = campoNovaSenha.value;
-  const confirmacao = campoConfirmarSenha.value;
-
-  limparMensagem(erroConfirmacao);
-  erroConfirmacao.classList.remove("mensagem-sucesso");
-
-  if (!confirmacao) {
-    mostrarMensagem(
-      erroConfirmacao,
-      "Confirme a senha."
-    );
-
-    return false;
-  }
-
-  if (senha !== confirmacao) {
-    mostrarMensagem(
-      erroConfirmacao,
-      "As senhas são diferentes."
-    );
-
-    return false;
-  }
-
-  mostrarMensagem(
-    erroConfirmacao,
-    "As senhas coincidem."
-  );
-
-  erroConfirmacao.classList.add("mensagem-sucesso");
-
-  return true;
-}
-
-function validarTermos() {
-  limparMensagem(erroTermos);
-
-  if (!aceiteTermos.checked) {
-    mostrarMensagem(
-      erroTermos,
-      "Você precisa aceitar os termos."
-    );
-
-    return false;
-  }
-
-  return true;
-}
-
-function atualizarEstadoBotao() {
-  botaoSolicitar.disabled = !aceiteTermos.checked;
-}
-
-function obterDadosPessoais() {
   try {
-    const dadosSalvos = sessionStorage.getItem(
-      "tufra_dados_pessoais"
-    );
+    streamCamera =
+      await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: "user"
+        },
+        audio: false
+      });
 
-    return dadosSalvos
-      ? JSON.parse(dadosSalvos)
-      : null;
+    video.srcObject = streamCamera;
+
+    estadoInicialCamera.hidden = true;
+    fotoPreview.hidden = true;
+    video.hidden = false;
+
+    acoesCameraInicial.hidden = true;
+    acoesCameraAberta.hidden = false;
+    acoesFotoCapturada.hidden = true;
   } catch (erro) {
     console.error(
-      "Erro ao carregar os dados pessoais:",
+      "Erro ao abrir a câmera:",
       erro
     );
 
-    return null;
+    mostrarMensagem(
+      "Não foi possível acessar a câmera. Verifique a permissão do navegador."
+    );
   }
 }
 
-function traduzirErroCadastro(mensagem) {
-  const texto = String(mensagem || "").toLowerCase();
-
-  if (
-    texto.includes("already registered") ||
-    texto.includes("already exists") ||
-    texto.includes("user already registered")
-  ) {
-    return "Este e-mail já possui um cadastro.";
-  }
-
-  if (
-    texto.includes("password") &&
-    texto.includes("characters")
-  ) {
-    return "A senha não atende aos requisitos mínimos.";
-  }
-
-  if (
-    texto.includes("invalid email") ||
-    texto.includes("email address")
-  ) {
-    return "Informe um e-mail válido.";
-  }
-
-  if (
-    texto.includes("duplicate") ||
-    texto.includes("unique")
-  ) {
-    return "Já existe um cadastro com este e-mail ou CPF.";
-  }
-
-  if (
-    texto.includes("database error") ||
-    texto.includes("saving new user")
-  ) {
-    return (
-      "Não foi possível concluir o cadastro no banco. " +
-      "Confira se o e-mail ou CPF já estão cadastrados."
+function capturarFoto() {
+  if (!video.videoWidth || !video.videoHeight) {
+    mostrarMensagem(
+      "A câmera ainda está carregando. Tente novamente."
     );
+    return;
   }
 
-  return (
-    "Não foi possível concluir o cadastro. " +
-    "Tente novamente."
+  const contexto = canvas.getContext("2d");
+
+  const tamanho = Math.min(
+    video.videoWidth,
+    video.videoHeight
+  );
+
+  const origemX =
+    (video.videoWidth - tamanho) / 2;
+
+  const origemY =
+    (video.videoHeight - tamanho) / 2;
+
+  canvas.width = 800;
+  canvas.height = 800;
+
+  contexto.drawImage(
+    video,
+    origemX,
+    origemY,
+    tamanho,
+    tamanho,
+    0,
+    0,
+    800,
+    800
+  );
+
+  fotoPreview.src =
+    canvas.toDataURL("image/jpeg", 0.85);
+
+  pararCamera();
+
+  estadoInicialCamera.hidden = true;
+  video.hidden = true;
+  fotoPreview.hidden = false;
+
+  acoesCameraInicial.hidden = true;
+  acoesCameraAberta.hidden = true;
+  acoesFotoCapturada.hidden = false;
+
+  mostrarMensagem("");
+}
+
+function tirarNovamente() {
+  fotoPreview.src = "";
+  abrirCamera();
+}
+
+function solicitarCadastro() {
+  console.log("Foto pronta para envio.");
+
+  mostrarMensagem(
+    "Foto capturada com sucesso. Na próxima etapa vamos enviá-la ao cadastro."
   );
 }
 
-function bloquearFormulario() {
-  botaoSolicitar.disabled = true;
-  botaoSolicitar.textContent = "ENVIANDO...";
-}
-
-function liberarFormulario() {
-  botaoSolicitar.textContent = "SOLICITAR CADASTRO";
-  atualizarEstadoBotao();
-}
-
-async function enviarSolicitacao(evento) {
-  evento.preventDefault();
-
-  erroConfirmacao.classList.remove("mensagem-sucesso");
-
-  const usuarioValido = validarNomeUsuario();
-  const senhaValida = validarSenha();
-  const confirmacaoValida = validarConfirmacaoSenha();
-  const termosValidos = validarTermos();
-
-  if (
-    !usuarioValido ||
-    !senhaValida ||
-    !confirmacaoValida ||
-    !termosValidos
-  ) {
-    return;
-  }
-
-  const dadosPessoais = obterDadosPessoais();
-
-  if (
-    !dadosPessoais ||
-    !dadosPessoais.nomeCompleto ||
-    !dadosPessoais.email ||
-    !dadosPessoais.cpf
-  ) {
-    mostrarMensagem(
-      erroUsuario,
-      "Os dados da primeira etapa não foram encontrados. Volte e preencha novamente."
-    );
-
-    return;
-  }
-
-  if (!window.supabaseClient) {
-    mostrarMensagem(
-      erroUsuario,
-      "Não foi possível conectar ao banco de dados."
-    );
-
-    console.error(
-      "O cliente do Supabase não foi inicializado."
-    );
-
-    return;
-  }
-
-  bloquearFormulario();
-
-  try {
-    const nomeUsuario = campoNomeUsuario.value
-      .trim()
-      .toLowerCase();
-
-    const senha = campoNovaSenha.value;
-
-    const resultado = await window.supabaseClient.auth.signUp({
-      email: dadosPessoais.email.trim().toLowerCase(),
-      password: senha,
-
-      options: {
-        data: {
-          nome_completo: dadosPessoais.nomeCompleto,
-          cpf: dadosPessoais.cpf,
-          telefone: dadosPessoais.telefone || "",
-          data_nascimento:
-            dadosPessoais.dataNascimento || "",
-          nome_usuario: nomeUsuario
-        }
-      }
-    });
-
-    if (resultado.error) {
-      throw resultado.error;
-    }
-
-    if (!resultado.data.user) {
-      throw new Error(
-        "O Supabase não retornou o usuário criado."
-      );
-    }
-
-    const cadastroCompleto = {
-      ...dadosPessoais,
-      nomeUsuario,
-      status: "Aguardando aprovação",
-      dataSolicitacao: new Date().toISOString(),
-      authId: resultado.data.user.id
-    };
-
-    /*
-      A senha não é armazenada no navegador.
-      Ela fica protegida exclusivamente no Supabase Auth.
-    */
-    sessionStorage.setItem(
-  "tufra_cadastro_completo",
-  JSON.stringify(cadastroCompleto)
+botaoAbrirCamera.addEventListener(
+  "click",
+  abrirCamera
 );
 
-window.location.href = "cadastro-foto.html";
-  } catch (erro) {
-    console.error("Erro ao criar cadastro:", erro);
-
-    mostrarMensagem(
-      erroUsuario,
-      traduzirErroCadastro(erro.message)
-    );
-
-    liberarFormulario();
-  }
-}
-
-botaoMostrarNovaSenha.addEventListener("click", () => {
-  alternarSenha(
-    campoNovaSenha,
-    botaoMostrarNovaSenha
-  );
-});
-
-botaoMostrarConfirmacao.addEventListener("click", () => {
-  alternarSenha(
-    campoConfirmarSenha,
-    botaoMostrarConfirmacao
-  );
-});
-
-campoNomeUsuario.addEventListener("input", () => {
-  limparMensagem(erroUsuario);
-});
-
-campoNovaSenha.addEventListener("input", () => {
-  limparMensagem(erroSenha);
-  limparMensagem(erroConfirmacao);
-
-  erroConfirmacao.classList.remove(
-    "mensagem-sucesso"
-  );
-});
-
-campoConfirmarSenha.addEventListener("input", () => {
-  limparMensagem(erroConfirmacao);
-
-  erroConfirmacao.classList.remove(
-    "mensagem-sucesso"
-  );
-
-  if (
-    campoConfirmarSenha.value &&
-    campoNovaSenha.value === campoConfirmarSenha.value
-  ) {
-    mostrarMensagem(
-      erroConfirmacao,
-      "As senhas coincidem."
-    );
-
-    erroConfirmacao.classList.add(
-      "mensagem-sucesso"
-    );
-  }
-});
-
-aceiteTermos.addEventListener("change", () => {
-  limparMensagem(erroTermos);
-  atualizarEstadoBotao();
-});
-
-formularioDadosAcesso.addEventListener(
-  "submit",
-  enviarSolicitacao
+botaoCapturar.addEventListener(
+  "click",
+  capturarFoto
 );
 
-atualizarEstadoBotao();
+botaoNovaFoto.addEventListener(
+  "click",
+  tirarNovamente
+);
+
+botaoEnviarCadastro.addEventListener(
+  "click",
+  solicitarCadastro
+);
+
+window.addEventListener(
+  "pagehide",
+  pararCamera
+);
+
+mostrarEstadoInicial();
