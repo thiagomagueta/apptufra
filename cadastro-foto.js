@@ -76,7 +76,7 @@ function pararCamera() {
 function mostrarEstadoInicial() {
   pararCamera();
 
-mostrar(estadoInicialCamera);
+  mostrar(estadoInicialCamera);
 
   esconder(video);
   esconder(fotoPreview);
@@ -187,7 +187,7 @@ function capturarFoto() {
 
   esconder(acoesCameraInicial);
   esconder(acoesCameraAberta);
-mostrar(acoesFotoCapturada);
+  mostrar(acoesFotoCapturada);
 
   mostrarMensagem("");
 }
@@ -236,10 +236,6 @@ async function solicitarCadastro() {
   try {
     let authId = dados.authId || "";
 
-    /*
-      Cria o usuário somente se ele ainda
-      não tiver sido criado.
-    */
     if (!authId) {
       const resultadoCadastro =
         await window.supabaseClient.auth.signUp({
@@ -287,12 +283,6 @@ async function solicitarCadastro() {
 
       authId = usuarioAuth.id;
 
-      /*
-        Guarda o ID imediatamente.
-        Se o upload da foto falhar,
-        poderemos tentar novamente sem
-        criar outro usuário.
-      */
       dados.authId = authId;
 
       sessionStorage.setItem(
@@ -301,10 +291,6 @@ async function solicitarCadastro() {
       );
     }
 
-    /*
-      Transforma a foto capturada
-      em um arquivo JPEG.
-    */
     const fotoBlob =
       await new Promise(
         (resolve, reject) => {
@@ -326,10 +312,6 @@ async function solicitarCadastro() {
         }
       );
 
-    /*
-      Prepara os dados que serão enviados
-      para a Edge Function.
-    */
     const formularioFoto =
       new FormData();
 
@@ -353,10 +335,6 @@ async function solicitarCadastro() {
       "Salvando sua foto..."
     );
 
-    /*
-      Envia a foto para a Edge Function
-      que criamos no Supabase.
-    */
     const resultadoFoto =
       await window.supabaseClient.functions.invoke(
         "salvar-foto-cadastro",
@@ -379,10 +357,6 @@ async function solicitarCadastro() {
       );
     }
 
-    /*
-      Guarda apenas dados seguros.
-      A senha não permanece salva.
-    */
     sessionStorage.setItem(
       "tufra_cadastro_completo",
       JSON.stringify({
@@ -432,7 +406,7 @@ async function solicitarCadastro() {
     console.error(
       "Erro ao concluir cadastro:",
       erro,
-      erro?context
+      erro?.context
     );
 
     mostrarMensagem(
