@@ -198,100 +198,223 @@ function tirarNovamente() {
 }
 
 async function solicitarCadastro() {
-
   mostrarMensagem("");
 
-  const dadosSalvos =
-    sessionStorage.getItem(
-      "tufra_cadastro_pendente"
-    );
+  const dadosSalvos = sessionStorage.getItem(
+    "tufra_cadastro_pendente"
+  );
 
   if (!dadosSalvos) {
     mostrarMensagem(
-      "Os dados do cadastro não foram encontrados."
+      "Os dados do cadastro não foram encontrados. Volte e preencha novamente."
     );
     return;
   }
 
-  const dados =
-    JSON.parse(dadosSalvos);
+  if (!fotoPreview.src) {
+    mostrarMensagem(
+      "Tire uma foto antes de solicitar o cadastro."
+    );
+    return;
+  }
+
+  if (!window.supabaseClient) {
+    mostrarMensagem(
+      "Não foi possível conectar ao sistema."
+    );
+    return;
+  }
+
+  const dados = JSON.parse(dadosSalvos);
 
   botaoEnviarCadastro.disabled = true;
   botaoNovaFoto.disabled = true;
 
   botaoEnviarCadastro.textContent =
-    "Enviando...";
+    "ENVIANDO...";
 
   try {
+    let authId = dados.authId || "";
 
-    const resultado =
-      await window.supabaseClient.auth.signUp({
-
-        email:
-          dados.email
+    /*
+      Cria o usuário somente se ele ainda
+      não tiver sido criado.
+    */
+    if (!authId) {
+      const resultadoCadastro =
+        await window.supabaseClient.auth.signUp({
+          email: dados.email
             .trim()
             .toLowerCase(),
 
-        password:
-          dados.senha,
+          password: dados.senha,
 
-        options: {
+          options: {
+            data: {
+              nome_completo:
+                dados.nomeCompleto,
 
-          data: {
+              cpf:
+                dados.cpf,
 
-            nome_completo:
-              dados.nomeCompleto,
+              telefone:
+                dados.telefone || "",
 
-            cpf:
-              dados.cpf,
+              data_nascimento:
+                dados.dataNascimento || "",
 
-            telefone:
-              dados.telefone || "",
+              nome_usuario:
+                dados.nomeUsuario,
 
-            data_nascimento:
-              dados.dataNascimento || "",
-
-            nome_usuario:
-              dados.nomeUsuario,
-
-            foto_token:
-              dados.fotoToken
-
+              foto_token:
+                dados.fotoToken
+            }
           }
+        });
 
-        }
+      if (resultadoCadastro.error) {
+        throw resultadoCadastro.error;
+      }
 
-      });
+      const usuarioAuth =
+        resultadoCadastro.data.user;
 
-    if (resultado.error) {
-      throw resultado.error;
-    }
+      if (!usuarioAuth) {
+        throw new Error(
+          "O usuário não foi criado."
+        );
+      }
 
-    if (!resultado.data.user) {
-      throw new Error(
-        "Usuário não criado."
+      authId = usuarioAuth.id;
+
+      /*
+        Guarda o ID imediatamente.
+        Se o upload da foto falhar,
+        poderemos tentar novamente sem
+        criar outro usuário.
+      */
+      dados.authId = authId;
+
+      sessionStorage.setItem(
+        "tufra_cadastro_pendente",
+        JSON.stringify(dados)
       );
     }
 
+    /*
+      Transforma a foto capturada
+      em um arquivo JPEG.
+    */
+    const fotoBlob =
+      await new Promise(
+        (resolve, reject) => {
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                resolve(blob);
+              } else {
+                reject(
+                  new Error(
+                    "Não foi possível preparar a foto."
+                  )
+                );
+              }
+            },
+            "image/jpeg",
+            0.85
+          );
+        }
+      );
+
+    /*
+      Prepara os dados que serão enviados
+      para a Edge Function.
+    */
+    const formularioFoto =
+      new FormData();
+
+    formularioFoto.append(
+      "auth_id",
+      authId
+    );
+
+    formularioFoto.append(
+      "foto_token",
+      dados.fotoToken
+    );
+
+    formularioFoto.append(
+      "foto",
+      fotoBlob,
+      "perfil.jpg"
+    );
+
+    mostrarMensagem(
+      "Salvando sua foto..."
+    );
+
+    /*
+      Envia a foto para a Edge Function
+      que criamos no Supabase.
+    */
+    const resultadoFoto =
+      await window.supabaseClient.functions.invoke(
+        "salvar-foto-cadastro",
+        {
+          body: formularioFoto
+        }
+      );
+
+    if (resultadoFoto.error) {
+      throw resultadoFoto.error;
+    }
+
+    if (
+      !resultadoFoto.data ||
+      !resultadoFoto.data.sucesso
+    ) {
+      throw new Error(
+        resultadoFoto.data?.erro ||
+        "Não foi possível salvar a foto."
+      );
+    }
+
+    /*
+      Guarda apenas dados seguros.
+      A senha não permanece salva.
+    */
     sessionStorage.setItem(
-
       "tufra_cadastro_completo",
-
       JSON.stringify({
+        nomeCompleto:
+          dados.nomeCompleto,
 
-        ...dados,
+        cpf:
+          dados.cpf,
 
-        authId:
-          resultado.data.user.id,
+        dataNascimento:
+          dados.dataNascimento,
+
+        telefone:
+          dados.telefone,
+
+        email:
+          dados.email,
+
+        nomeUsuario:
+          dados.nomeUsuario,
+
+        authId,
+
+        fotoPath:
+          resultadoFoto.data.foto_path,
 
         status:
           "Aguardando aprovação",
 
         dataSolicitacao:
           new Date().toISOString()
-
       })
-
     );
 
     sessionStorage.removeItem(
@@ -305,15 +428,14 @@ async function solicitarCadastro() {
     window.location.href =
       "cadastro-sucesso.html";
 
-  }
-
-  catch (erro) {
-
-    console.error(erro);
+  } catch (erro) {
+    console.error(
+      "Erro ao concluir cadastro:",
+      erro
+    );
 
     mostrarMensagem(
-      erro.message ||
-      "Não foi possível concluir o cadastro."
+      "Não foi possível concluir o cadastro. Tente novamente."
     );
 
     botaoEnviarCadastro.disabled = false;
@@ -321,9 +443,7 @@ async function solicitarCadastro() {
 
     botaoEnviarCadastro.textContent =
       "Solicitar cadastro";
-
   }
-
 }
 
 botaoAbrirCamera.addEventListener(
