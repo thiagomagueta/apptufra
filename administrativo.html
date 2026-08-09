@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#651b1d">
+
+  <title>Administrativo | TUFRA</title>
+
+  <link rel="stylesheet" href="layout.css?v=7">
+</head>
+
+<body>
+
+  <main class="app">
+
+    <div class="conteudo-app">
+
+      <header class="cabecalho-app">
+
+        <img
+          class="logo-app"
+          src="logo-tufra.png"
+          alt="Logo da TUFRA"
+        >
+
+        <div class="identidade-app">
+          <strong>TUFRA</strong>
+          <span>
+            Tenda de Umbanda Francisco de Assis
+          </span>
+        </div>
+
+      </header>
+
+      <section>
+        <h1 class="titulo-pagina">
+          Administrativo
+        </h1>
+
+        <p class="subtitulo-pagina">
+          Selecione uma opção administrativa.
+        </p>
+      </section>
+
+      <section
+        id="opcaoPermissoes"
+        class="cartao-app opcao-administrativa"
+        hidden
+      >
+
+        <a
+          class="link-opcao-administrativa"
+          href="permissoes.html"
+        >
+
+          <div class="icone-opcao-administrativa">
+            👥
+          </div>
+
+          <div class="dados-opcao-administrativa">
+
+            <strong>
+              Permissões
+            </strong>
+
+            <span>
+              Aceitar novos cadastros e atribuir funções.
+            </span>
+
+          </div>
+
+          <span class="seta-opcao-administrativa">
+            ›
+          </span>
+
+        </a>
+
+      </section>
+
+      <section
+        id="semOpcoesAdministrativas"
+        class="cartao-app"
+        hidden
+      >
+        <p>
+          Não existem opções administrativas disponíveis para sua função neste momento.
+        </p>
+      </section>
+
+    </div>
+
+  </main>
+
+  <nav
+    class="menu-inferior"
+    aria-label="Navegação principal"
+  >
+
+    <div class="menu-inferior-conteudo">
+
+      <a
+        class="item-menu"
+        href="dashboard.html"
+      >
+        <span class="icone-menu">⌂</span>
+        <span class="texto-menu">Início</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="calendario.html"
+      >
+        <span class="icone-menu">📅</span>
+        <span class="texto-menu">Calendário</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="minha-ficha.html"
+      >
+        <span class="icone-menu">👤</span>
+        <span class="texto-menu">Minha ficha</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="mais.html"
+      >
+        <span class="icone-menu">☰</span>
+        <span class="texto-menu">Mais</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="#"
+        id="botaoSair"
+      >
+        <span class="icone-menu">🚪</span>
+        <span class="texto-menu">Sair</span>
+      </a>
+
+    </div>
+
+  </nav>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js?v=2"></script>
+  <script src="app.js?v=2"></script>
+  <script src="administrativo.js?v=1"></script>
+
+</body>
+</html>
