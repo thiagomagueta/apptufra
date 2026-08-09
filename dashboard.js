@@ -7,7 +7,7 @@ const saudacaoDashboard = document.getElementById(
 function carregarUsuarioLogado() {
   try {
     const dados = sessionStorage.getItem(
-      "tufra_usuario_logado"
+"tufra_usuario_logado"
     );
 
     return dados ? JSON.parse(dados) : {};
