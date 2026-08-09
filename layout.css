@@ -590,3 +590,51 @@ textarea {
   font-size: 30px;
   line-height: 1;
 }
+/* ==========================================
+   PERMISSÕES
+========================================== */
+
+.lista-permissoes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.item-permissao {
+  display: grid;
+  grid-template-columns: 54px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.foto-permissao {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #f2ece8;
+}
+
+.dados-permissao strong {
+  display: block;
+  color: var(--cor-texto);
+  font-size: 14px;
+}
+
+.dados-permissao span {
+  display: block;
+  margin-top: 4px;
+  color: var(--cor-texto-suave);
+  font-size: 12px;
+}
+
+.link-permissao {
+  color: var(--cor-principal);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
