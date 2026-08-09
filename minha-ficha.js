@@ -315,5 +315,72 @@ async function carregarMinhaFicha() {
     );
   }
 }
+async function carregarFotoUsuario() {
+  if (!window.supabaseClient) {
+    return;
+  }
 
+  try {
+    const resultadoSessao =
+      await window.supabaseClient.auth.getSession();
+
+    if (resultadoSessao.error) {
+      throw resultadoSessao.error;
+    }
+
+    const sessao = resultadoSessao.data.session;
+
+    if (!sessao) {
+      return;
+    }
+
+    const resultadoUsuario =
+      await window.supabaseClient
+        .from("usuarios")
+        .select("foto_path")
+        .eq("auth_id", sessao.user.id)
+        .maybeSingle();
+
+    if (resultadoUsuario.error) {
+      throw resultadoUsuario.error;
+    }
+
+    const fotoPath =
+      resultadoUsuario.data?.foto_path;
+
+    if (!fotoPath) {
+      return;
+    }
+
+    const resultadoFoto =
+      await window.supabaseClient.storage
+        .from("fotos-associados")
+        .createSignedUrl(
+          fotoPath,
+          60 * 60
+        );
+
+    if (resultadoFoto.error) {
+      throw resultadoFoto.error;
+    }
+
+    const urlFoto =
+      resultadoFoto.data?.signedUrl;
+
+    if (!urlFoto) {
+      return;
+    }
+
+    fotoUsuarioFicha.src = urlFoto;
+
+    fotoUsuarioFicha.hidden = false;
+    fotoUsuarioFichaPadrao.hidden = true;
+
+  } catch (erro) {
+    console.error(
+      "Erro ao carregar foto na ficha:",
+      erro
+    );
+  }
+}
 carregarMinhaFicha();
