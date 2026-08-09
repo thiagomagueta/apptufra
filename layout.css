@@ -339,3 +339,33 @@ textarea {
   line-height: 1.5;
   text-align: center;
 }
+/* ==========================================
+   FOTO DO USUÁRIO - DASHBOARD
+========================================== */
+
+.area-foto-usuario {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.foto-usuario-dashboard,
+.foto-usuario-padrao {
+  width: 58px;
+  height: 58px;
+  border: 2px solid rgba(101, 27, 29, 0.28);
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 6px 14px rgba(66, 16, 18, 0.12);
+}
+
+.foto-usuario-dashboard {
+  display: block;
+  object-fit: cover;
+}
+
+.foto-usuario-padrao {
+  display: grid;
+  place-items: center;
+  color: var(--cor-principal);
+  font-size: 28px;
+}
