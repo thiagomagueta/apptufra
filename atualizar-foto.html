@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#651b1d">
+
+  <title>Atualizar foto | TUFRA</title>
+
+  <link rel="stylesheet" href="style.css?v=17">
+</head>
+
+<body>
+
+  <main class="tela-cadastro">
+
+    <section class="cartao-cadastro">
+
+      <header class="cabecalho-cadastro">
+
+        <img
+          class="logo-cadastro"
+          src="logo-tufra.png"
+          alt="Logo da TUFRA"
+        >
+
+        <h1>Atualizar foto</h1>
+
+        <p>Foto de identificação</p>
+
+      </header>
+
+      <section class="area-foto-cadastro">
+
+        <p class="texto-foto-cadastro">
+          Tire uma nova foto de frente.
+        </p>
+
+        <div
+          id="molduraCamera"
+          class="moldura-camera"
+        >
+
+          <div
+            id="estadoInicialCamera"
+            class="estado-inicial-camera"
+          >
+            <span class="icone-camera-cadastro">
+              📷
+            </span>
+
+            <span>
+              Sua nova foto aparecerá aqui
+            </span>
+          </div>
+
+          <video
+            id="camera"
+            class="camera-video"
+            autoplay
+            playsinline
+            muted
+            hidden
+          ></video>
+
+          <canvas
+            id="fotoCapturada"
+            hidden
+          ></canvas>
+
+          <img
+            id="fotoPreview"
+            class="camera-video"
+            alt="Prévia da nova foto"
+            hidden
+          >
+
+        </div>
+
+        <small
+          id="mensagemCamera"
+          class="mensagem-campo"
+        ></small>
+
+        <div
+          id="acoesCameraInicial"
+          class="acoes-foto"
+        >
+          <button
+            id="botaoAbrirCamera"
+            class="botao-solicitar"
+            type="button"
+          >
+            Abrir câmera
+          </button>
+        </div>
+
+        <div
+          id="acoesCameraAberta"
+          class="acoes-foto"
+          hidden
+        >
+          <button
+            id="botaoCapturar"
+            class="botao-solicitar"
+            type="button"
+          >
+            Capturar foto
+          </button>
+        </div>
+
+        <div
+          id="acoesFotoCapturada"
+          class="acoes-foto-dupla"
+          hidden
+        >
+
+          <button
+            id="botaoNovaFoto"
+            class="botao-anterior"
+            type="button"
+          >
+            Tirar novamente
+          </button>
+
+          <button
+            id="botaoSalvarFoto"
+            class="botao-solicitar"
+            type="button"
+          >
+            Salvar nova foto
+          </button>
+
+        </div>
+
+        <div class="acoes-foto">
+          <a
+            class="botao-anterior"
+            href="minha-ficha.html"
+          >
+            Voltar
+          </a>
+        </div>
+
+      </section>
+
+    </section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js?v=2"></script>
+  <script src="atualizar-foto.js?v=1"></script>
+
+</body>
+</html>
