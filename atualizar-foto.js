@@ -197,14 +197,119 @@ function tirarNovamente() {
   abrirCamera();
 }
 
-function salvarNovaFoto() {
-  mostrarMensagem(
-    "Foto pronta para ser atualizada."
-  );
+async function salvarNovaFoto() {
+  mostrarMensagem("");
 
-  console.log(
-    "Nova foto pronta para envio ao Supabase."
-  );
+  if (!fotoPreview.src) {
+    mostrarMensagem(
+      "Tire uma nova foto antes de salvar."
+    );
+    return;
+  }
+
+  if (!window.supabaseClient) {
+    mostrarMensagem(
+      "Não foi possível conectar ao sistema."
+    );
+    return;
+  }
+
+  botaoSalvarFoto.disabled = true;
+  botaoNovaFoto.disabled = true;
+  botaoSalvarFoto.textContent = "SALVANDO...";
+
+  try {
+    const resultadoSessao =
+      await window.supabaseClient.auth.getSession();
+
+    if (resultadoSessao.error) {
+      throw resultadoSessao.error;
+    }
+
+    const sessao = resultadoSessao.data.session;
+
+    if (!sessao) {
+      window.location.href = "index.html";
+      return;
+    }
+
+    const authId = sessao.user.id;
+
+    const respostaFoto = await fetch(
+      fotoPreview.src
+    );
+
+    if (!respostaFoto.ok) {
+      throw new Error(
+        "Não foi possível preparar a foto."
+      );
+    }
+
+    const fotoBlob =
+      await respostaFoto.blob();
+
+    if (
+      !fotoBlob ||
+      fotoBlob.size === 0
+    ) {
+      throw new Error(
+        "A foto capturada está vazia."
+      );
+    }
+
+    const caminhoFoto =
+      `${authId}/perfil.jpg`;
+
+    mostrarMensagem(
+      "Salvando nova foto..."
+    );
+
+    const resultadoUpload =
+      await window.supabaseClient.storage
+        .from("fotos-associados")
+        .upload(
+          caminhoFoto,
+          fotoBlob,
+          {
+            contentType: "image/jpeg",
+            upsert: true
+          }
+        );
+
+    if (resultadoUpload.error) {
+      throw resultadoUpload.error;
+    }
+
+    const resultadoUsuario =
+      await window.supabaseClient
+        .from("usuarios")
+        .update({
+          foto_path: caminhoFoto
+        })
+        .eq("auth_id", authId);
+
+    if (resultadoUsuario.error) {
+      throw resultadoUsuario.error;
+    }
+
+    window.location.href =
+      "minha-ficha.html?foto=atualizada";
+
+  } catch (erro) {
+    console.error(
+      "Erro ao atualizar foto:",
+      erro
+    );
+
+    mostrarMensagem(
+      "Não foi possível atualizar sua foto. Tente novamente."
+    );
+
+    botaoSalvarFoto.disabled = false;
+    botaoNovaFoto.disabled = false;
+    botaoSalvarFoto.textContent =
+      "Salvar nova foto";
+  }
 }
 
 botaoAbrirCamera.addEventListener(
