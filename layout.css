@@ -373,3 +373,79 @@ textarea {
 .foto-usuario-padrao[hidden] {
   display: none;
 }
+/* ==========================================
+   FOTO - MINHA FICHA
+========================================== */
+
+.cartao-foto-ficha {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid rgba(101, 27, 29, 0.10);
+  border-radius: 22px;
+  background: var(--cor-cartao);
+  box-shadow: var(--sombra);
+}
+
+.area-foto-ficha {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.foto-usuario-ficha,
+.foto-usuario-ficha-padrao {
+  width: 76px;
+  height: 76px;
+  flex-shrink: 0;
+  border: 2px solid rgba(101, 27, 29, 0.25);
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.foto-usuario-ficha {
+  display: block;
+  object-fit: cover;
+}
+
+.foto-usuario-ficha[hidden],
+.foto-usuario-ficha-padrao[hidden] {
+  display: none;
+}
+
+.foto-usuario-ficha-padrao {
+  display: grid;
+  place-items: center;
+  color: var(--cor-principal);
+  font-size: 34px;
+}
+
+.dados-foto-ficha {
+  min-width: 0;
+}
+
+.dados-foto-ficha strong {
+  display: block;
+  color: var(--cor-principal);
+  font-size: 16px;
+}
+
+.dados-foto-ficha span {
+  display: block;
+  margin-top: 5px;
+  color: var(--cor-texto-suave);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.botao-atualizar-foto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  margin-top: 16px;
+  border: 1px solid var(--cor-principal);
+  border-radius: 14px;
+  color: var(--cor-principal);
+  font-weight: 700;
+  text-decoration: none;
+}
