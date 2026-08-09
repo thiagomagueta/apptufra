@@ -453,12 +453,17 @@ textarea {
    DASHBOARD - FUNÇÕES E RESUMOS
 ========================================== */
 
-.cartao-administrativo {
-  padding: 14px 18px;
+.link-administrativo {
+  display: inline-block;
+  margin-top: 14px;
+  color: var(--cor-principal);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
 }
 
-.cartao-administrativo .botao-principal-app {
-  margin-top: 0;
+.link-administrativo:hover {
+  text-decoration: underline;
 }
 
 .lista-funcoes-dashboard {
