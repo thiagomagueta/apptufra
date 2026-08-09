@@ -24,10 +24,6 @@ const areaAdministrativo = document.getElementById(
   "areaAdministrativo"
 );
 
-const botaoAdministrativo = document.getElementById(
-  "botaoAdministrativo"
-);
-
 
 /* ==========================================
    USUÁRIO LOGADO
@@ -324,13 +320,8 @@ async function carregarFuncoesUsuario() {
    ACESSO ADMINISTRATIVO
 ========================================== */
 
-function verificarAdministrativo(
-  funcoes
-) {
-  if (
-    !areaAdministrativo ||
-    !botaoAdministrativo
-  ) {
+function verificarAdministrativo(funcoes) {
+  if (!areaAdministrativo) {
     return;
   }
 
@@ -346,11 +337,8 @@ function verificarAdministrativo(
   ];
 
   const possuiAcesso =
-    funcoes.some(
-      (funcao) =>
-        funcoesAdministrativas.includes(
-          funcao
-        )
+    funcoes.some((funcao) =>
+      funcoesAdministrativas.includes(funcao)
     );
 
   areaAdministrativo.hidden =
@@ -360,29 +348,13 @@ function verificarAdministrativo(
     return;
   }
 
-  /*
-    Por enquanto somente o Tesoureiro
-    terá uma tela administrativa pronta.
-  */
-
-  if (
-    funcoes.includes(
-      "Tesoureiro"
-    )
-  ) {
-    botaoAdministrativo.href =
+  if (funcoes.includes("Tesoureiro")) {
+    areaAdministrativo.href =
       "permissoes.html";
-
-    return;
+  } else {
+    areaAdministrativo.href =
+      "#";
   }
-
-  /*
-    As telas administrativas das demais
-    funções serão criadas futuramente.
-  */
-
-  botaoAdministrativo.href =
-    "#";
 }
 
 
