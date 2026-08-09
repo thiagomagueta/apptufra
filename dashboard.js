@@ -1,8 +1,13 @@
 "use strict";
 
+/* ==========================================
+   ELEMENTOS DO DASHBOARD
+========================================== */
+
 const saudacaoDashboard = document.getElementById(
   "saudacaoDashboard"
 );
+
 const fotoUsuarioDashboard = document.getElementById(
   "fotoUsuarioDashboard"
 );
@@ -11,13 +16,33 @@ const fotoUsuarioPadrao = document.getElementById(
   "fotoUsuarioPadrao"
 );
 
+const listaFuncoesDashboard = document.getElementById(
+  "listaFuncoesDashboard"
+);
+
+const areaAdministrativo = document.getElementById(
+  "areaAdministrativo"
+);
+
+const botaoAdministrativo = document.getElementById(
+  "botaoAdministrativo"
+);
+
+
+/* ==========================================
+   USUÁRIO LOGADO
+========================================== */
+
 function carregarUsuarioLogado() {
   try {
     const dados = sessionStorage.getItem(
-"tufra_usuario_logado"
+      "tufra_usuario_logado"
     );
 
-    return dados ? JSON.parse(dados) : {};
+    return dados
+      ? JSON.parse(dados)
+      : {};
+
   } catch (erro) {
     console.error(
       "Erro ao carregar usuário logado:",
@@ -28,8 +53,14 @@ function carregarUsuarioLogado() {
   }
 }
 
+
+/* ==========================================
+   SAUDAÇÃO
+========================================== */
+
 function obterPrimeiroNome(nomeCompleto) {
-  const nome = String(nomeCompleto || "").trim();
+  const nome =
+    String(nomeCompleto || "").trim();
 
   if (!nome) {
     return "";
@@ -38,38 +69,59 @@ function obterPrimeiroNome(nomeCompleto) {
   return nome.split(/\s+/)[0];
 }
 
-function obterSaudacaoPorHorario() {
-  const horaAtual = new Date().getHours();
 
-  if (horaAtual >= 5 && horaAtual < 12) {
+function obterSaudacaoPorHorario() {
+  const horaAtual =
+    new Date().getHours();
+
+  if (
+    horaAtual >= 5 &&
+    horaAtual < 12
+  ) {
     return "Bom dia com muita alegria";
   }
 
-  if (horaAtual >= 12 && horaAtual < 18) {
+  if (
+    horaAtual >= 12 &&
+    horaAtual < 18
+  ) {
     return "Boa tarde com muita alegria";
   }
 
   return "Boa noite com muita alegria";
 }
 
+
 function atualizarSaudacao() {
-  const usuario = carregarUsuarioLogado();
+  const usuario =
+    carregarUsuarioLogado();
 
-  const primeiroNome = obterPrimeiroNome(
-    usuario.nomeCompleto
-  );
+  const primeiroNome =
+    obterPrimeiroNome(
+      usuario.nomeCompleto
+    );
 
-  const saudacao = obterSaudacaoPorHorario();
+  const saudacao =
+    obterSaudacaoPorHorario();
 
-  saudacaoDashboard.textContent = primeiroNome
-    ? `${saudacao}, ${primeiroNome}!`
-    : `${saudacao}!`;
+  if (!saudacaoDashboard) {
+    return;
+  }
+
+  saudacaoDashboard.textContent =
+    primeiroNome
+      ? `${saudacao}, ${primeiroNome}!`
+      : `${saudacao}!`;
 }
 
-atualizarSaudacao();
-carregarFotoUsuario();
+
+/* ==========================================
+   FOTO DO USUÁRIO
+========================================== */
+
 async function carregarFotoUsuario() {
-  const usuario = carregarUsuarioLogado();
+  const usuario =
+    carregarUsuarioLogado();
 
   if (
     !usuario.authId ||
@@ -83,7 +135,10 @@ async function carregarFotoUsuario() {
       await window.supabaseClient
         .from("usuarios")
         .select("foto_path")
-        .eq("auth_id", usuario.authId)
+        .eq(
+          "auth_id",
+          usuario.authId
+        )
         .maybeSingle();
 
     if (resultadoUsuario.error) {
@@ -132,3 +187,209 @@ async function carregarFotoUsuario() {
     );
   }
 }
+
+
+/* ==========================================
+   FUNÇÕES DO USUÁRIO
+========================================== */
+
+async function carregarFuncoesUsuario() {
+  if (
+    !window.supabaseClient ||
+    !listaFuncoesDashboard
+  ) {
+    return;
+  }
+
+  try {
+    const resultadoSessao =
+      await window.supabaseClient.auth
+        .getSession();
+
+    if (resultadoSessao.error) {
+      throw resultadoSessao.error;
+    }
+
+    const sessao =
+      resultadoSessao.data.session;
+
+    if (!sessao) {
+      listaFuncoesDashboard.innerHTML =
+        "<p>Nenhuma função atribuída.</p>";
+
+      return;
+    }
+
+    const resultadoUsuario =
+      await window.supabaseClient
+        .from("usuarios")
+        .select("id")
+        .eq(
+          "auth_id",
+          sessao.user.id
+        )
+        .maybeSingle();
+
+    if (resultadoUsuario.error) {
+      throw resultadoUsuario.error;
+    }
+
+    if (!resultadoUsuario.data) {
+      listaFuncoesDashboard.innerHTML =
+        "<p>Nenhuma função atribuída.</p>";
+
+      return;
+    }
+
+    const usuarioId =
+      resultadoUsuario.data.id;
+
+    const resultadoFuncoes =
+      await window.supabaseClient
+        .from("usuario_funcoes")
+        .select(`
+          funcao_id,
+          funcoes (
+            id,
+            nome
+          )
+        `)
+        .eq(
+          "usuario_id",
+          usuarioId
+        );
+
+    if (resultadoFuncoes.error) {
+      throw resultadoFuncoes.error;
+    }
+
+    const funcoes =
+      resultadoFuncoes.data || [];
+
+    listaFuncoesDashboard.innerHTML =
+      "";
+
+    if (funcoes.length === 0) {
+      listaFuncoesDashboard.innerHTML =
+        "<p>Nenhuma função atribuída.</p>";
+
+      return;
+    }
+
+    const nomesFuncoes = [];
+
+    funcoes.forEach((item) => {
+      const nome =
+        item.funcoes?.nome;
+
+      if (!nome) {
+        return;
+      }
+
+      nomesFuncoes.push(nome);
+
+      const elemento =
+        document.createElement(
+          "span"
+        );
+
+      elemento.className =
+        "funcao-dashboard";
+
+      elemento.textContent =
+        nome;
+
+      listaFuncoesDashboard.appendChild(
+        elemento
+      );
+    });
+
+    verificarAdministrativo(
+      nomesFuncoes
+    );
+
+  } catch (erro) {
+    console.error(
+      "Erro ao carregar funções:",
+      erro
+    );
+
+    listaFuncoesDashboard.innerHTML =
+      "<p>Não foi possível carregar suas funções.</p>";
+  }
+}
+
+
+/* ==========================================
+   ACESSO ADMINISTRATIVO
+========================================== */
+
+function verificarAdministrativo(
+  funcoes
+) {
+  if (
+    !areaAdministrativo ||
+    !botaoAdministrativo
+  ) {
+    return;
+  }
+
+  const funcoesAdministrativas = [
+    "Presidente",
+    "Secretária",
+    "Tesoureiro",
+    "Pai/Mãe Pequeno (a)",
+    "Sacerdote",
+    "Líder dos Ogans",
+    "Líder dos Cambones",
+    "Líder da Cantina"
+  ];
+
+  const possuiAcesso =
+    funcoes.some(
+      (funcao) =>
+        funcoesAdministrativas.includes(
+          funcao
+        )
+    );
+
+  areaAdministrativo.hidden =
+    !possuiAcesso;
+
+  if (!possuiAcesso) {
+    return;
+  }
+
+  /*
+    Por enquanto somente o Tesoureiro
+    terá uma tela administrativa pronta.
+  */
+
+  if (
+    funcoes.includes(
+      "Tesoureiro"
+    )
+  ) {
+    botaoAdministrativo.href =
+      "permissoes.html";
+
+    return;
+  }
+
+  /*
+    As telas administrativas das demais
+    funções serão criadas futuramente.
+  */
+
+  botaoAdministrativo.href =
+    "#";
+}
+
+
+/* ==========================================
+   INICIALIZAÇÃO DO DASHBOARD
+========================================== */
+
+atualizarSaudacao();
+carregarFotoUsuario();
+carregarFuncoesUsuario();
