@@ -67,6 +67,7 @@ function atualizarSaudacao() {
 }
 
 atualizarSaudacao();
+carregarFotoUsuario();
 async function carregarFotoUsuario() {
   const usuario = carregarUsuarioLogado();
 
