@@ -280,17 +280,7 @@ async function salvarNovaFoto() {
       throw resultadoUpload.error;
     }
 
-    const resultadoUsuario =
-      await window.supabaseClient
-        .from("usuarios")
-        .update({
-          foto_path: caminhoFoto
-        })
-        .eq("auth_id", authId);
 
-    if (resultadoUsuario.error) {
-      throw resultadoUsuario.error;
-    }
 
     window.location.href =
       "minha-ficha.html?foto=atualizada";
