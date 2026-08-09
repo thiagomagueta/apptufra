@@ -291,27 +291,27 @@ async function solicitarCadastro() {
       );
     }
 
-    const fotoBlob =
-      await new Promise(
-        (resolve, reject) => {
-          canvas.toBlob(
-            (blob) => {
-              if (blob) {
-                resolve(blob);
-              } else {
-                reject(
-                  new Error(
-                    "Não foi possível preparar a foto."
-                  )
-                );
-              }
-            },
-            "image/jpeg",
-            0.85
-          );
-        }
-      );
+    const respostaFoto = await fetch(
+  fotoPreview.src
+);
 
+if (!respostaFoto.ok) {
+  throw new Error(
+    "Não foi possível preparar a foto."
+  );
+}
+
+const fotoBlob =
+  await respostaFoto.blob();
+
+if (
+  !fotoBlob ||
+  fotoBlob.size === 0
+) {
+  throw new Error(
+    "A foto capturada está vazia."
+  );
+}
     const formularioFoto =
       new FormData();
 
