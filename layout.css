@@ -449,3 +449,91 @@ textarea {
   font-weight: 700;
   text-decoration: none;
 }
+/* ==========================================
+   DASHBOARD - FUNÇÕES E RESUMOS
+========================================== */
+
+.cartao-administrativo {
+  padding: 14px 18px;
+}
+
+.cartao-administrativo .botao-principal-app {
+  margin-top: 0;
+}
+
+.lista-funcoes-dashboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.funcao-dashboard {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgba(101, 27, 29, 0.10);
+  color: var(--cor-principal);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.lista-resumo-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.linha-resumo-dashboard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.linha-resumo-dashboard:last-child {
+  border-bottom: none;
+}
+
+.linha-resumo-dashboard strong {
+  display: block;
+  color: var(--cor-texto);
+  font-size: 14px;
+}
+
+.linha-resumo-dashboard div > span {
+  display: block;
+  margin-top: 3px;
+  color: var(--cor-texto-suave);
+  font-size: 12px;
+}
+
+.status-resumo {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status-presente,
+.status-pago {
+  background: #e4f3e8;
+  color: #267341;
+}
+
+.status-falta {
+  background: #f9e4e4;
+  color: #a12626;
+}
+
+.aviso-dados-exemplo {
+  display: block;
+  margin-top: 12px;
+  color: var(--cor-texto-suave);
+  font-size: 11px;
+  line-height: 1.4;
+}
