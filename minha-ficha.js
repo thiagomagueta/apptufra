@@ -9,7 +9,13 @@ const areaDadosPessoais = document.getElementById(
 const areaEnderecoContato = document.getElementById(
   "minhaFichaEnderecoContato"
 );
+const fotoUsuarioFicha = document.getElementById(
+  "fotoUsuarioFicha"
+);
 
+const fotoUsuarioFichaPadrao = document.getElementById(
+  "fotoUsuarioFichaPadrao"
+);
 const areaHistoricoUmbanda = document.getElementById(
   "minhaFichaHistoricoUmbanda"
 );
