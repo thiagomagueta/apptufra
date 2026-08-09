@@ -348,13 +348,8 @@ function verificarAdministrativo(funcoes) {
     return;
   }
 
-  if (funcoes.includes("Tesoureiro")) {
-    areaAdministrativo.href =
-      "permissoes.html";
-  } else {
-    areaAdministrativo.href =
-      "#";
-  }
+areaAdministrativo.href =
+  "administrativo.html";
 }
 
 
