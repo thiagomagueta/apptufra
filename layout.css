@@ -981,3 +981,76 @@ textarea {
   color: var(--cor-texto-suave);
   font-size: 11px;
 }
+/* ==========================================
+   CONFIRMAÇÃO DE EXCLUSÃO
+========================================== */
+
+.dados-confirmacao-exclusao {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tipo-exclusao-atividade {
+  color: var(--cor-principal);
+  font-size: 15px;
+}
+
+.titulo-exclusao-atividade {
+  color: var(--cor-texto);
+  font-size: 16px;
+}
+
+.dados-confirmacao-exclusao span {
+  color: var(--cor-texto-suave);
+  font-size: 13px;
+}
+
+.dados-confirmacao-exclusao p {
+  margin-top: 8px;
+}
+
+.aviso-exclusao-atividade {
+  color: #9b2626 !important;
+  font-weight: 700;
+}
+
+.acoes-confirmacao-exclusao {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.botao-cancelar-exclusao,
+.botao-confirmar-exclusao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 48px;
+  padding: 0 12px;
+
+  border-radius: 14px;
+
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.botao-cancelar-exclusao {
+  border: 1px solid var(--cor-borda);
+  background: #ffffff;
+  color: var(--cor-texto);
+}
+
+.botao-confirmar-exclusao {
+  border: none;
+  background: #9b2626;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.botao-confirmar-exclusao:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
