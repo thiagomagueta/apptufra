@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Nova atividade - TUFRA</title>
+
+  <link
+    rel="stylesheet"
+    href="layout.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="nova-atividade.css"
+  >
+</head>
+
+<body>
+
+  <main class="pagina-nova-atividade">
+
+    <!-- CABEÇALHO -->
+
+    <header class="cabecalho-nova-atividade">
+
+      <div class="marca-tufra">
+
+        <img
+          src="logo-tufra.png"
+          alt="TUFRA"
+          class="logo-tufra"
+        >
+
+        <div>
+          <strong>TUFRA</strong>
+
+          <span>
+            Tenda de Umbanda Francisco de Assis
+          </span>
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <!-- TÍTULO -->
+
+    <section class="titulo-pagina">
+
+      <h1>
+        Nova atividade
+      </h1>
+
+      <p>
+        Cadastre uma atividade no calendário da TUFRA.
+      </p>
+
+    </section>
+
+
+    <!-- FORMULÁRIO -->
+
+    <section class="cartao-nova-atividade">
+
+      <form id="formNovaAtividade">
+
+        <!-- TÍTULO -->
+
+        <div class="campo-formulario">
+
+          <label for="tituloAtividade">
+            Título da atividade
+          </label>
+
+          <input
+            type="text"
+            id="tituloAtividade"
+            maxlength="100"
+            autocomplete="off"
+            required
+          >
+
+        </div>
+
+
+        <!-- DATA -->
+
+        <div class="campo-formulario">
+
+          <label for="dataAtividade">
+            Data
+          </label>
+
+          <input
+            type="date"
+            id="dataAtividade"
+            required
+          >
+
+        </div>
+
+
+        <!-- HORÁRIOS -->
+
+        <div class="linha-horarios">
+
+          <div class="campo-formulario">
+
+            <label for="horaInicioAtividade">
+              Hora de início
+            </label>
+
+            <input
+              type="time"
+              id="horaInicioAtividade"
+              required
+            >
+
+          </div>
+
+
+          <div class="campo-formulario">
+
+            <label for="horaFimAtividade">
+              Hora de fim
+            </label>
+
+            <input
+              type="time"
+              id="horaFimAtividade"
+            >
+
+            <small>
+              Opcional
+            </small>
+
+          </div>
+
+        </div>
+
+
+        <!-- TIPO -->
+
+        <div class="campo-formulario">
+
+          <label for="tipoAtividade">
+            Tipo da atividade
+          </label>
+
+          <select
+            id="tipoAtividade"
+            required
+          >
+
+            <option value="">
+              Selecione
+            </option>
+
+            <option value="gira_principal">
+              Gira Principal
+            </option>
+
+            <option value="gira_desenvolvimento">
+              Gira de Desenvolvimento
+            </option>
+
+            <option value="aula">
+              Aula
+            </option>
+
+            <option value="trabalho_cura">
+              Trabalho de Cura
+            </option>
+
+            <option value="eventos">
+              Eventos
+            </option>
+
+            <option value="obrigacoes">
+              Obrigações
+            </option>
+
+            <option value="outros">
+              Outros
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- OUTRO TIPO -->
+
+        <div
+          id="areaTipoOutro"
+          class="campo-formulario"
+          hidden
+        >
+
+          <label for="tipoOutroAtividade">
+            Qual tipo de atividade?
+          </label>
+
+          <input
+            type="text"
+            id="tipoOutroAtividade"
+            maxlength="100"
+            autocomplete="off"
+          >
+
+        </div>
+
+
+        <!-- OBSERVAÇÃO -->
+
+        <div class="campo-formulario">
+
+          <label for="observacaoAtividade">
+            Observação
+          </label>
+
+          <textarea
+            id="observacaoAtividade"
+            rows="4"
+            maxlength="500"
+          ></textarea>
+
+          <small>
+            Opcional
+          </small>
+
+        </div>
+
+
+        <!-- MENSAGEM -->
+
+        <p
+          id="mensagemNovaAtividade"
+          class="mensagem-formulario"
+          hidden
+        ></p>
+
+
+        <!-- BOTÃO -->
+
+        <button
+          type="submit"
+          id="botaoCadastrarAtividade"
+          class="botao-cadastrar-atividade"
+        >
+          Cadastrar atividade
+        </button>
+
+      </form>
+
+    </section>
+
+
+    <!-- VOLTAR -->
+
+    <a
+      href="administrativo.html"
+      class="voltar-administrativo"
+    >
+      Voltar ao Administrativo
+    </a>
+
+  </main>
+
+
+  <!-- SCRIPTS -->
+
+  <script src="supabase-config.js"></script>
+
+  <script src="nova-atividade.js"></script>
+
+</body>
+
+</html>
