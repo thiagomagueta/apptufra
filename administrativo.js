@@ -13,10 +13,17 @@ const opcaoCalendarioAdmin =
   document.getElementById(
     "opcaoCalendarioAdmin"
   );
-const opcaoImportarGoogle =
+
+const opcaoImportarExcel =
   document.getElementById(
-    "opcaoImportarGoogle"
+    "opcaoImportarExcel"
   );
+
+const opcaoExportarExcel =
+  document.getElementById(
+    "opcaoExportarExcel"
+  );
+
 const semOpcoesAdministrativas =
   document.getElementById(
     "semOpcoesAdministrativas"
@@ -48,10 +55,6 @@ async function carregarOpcoesAdministrativas() {
 
   try {
 
-    /* --------------------------------------
-       SESSÃO
-    -------------------------------------- */
-
     const resultadoSessao =
       await window.supabaseClient.auth
         .getSession();
@@ -64,17 +67,12 @@ async function carregarOpcoesAdministrativas() {
       resultadoSessao.data.session;
 
     if (!sessao) {
-
       window.location.href =
         "index.html";
 
       return;
     }
 
-
-    /* --------------------------------------
-       USUÁRIO
-    -------------------------------------- */
 
     const resultadoUsuario =
       await window.supabaseClient
@@ -91,17 +89,12 @@ async function carregarOpcoesAdministrativas() {
     }
 
     if (!resultadoUsuario.data) {
-
       semOpcoesAdministrativas.hidden =
         false;
 
       return;
     }
 
-
-    /* --------------------------------------
-       FUNÇÕES DO USUÁRIO
-    -------------------------------------- */
 
     const resultadoFuncoes =
       await window.supabaseClient
@@ -160,13 +153,28 @@ async function carregarOpcoesAdministrativas() {
 
     opcaoCalendarioAdmin.hidden =
       !podeGerenciarCalendario;
-const podeImportarGoogle =
-  nomesFuncoes.includes(
-    "Tesoureiro"
-  );
 
-opcaoImportarGoogle.hidden =
-  !podeImportarGoogle;
+
+    /* ======================================
+       EXCEL
+       SOMENTE TESOURARIA
+    ====================================== */
+
+    const podeGerenciarExcel =
+      nomesFuncoes.includes(
+        "Tesoureiro"
+      );
+
+    if (opcaoImportarExcel) {
+      opcaoImportarExcel.hidden =
+        !podeGerenciarExcel;
+    }
+
+    if (opcaoExportarExcel) {
+      opcaoExportarExcel.hidden =
+        !podeGerenciarExcel;
+    }
+
 
     /* ======================================
        SEM OPÇÕES
