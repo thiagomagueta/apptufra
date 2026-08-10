@@ -1,5 +1,9 @@
 "use strict";
 
+/* ==========================================
+   ELEMENTOS DA TELA
+========================================== */
+
 const tituloPermissaoUsuario =
   document.getElementById(
     "tituloPermissaoUsuario"
@@ -45,6 +49,11 @@ const areaAprovacaoCadastro =
     "areaAprovacaoCadastro"
   );
 
+const botaoAprovarCadastro =
+  document.getElementById(
+    "botaoAprovarCadastro"
+  );
+
 const areaSalvarFuncoes =
   document.getElementById(
     "areaSalvarFuncoes"
@@ -60,6 +69,10 @@ const mensagemSalvarFuncoes =
     "mensagemSalvarFuncoes"
   );
 
+
+/* ==========================================
+   PARÂMETROS DA PÁGINA
+========================================== */
 
 function obterParametros() {
   const parametros =
@@ -77,6 +90,10 @@ function obterParametros() {
 }
 
 
+/* ==========================================
+   FORMATAÇÃO
+========================================== */
+
 function formatarNome(nomeCompleto) {
   return String(nomeCompleto || "")
     .trim()
@@ -88,6 +105,10 @@ function formatarNome(nomeCompleto) {
     );
 }
 
+
+/* ==========================================
+   FOTO
+========================================== */
 
 async function carregarFoto(
   fotoPath
@@ -129,6 +150,10 @@ async function carregarFoto(
   }
 }
 
+
+/* ==========================================
+   CHECKBOX DAS FUNÇÕES
+========================================== */
 
 function criarCheckboxFuncao(
   funcao,
@@ -176,6 +201,10 @@ function criarCheckboxFuncao(
 }
 
 
+/* ==========================================
+   MONTA A ÁRVORE DE FUNÇÕES
+========================================== */
+
 function montarListaFuncoes(
   funcoes,
   funcoesUsuario
@@ -196,6 +225,7 @@ function montarListaFuncoes(
 
   principais.forEach(
     (funcaoPrincipal) => {
+
       const bloco =
         document.createElement("div");
 
@@ -223,22 +253,29 @@ function montarListaFuncoes(
 
       filhas.forEach(
         (funcaoFilha) => {
+
           bloco.appendChild(
             criarCheckboxFuncao(
               funcaoFilha,
               funcoesUsuario
             )
           );
+
         }
       );
 
       listaFuncoesPermissao.appendChild(
         bloco
       );
+
     }
   );
 }
 
+
+/* ==========================================
+   CARREGA AS FUNÇÕES
+========================================== */
 
 async function carregarFuncoes(
   usuarioId
@@ -281,11 +318,10 @@ async function carregarFuncoes(
     (
       resultadoFuncoesUsuario.data ||
       []
-    )
-      .map(
-        (item) =>
-          item.funcao_id
-      );
+    ).map(
+      (item) =>
+        item.funcao_id
+    );
 
   montarListaFuncoes(
     resultadoFuncoes.data || [],
@@ -293,6 +329,10 @@ async function carregarFuncoes(
   );
 }
 
+
+/* ==========================================
+   FUNÇÕES MARCADAS
+========================================== */
 
 function obterFuncoesMarcadas() {
   return Array.from(
@@ -305,6 +345,159 @@ function obterFuncoesMarcadas() {
   );
 }
 
+
+/* ==========================================
+   DESCOBRE QUEM ESTÁ ADMINISTRANDO
+========================================== */
+
+async function obterUsuarioAdministrador() {
+  const resultadoSessao =
+    await window.supabaseClient.auth
+      .getSession();
+
+  if (resultadoSessao.error) {
+    throw resultadoSessao.error;
+  }
+
+  const sessao =
+    resultadoSessao.data.session;
+
+  if (!sessao) {
+    window.location.href =
+      "index.html";
+
+    throw new Error(
+      "Sessão não encontrada."
+    );
+  }
+
+  const resultadoUsuario =
+    await window.supabaseClient
+      .from("usuarios")
+      .select("id")
+      .eq(
+        "auth_id",
+        sessao.user.id
+      )
+      .maybeSingle();
+
+  if (resultadoUsuario.error) {
+    throw resultadoUsuario.error;
+  }
+
+  if (!resultadoUsuario.data) {
+    throw new Error(
+      "Usuário administrador não encontrado."
+    );
+  }
+
+  return resultadoUsuario.data.id;
+}
+
+
+/* ==========================================
+   SINCRONIZA FUNÇÕES DO USUÁRIO
+========================================== */
+
+async function sincronizarFuncoesUsuario(
+  usuarioId,
+  atribuidoPor
+) {
+  const resultadoAtuais =
+    await window.supabaseClient
+      .from("usuario_funcoes")
+      .select(`
+        id,
+        funcao_id
+      `)
+      .eq(
+        "usuario_id",
+        usuarioId
+      );
+
+  if (resultadoAtuais.error) {
+    throw resultadoAtuais.error;
+  }
+
+  const atuais =
+    resultadoAtuais.data || [];
+
+  const marcadas =
+    obterFuncoesMarcadas();
+
+  const adicionar =
+    marcadas.filter(
+      (funcaoId) =>
+        !atuais.some(
+          (item) =>
+            item.funcao_id ===
+            funcaoId
+        )
+    );
+
+  const remover =
+    atuais.filter(
+      (item) =>
+        !marcadas.includes(
+          item.funcao_id
+        )
+    );
+
+  for (const item of remover) {
+
+    const resultadoRemocao =
+      await window.supabaseClient
+        .from("usuario_funcoes")
+        .delete()
+        .eq(
+          "id",
+          item.id
+        );
+
+    if (
+      resultadoRemocao.error
+    ) {
+      throw resultadoRemocao.error;
+    }
+
+  }
+
+  if (adicionar.length > 0) {
+
+    const novosRegistros =
+      adicionar.map(
+        (funcaoId) => ({
+          usuario_id:
+            usuarioId,
+
+          funcao_id:
+            funcaoId,
+
+          atribuido_por:
+            atribuidoPor
+        })
+      );
+
+    const resultadoInsercao =
+      await window.supabaseClient
+        .from("usuario_funcoes")
+        .insert(
+          novosRegistros
+        );
+
+    if (
+      resultadoInsercao.error
+    ) {
+      throw resultadoInsercao.error;
+    }
+
+  }
+}
+
+
+/* ==========================================
+   SALVAR FUNÇÕES DE USUÁRIO ATIVO
+========================================== */
 
 async function salvarFuncoesUsuario() {
   const {
@@ -329,134 +522,14 @@ async function salvarFuncoesUsuario() {
     "SALVANDO...";
 
   try {
-    const resultadoSessao =
-      await window.supabaseClient.auth
-        .getSession();
-
-    if (resultadoSessao.error) {
-      throw resultadoSessao.error;
-    }
-
-    const sessao =
-      resultadoSessao.data.session;
-
-    if (!sessao) {
-      window.location.href =
-        "index.html";
-
-      return;
-    }
-
-    const resultadoTesoureiro =
-      await window.supabaseClient
-        .from("usuarios")
-        .select("id")
-        .eq(
-          "auth_id",
-          sessao.user.id
-        )
-        .maybeSingle();
-
-    if (
-      resultadoTesoureiro.error
-    ) {
-      throw resultadoTesoureiro.error;
-    }
-
-    if (!resultadoTesoureiro.data) {
-      throw new Error(
-        "Usuário responsável não encontrado."
-      );
-    }
 
     const atribuidoPor =
-      resultadoTesoureiro.data.id;
+      await obterUsuarioAdministrador();
 
-    const resultadoAtuais =
-      await window.supabaseClient
-        .from("usuario_funcoes")
-        .select(`
-          id,
-          funcao_id
-        `)
-        .eq(
-          "usuario_id",
-          usuarioId
-        );
-
-    if (resultadoAtuais.error) {
-      throw resultadoAtuais.error;
-    }
-
-    const atuais =
-      resultadoAtuais.data || [];
-
-    const marcadas =
-      obterFuncoesMarcadas();
-
-    const adicionar =
-      marcadas.filter(
-        (funcaoId) =>
-          !atuais.some(
-            (item) =>
-              item.funcao_id ===
-              funcaoId
-          )
-      );
-
-    const remover =
-      atuais.filter(
-        (item) =>
-          !marcadas.includes(
-            item.funcao_id
-          )
-      );
-
-    for (const item of remover) {
-      const resultadoRemocao =
-        await window.supabaseClient
-          .from("usuario_funcoes")
-          .delete()
-          .eq(
-            "id",
-            item.id
-          );
-
-      if (
-        resultadoRemocao.error
-      ) {
-        throw resultadoRemocao.error;
-      }
-    }
-
-    if (adicionar.length > 0) {
-      const novosRegistros =
-        adicionar.map(
-          (funcaoId) => ({
-            usuario_id:
-              usuarioId,
-
-            funcao_id:
-              funcaoId,
-
-            atribuido_por:
-              atribuidoPor
-          })
-        );
-
-      const resultadoInsercao =
-        await window.supabaseClient
-          .from("usuario_funcoes")
-          .insert(
-            novosRegistros
-          );
-
-      if (
-        resultadoInsercao.error
-      ) {
-        throw resultadoInsercao.error;
-      }
-    }
+    await sincronizarFuncoesUsuario(
+      usuarioId,
+      atribuidoPor
+    );
 
     mensagemSalvarFuncoes.textContent =
       "Funções atualizadas com sucesso.";
@@ -465,11 +538,14 @@ async function salvarFuncoesUsuario() {
       "Salvo";
 
     setTimeout(() => {
+
       window.location.href =
         "permissoes.html";
+
     }, 900);
 
   } catch (erro) {
+
     console.error(
       "Erro ao salvar funções:",
       erro
@@ -483,9 +559,127 @@ async function salvarFuncoesUsuario() {
 
     botaoSalvarFuncoes.textContent =
       "Salvar funções";
+
   }
 }
 
+
+/* ==========================================
+   APROVAR NOVO CADASTRO
+========================================== */
+
+async function aprovarCadastro() {
+  const {
+    usuarioId,
+    tipo
+  } = obterParametros();
+
+  if (
+    !usuarioId ||
+    tipo !== "pendente"
+  ) {
+    return;
+  }
+
+  const funcoesMarcadas =
+    obterFuncoesMarcadas();
+
+  /*
+    Não permitimos aprovar alguém
+    sem nenhuma função.
+  */
+
+  if (funcoesMarcadas.length === 0) {
+
+    alert(
+      "Selecione pelo menos uma função antes de aprovar o cadastro."
+    );
+
+    return;
+  }
+
+  botaoAprovarCadastro.disabled =
+    true;
+
+  botaoAprovarCadastro.textContent =
+    "APROVANDO...";
+
+  try {
+
+    const aprovadoPor =
+      await obterUsuarioAdministrador();
+
+    /*
+      Primeiro gravamos as funções.
+    */
+
+    await sincronizarFuncoesUsuario(
+      usuarioId,
+      aprovadoPor
+    );
+
+    /*
+      Depois aprovamos o cadastro.
+    */
+
+    const resultadoAprovacao =
+      await window.supabaseClient
+        .from("usuarios")
+        .update({
+          status:
+            "ativo",
+
+          data_aprovacao:
+            new Date().toISOString(),
+
+          aprovado_por:
+            aprovadoPor
+        })
+        .eq(
+          "id",
+          usuarioId
+        );
+
+    if (
+      resultadoAprovacao.error
+    ) {
+      throw resultadoAprovacao.error;
+    }
+
+    botaoAprovarCadastro.textContent =
+      "Cadastro aprovado";
+
+    setTimeout(() => {
+
+      window.location.href =
+        "permissoes.html";
+
+    }, 900);
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao aprovar cadastro:",
+      erro
+    );
+
+    alert(
+      "Não foi possível aprovar o cadastro. Tente novamente."
+    );
+
+    botaoAprovarCadastro.disabled =
+      false;
+
+    botaoAprovarCadastro.textContent =
+      "Aprovar cadastro";
+
+  }
+}
+
+
+/* ==========================================
+   CARREGA O USUÁRIO
+========================================== */
 
 async function carregarUsuario() {
   if (!window.supabaseClient) {
@@ -498,6 +692,7 @@ async function carregarUsuario() {
   } = obterParametros();
 
   if (!usuarioId) {
+
     window.location.href =
       "permissoes.html";
 
@@ -505,6 +700,7 @@ async function carregarUsuario() {
   }
 
   try {
+
     const resultadoUsuario =
       await window.supabaseClient
         .from("usuarios")
@@ -521,7 +717,9 @@ async function carregarUsuario() {
         )
         .maybeSingle();
 
-    if (resultadoUsuario.error) {
+    if (
+      resultadoUsuario.error
+    ) {
       throw resultadoUsuario.error;
     }
 
@@ -571,6 +769,7 @@ async function carregarUsuario() {
       tipo !== "ativo";
 
   } catch (erro) {
+
     console.error(
       "Erro ao carregar usuário:",
       erro
@@ -581,13 +780,36 @@ async function carregarUsuario() {
 
     listaFuncoesPermissao.innerHTML =
       "<p>Não foi possível carregar as funções.</p>";
+
   }
 }
 
 
-botaoSalvarFuncoes.addEventListener(
-  "click",
-  salvarFuncoesUsuario
-);
+/* ==========================================
+   EVENTOS
+========================================== */
+
+if (botaoSalvarFuncoes) {
+
+  botaoSalvarFuncoes.addEventListener(
+    "click",
+    salvarFuncoesUsuario
+  );
+
+}
+
+if (botaoAprovarCadastro) {
+
+  botaoAprovarCadastro.addEventListener(
+    "click",
+    aprovarCadastro
+  );
+
+}
+
+
+/* ==========================================
+   INICIALIZAÇÃO
+========================================== */
 
 carregarUsuario();
