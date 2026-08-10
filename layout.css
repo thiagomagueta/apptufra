@@ -496,7 +496,6 @@ textarea {
   justify-content: space-between;
   gap: 14px;
   padding: 12px 0;
-  border-bottom: 1px solid var(--cor-borda);
 }
 
 .linha-resumo-dashboard:last-child {
@@ -653,9 +652,7 @@ textarea {
   justify-content: space-between;
   gap: 12px;
 
-  padding: 12px 4px;
-
-  border-bottom: 1px solid var(--cor-borda);
+  padding: 10px 4px;
 
   color: inherit;
   text-decoration: none;
