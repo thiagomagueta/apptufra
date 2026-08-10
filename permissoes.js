@@ -7,7 +7,14 @@ const listaCadastrosPendentes = document.getElementById(
 const listaUsuariosAtivos = document.getElementById(
   "listaUsuariosAtivos"
 );
-
+function formatarNome(nomeCompleto) {
+  return String(nomeCompleto || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\b\p{L}/gu, (letra) =>
+      letra.toUpperCase()
+    );
+}
 function criarItemUsuario(
   usuario,
   tipo
