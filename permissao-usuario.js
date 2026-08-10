@@ -45,6 +45,7 @@ const areaAprovacaoCadastro =
     "areaAprovacaoCadastro"
   );
 
+
 function obterParametros() {
   const parametros =
     new URLSearchParams(
@@ -60,6 +61,7 @@ function obterParametros() {
   };
 }
 
+
 function formatarNome(nomeCompleto) {
   return String(nomeCompleto || "")
     .trim()
@@ -70,6 +72,7 @@ function formatarNome(nomeCompleto) {
         letra.toUpperCase()
     );
 }
+
 
 async function carregarFoto(
   fotoPath
@@ -110,6 +113,172 @@ async function carregarFoto(
     );
   }
 }
+
+
+function criarCheckboxFuncao(
+  funcao,
+  funcoesUsuario
+) {
+  const linha =
+    document.createElement("label");
+
+  linha.className =
+    funcao.funcao_pai_id
+      ? "linha-funcao linha-subfuncao"
+      : "linha-funcao";
+
+  const checkbox =
+    document.createElement("input");
+
+  checkbox.type = "checkbox";
+
+  checkbox.value =
+    funcao.id;
+
+  checkbox.dataset.funcaoId =
+    funcao.id;
+
+  checkbox.checked =
+    funcoesUsuario.includes(
+      funcao.id
+    );
+
+  const texto =
+    document.createElement("span");
+
+  texto.textContent =
+    funcao.nome;
+
+  linha.appendChild(
+    checkbox
+  );
+
+  linha.appendChild(
+    texto
+  );
+
+  return linha;
+}
+
+
+function montarListaFuncoes(
+  funcoes,
+  funcoesUsuario
+) {
+  listaFuncoesPermissao.innerHTML =
+    "";
+
+  const principais =
+    funcoes
+      .filter(
+        (funcao) =>
+          !funcao.funcao_pai_id
+      )
+      .sort(
+        (a, b) =>
+          a.ordem - b.ordem
+      );
+
+  principais.forEach(
+    (funcaoPrincipal) => {
+
+      const bloco =
+        document.createElement("div");
+
+      bloco.className =
+        "bloco-funcao-permissao";
+
+      bloco.appendChild(
+        criarCheckboxFuncao(
+          funcaoPrincipal,
+          funcoesUsuario
+        )
+      );
+
+      const filhas =
+        funcoes
+          .filter(
+            (funcao) =>
+              funcao.funcao_pai_id ===
+              funcaoPrincipal.id
+          )
+          .sort(
+            (a, b) =>
+              a.ordem - b.ordem
+          );
+
+      filhas.forEach(
+        (funcaoFilha) => {
+          bloco.appendChild(
+            criarCheckboxFuncao(
+              funcaoFilha,
+              funcoesUsuario
+            )
+          );
+        }
+      );
+
+      listaFuncoesPermissao.appendChild(
+        bloco
+      );
+    }
+  );
+}
+
+
+async function carregarFuncoes(
+  usuarioId
+) {
+  const resultadoFuncoes =
+    await window.supabaseClient
+      .from("funcoes")
+      .select(`
+        id,
+        nome,
+        ordem,
+        ativo,
+        funcao_pai_id
+      `)
+      .eq(
+        "ativo",
+        true
+      );
+
+  if (resultadoFuncoes.error) {
+    throw resultadoFuncoes.error;
+  }
+
+  const resultadoFuncoesUsuario =
+    await window.supabaseClient
+      .from("usuario_funcoes")
+      .select("funcao_id")
+      .eq(
+        "usuario_id",
+        usuarioId
+      );
+
+  if (
+    resultadoFuncoesUsuario.error
+  ) {
+    throw resultadoFuncoesUsuario.error;
+  }
+
+  const funcoesUsuario =
+    (
+      resultadoFuncoesUsuario.data ||
+      []
+    )
+      .map(
+        (item) =>
+          item.funcao_id
+      );
+
+  montarListaFuncoes(
+    resultadoFuncoes.data || [],
+    funcoesUsuario
+  );
+}
+
 
 async function carregarUsuario() {
   if (!window.supabaseClient) {
@@ -184,6 +353,10 @@ async function carregarUsuario() {
       usuario.foto_path
     );
 
+    await carregarFuncoes(
+      usuario.id
+    );
+
     areaAprovacaoCadastro.hidden =
       tipo !== "pendente";
 
@@ -195,7 +368,11 @@ async function carregarUsuario() {
 
     subtituloPermissaoUsuario.textContent =
       "Não foi possível carregar os dados deste usuário.";
+
+    listaFuncoesPermissao.innerHTML =
+      "<p>Não foi possível carregar as funções.</p>";
   }
 }
+
 
 carregarUsuario();
