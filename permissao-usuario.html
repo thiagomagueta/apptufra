@@ -208,7 +208,60 @@
     </div>
 
   </nav>
+<div
+  id="modalFotoUsuario"
+  class="modal-foto-usuario"
+  hidden
+>
 
+  <button
+    id="fecharModalFoto"
+    class="fechar-modal-foto"
+    type="button"
+    aria-label="Fechar foto"
+  >
+    ×
+  </button>
+
+  <div class="controles-zoom-foto">
+
+    <button
+      id="diminuirZoomFoto"
+      type="button"
+    >
+      −
+    </button>
+
+    <button
+      id="resetarZoomFoto"
+      type="button"
+    >
+      100%
+    </button>
+
+    <button
+      id="aumentarZoomFoto"
+      type="button"
+    >
+      +
+    </button>
+
+  </div>
+
+  <div
+    id="areaZoomFoto"
+    class="area-zoom-foto"
+  >
+
+    <img
+      id="fotoUsuarioAmpliada"
+      class="foto-usuario-ampliada"
+      alt="Foto ampliada do usuário"
+    >
+
+  </div>
+
+</div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js?v=2"></script>
   <script src="app.js?v=2"></script>
