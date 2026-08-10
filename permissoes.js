@@ -41,9 +41,10 @@ function criarItemUsuario(
   const nome =
     document.createElement("strong");
 
-  nome.textContent =
-    usuario.nome_completo ||
-    "Usuário";
+nome.textContent =
+  formatarNome(
+    usuario.nome_completo
+  ) || "Usuário";
 
   const status =
     document.createElement("span");
