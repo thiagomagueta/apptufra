@@ -20,6 +20,9 @@ async function carregarOpcoesAdministrativas() {
     if (resultadoSessao.error) {
       throw resultadoSessao.error;
     }
+    const opcaoGerenciarAtividades = document.getElementById(
+  "opcaoGerenciarAtividades"
+);
 const opcaoCalendarioAdmin = document.getElementById(
   "opcaoCalendarioAdmin"
 );
