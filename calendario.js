@@ -276,55 +276,55 @@ function criarItemAtividade(
 
   /* TÍTULO */
 
-  const titulo =
-    document.createElement(
-      "strong"
-    );
-
-  titulo.textContent =
-    atividade.titulo;
-
-
-  /* DIA + HORÁRIO */
-
-  const dataHorario =
-    document.createElement(
-      "span"
-    );
-
-  dataHorario.textContent =
-    `${formatarDiaSemana(data)} • ` +
-    `${montarHorario(atividade)}`;
-
-
-  /* TIPO */
-
-  const tipo =
-    document.createElement(
-      "span"
-    );
-
-  tipo.className =
-    "tipo-atividade-calendario";
-
-  tipo.textContent =
-    formatarTipoAtividade(
-      atividade
-    );
-
-
-  conteudo.appendChild(
-    titulo
+const tipo =
+  document.createElement(
+    "strong"
   );
 
-  conteudo.appendChild(
-    dataHorario
+tipo.className =
+  "tipo-atividade-calendario";
+
+tipo.textContent =
+  formatarTipoAtividade(
+    atividade
   );
 
-  conteudo.appendChild(
-    tipo
+
+const titulo =
+  document.createElement(
+    "strong"
   );
 
+titulo.className =
+  "titulo-atividade-calendario";
+
+titulo.textContent =
+  atividade.titulo;
+
+
+/* DIA + HORÁRIO */
+
+const dataHorario =
+  document.createElement(
+    "span"
+  );
+
+dataHorario.textContent =
+  `${formatarDiaSemana(data)} • ` +
+  `${montarHorario(atividade)}`;
+
+
+conteudo.appendChild(
+  tipo
+);
+
+conteudo.appendChild(
+  titulo
+);
+
+conteudo.appendChild(
+  dataHorario
+);
 
   /* OBSERVAÇÃO */
 
