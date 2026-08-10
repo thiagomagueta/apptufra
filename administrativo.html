@@ -1,267 +1,88 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  >
-
-  <meta name="theme-color" content="#651b1d">
-
-  <title>Administrativo | TUFRA</title>
-
-  <link rel="stylesheet" href="layout.css?v=10">
-</head>
-
-<body>
-
-  <main class="app">
-
-    <div class="conteudo-app">
-
-      <header class="cabecalho-app">
-
-        <img
-          class="logo-app"
-          src="logo-tufra.png"
-          alt="Logo da TUFRA"
-        >
-
-        <div class="identidade-app">
-          <strong>TUFRA</strong>
-
-          <span>
-            Tenda de Umbanda Francisco de Assis
-          </span>
-        </div>
-
-      </header>
-
-
-      <section>
-
-        <h1 class="titulo-pagina">
-          Administrativo
-        </h1>
-
-        <p class="subtitulo-pagina">
-          Selecione uma opção administrativa.
-        </p>
-
-      </section>
-
-
-      <!-- =====================================
-           PERMISSÕES
-      ====================================== -->
-
-      <section
-        id="opcaoPermissoes"
-        class="cartao-app opcao-administrativa"
-        hidden
-      >
-
-        <a
-          class="link-opcao-administrativa"
-          href="permissoes.html"
-        >
-
-          <div class="icone-opcao-administrativa">
-            👥
-          </div>
-
-          <div class="dados-opcao-administrativa">
-
-            <strong>
-              Permissões
-            </strong>
-
-            <span>
-              Aceitar novos cadastros e atribuir funções.
-            </span>
-
-          </div>
-
-          <span class="seta-opcao-administrativa">
-            ›
-          </span>
-
-        </a>
-
-      </section>
-
-
-      <!-- =====================================
-           CALENDÁRIO
-      ====================================== -->
-
-      <section
-        id="opcaoCalendarioAdmin"
-        class="cartao-app"
-        hidden
-      >
-
-        <h2>
-          Calendário
-        </h2>
-
-        <div class="lista-acoes-administrativas">
-
-          <a
-            class="item-acao-administrativa"
-            href="nova-atividade.html"
-          >
-
-            <span>
-              Cadastrar nova atividade
-            </span>
-
-            <span class="seta-permissao-lista">
-              ›
-            </span>
-
-          </a>
-
-
-          <a
-            class="item-acao-administrativa"
-            href="editar-atividade.html"
-          >
-
-            <span>
-              Editar atividade cadastrada
-            </span>
-
-            <span class="seta-permissao-lista">
-              ›
-            </span>
-
-          </a>
-
-
-          <a
-            class="item-acao-administrativa"
-            href="excluir-atividade.html"
-          >
-
-            <span>
-              Excluir atividade cadastrada
-            </span>
-
-            <span class="seta-permissao-lista">
-              ›
-            </span>
-
-          </a>
-<a
-  id="opcaoImportarGoogle"
-  class="item-acao-administrativa"
-  href="importar-google.html"
+<section
+  id="opcaoCalendarioAdmin"
+  class="cartao-app"
   hidden
 >
 
-  <span>
-    Importar do Google Calendar
-  </span>
+  <h2>
+    Calendário
+  </h2>
 
-  <span class="seta-permissao-lista">
-    ›
-  </span>
+  <div class="lista-acoes-administrativas">
 
-</a>
-        </div>
+    <a
+      class="item-acao-administrativa"
+      href="nova-atividade.html"
+    >
+      <span>
+        Cadastrar nova atividade
+      </span>
 
-      </section>
-
-
-      <!-- =====================================
-           SEM OPÇÕES
-      ====================================== -->
-
-      <section
-        id="semOpcoesAdministrativas"
-        class="cartao-app"
-        hidden
-      >
-
-        <p>
-          Não existem opções administrativas disponíveis para sua função neste momento.
-        </p>
-
-      </section>
-
-    </div>
-
-  </main>
+      <span class="seta-permissao-lista">
+        ›
+      </span>
+    </a>
 
 
-  <!-- =====================================
-       MENU INFERIOR
-  ====================================== -->
+    <a
+      class="item-acao-administrativa"
+      href="editar-atividade.html"
+    >
+      <span>
+        Editar atividade cadastrada
+      </span>
 
-  <nav
-    class="menu-inferior"
-    aria-label="Navegação principal"
-  >
-
-    <div class="menu-inferior-conteudo">
-
-      <a
-        class="item-menu"
-        href="dashboard.html"
-      >
-        <span class="icone-menu">⌂</span>
-        <span class="texto-menu">Início</span>
-      </a>
-
-      <a
-        class="item-menu"
-        href="calendario.html"
-      >
-        <span class="icone-menu">📅</span>
-        <span class="texto-menu">Calendário</span>
-      </a>
-
-      <a
-        class="item-menu"
-        href="minha-ficha.html"
-      >
-        <span class="icone-menu">👤</span>
-        <span class="texto-menu">Minha ficha</span>
-      </a>
-
-      <a
-        class="item-menu"
-        href="mais.html"
-      >
-        <span class="icone-menu">☰</span>
-        <span class="texto-menu">Mais</span>
-      </a>
-
-      <a
-        class="item-menu"
-        href="#"
-        id="botaoSair"
-      >
-        <span class="icone-menu">🚪</span>
-        <span class="texto-menu">Sair</span>
-      </a>
-
-    </div>
-
-  </nav>
+      <span class="seta-permissao-lista">
+        ›
+      </span>
+    </a>
 
 
-  <!-- =====================================
-       SCRIPTS
-  ====================================== -->
+    <a
+      class="item-acao-administrativa"
+      href="excluir-atividade.html"
+    >
+      <span>
+        Excluir atividade cadastrada
+      </span>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase.js?v=2"></script>
-  <script src="app.js?v=2"></script>
-  <script src="administrativo.js?v=3"></script>
+      <span class="seta-permissao-lista">
+        ›
+      </span>
+    </a>
 
-</body>
-</html>
+
+    <a
+      id="opcaoImportarExcel"
+      class="item-acao-administrativa"
+      href="importar-excel.html"
+      hidden
+    >
+      <span>
+        Importar planilha Excel
+      </span>
+
+      <span class="seta-permissao-lista">
+        ›
+      </span>
+    </a>
+
+
+    <a
+      id="opcaoExportarExcel"
+      class="item-acao-administrativa"
+      href="exportar-excel.html"
+      hidden
+    >
+      <span>
+        Exportar planilha Excel
+      </span>
+
+      <span class="seta-permissao-lista">
+        ›
+      </span>
+    </a>
+
+  </div>
+
+</section>
