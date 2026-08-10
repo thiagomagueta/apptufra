@@ -1,40 +1,77 @@
 "use strict";
 
-const opcaoPermissoes = document.getElementById(
-  "opcaoPermissoes"
-);
+/* ==========================================
+   ELEMENTOS
+========================================== */
 
-const semOpcoesAdministrativas = document.getElementById(
-  "semOpcoesAdministrativas"
-);
+const opcaoPermissoes =
+  document.getElementById(
+    "opcaoPermissoes"
+  );
+
+const opcaoCalendarioAdmin =
+  document.getElementById(
+    "opcaoCalendarioAdmin"
+  );
+
+const semOpcoesAdministrativas =
+  document.getElementById(
+    "semOpcoesAdministrativas"
+  );
+
+
+/* ==========================================
+   FUNÇÕES COM ACESSO AO CALENDÁRIO
+========================================== */
+
+const funcoesCalendario = [
+  "Sacerdote",
+  "Pai/Mãe Pequeno (a)",
+  "Tesoureiro",
+  "Secretária",
+  "Presidente"
+];
+
+
+/* ==========================================
+   CARREGAR OPÇÕES ADMINISTRATIVAS
+========================================== */
 
 async function carregarOpcoesAdministrativas() {
+
   if (!window.supabaseClient) {
     return;
   }
 
   try {
+
+    /* --------------------------------------
+       SESSÃO
+    -------------------------------------- */
+
     const resultadoSessao =
-      await window.supabaseClient.auth.getSession();
+      await window.supabaseClient.auth
+        .getSession();
 
     if (resultadoSessao.error) {
       throw resultadoSessao.error;
     }
-    const opcaoGerenciarAtividades = document.getElementById(
-  "opcaoGerenciarAtividades"
-);
-const opcaoCalendarioAdmin = document.getElementById(
-  "opcaoCalendarioAdmin"
-);
+
     const sessao =
       resultadoSessao.data.session;
 
     if (!sessao) {
+
       window.location.href =
         "index.html";
 
       return;
     }
+
+
+    /* --------------------------------------
+       USUÁRIO
+    -------------------------------------- */
 
     const resultadoUsuario =
       await window.supabaseClient
@@ -51,8 +88,17 @@ const opcaoCalendarioAdmin = document.getElementById(
     }
 
     if (!resultadoUsuario.data) {
+
+      semOpcoesAdministrativas.hidden =
+        false;
+
       return;
     }
+
+
+    /* --------------------------------------
+       FUNÇÕES DO USUÁRIO
+    -------------------------------------- */
 
     const resultadoFuncoes =
       await window.supabaseClient
@@ -71,31 +117,23 @@ const opcaoCalendarioAdmin = document.getElementById(
       throw resultadoFuncoes.error;
     }
 
+
     const nomesFuncoes =
-      (resultadoFuncoes.data || [])
+      (
+        resultadoFuncoes.data ||
+        []
+      )
         .map(
           (item) =>
             item.funcoes?.nome
         )
         .filter(Boolean);
-const funcoesCalendario = [
-  "Sacerdote",
-  "Pai/Mãe Pequeno (a)",
-  "Tesoureiro",
-  "Secretária",
-  "Presidente"
-];
 
-const podeGerenciarCalendario =
-  nomesFuncoes.some(
-    (funcao) =>
-      funcoesCalendario.includes(
-        funcao
-      )
-  );
 
-opcaoCalendarioAdmin.hidden =
-  !podeGerenciarCalendario;
+    /* ======================================
+       PERMISSÕES
+    ====================================== */
+
     const podeGerenciarPermissoes =
       nomesFuncoes.includes(
         "Tesoureiro"
@@ -103,13 +141,37 @@ opcaoCalendarioAdmin.hidden =
 
     opcaoPermissoes.hidden =
       !podeGerenciarPermissoes;
-opcaoGerenciarAtividades.hidden =
-  !podeGerenciarCalendario;
-semOpcoesAdministrativas.hidden =
-  podeGerenciarPermissoes ||
-  podeGerenciarCalendario;
+
+
+    /* ======================================
+       CALENDÁRIO
+    ====================================== */
+
+    const podeGerenciarCalendario =
+      nomesFuncoes.some(
+        (funcao) =>
+          funcoesCalendario.includes(
+            funcao
+          )
+      );
+
+    opcaoCalendarioAdmin.hidden =
+      !podeGerenciarCalendario;
+
+
+    /* ======================================
+       SEM OPÇÕES
+    ====================================== */
+
+    const possuiAlgumaOpcao =
+      podeGerenciarPermissoes ||
+      podeGerenciarCalendario;
+
+    semOpcoesAdministrativas.hidden =
+      possuiAlgumaOpcao;
 
   } catch (erro) {
+
     console.error(
       "Erro ao carregar opções administrativas:",
       erro
@@ -119,5 +181,10 @@ semOpcoesAdministrativas.hidden =
       false;
   }
 }
+
+
+/* ==========================================
+   INICIALIZAÇÃO
+========================================== */
 
 carregarOpcoesAdministrativas();
