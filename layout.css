@@ -643,3 +643,55 @@ textarea {
   place-items: center;
   font-size: 24px;
 }
+/* ==========================================
+   LISTA COMPACTA DE PERMISSÕES
+========================================== */
+
+.item-permissao-lista {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 12px 4px;
+
+  border-bottom: 1px solid var(--cor-borda);
+
+  color: inherit;
+  text-decoration: none;
+}
+
+.item-permissao-lista:last-child {
+  border-bottom: none;
+}
+
+.dados-permissao-lista {
+  min-width: 0;
+}
+
+.dados-permissao-lista strong {
+  display: block;
+
+  color: var(--cor-texto);
+
+  font-size: 14px;
+}
+
+.dados-permissao-lista span {
+  display: block;
+
+  margin-top: 3px;
+
+  color: var(--cor-texto-suave);
+
+  font-size: 11px;
+}
+
+.seta-permissao-lista {
+  flex-shrink: 0;
+
+  color: var(--cor-principal);
+
+  font-size: 24px;
+  line-height: 1;
+}
