@@ -75,7 +75,24 @@ const opcaoCalendarioAdmin = document.getElementById(
             item.funcoes?.nome
         )
         .filter(Boolean);
+const funcoesCalendario = [
+  "Sacerdote",
+  "Pai/Mãe Pequeno (a)",
+  "Tesoureiro",
+  "Secretária",
+  "Presidente"
+];
 
+const podeGerenciarCalendario =
+  nomesFuncoes.some(
+    (funcao) =>
+      funcoesCalendario.includes(
+        funcao
+      )
+  );
+
+opcaoCalendarioAdmin.hidden =
+  !podeGerenciarCalendario;
     const podeGerenciarPermissoes =
       nomesFuncoes.includes(
         "Tesoureiro"
@@ -84,8 +101,9 @@ const opcaoCalendarioAdmin = document.getElementById(
     opcaoPermissoes.hidden =
       !podeGerenciarPermissoes;
 
-    semOpcoesAdministrativas.hidden =
-      podeGerenciarPermissoes;
+semOpcoesAdministrativas.hidden =
+  podeGerenciarPermissoes ||
+  podeGerenciarCalendario;
 
   } catch (erro) {
     console.error(
