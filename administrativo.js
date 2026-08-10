@@ -103,7 +103,8 @@ opcaoCalendarioAdmin.hidden =
 
     opcaoPermissoes.hidden =
       !podeGerenciarPermissoes;
-
+opcaoGerenciarAtividades.hidden =
+  !podeGerenciarCalendario;
 semOpcoesAdministrativas.hidden =
   podeGerenciarPermissoes ||
   podeGerenciarCalendario;
