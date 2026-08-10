@@ -44,7 +44,20 @@ const areaAprovacaoCadastro =
   document.getElementById(
     "areaAprovacaoCadastro"
   );
+const areaSalvarFuncoes =
+  document.getElementById(
+    "areaSalvarFuncoes"
+  );
 
+const botaoSalvarFuncoes =
+  document.getElementById(
+    "botaoSalvarFuncoes"
+  );
+
+const mensagemSalvarFuncoes =
+  document.getElementById(
+    "mensagemSalvarFuncoes"
+  );
 
 function obterParametros() {
   const parametros =
