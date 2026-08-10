@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#651b1d">
+
+  <title>Permissão do usuário | TUFRA</title>
+
+  <link rel="stylesheet" href="layout.css?v=9">
+</head>
+
+<body>
+
+  <main class="app">
+
+    <div class="conteudo-app">
+
+      <header class="cabecalho-app">
+
+        <img
+          class="logo-app"
+          src="logo-tufra.png"
+          alt="Logo da TUFRA"
+        >
+
+        <div class="identidade-app">
+          <strong>TUFRA</strong>
+          <span>
+            Tenda de Umbanda Francisco de Assis
+          </span>
+        </div>
+
+      </header>
+
+      <section>
+
+        <h1
+          id="tituloPermissaoUsuario"
+          class="titulo-pagina"
+        >
+          Usuário
+        </h1>
+
+        <p
+          id="subtituloPermissaoUsuario"
+          class="subtitulo-pagina"
+        >
+          Carregando dados...
+        </p>
+
+      </section>
+
+      <section class="cartao-app">
+
+        <div class="cabecalho-usuario-permissao">
+
+          <img
+            id="fotoUsuarioPermissao"
+            class="foto-usuario-permissao"
+            alt="Foto do usuário"
+            hidden
+          >
+
+          <div
+            id="fotoUsuarioPermissaoPadrao"
+            class="foto-usuario-permissao-padrao"
+          >
+            👤
+          </div>
+
+          <div class="dados-usuario-permissao">
+
+            <strong id="nomeUsuarioPermissao">
+              Carregando...
+            </strong>
+
+            <span id="emailUsuarioPermissao"></span>
+
+            <span id="statusUsuarioPermissao"></span>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <section class="cartao-app">
+
+        <h2>Funções</h2>
+
+        <div
+          id="listaFuncoesPermissao"
+          class="lista-funcoes-permissao"
+        >
+          <p>Carregando funções...</p>
+        </div>
+
+      </section>
+
+      <section
+        id="areaAprovacaoCadastro"
+        class="cartao-app"
+        hidden
+      >
+
+        <h2>Aprovação do cadastro</h2>
+
+        <p>
+          Após definir as funções, o cadastro poderá ser aprovado.
+        </p>
+
+        <button
+          id="botaoAprovarCadastro"
+          class="botao-solicitar"
+          type="button"
+        >
+          Aprovar cadastro
+        </button>
+
+      </section>
+
+      <a
+        class="link-administrativo"
+        href="permissoes.html"
+      >
+        Voltar para Permissões
+      </a>
+
+    </div>
+
+  </main>
+
+  <nav
+    class="menu-inferior"
+    aria-label="Navegação principal"
+  >
+
+    <div class="menu-inferior-conteudo">
+
+      <a
+        class="item-menu"
+        href="dashboard.html"
+      >
+        <span class="icone-menu">⌂</span>
+        <span class="texto-menu">Início</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="calendario.html"
+      >
+        <span class="icone-menu">📅</span>
+        <span class="texto-menu">Calendário</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="minha-ficha.html"
+      >
+        <span class="icone-menu">👤</span>
+        <span class="texto-menu">Minha ficha</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="mais.html"
+      >
+        <span class="icone-menu">☰</span>
+        <span class="texto-menu">Mais</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="#"
+        id="botaoSair"
+      >
+        <span class="icone-menu">🚪</span>
+        <span class="texto-menu">Sair</span>
+      </a>
+
+    </div>
+
+  </nav>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js?v=2"></script>
+  <script src="app.js?v=2"></script>
+  <script src="permissao-usuario.js?v=1"></script>
+
+</body>
+</html>
