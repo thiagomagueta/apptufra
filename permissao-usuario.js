@@ -44,6 +44,7 @@ const areaAprovacaoCadastro =
   document.getElementById(
     "areaAprovacaoCadastro"
   );
+
 const areaSalvarFuncoes =
   document.getElementById(
     "areaSalvarFuncoes"
@@ -58,6 +59,7 @@ const mensagemSalvarFuncoes =
   document.getElementById(
     "mensagemSalvarFuncoes"
   );
+
 
 function obterParametros() {
   const parametros =
@@ -194,7 +196,6 @@ function montarListaFuncoes(
 
   principais.forEach(
     (funcaoPrincipal) => {
-
       const bloco =
         document.createElement("div");
 
@@ -293,6 +294,199 @@ async function carregarFuncoes(
 }
 
 
+function obterFuncoesMarcadas() {
+  return Array.from(
+    listaFuncoesPermissao.querySelectorAll(
+      'input[type="checkbox"]:checked'
+    )
+  ).map(
+    (checkbox) =>
+      checkbox.dataset.funcaoId
+  );
+}
+
+
+async function salvarFuncoesUsuario() {
+  const {
+    usuarioId,
+    tipo
+  } = obterParametros();
+
+  if (
+    !usuarioId ||
+    tipo !== "ativo"
+  ) {
+    return;
+  }
+
+  mensagemSalvarFuncoes.textContent =
+    "";
+
+  botaoSalvarFuncoes.disabled =
+    true;
+
+  botaoSalvarFuncoes.textContent =
+    "SALVANDO...";
+
+  try {
+    const resultadoSessao =
+      await window.supabaseClient.auth
+        .getSession();
+
+    if (resultadoSessao.error) {
+      throw resultadoSessao.error;
+    }
+
+    const sessao =
+      resultadoSessao.data.session;
+
+    if (!sessao) {
+      window.location.href =
+        "index.html";
+
+      return;
+    }
+
+    const resultadoTesoureiro =
+      await window.supabaseClient
+        .from("usuarios")
+        .select("id")
+        .eq(
+          "auth_id",
+          sessao.user.id
+        )
+        .maybeSingle();
+
+    if (
+      resultadoTesoureiro.error
+    ) {
+      throw resultadoTesoureiro.error;
+    }
+
+    if (!resultadoTesoureiro.data) {
+      throw new Error(
+        "Usuário responsável não encontrado."
+      );
+    }
+
+    const atribuidoPor =
+      resultadoTesoureiro.data.id;
+
+    const resultadoAtuais =
+      await window.supabaseClient
+        .from("usuario_funcoes")
+        .select(`
+          id,
+          funcao_id
+        `)
+        .eq(
+          "usuario_id",
+          usuarioId
+        );
+
+    if (resultadoAtuais.error) {
+      throw resultadoAtuais.error;
+    }
+
+    const atuais =
+      resultadoAtuais.data || [];
+
+    const marcadas =
+      obterFuncoesMarcadas();
+
+    const adicionar =
+      marcadas.filter(
+        (funcaoId) =>
+          !atuais.some(
+            (item) =>
+              item.funcao_id ===
+              funcaoId
+          )
+      );
+
+    const remover =
+      atuais.filter(
+        (item) =>
+          !marcadas.includes(
+            item.funcao_id
+          )
+      );
+
+    for (const item of remover) {
+      const resultadoRemocao =
+        await window.supabaseClient
+          .from("usuario_funcoes")
+          .delete()
+          .eq(
+            "id",
+            item.id
+          );
+
+      if (
+        resultadoRemocao.error
+      ) {
+        throw resultadoRemocao.error;
+      }
+    }
+
+    if (adicionar.length > 0) {
+      const novosRegistros =
+        adicionar.map(
+          (funcaoId) => ({
+            usuario_id:
+              usuarioId,
+
+            funcao_id:
+              funcaoId,
+
+            atribuido_por:
+              atribuidoPor
+          })
+        );
+
+      const resultadoInsercao =
+        await window.supabaseClient
+          .from("usuario_funcoes")
+          .insert(
+            novosRegistros
+          );
+
+      if (
+        resultadoInsercao.error
+      ) {
+        throw resultadoInsercao.error;
+      }
+    }
+
+    mensagemSalvarFuncoes.textContent =
+      "Funções atualizadas com sucesso.";
+
+    botaoSalvarFuncoes.textContent =
+      "Salvo";
+
+    setTimeout(() => {
+      window.location.href =
+        "permissoes.html";
+    }, 900);
+
+  } catch (erro) {
+    console.error(
+      "Erro ao salvar funções:",
+      erro
+    );
+
+    mensagemSalvarFuncoes.textContent =
+      "Não foi possível salvar as funções.";
+
+    botaoSalvarFuncoes.disabled =
+      false;
+
+    botaoSalvarFuncoes.textContent =
+      "Salvar funções";
+  }
+}
+
+
 async function carregarUsuario() {
   if (!window.supabaseClient) {
     return;
@@ -373,6 +567,9 @@ async function carregarUsuario() {
     areaAprovacaoCadastro.hidden =
       tipo !== "pendente";
 
+    areaSalvarFuncoes.hidden =
+      tipo !== "ativo";
+
   } catch (erro) {
     console.error(
       "Erro ao carregar usuário:",
@@ -387,5 +584,10 @@ async function carregarUsuario() {
   }
 }
 
+
+botaoSalvarFuncoes.addEventListener(
+  "click",
+  salvarFuncoesUsuario
+);
 
 carregarUsuario();
