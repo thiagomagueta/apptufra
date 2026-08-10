@@ -41,13 +41,17 @@ function criarItemUsuario(
   const status =
     document.createElement("span");
 
-  status.textContent =
-    tipo === "pendente"
-      ? "Aguardando aprovação"
-      : "Usuário ativo";
+dados.appendChild(nome);
 
-  dados.appendChild(nome);
+if (tipo === "pendente") {
+  const status =
+    document.createElement("span");
+
+  status.textContent =
+    "Aguardando aprovação";
+
   dados.appendChild(status);
+}
 
   const seta =
     document.createElement("span");
