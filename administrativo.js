@@ -160,7 +160,13 @@ async function carregarOpcoesAdministrativas() {
 
     opcaoCalendarioAdmin.hidden =
       !podeGerenciarCalendario;
+const podeImportarGoogle =
+  nomesFuncoes.includes(
+    "Tesoureiro"
+  );
 
+opcaoImportarGoogle.hidden =
+  !podeImportarGoogle;
 
     /* ======================================
        SEM OPÇÕES
