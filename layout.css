@@ -692,3 +692,60 @@ textarea {
   font-size: 24px;
   line-height: 1;
 }
+/* ==========================================
+   PERMISSÃO DO USUÁRIO
+========================================== */
+
+.cabecalho-usuario-permissao {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.foto-usuario-permissao,
+.foto-usuario-permissao-padrao {
+  width: 82px;
+  height: 82px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(101, 27, 29, 0.20);
+  background: #ffffff;
+}
+
+.foto-usuario-permissao {
+  object-fit: cover;
+}
+
+.foto-usuario-permissao[hidden],
+.foto-usuario-permissao-padrao[hidden] {
+  display: none;
+}
+
+.foto-usuario-permissao-padrao {
+  display: grid;
+  place-items: center;
+  font-size: 34px;
+}
+
+.dados-usuario-permissao {
+  min-width: 0;
+}
+
+.dados-usuario-permissao strong {
+  display: block;
+  color: var(--cor-principal);
+  font-size: 17px;
+}
+
+.dados-usuario-permissao span {
+  display: block;
+  margin-top: 4px;
+  color: var(--cor-texto-suave);
+  font-size: 13px;
+}
+
+.lista-funcoes-permissao {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
