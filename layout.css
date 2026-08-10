@@ -749,3 +749,41 @@ textarea {
   flex-direction: column;
   gap: 8px;
 }
+.bloco-funcao-permissao {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.linha-funcao {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 7px 0;
+
+  cursor: pointer;
+}
+
+.linha-funcao input {
+  width: 18px;
+  height: 18px;
+
+  accent-color: var(--cor-principal);
+}
+
+.linha-funcao span {
+  color: var(--cor-texto);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.linha-subfuncao {
+  margin-left: 28px;
+}
+
+.linha-subfuncao span {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--cor-texto-suave);
+}
