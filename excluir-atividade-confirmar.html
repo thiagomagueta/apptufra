@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#651b1d">
+
+  <title>Confirmar exclusão | TUFRA</title>
+
+  <link rel="stylesheet" href="layout.css?v=13">
+</head>
+
+<body>
+
+  <main class="app">
+
+    <div class="conteudo-app">
+
+      <header class="cabecalho-app">
+
+        <img
+          class="logo-app"
+          src="logo-tufra.png"
+          alt="Logo da TUFRA"
+        >
+
+        <div class="identidade-app">
+          <strong>TUFRA</strong>
+
+          <span>
+            Tenda de Umbanda Francisco de Assis
+          </span>
+        </div>
+
+      </header>
+
+
+      <section>
+
+        <h1 class="titulo-pagina">
+          Excluir atividade
+        </h1>
+
+        <p class="subtitulo-pagina">
+          Confira os dados antes de excluir.
+        </p>
+
+      </section>
+
+
+      <section class="cartao-app">
+
+        <div
+          id="dadosAtividadeExcluir"
+          class="dados-confirmacao-exclusao"
+        >
+
+          <p>
+            Carregando atividade...
+          </p>
+
+        </div>
+
+      </section>
+
+
+      <section class="cartao-app">
+
+        <p class="aviso-exclusao-atividade">
+          Esta ação removerá a atividade do calendário.
+        </p>
+
+        <div class="acoes-confirmacao-exclusao">
+
+          <a
+            class="botao-cancelar-exclusao"
+            href="excluir-atividade.html"
+          >
+            Cancelar
+          </a>
+
+          <button
+            id="botaoConfirmarExclusao"
+            class="botao-confirmar-exclusao"
+            type="button"
+            disabled
+          >
+            Excluir atividade
+          </button>
+
+        </div>
+
+        <p
+          id="mensagemExcluirAtividade"
+          class="mensagem-formulario"
+          hidden
+        ></p>
+
+      </section>
+
+
+      <a
+        class="link-administrativo"
+        href="administrativo.html"
+      >
+        Voltar ao Administrativo
+      </a>
+
+    </div>
+
+  </main>
+
+
+  <nav
+    class="menu-inferior"
+    aria-label="Navegação principal"
+  >
+
+    <div class="menu-inferior-conteudo">
+
+      <a
+        class="item-menu"
+        href="dashboard.html"
+      >
+        <span class="icone-menu">⌂</span>
+        <span class="texto-menu">Início</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="calendario.html"
+      >
+        <span class="icone-menu">📅</span>
+        <span class="texto-menu">Calendário</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="minha-ficha.html"
+      >
+        <span class="icone-menu">👤</span>
+        <span class="texto-menu">Minha ficha</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="mais.html"
+      >
+        <span class="icone-menu">☰</span>
+        <span class="texto-menu">Mais</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="#"
+        id="botaoSair"
+      >
+        <span class="icone-menu">🚪</span>
+        <span class="texto-menu">Sair</span>
+      </a>
+
+    </div>
+
+  </nav>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js?v=2"></script>
+  <script src="app.js?v=2"></script>
+  <script src="excluir-atividade-confirmar.js?v=1"></script>
+
+</body>
+</html>
