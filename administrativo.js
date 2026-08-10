@@ -20,7 +20,9 @@ async function carregarOpcoesAdministrativas() {
     if (resultadoSessao.error) {
       throw resultadoSessao.error;
     }
-
+const opcaoCalendarioAdmin = document.getElementById(
+  "opcaoCalendarioAdmin"
+);
     const sessao =
       resultadoSessao.data.session;
 
