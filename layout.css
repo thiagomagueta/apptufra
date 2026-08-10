@@ -787,3 +787,102 @@ textarea {
   font-weight: 400;
   color: var(--cor-texto-suave);
 }
+/* ==========================================
+   FOTO AMPLIADA DO USUÁRIO
+========================================== */
+
+.foto-usuario-permissao {
+  cursor: zoom-in;
+}
+
+.modal-foto-usuario {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  flex-direction: column;
+
+  background: rgba(0, 0, 0, 0.94);
+}
+
+.modal-foto-usuario[hidden] {
+  display: none;
+}
+
+.fechar-modal-foto {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+
+  z-index: 3;
+
+  width: 44px;
+  height: 44px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+
+  font-size: 30px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.controles-zoom-foto {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+
+  z-index: 3;
+
+  display: flex;
+  gap: 8px;
+
+  transform: translateX(-50%);
+}
+
+.controles-zoom-foto button {
+  min-width: 48px;
+  height: 42px;
+
+  padding: 0 12px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.92);
+  color: #651b1d;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.area-zoom-foto {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: auto;
+
+  touch-action: none;
+}
+
+.foto-usuario-ampliada {
+  max-width: 92vw;
+  max-height: 86vh;
+
+  object-fit: contain;
+
+  transform-origin: center center;
+
+  transition: transform 0.12s ease;
+}
