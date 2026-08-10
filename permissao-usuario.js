@@ -68,7 +68,43 @@ const mensagemSalvarFuncoes =
   document.getElementById(
     "mensagemSalvarFuncoes"
   );
+const modalFotoUsuario =
+  document.getElementById(
+    "modalFotoUsuario"
+  );
 
+const fecharModalFoto =
+  document.getElementById(
+    "fecharModalFoto"
+  );
+
+const fotoUsuarioAmpliada =
+  document.getElementById(
+    "fotoUsuarioAmpliada"
+  );
+
+const areaZoomFoto =
+  document.getElementById(
+    "areaZoomFoto"
+  );
+
+const aumentarZoomFoto =
+  document.getElementById(
+    "aumentarZoomFoto"
+  );
+
+const diminuirZoomFoto =
+  document.getElementById(
+    "diminuirZoomFoto"
+  );
+
+const resetarZoomFoto =
+  document.getElementById(
+    "resetarZoomFoto"
+  );
+
+let zoomFoto = 1;
+let distanciaToqueInicial = null;
 
 /* ==========================================
    PARÂMETROS DA PÁGINA
@@ -783,7 +819,92 @@ async function carregarUsuario() {
 
   }
 }
+function aplicarZoomFoto() {
+  fotoUsuarioAmpliada.style.transform =
+    `scale(${zoomFoto})`;
 
+  resetarZoomFoto.textContent =
+    `${Math.round(zoomFoto * 100)}%`;
+}
+
+function abrirFotoAmpliada() {
+  if (!fotoUsuarioPermissao.src) {
+    return;
+  }
+
+  fotoUsuarioAmpliada.src =
+    fotoUsuarioPermissao.src;
+
+  zoomFoto = 1;
+
+  aplicarZoomFoto();
+
+  modalFotoUsuario.hidden =
+    false;
+
+  document.body.style.overflow =
+    "hidden";
+}
+
+function fecharFotoAmpliada() {
+  modalFotoUsuario.hidden =
+    true;
+
+  document.body.style.overflow =
+    "";
+
+  zoomFoto = 1;
+}
+
+function aumentarZoom() {
+  zoomFoto =
+    Math.min(
+      zoomFoto + 0.25,
+      4
+    );
+
+  aplicarZoomFoto();
+}
+
+function diminuirZoom() {
+  zoomFoto =
+    Math.max(
+      zoomFoto - 0.25,
+      1
+    );
+
+  aplicarZoomFoto();
+}
+
+function resetarZoom() {
+  zoomFoto = 1;
+  aplicarZoomFoto();
+}
+
+function calcularDistanciaToques(evento) {
+  if (evento.touches.length < 2) {
+    return null;
+  }
+
+  const toque1 =
+    evento.touches[0];
+
+  const toque2 =
+    evento.touches[1];
+
+  const distanciaX =
+    toque2.clientX -
+    toque1.clientX;
+
+  const distanciaY =
+    toque2.clientY -
+    toque1.clientY;
+
+  return Math.hypot(
+    distanciaX,
+    distanciaY
+  );
+}
 
 /* ==========================================
    EVENTOS
@@ -807,7 +928,143 @@ if (botaoAprovarCadastro) {
 
 }
 
+if (fotoUsuarioPermissao) {
+  fotoUsuarioPermissao.addEventListener(
+    "click",
+    abrirFotoAmpliada
+  );
+}
 
+if (fecharModalFoto) {
+  fecharModalFoto.addEventListener(
+    "click",
+    fecharFotoAmpliada
+  );
+}
+
+if (aumentarZoomFoto) {
+  aumentarZoomFoto.addEventListener(
+    "click",
+    aumentarZoom
+  );
+}
+
+if (diminuirZoomFoto) {
+  diminuirZoomFoto.addEventListener(
+    "click",
+    diminuirZoom
+  );
+}
+
+if (resetarZoomFoto) {
+  resetarZoomFoto.addEventListener(
+    "click",
+    resetarZoom
+  );
+}
+
+if (areaZoomFoto) {
+
+  areaZoomFoto.addEventListener(
+    "wheel",
+    (evento) => {
+
+      evento.preventDefault();
+
+      if (evento.deltaY < 0) {
+        aumentarZoom();
+      } else {
+        diminuirZoom();
+      }
+
+    },
+    {
+      passive: false
+    }
+  );
+
+  areaZoomFoto.addEventListener(
+    "touchstart",
+    (evento) => {
+
+      if (
+        evento.touches.length === 2
+      ) {
+        distanciaToqueInicial =
+          calcularDistanciaToques(
+            evento
+          );
+      }
+
+    },
+    {
+      passive: false
+    }
+  );
+
+  areaZoomFoto.addEventListener(
+    "touchmove",
+    (evento) => {
+
+      if (
+        evento.touches.length !== 2 ||
+        !distanciaToqueInicial
+      ) {
+        return;
+      }
+
+      evento.preventDefault();
+
+      const distanciaAtual =
+        calcularDistanciaToques(
+          evento
+        );
+
+      if (!distanciaAtual) {
+        return;
+      }
+
+      const diferenca =
+        distanciaAtual -
+        distanciaToqueInicial;
+
+      if (Math.abs(diferenca) < 8) {
+        return;
+      }
+
+      if (diferenca > 0) {
+        zoomFoto =
+          Math.min(
+            zoomFoto + 0.05,
+            4
+          );
+      } else {
+        zoomFoto =
+          Math.max(
+            zoomFoto - 0.05,
+            1
+          );
+      }
+
+      distanciaToqueInicial =
+        distanciaAtual;
+
+      aplicarZoomFoto();
+
+    },
+    {
+      passive: false
+    }
+  );
+
+  areaZoomFoto.addEventListener(
+    "touchend",
+    () => {
+      distanciaToqueInicial =
+        null;
+    }
+  );
+}
 /* ==========================================
    INICIALIZAÇÃO
 ========================================== */
