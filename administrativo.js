@@ -13,7 +13,10 @@ const opcaoCalendarioAdmin =
   document.getElementById(
     "opcaoCalendarioAdmin"
   );
-
+const opcaoImportarGoogle =
+  document.getElementById(
+    "opcaoImportarGoogle"
+  );
 const semOpcoesAdministrativas =
   document.getElementById(
     "semOpcoesAdministrativas"
