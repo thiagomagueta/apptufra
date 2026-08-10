@@ -908,3 +908,30 @@ textarea {
   font-weight: 700;
   line-height: 1.3;
 }
+/* ==========================================
+   AÇÕES ADMINISTRATIVAS
+========================================== */
+
+.lista-acoes-administrativas {
+  display: flex;
+  flex-direction: column;
+}
+
+.item-acao-administrativa {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 6px 4px;
+
+  color: var(--cor-texto);
+  font-size: 14px;
+  font-weight: 600;
+
+  text-decoration: none;
+}
+
+.item-acao-administrativa span:first-child {
+  min-width: 0;
+}
