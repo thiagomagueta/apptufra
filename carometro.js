@@ -73,7 +73,7 @@ function ordenarAssociados(
 
 
 /* ==========================================
-   CRIAR FOTO
+   FOTO
 ========================================== */
 
 async function obterUrlFoto(
@@ -132,7 +132,7 @@ async function obterUrlFoto(
 
 
 /* ==========================================
-   CRIAR ITEM DO CARÔMETRO
+   ITEM DO CARÔMETRO
 ========================================== */
 
 async function criarItemCarometro(
@@ -150,7 +150,7 @@ async function criarItemCarometro(
 
 
   link.href =
-    `associado-resumo.html?id=${associado.id}`;
+    `associado-resumo.html?id=${associado.id}&origem=carometro`;
 
 
   /* FOTO */
