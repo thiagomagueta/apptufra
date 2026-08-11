@@ -10,11 +10,6 @@ const tituloAssociadoResumo =
     "tituloAssociadoResumo"
   );
 
-const nomeAssociadoResumo =
-  document.getElementById(
-    "nomeAssociadoResumo"
-  );
-
 const dadosAssociadoResumo =
   document.getElementById(
     "dadosAssociadoResumo"
@@ -82,7 +77,9 @@ const resetarZoomFotoAssociado =
 
 
 let zoomFoto = 1;
-let distanciaToqueInicial = null;
+
+let distanciaToqueInicial =
+  null;
 
 
 /* ==========================================
@@ -132,7 +129,9 @@ function valorOuTraco(
     valor === null ||
     valor === ""
   ) {
+
     return "Não informado";
+
   }
 
   return String(
@@ -211,7 +210,7 @@ function mostrarMensagem(
 
 
 /* ==========================================
-   CARREGAR DADOS
+   CARREGAR ASSOCIADO
 ========================================== */
 
 async function carregarAssociado() {
@@ -226,13 +225,16 @@ async function carregarAssociado() {
       "lista-associados.html";
 
     return;
+
   }
 
 
   if (
     !window.supabaseClient
   ) {
+
     return;
+
   }
 
 
@@ -260,16 +262,20 @@ async function carregarAssociado() {
     if (
       resultadoUsuario.error
     ) {
+
       throw resultadoUsuario.error;
+
     }
 
 
     if (
       !resultadoUsuario.data
     ) {
+
       throw new Error(
         "Associado não encontrado."
       );
+
     }
 
 
@@ -301,7 +307,9 @@ async function carregarAssociado() {
     if (
       resultadoFicha.error
     ) {
+
       throw resultadoFicha.error;
+
     }
 
 
@@ -336,12 +344,8 @@ async function carregarAssociado() {
       nome;
 
 
-    nomeAssociadoResumo.textContent =
-      nome;
-
-
     /* --------------------------------------
-       RESUMO
+       DADOS DO RESUMO
     -------------------------------------- */
 
     dadosAssociadoResumo.innerHTML =
@@ -408,7 +412,9 @@ async function carregarAssociado() {
       if (
         resultadoFoto.error
       ) {
+
         throw resultadoFoto.error;
+
       }
 
 
@@ -416,7 +422,9 @@ async function carregarAssociado() {
         resultadoFoto.data?.signedUrl;
 
 
-      if (urlFoto) {
+      if (
+        urlFoto
+      ) {
 
         fotoAssociadoResumo.src =
           urlFoto;
@@ -426,7 +434,9 @@ async function carregarAssociado() {
 
         fotoAssociadoResumoPadrao.hidden =
           true;
+
       }
+
     }
 
 
@@ -441,7 +451,9 @@ async function carregarAssociado() {
     mostrarMensagem(
       "Não foi possível carregar os dados do associado."
     );
+
   }
+
 }
 
 
@@ -468,7 +480,9 @@ function abrirFotoAmpliada() {
     !fotoAssociadoResumo.src ||
     fotoAssociadoResumo.hidden
   ) {
+
     return;
+
   }
 
 
@@ -476,7 +490,8 @@ function abrirFotoAmpliada() {
     fotoAssociadoResumo.src;
 
 
-  zoomFoto = 1;
+  zoomFoto =
+    1;
 
 
   aplicarZoomFoto();
@@ -501,7 +516,8 @@ function fecharFotoAmpliada() {
     "";
 
 
-  zoomFoto = 1;
+  zoomFoto =
+    1;
 }
 
 
@@ -533,7 +549,9 @@ function diminuirZoom() {
 
 function resetarZoom() {
 
-  zoomFoto = 1;
+  zoomFoto =
+    1;
+
 
   aplicarZoomFoto();
 }
@@ -546,7 +564,9 @@ function calcularDistanciaToques(
   if (
     evento.touches.length < 2
   ) {
+
     return null;
+
   }
 
 
@@ -576,7 +596,7 @@ function calcularDistanciaToques(
 
 
 /* ==========================================
-   EVENTOS
+   EVENTOS DA FOTO
 ========================================== */
 
 fotoAssociadoResumo.addEventListener(
@@ -619,9 +639,13 @@ areaZoomFotoAssociado.addEventListener(
     if (
       evento.deltaY < 0
     ) {
+
       aumentarZoom();
+
     } else {
+
       diminuirZoom();
+
     }
 
   },
@@ -661,7 +685,9 @@ areaZoomFotoAssociado.addEventListener(
       evento.touches.length !== 2 ||
       !distanciaToqueInicial
     ) {
+
       return;
+
     }
 
 
@@ -674,8 +700,12 @@ areaZoomFotoAssociado.addEventListener(
       );
 
 
-    if (!distanciaAtual) {
+    if (
+      !distanciaAtual
+    ) {
+
       return;
+
     }
 
 
@@ -689,7 +719,9 @@ areaZoomFotoAssociado.addEventListener(
         diferenca
       ) < 8
     ) {
+
       return;
+
     }
 
 
