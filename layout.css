@@ -1244,13 +1244,13 @@ textarea {
 .resumo-associado-cabecalho {
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
 }
 
 .foto-associado-resumo,
 .foto-associado-resumo-padrao {
-  width: 92px;
-  height: 92px;
+  width: 130px;
+  height: 130px;
 
   flex-shrink: 0;
 
@@ -1279,24 +1279,12 @@ textarea {
 
   color: var(--cor-principal);
 
-  font-size: 38px;
-}
-
-.nome-associado-resumo {
-  min-width: 0;
-}
-
-.nome-associado-resumo strong {
-  color: var(--cor-principal);
-
-  font-size: 18px;
-
-  line-height: 1.3;
+  font-size: 48px;
 }
 
 
 /* ==========================================
-   DADOS DO RESUMO
+   DADOS DO RESUMO DO ASSOCIADO
 ========================================== */
 
 .dados-associado-resumo {
