@@ -1321,3 +1321,102 @@ textarea {
 
   line-height: 1.35;
 }
+/* ==========================================
+   CARÔMETRO
+========================================== */
+
+.lista-carometro {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 18px 14px;
+}
+
+.item-carometro {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  color: inherit;
+
+  text-decoration: none;
+}
+
+.area-foto-carometro {
+  width: 100%;
+
+  display: flex;
+
+  justify-content: center;
+}
+
+.foto-carometro {
+  width: 125px;
+  height: 125px;
+
+  border: 2px solid rgba(101, 27, 29, 0.18);
+  border-radius: 18px;
+
+  background: #ffffff;
+
+  object-fit: cover;
+
+  box-shadow:
+    0 6px 14px
+    rgba(66, 16, 18, 0.10);
+}
+
+.foto-carometro-padrao {
+  display: grid;
+
+  place-items: center;
+
+  color: var(--cor-principal);
+
+  font-size: 42px;
+}
+
+.nome-carometro {
+  display: block;
+
+  width: 100%;
+
+  margin-top: 8px;
+
+  color: var(--cor-texto);
+
+  font-size: 12px;
+
+  line-height: 1.3;
+
+  text-align: center;
+}
+
+
+/* ==========================================
+   TELAS MAIORES
+========================================== */
+
+@media (min-width: 460px) {
+
+  .lista-carometro {
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+  }
+
+  .foto-carometro {
+    width: 120px;
+    height: 120px;
+  }
+
+}
