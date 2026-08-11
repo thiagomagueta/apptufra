@@ -1054,3 +1054,78 @@ textarea {
   opacity: 0.6;
   cursor: not-allowed;
 }
+/* ==========================================
+   IMPORTAR EXCEL
+========================================== */
+
+.botao-selecionar-excel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 50px;
+
+  padding: 0 16px;
+
+  border: 1px solid var(--cor-principal);
+  border-radius: 14px;
+
+  background: #ffffff;
+  color: var(--cor-principal);
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.dados-arquivo-excel {
+  margin-top: 16px;
+}
+
+.dados-arquivo-excel strong {
+  display: block;
+  color: var(--cor-texto);
+  font-size: 14px;
+}
+
+.dados-arquivo-excel span {
+  display: block;
+  margin-top: 4px;
+  color: var(--cor-texto-suave);
+  font-size: 12px;
+}
+
+.lista-previa-excel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.item-previa-excel {
+  padding: 10px 0;
+}
+
+.item-previa-excel strong {
+  display: block;
+  color: var(--cor-principal);
+  font-size: 14px;
+}
+
+.item-previa-excel span {
+  display: block;
+  margin-top: 3px;
+  color: var(--cor-texto-suave);
+  font-size: 12px;
+}
+
+.item-previa-excel.erro {
+  padding: 10px;
+  border-radius: 12px;
+  background: #f9e4e4;
+}
+
+.item-previa-excel.erro strong {
+  color: #a12626;
+}
