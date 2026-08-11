@@ -1,6 +1,10 @@
 "use strict";
 
 
+/* ==========================================
+   ELEMENTOS
+========================================== */
+
 const listaAssociados =
   document.getElementById(
     "listaAssociados"
@@ -12,7 +16,12 @@ const mensagemSemAssociados =
   );
 
 
+/* ==========================================
+   FORMATAÇÃO DO NOME
+========================================== */
+
 function formatarNome(nomeCompleto) {
+
   return String(
     nomeCompleto || ""
   )
@@ -33,6 +42,7 @@ function formatarNome(nomeCompleto) {
 function obterFuncaoPrioritaria(
   funcoes
 ) {
+
   const nomes =
     funcoes
       .map(
@@ -41,6 +51,8 @@ function obterFuncaoPrioritaria(
       )
       .filter(Boolean);
 
+
+  /* 1 - SACERDOTE */
 
   if (
     nomes.includes(
@@ -51,6 +63,8 @@ function obterFuncaoPrioritaria(
   }
 
 
+  /* 2 - PAI / MÃE PEQUENO */
+
   if (
     nomes.includes(
       "Pai/Mãe Pequeno (a)"
@@ -60,7 +74,12 @@ function obterFuncaoPrioritaria(
   }
 
 
+  /* 3 - MÉDIUM PRINCIPAL */
+
   if (
+    nomes.includes(
+      "Médium Corrente Principal"
+    ) ||
     nomes.includes(
       "Médium Principal"
     )
@@ -69,9 +88,9 @@ function obterFuncaoPrioritaria(
   }
 
 
-  /*
-    DESENVOLVIMENTO
-  */
+  /* ======================================
+     4 - MÉDIUM EM DESENVOLVIMENTO
+  ====================================== */
 
   if (
     nomes.includes(
@@ -81,19 +100,14 @@ function obterFuncaoPrioritaria(
 
     if (
       nomes.includes(
-        "Corrente"
-      ) ||
-      nomes.includes(
         "Corrente do Desenvolvimento"
       )
     ) {
       return "Desenv. Corrente";
     }
 
+
     if (
-      nomes.includes(
-        "Banco"
-      ) ||
       nomes.includes(
         "Banco do Desenvolvimento"
       )
@@ -101,9 +115,12 @@ function obterFuncaoPrioritaria(
       return "Desenv. Banco";
     }
 
+
     return "Desenvolvimento";
   }
 
+
+  /* 5 - CAMBONE */
 
   if (
     nomes.includes(
@@ -114,6 +131,8 @@ function obterFuncaoPrioritaria(
   }
 
 
+  /* 6 - OGAM */
+
   if (
     nomes.includes(
       "Ogam"
@@ -123,6 +142,8 @@ function obterFuncaoPrioritaria(
   }
 
 
+  /* 7 - CANTINA */
+
   if (
     nomes.includes(
       "Cantina"
@@ -131,6 +152,8 @@ function obterFuncaoPrioritaria(
     return "Cantina";
   }
 
+
+  /* 8 - ASSISTÊNCIA */
 
   if (
     nomes.includes(
@@ -146,31 +169,38 @@ function obterFuncaoPrioritaria(
 
 
 /* ==========================================
-   CRIAR LINHA
+   CRIAR LINHA DO ASSOCIADO
 ========================================== */
 
 function criarItemAssociado(
   associado
 ) {
+
   const link =
     document.createElement(
       "a"
     );
 
+
   link.className =
     "item-lista-associado";
+
 
   link.href =
     `associado-resumo.html?id=${associado.id}`;
 
+
+  /* FUNÇÃO */
 
   const funcao =
     document.createElement(
       "span"
     );
 
+
   funcao.className =
     "funcao-lista-associado";
+
 
   funcao.textContent =
     obterFuncaoPrioritaria(
@@ -179,13 +209,17 @@ function criarItemAssociado(
     );
 
 
+  /* NOME */
+
   const nome =
     document.createElement(
       "strong"
     );
 
+
   nome.className =
     "nome-lista-associado";
+
 
   nome.textContent =
     formatarNome(
@@ -193,13 +227,17 @@ function criarItemAssociado(
     );
 
 
+  /* SETA */
+
   const seta =
     document.createElement(
       "span"
     );
 
+
   seta.className =
     "seta-permissao-lista";
+
 
   seta.textContent =
     "›";
@@ -209,9 +247,11 @@ function criarItemAssociado(
     funcao
   );
 
+
   link.appendChild(
     nome
   );
+
 
   link.appendChild(
     seta
@@ -223,10 +263,46 @@ function criarItemAssociado(
 
 
 /* ==========================================
+   ORDENAR PELO NOME
+========================================== */
+
+function ordenarAssociados(
+  associados
+) {
+
+  return associados.sort(
+    (a, b) => {
+
+      const nomeA =
+        String(
+          a.nome_completo || ""
+        );
+
+      const nomeB =
+        String(
+          b.nome_completo || ""
+        );
+
+
+      return nomeA.localeCompare(
+        nomeB,
+        "pt-BR",
+        {
+          sensitivity: "base"
+        }
+      );
+
+    }
+  );
+}
+
+
+/* ==========================================
    CARREGAR ASSOCIADOS
 ========================================== */
 
 async function carregarAssociados() {
+
   if (
     !window.supabaseClient
   ) {
@@ -244,8 +320,10 @@ async function carregarAssociados() {
           nome_completo,
           status,
           ficha_concluida,
-          usuario_funcoes (
+
+          usuario_funcoes!usuario_funcoes_usuario_id_fkey (
             funcao_id,
+
             funcoes (
               id,
               nome
@@ -255,12 +333,6 @@ async function carregarAssociados() {
         .eq(
           "status",
           "ativo"
-        )
-        .order(
-          "nome_completo",
-          {
-            ascending: true
-          }
         );
 
 
@@ -272,7 +344,9 @@ async function carregarAssociados() {
 
 
     const associados =
-      resultado.data || [];
+      ordenarAssociados(
+        resultado.data || []
+      );
 
 
     listaAssociados.innerHTML =
@@ -309,5 +383,9 @@ async function carregarAssociados() {
   }
 }
 
+
+/* ==========================================
+   INICIALIZAÇÃO
+========================================== */
 
 carregarAssociados();
