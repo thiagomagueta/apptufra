@@ -52,8 +52,6 @@ function obterFuncaoPrioritaria(
       .filter(Boolean);
 
 
-  /* 1 - SACERDOTE */
-
   if (
     nomes.includes(
       "Sacerdote"
@@ -63,8 +61,6 @@ function obterFuncaoPrioritaria(
   }
 
 
-  /* 2 - PAI / MÃE PEQUENO */
-
   if (
     nomes.includes(
       "Pai/Mãe Pequeno (a)"
@@ -73,8 +69,6 @@ function obterFuncaoPrioritaria(
     return "Pai/Mãe Pequeno(a)";
   }
 
-
-  /* 3 - MÉDIUM PRINCIPAL */
 
   if (
     nomes.includes(
@@ -87,10 +81,6 @@ function obterFuncaoPrioritaria(
     return "Médium Principal";
   }
 
-
-  /* ======================================
-     4 - MÉDIUM EM DESENVOLVIMENTO
-  ====================================== */
 
   if (
     nomes.includes(
@@ -120,8 +110,6 @@ function obterFuncaoPrioritaria(
   }
 
 
-  /* 5 - CAMBONE */
-
   if (
     nomes.includes(
       "Cambone"
@@ -130,8 +118,6 @@ function obterFuncaoPrioritaria(
     return "Cambone";
   }
 
-
-  /* 6 - OGAM */
 
   if (
     nomes.includes(
@@ -142,8 +128,6 @@ function obterFuncaoPrioritaria(
   }
 
 
-  /* 7 - CANTINA */
-
   if (
     nomes.includes(
       "Cantina"
@@ -152,8 +136,6 @@ function obterFuncaoPrioritaria(
     return "Cantina";
   }
 
-
-  /* 8 - ASSISTÊNCIA */
 
   if (
     nomes.includes(
@@ -169,7 +151,7 @@ function obterFuncaoPrioritaria(
 
 
 /* ==========================================
-   CRIAR LINHA DO ASSOCIADO
+   ITEM DO ASSOCIADO
 ========================================== */
 
 function criarItemAssociado(
@@ -187,10 +169,8 @@ function criarItemAssociado(
 
 
   link.href =
-    `associado-resumo.html?id=${associado.id}`;
+    `associado-resumo.html?id=${associado.id}&origem=lista`;
 
-
-  /* FUNÇÃO */
 
   const funcao =
     document.createElement(
@@ -209,8 +189,6 @@ function criarItemAssociado(
     );
 
 
-  /* NOME */
-
   const nome =
     document.createElement(
       "strong"
@@ -226,8 +204,6 @@ function criarItemAssociado(
       associado.nome_completo
     );
 
-
-  /* SETA */
 
   const seta =
     document.createElement(
