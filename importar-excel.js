@@ -90,7 +90,7 @@ const tiposAtividade = {
 
 
 /* ==========================================
-   MENSAGEM
+   MENSAGENS
 ========================================== */
 
 function mostrarMensagem(
@@ -114,7 +114,7 @@ function esconderMensagem() {
 
 
 /* ==========================================
-   NORMALIZAÇÃO DE TEXTO
+   NORMALIZAÇÃO
 ========================================== */
 
 function normalizarTexto(
@@ -128,6 +128,21 @@ function normalizarTexto(
 }
 
 
+function normalizarCabecalho(
+  texto
+) {
+  return normalizarTexto(
+    texto
+  )
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(
+      /[\u0300-\u036f]/g,
+      ""
+    );
+}
+
+
 /* ==========================================
    DATA
 ========================================== */
@@ -135,12 +150,6 @@ function normalizarTexto(
 function formatarNumeroData(
   numero
 ) {
-  /*
-    Excel guarda datas como números seriais.
-    O SheetJS converte esse número para
-    ano, mês e dia.
-  */
-
   const partes =
     XLSX.SSF.parse_date_code(
       numero
@@ -176,9 +185,6 @@ function formatarDataExcel(
     return null;
   }
 
-
-  /* DATA NUMÉRICA DO EXCEL */
-
   if (
     typeof valor === "number"
   ) {
@@ -187,14 +193,10 @@ function formatarDataExcel(
     );
   }
 
-
   const texto =
     normalizarTexto(
       valor
     );
-
-
-  /* DD/MM/AAAA */
 
   const padraoBrasil =
     texto.match(
@@ -202,7 +204,6 @@ function formatarDataExcel(
     );
 
   if (padraoBrasil) {
-
     const dia =
       padraoBrasil[1]
         .padStart(2, "0");
@@ -217,9 +218,6 @@ function formatarDataExcel(
     return `${ano}-${mes}-${dia}`;
   }
 
-
-  /* AAAA-MM-DD */
-
   const padraoISO =
     texto.match(
       /^(\d{4})-(\d{2})-(\d{2})$/
@@ -228,7 +226,6 @@ function formatarDataExcel(
   if (padraoISO) {
     return texto;
   }
-
 
   return null;
 }
@@ -241,11 +238,6 @@ function formatarDataExcel(
 function converterNumeroHorario(
   valor
 ) {
-  /*
-    Horários do Excel podem ser armazenados
-    como fração de um dia.
-  */
-
   const totalMinutos =
     Math.round(
       valor * 24 * 60
@@ -280,7 +272,6 @@ function formatarHorarioExcel(
     return "";
   }
 
-
   if (
     typeof valor === "number"
   ) {
@@ -289,12 +280,10 @@ function formatarHorarioExcel(
     );
   }
 
-
   const texto =
     normalizarTexto(
       valor
     );
-
 
   const padrao =
     texto.match(
@@ -304,7 +293,6 @@ function formatarHorarioExcel(
   if (!padrao) {
     return null;
   }
-
 
   const hora =
     Number(
@@ -316,7 +304,6 @@ function formatarHorarioExcel(
       padrao[2]
     );
 
-
   if (
     hora < 0 ||
     hora > 23 ||
@@ -325,7 +312,6 @@ function formatarHorarioExcel(
   ) {
     return null;
   }
-
 
   return (
     String(hora)
@@ -338,23 +324,8 @@ function formatarHorarioExcel(
 
 
 /* ==========================================
-   IDENTIFICAÇÃO DAS COLUNAS
+   LOCALIZA COLUNAS
 ========================================== */
-
-function normalizarCabecalho(
-  texto
-) {
-  return normalizarTexto(
-    texto
-  )
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(
-      /[\u0300-\u036f]/g,
-      ""
-    );
-}
-
 
 function obterValorColuna(
   linha,
@@ -368,7 +339,6 @@ function obterValorColuna(
   for (
     const chave of chaves
   ) {
-
     const chaveNormalizada =
       normalizarCabecalho(
         chave
@@ -393,7 +363,7 @@ function obterValorColuna(
 
 
 /* ==========================================
-   VALIDAÇÃO DA LINHA
+   VALIDAÇÃO
 ========================================== */
 
 function validarLinha(
@@ -401,7 +371,6 @@ function validarLinha(
   numeroLinha
 ) {
   const erros = [];
-
 
   const titulo =
     normalizarTexto(
@@ -414,15 +383,11 @@ function validarLinha(
       )
     );
 
-
   const dataOriginal =
     obterValorColuna(
       linha,
-      [
-        "Data"
-      ]
+      ["Data"]
     );
-
 
   const horaInicioOriginal =
     obterValorColuna(
@@ -433,15 +398,11 @@ function validarLinha(
       ]
     );
 
-
   const horaFimOriginal =
     obterValorColuna(
       linha,
-      [
-        "Hora Fim"
-      ]
+      ["Hora Fim"]
     );
-
 
   const tipoOriginal =
     normalizarTexto(
@@ -454,7 +415,6 @@ function validarLinha(
       )
     );
 
-
   const tipoOutro =
     normalizarTexto(
       obterValorColuna(
@@ -465,7 +425,6 @@ function validarLinha(
         ]
       )
     );
-
 
   const observacao =
     normalizarTexto(
@@ -479,16 +438,12 @@ function validarLinha(
     );
 
 
-  /* TÍTULO */
-
   if (!titulo) {
     erros.push(
       "Título não informado"
     );
   }
 
-
-  /* DATA */
 
   const data =
     formatarDataExcel(
@@ -502,8 +457,6 @@ function validarLinha(
   }
 
 
-  /* HORA INÍCIO */
-
   const horaInicio =
     formatarHorarioExcel(
       horaInicioOriginal
@@ -515,8 +468,6 @@ function validarLinha(
     );
   }
 
-
-  /* HORA FIM */
 
   const horaFim =
     formatarHorarioExcel(
@@ -544,13 +495,10 @@ function validarLinha(
   }
 
 
-  /* TIPO */
-
   const tipoNormalizado =
     tipoOriginal
       .toLowerCase()
       .replace(/\s+/g, " ");
-
 
   const tipoAtividade =
     tiposAtividade[
@@ -636,12 +584,9 @@ function criarItemPrevia(
 
 
   if (resultado.valido) {
-
     titulo.textContent =
       resultado.atividade.titulo;
-
   } else {
-
     titulo.textContent =
       `Linha ${resultado.numeroLinha}`;
   }
@@ -653,7 +598,6 @@ function criarItemPrevia(
 
 
   if (resultado.valido) {
-
     const dados =
       document.createElement(
         "span"
@@ -685,7 +629,6 @@ function criarItemPrevia(
 
     resultado.erros.forEach(
       (erro) => {
-
         const mensagemErro =
           document.createElement(
             "span"
@@ -697,7 +640,6 @@ function criarItemPrevia(
         item.appendChild(
           mensagemErro
         );
-
       }
     );
   }
@@ -713,19 +655,15 @@ function mostrarPrevia(
   listaPreviaExcel.innerHTML =
     "";
 
-
   resultados.forEach(
     (resultado) => {
-
       listaPreviaExcel.appendChild(
         criarItemPrevia(
           resultado
         )
       );
-
     }
   );
-
 
   areaPreviaExcel.hidden =
     false;
@@ -733,7 +671,7 @@ function mostrarPrevia(
 
 
 /* ==========================================
-   PROCESSAR PLANILHA
+   PROCESSAR ARQUIVO
 ========================================== */
 
 async function processarArquivo(
@@ -744,22 +682,21 @@ async function processarArquivo(
   atividadesValidas = [];
   atividadesComErro = [];
 
+  botaoImportarExcel.disabled =
+    true;
+
 
   try {
-
     const dados =
       await arquivo.arrayBuffer();
-
 
     const workbook =
       XLSX.read(
         dados
       );
 
-
     const nomePrimeiraAba =
       workbook.SheetNames[0];
-
 
     if (!nomePrimeiraAba) {
       throw new Error(
@@ -774,12 +711,6 @@ async function processarArquivo(
       ];
 
 
-    /*
-      O SheetJS transforma cada linha em
-      um objeto usando a primeira linha
-      como cabeçalho.
-    */
-
     const linhas =
       XLSX.utils.sheet_to_json(
         planilha,
@@ -793,7 +724,6 @@ async function processarArquivo(
     if (
       linhas.length === 0
     ) {
-
       mostrarMensagem(
         "A planilha está vazia."
       );
@@ -858,16 +788,12 @@ async function processarArquivo(
       atividadesComErro.length >
       0
     ) {
-
       mostrarMensagem(
-        "Existem linhas com erro. Somente as atividades válidas poderão ser importadas."
+        "Existem linhas com erro. Somente as atividades válidas serão importadas."
       );
-
     }
 
-
   } catch (erro) {
-
     console.error(
       "Erro ao ler planilha:",
       erro
@@ -890,7 +816,344 @@ async function processarArquivo(
 
 
 /* ==========================================
-   EVENTO DO ARQUIVO
+   USUÁRIO TES OUREIRO LOGADO
+========================================== */
+
+async function obterUsuarioLogado() {
+  const resultadoSessao =
+    await window.supabaseClient.auth
+      .getSession();
+
+  if (resultadoSessao.error) {
+    throw resultadoSessao.error;
+  }
+
+
+  const sessao =
+    resultadoSessao.data.session;
+
+
+  if (!sessao) {
+    window.location.href =
+      "index.html";
+
+    throw new Error(
+      "Sessão não encontrada."
+    );
+  }
+
+
+  const resultadoUsuario =
+    await window.supabaseClient
+      .from("usuarios")
+      .select("id")
+      .eq(
+        "auth_id",
+        sessao.user.id
+      )
+      .maybeSingle();
+
+
+  if (resultadoUsuario.error) {
+    throw resultadoUsuario.error;
+  }
+
+
+  if (!resultadoUsuario.data) {
+    throw new Error(
+      "Usuário não encontrado."
+    );
+  }
+
+
+  return resultadoUsuario.data.id;
+}
+
+
+/* ==========================================
+   DUPLICIDADE
+========================================== */
+
+function atividadeJaExiste(
+  atividade,
+  atividadesExistentes
+) {
+  return atividadesExistentes.some(
+    (existente) => {
+
+      const horaExistente =
+        existente.hora_inicio
+          ? existente.hora_inicio
+              .slice(0, 5)
+          : "";
+
+      return (
+        existente.data ===
+          atividade.data &&
+
+        horaExistente ===
+          atividade.hora_inicio &&
+
+        normalizarTexto(
+          existente.titulo
+        ).toLowerCase() ===
+          normalizarTexto(
+            atividade.titulo
+          ).toLowerCase()
+      );
+    }
+  );
+}
+
+
+/* ==========================================
+   IMPORTAÇÃO REAL
+========================================== */
+
+async function importarAtividades() {
+  if (
+    atividadesValidas.length ===
+    0
+  ) {
+    return;
+  }
+
+
+  botaoImportarExcel.disabled =
+    true;
+
+  botaoImportarExcel.textContent =
+    "IMPORTANDO...";
+
+  esconderMensagem();
+
+
+  try {
+
+    const criadoPor =
+      await obterUsuarioLogado();
+
+
+    /*
+      Carregamos as atividades atuais
+      para evitar importar novamente
+      a mesma combinação de:
+      data + horário + título.
+    */
+
+    const resultadoExistentes =
+      await window.supabaseClient
+        .from("atividades")
+        .select(`
+          titulo,
+          data,
+          hora_inicio
+        `);
+
+
+    if (
+      resultadoExistentes.error
+    ) {
+      throw resultadoExistentes.error;
+    }
+
+
+    const existentes =
+      resultadoExistentes.data ||
+      [];
+
+
+    const novas = [];
+
+    let duplicadas = 0;
+
+
+    atividadesValidas.forEach(
+      (resultado) => {
+
+        const atividade =
+          resultado.atividade;
+
+
+        if (
+          atividadeJaExiste(
+            atividade,
+            existentes
+          )
+        ) {
+
+          duplicadas += 1;
+
+          return;
+        }
+
+
+        /*
+          Também evita duplicidade dentro
+          da própria planilha.
+        */
+
+        if (
+          atividadeJaExiste(
+            atividade,
+            novas
+          )
+        ) {
+
+          duplicadas += 1;
+
+          return;
+        }
+
+
+        novas.push({
+          titulo:
+            atividade.titulo,
+
+          data:
+            atividade.data,
+
+          hora_inicio:
+            atividade.hora_inicio,
+
+          hora_fim:
+            atividade.hora_fim,
+
+          tipo_atividade:
+            atividade.tipo_atividade,
+
+          tipo_outro:
+            atividade.tipo_outro,
+
+          observacao:
+            atividade.observacao,
+
+          origem:
+            "excel",
+
+          google_event_id:
+            null,
+
+          criado_por:
+            criadoPor
+        });
+      }
+    );
+
+
+    if (
+      novas.length === 0
+    ) {
+
+      mostrarMensagem(
+        duplicadas > 0
+          ? "Nenhuma atividade nova para importar. Todas já estão cadastradas."
+          : "Nenhuma atividade válida para importar."
+      );
+
+      botaoImportarExcel.disabled =
+        false;
+
+      botaoImportarExcel.textContent =
+        "Importar atividades";
+
+      return;
+    }
+
+
+    const resultadoImportacao =
+      await window.supabaseClient
+        .from("atividades")
+        .insert(
+          novas
+        );
+
+
+    if (
+      resultadoImportacao.error
+    ) {
+      throw resultadoImportacao.error;
+    }
+
+
+    let mensagem =
+      `${novas.length} ` +
+      (
+        novas.length === 1
+          ? "atividade importada"
+          : "atividades importadas"
+      ) +
+      " com sucesso.";
+
+
+    if (duplicadas > 0) {
+      mensagem +=
+        ` ${duplicadas} ` +
+        (
+          duplicadas === 1
+            ? "atividade duplicada foi ignorada."
+            : "atividades duplicadas foram ignoradas."
+        );
+    }
+
+
+    if (
+      atividadesComErro.length >
+      0
+    ) {
+      mensagem +=
+        ` ${atividadesComErro.length} ` +
+        (
+          atividadesComErro.length ===
+          1
+            ? "linha com erro não foi importada."
+            : "linhas com erro não foram importadas."
+        );
+    }
+
+
+    mostrarMensagem(
+      mensagem
+    );
+
+
+    botaoImportarExcel.textContent =
+      "Importação concluída";
+
+
+    setTimeout(
+      () => {
+        window.location.href =
+          "calendario.html";
+      },
+      1800
+    );
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao importar atividades:",
+      erro
+    );
+
+
+    mostrarMensagem(
+      "Não foi possível importar as atividades."
+    );
+
+
+    botaoImportarExcel.disabled =
+      false;
+
+
+    botaoImportarExcel.textContent =
+      "Importar atividades";
+  }
+}
+
+
+/* ==========================================
+   SELEÇÃO DO ARQUIVO
 ========================================== */
 
 arquivoExcel.addEventListener(
@@ -912,17 +1175,14 @@ arquivoExcel.addEventListener(
 
 
     if (
-      !nome.endsWith(
-        ".xlsx"
-      ) &&
-      !nome.endsWith(
-        ".xls"
-      )
+      !nome.endsWith(".xlsx") &&
+      !nome.endsWith(".xls")
     ) {
 
       mostrarMensagem(
         "Selecione um arquivo Excel no formato .xlsx ou .xls."
       );
+
 
       arquivoExcel.value =
         "";
@@ -939,17 +1199,10 @@ arquivoExcel.addEventListener(
 
 
 /* ==========================================
-   IMPORTAÇÃO
-   AINDA NÃO ATIVADA
+   BOTÃO IMPORTAR
 ========================================== */
 
 botaoImportarExcel.addEventListener(
   "click",
-  () => {
-
-    mostrarMensagem(
-      "A planilha foi validada. A importação para o calendário será ativada na próxima etapa."
-    );
-
-  }
+  importarAtividades
 );
