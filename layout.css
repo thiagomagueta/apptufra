@@ -1169,3 +1169,71 @@ textarea {
   font-size: 13px;
   line-height: 1.4;
 }
+/* ==========================================
+   LISTA DE ASSOCIADOS
+========================================== */
+
+.lista-associados {
+  display: flex;
+  flex-direction: column;
+}
+
+.item-lista-associado {
+  display: grid;
+
+  grid-template-columns:
+    125px
+    1fr
+    20px;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 6px 4px;
+
+  color: inherit;
+
+  text-decoration: none;
+}
+
+.funcao-lista-associado {
+  color: var(--cor-principal);
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  line-height: 1.2;
+}
+
+.nome-lista-associado {
+  min-width: 0;
+
+  color: var(--cor-texto);
+
+  font-size: 14px;
+
+  line-height: 1.3;
+}
+
+@media (max-width: 380px) {
+
+  .item-lista-associado {
+    grid-template-columns:
+      105px
+      1fr
+      18px;
+
+    gap: 7px;
+  }
+
+  .funcao-lista-associado {
+    font-size: 10px;
+  }
+
+  .nome-lista-associado {
+    font-size: 13px;
+  }
+
+}
