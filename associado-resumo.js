@@ -35,6 +35,11 @@ const mensagemAssociadoResumo =
     "mensagemAssociadoResumo"
   );
 
+const voltarAssociados =
+  document.getElementById(
+    "voltarAssociados"
+  );
+
 
 /* ==========================================
    FOTO AMPLIADA
@@ -83,19 +88,65 @@ let distanciaToqueInicial =
 
 
 /* ==========================================
-   ID DO ASSOCIADO
+   PARÂMETROS
 ========================================== */
 
-function obterAssociadoId() {
+function obterParametros() {
 
   const parametros =
     new URLSearchParams(
       window.location.search
     );
 
-  return parametros.get(
-    "id"
-  );
+
+  return {
+
+    associadoId:
+      parametros.get(
+        "id"
+      ),
+
+    origem:
+      parametros.get(
+        "origem"
+      ) || "lista"
+
+  };
+}
+
+
+/* ==========================================
+   VOLTAR
+========================================== */
+
+function configurarVoltar() {
+
+  const {
+    origem
+  } =
+    obterParametros();
+
+
+  if (
+    origem === "carometro"
+  ) {
+
+    voltarAssociados.href =
+      "carometro.html";
+
+    voltarAssociados.textContent =
+      "Voltar para o Carômetro";
+
+    return;
+
+  }
+
+
+  voltarAssociados.href =
+    "lista-associados.html";
+
+  voltarAssociados.textContent =
+    "Voltar para Lista de Associados";
 }
 
 
@@ -134,6 +185,7 @@ function valorOuTraco(
 
   }
 
+
   return String(
     valor
   );
@@ -154,6 +206,7 @@ function adicionarItem(
       "div"
     );
 
+
   item.className =
     "item-resumo-associado";
 
@@ -162,6 +215,7 @@ function adicionarItem(
     document.createElement(
       "span"
     );
+
 
   rotulo.textContent =
     titulo;
@@ -172,6 +226,7 @@ function adicionarItem(
       "strong"
     );
 
+
   conteudo.textContent =
     valorOuTraco(
       valor
@@ -181,6 +236,7 @@ function adicionarItem(
   item.appendChild(
     rotulo
   );
+
 
   item.appendChild(
     conteudo
@@ -204,6 +260,7 @@ function mostrarMensagem(
   mensagemAssociadoResumo.textContent =
     texto;
 
+
   mensagemAssociadoResumo.hidden =
     false;
 }
@@ -215,14 +272,21 @@ function mostrarMensagem(
 
 async function carregarAssociado() {
 
-  const associadoId =
-    obterAssociadoId();
+  const {
+    associadoId,
+    origem
+  } =
+    obterParametros();
 
 
-  if (!associadoId) {
+  if (
+    !associadoId
+  ) {
 
     window.location.href =
-      "lista-associados.html";
+      origem === "carometro"
+        ? "carometro.html"
+        : "lista-associados.html";
 
     return;
 
@@ -239,10 +303,6 @@ async function carregarAssociado() {
 
 
   try {
-
-    /* --------------------------------------
-       USUÁRIO
-    -------------------------------------- */
 
     const resultadoUsuario =
       await window.supabaseClient
@@ -282,10 +342,6 @@ async function carregarAssociado() {
     const usuario =
       resultadoUsuario.data;
 
-
-    /* --------------------------------------
-       FICHA
-    -------------------------------------- */
 
     const resultadoFicha =
       await window.supabaseClient
@@ -329,10 +385,6 @@ async function carregarAssociado() {
       ficha.historico_umbanda || {};
 
 
-    /* --------------------------------------
-       NOME
-    -------------------------------------- */
-
     const nome =
       formatarNome(
         usuario.nome_completo ||
@@ -343,10 +395,6 @@ async function carregarAssociado() {
     tituloAssociadoResumo.textContent =
       nome;
 
-
-    /* --------------------------------------
-       DADOS DO RESUMO
-    -------------------------------------- */
 
     dadosAssociadoResumo.innerHTML =
       "";
@@ -382,17 +430,14 @@ async function carregarAssociado() {
     );
 
 
-    /* --------------------------------------
-       CADASTRO COMPLETO
-    -------------------------------------- */
+    /*
+      Também preservamos a origem ao
+      abrir o cadastro completo.
+    */
 
     botaoCadastroCompleto.href =
-      `associado-ficha.html?id=${associadoId}`;
+      `associado-ficha.html?id=${associadoId}&origem=${origem}`;
 
-
-    /* --------------------------------------
-       FOTO
-    -------------------------------------- */
 
     if (
       usuario.foto_path
@@ -429,8 +474,10 @@ async function carregarAssociado() {
         fotoAssociadoResumo.src =
           urlFoto;
 
+
         fotoAssociadoResumo.hidden =
           false;
+
 
         fotoAssociadoResumoPadrao.hidden =
           true;
@@ -458,7 +505,7 @@ async function carregarAssociado() {
 
 
 /* ==========================================
-   ZOOM DA FOTO
+   ZOOM
 ========================================== */
 
 function aplicarZoomFoto() {
@@ -596,7 +643,7 @@ function calcularDistanciaToques(
 
 
 /* ==========================================
-   EVENTOS DA FOTO
+   EVENTOS
 ========================================== */
 
 fotoAssociadoResumo.addEventListener(
@@ -773,5 +820,7 @@ areaZoomFotoAssociado.addEventListener(
 /* ==========================================
    INICIALIZAÇÃO
 ========================================== */
+
+configurarVoltar();
 
 carregarAssociado();
