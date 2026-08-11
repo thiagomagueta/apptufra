@@ -1129,3 +1129,43 @@ textarea {
 .item-previa-excel.erro strong {
   color: #a12626;
 }
+/* ==========================================
+   EXPORTAR EXCEL
+========================================== */
+
+.campo-exportar-excel {
+  margin-bottom: 18px;
+}
+
+.campo-exportar-excel label {
+  display: block;
+  margin-bottom: 7px;
+
+  color: var(--cor-texto);
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.campo-exportar-excel select {
+  width: 100%;
+
+  padding: 13px 14px;
+
+  border: 1px solid var(--cor-borda);
+  border-radius: 14px;
+
+  background: #ffffff;
+  color: var(--cor-texto);
+
+  font-size: 14px;
+}
+
+.resumo-exportacao {
+  margin: 14px 0 4px;
+
+  color: var(--cor-texto-suave);
+
+  font-size: 13px;
+  line-height: 1.4;
+}
