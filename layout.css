@@ -1427,3 +1427,40 @@ textarea {
 .item-acao-administrativa[hidden] {
   display: none !important;
 }
+/* ==========================================
+   RESPONSÁVEIS DAS LISTAS DE PRESENÇA
+========================================== */
+
+.lista-responsaveis-presenca {
+  display: flex;
+  flex-direction: column;
+}
+
+.item-responsavel-presenca {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 7px 2px;
+
+  cursor: pointer;
+}
+
+.checkbox-responsavel-presenca {
+  width: 18px;
+  height: 18px;
+
+  flex-shrink: 0;
+
+  accent-color: var(--cor-principal);
+}
+
+.item-responsavel-presenca span {
+  color: var(--cor-texto);
+
+  font-size: 14px;
+
+  line-height: 1.35;
+}
