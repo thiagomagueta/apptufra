@@ -20,6 +20,21 @@ const opcaoAssociadosAdmin =
     "opcaoAssociadosAdmin"
   );
 
+const opcaoPresencaAdmin =
+  document.getElementById(
+    "opcaoPresencaAdmin"
+  );
+
+const opcaoConfigurarResponsaveis =
+  document.getElementById(
+    "opcaoConfigurarResponsaveis"
+  );
+
+const opcaoPreencherPresenca =
+  document.getElementById(
+    "opcaoPreencherPresenca"
+  );
+
 const opcaoImportarExcel =
   document.getElementById(
     "opcaoImportarExcel"
@@ -116,6 +131,10 @@ async function carregarOpcoesAdministrativas() {
     }
 
 
+    const usuarioId =
+      resultadoUsuario.data.id;
+
+
     /* --------------------------------------
        FUNÇÕES DO USUÁRIO
     -------------------------------------- */
@@ -130,7 +149,7 @@ async function carregarOpcoesAdministrativas() {
         `)
         .eq(
           "usuario_id",
-          resultadoUsuario.data.id
+          usuarioId
         );
 
 
@@ -165,20 +184,24 @@ async function carregarOpcoesAdministrativas() {
 
 
     /* ======================================
-       PERMISSÕES
-       SOMENTE TESOURARIA
+       TESOURARIA
     ====================================== */
 
-    const podeGerenciarPermissoes =
+    const ehTesoureiro =
       nomesFuncoes.includes(
         "Tesoureiro"
       );
 
 
+    /* ======================================
+       PERMISSÕES
+       SOMENTE TESOURARIA
+    ====================================== */
+
     if (opcaoPermissoes) {
 
       opcaoPermissoes.hidden =
-        !podeGerenciarPermissoes;
+        !ehTesoureiro;
 
     }
 
@@ -214,16 +237,10 @@ async function carregarOpcoesAdministrativas() {
        SOMENTE TESOURARIA
     ====================================== */
 
-    const podeGerenciarExcel =
-      nomesFuncoes.includes(
-        "Tesoureiro"
-      );
-
-
     if (opcaoImportarExcel) {
 
       opcaoImportarExcel.hidden =
-        !podeGerenciarExcel;
+        !ehTesoureiro;
 
     }
 
@@ -231,7 +248,85 @@ async function carregarOpcoesAdministrativas() {
     if (opcaoExportarExcel) {
 
       opcaoExportarExcel.hidden =
-        !podeGerenciarExcel;
+        !ehTesoureiro;
+
+    }
+
+
+    /* ======================================
+       PRESENÇA
+    ====================================== */
+
+    let ehResponsavelPresenca =
+      false;
+
+
+    const resultadoResponsavel =
+      await window.supabaseClient
+        .from(
+          "responsaveis_lista_presenca"
+        )
+        .select("id")
+        .eq(
+          "usuario_id",
+          usuarioId
+        )
+        .limit(1);
+
+
+    if (
+      resultadoResponsavel.error
+    ) {
+
+      throw resultadoResponsavel.error;
+
+    }
+
+
+    ehResponsavelPresenca =
+      (
+        resultadoResponsavel.data ||
+        []
+      ).length > 0;
+
+
+    /* CONFIGURAR RESPONSÁVEIS */
+
+    if (
+      opcaoConfigurarResponsaveis
+    ) {
+
+      opcaoConfigurarResponsaveis.hidden =
+        !ehTesoureiro;
+
+    }
+
+
+    /* PREENCHER PRESENÇA */
+
+    if (
+      opcaoPreencherPresenca
+    ) {
+
+      opcaoPreencherPresenca.hidden =
+        !ehResponsavelPresenca;
+
+    }
+
+
+    /* BLOCO PRESENÇA */
+
+    const podeVerPresenca =
+      ehTesoureiro ||
+      ehResponsavelPresenca;
+
+
+    if (
+      opcaoPresencaAdmin
+    ) {
+
+      opcaoPresencaAdmin.hidden =
+        !podeVerPresenca;
 
     }
 
@@ -241,11 +336,14 @@ async function carregarOpcoesAdministrativas() {
     ====================================== */
 
     const possuiAlgumaOpcao =
-      podeGerenciarPermissoes ||
-      pertenceDiretoria;
+      ehTesoureiro ||
+      pertenceDiretoria ||
+      ehResponsavelPresenca;
 
 
-    if (semOpcoesAdministrativas) {
+    if (
+      semOpcoesAdministrativas
+    ) {
 
       semOpcoesAdministrativas.hidden =
         possuiAlgumaOpcao;
@@ -261,7 +359,9 @@ async function carregarOpcoesAdministrativas() {
     );
 
 
-    if (semOpcoesAdministrativas) {
+    if (
+      semOpcoesAdministrativas
+    ) {
 
       semOpcoesAdministrativas.hidden =
         false;
