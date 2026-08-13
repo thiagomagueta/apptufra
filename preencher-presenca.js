@@ -630,6 +630,10 @@ function criarItemChamada(
     "item-chamada-presenca";
 
 
+  /* --------------------------------------
+     NOME
+  -------------------------------------- */
+
   const nome =
     document.createElement(
       "strong"
@@ -645,6 +649,10 @@ function criarItemChamada(
       associado.nome_completo
     );
 
+
+  /* --------------------------------------
+     OPÇÕES
+  -------------------------------------- */
 
   const opcoes =
     document.createElement(
@@ -668,21 +676,32 @@ function criarItemChamada(
         "presente",
 
       texto:
-        "Presente"
+        "P",
+
+      classe:
+        "status-presente"
     },
+
     {
       valor:
         "falta",
 
       texto:
-        "Falta"
+        "F",
+
+      classe:
+        "status-falta"
     },
+
     {
       valor:
         "justificada",
 
       texto:
-        "Justificada"
+        "J",
+
+      classe:
+        "status-justificada"
     }
   ];
 
@@ -697,7 +716,7 @@ function criarItemChamada(
 
 
       label.className =
-        "opcao-status-presenca";
+        `opcao-status-presenca ${status.classe}`;
 
 
       const radio =
@@ -862,7 +881,7 @@ async function salvarLista() {
   ) {
 
     mostrarMensagem(
-      "Defina Presente, Falta ou Justificada para todos os associados antes de salvar."
+      "Defina P, F ou J para todos os associados antes de salvar."
     );
 
     return;
@@ -925,6 +944,18 @@ async function salvarLista() {
 
     botaoSalvarPresenca.textContent =
       "Lista salva";
+
+
+    presencasExistentes =
+      registros.map(
+        (item) => ({
+          usuario_id:
+            item.usuario_id,
+
+          status:
+            item.status
+        })
+      );
 
 
     setTimeout(
