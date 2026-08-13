@@ -1527,3 +1527,93 @@ textarea {
 
   line-height: 1.3;
 }
+/* ==========================================
+   PREENCHIMENTO DA LISTA DE PRESENÇA
+========================================== */
+
+.lista-chamada-presenca {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.item-chamada-presenca {
+  padding: 12px 0;
+
+  border-bottom: 1px solid
+    rgba(101, 27, 29, 0.10);
+}
+
+.item-chamada-presenca:last-child {
+  border-bottom: none;
+}
+
+.nome-chamada-presenca {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: var(--cor-texto);
+
+  font-size: 14px;
+
+  line-height: 1.3;
+}
+
+.opcoes-chamada-presenca {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 7px;
+}
+
+.opcao-status-presenca {
+  position: relative;
+
+  cursor: pointer;
+}
+
+.opcao-status-presenca input {
+  position: absolute;
+
+  opacity: 0;
+
+  pointer-events: none;
+}
+
+.opcao-status-presenca span {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-height: 34px;
+
+  padding: 7px 10px;
+
+  border: 1px solid
+    var(--cor-borda);
+
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  color: var(--cor-texto-suave);
+
+  font-size: 11px;
+
+  font-weight: 700;
+}
+
+.opcao-status-presenca input:checked + span {
+  border-color:
+    var(--cor-principal);
+
+  background:
+    rgba(101, 27, 29, 0.10);
+
+  color:
+    var(--cor-principal);
+}
