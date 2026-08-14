@@ -54,6 +54,9 @@ let atividadeId =
 let tipoListaNome =
   "";
 
+let dataAtividade =
+  null;
+
 let associadosDaLista =
   [];
 
@@ -74,6 +77,7 @@ function obterParametros() {
 
 
   return {
+
     lista:
       parametros.get(
         "lista"
@@ -83,6 +87,7 @@ function obterParametros() {
       parametros.get(
         "atividade"
       )
+
   };
 }
 
@@ -152,6 +157,7 @@ function removerSegundos(
     return "";
   }
 
+
   return horario.slice(
     0,
     5
@@ -197,10 +203,12 @@ function nomesFuncoesDaLista(
     nomeLista ===
     "Corrente Principal"
   ) {
+
     return [
       "Médium Corrente Principal",
       "Médium Principal"
     ];
+
   }
 
 
@@ -208,9 +216,11 @@ function nomesFuncoesDaLista(
     nomeLista ===
     "Desenvolvimento"
   ) {
+
     return [
       "Médium em Desenvolvimento"
     ];
+
   }
 
 
@@ -218,9 +228,11 @@ function nomesFuncoesDaLista(
     nomeLista ===
     "Ogans"
   ) {
+
     return [
       "Ogam"
     ];
+
   }
 
 
@@ -228,9 +240,11 @@ function nomesFuncoesDaLista(
     nomeLista ===
     "Cantina"
   ) {
+
     return [
       "Cantina"
     ];
+
   }
 
 
@@ -238,9 +252,11 @@ function nomesFuncoesDaLista(
     nomeLista ===
     "Cambones"
   ) {
+
     return [
       "Cambone"
     ];
+
   }
 
 
@@ -274,16 +290,20 @@ async function carregarTipoLista() {
   if (
     resultado.error
   ) {
+
     throw resultado.error;
+
   }
 
 
   if (
     !resultado.data
   ) {
+
     throw new Error(
       "Lista não encontrada."
     );
+
   }
 
 
@@ -310,7 +330,9 @@ async function validarResponsavel() {
   if (
     resultadoSessao.error
   ) {
+
     throw resultadoSessao.error;
+
   }
 
 
@@ -323,9 +345,11 @@ async function validarResponsavel() {
     window.location.href =
       "index.html";
 
+
     throw new Error(
       "Sessão não encontrada."
     );
+
   }
 
 
@@ -343,16 +367,20 @@ async function validarResponsavel() {
   if (
     resultadoUsuario.error
   ) {
+
     throw resultadoUsuario.error;
+
   }
 
 
   if (
     !resultadoUsuario.data
   ) {
+
     throw new Error(
       "Usuário não encontrado."
     );
+
   }
 
 
@@ -376,7 +404,9 @@ async function validarResponsavel() {
   if (
     resultadoResponsavel.error
   ) {
+
     throw resultadoResponsavel.error;
+
   }
 
 
@@ -387,10 +417,13 @@ async function validarResponsavel() {
     window.location.href =
       "listas-presenca.html";
 
+
     throw new Error(
       "Usuário não autorizado."
     );
+
   }
+
 }
 
 
@@ -422,21 +455,37 @@ async function carregarAtividade() {
   if (
     resultado.error
   ) {
+
     throw resultado.error;
+
   }
 
 
   if (
     !resultado.data
   ) {
+
     throw new Error(
       "Atividade não encontrada."
     );
+
   }
 
 
   const atividade =
     resultado.data;
+
+
+  /*
+    Guardamos a data da atividade.
+
+    Ela será utilizada para descobrir
+    quem já fazia parte do TUFRA
+    naquela data.
+  */
+
+  dataAtividade =
+    atividade.data;
 
 
   const horario =
@@ -455,6 +504,68 @@ async function carregarAtividade() {
         ? ` • ${horario}`
         : ""
     );
+
+}
+
+
+/* ==========================================
+   VERIFICAR SE JÁ ERA ASSOCIADO
+========================================== */
+
+function associadoParticipavaNaData(
+  usuario
+) {
+
+  /*
+    Enquanto os associados antigos ainda
+    estiverem sem data de entrada, mantemos
+    essas pessoas normalmente nas listas.
+
+    Assim ninguém desaparece enquanto a
+    Diretoria não corrigir as datas antigas.
+  */
+
+  if (
+    !usuario.data_entrada_tufra
+  ) {
+
+    return true;
+
+  }
+
+
+  /*
+    Se não houver data da atividade,
+    mantemos o associado por segurança.
+  */
+
+  if (
+    !dataAtividade
+  ) {
+
+    return true;
+
+  }
+
+
+  /*
+    As duas datas estão no formato
+    YYYY-MM-DD.
+
+    Nesse formato podemos compará-las
+    diretamente sem problemas de fuso
+    horário.
+
+    Entrada anterior à gira = aparece
+    Entrada no mesmo dia = aparece
+    Entrada posterior à gira = não aparece
+  */
+
+  return (
+    usuario.data_entrada_tufra <=
+    dataAtividade
+  );
+
 }
 
 
@@ -479,6 +590,7 @@ async function carregarAssociados() {
       [];
 
     return;
+
   }
 
 
@@ -489,6 +601,7 @@ async function carregarAssociados() {
         id,
         nome_completo,
         status,
+        data_entrada_tufra,
 
         usuario_funcoes!usuario_funcoes_usuario_id_fkey (
           funcoes (
@@ -505,7 +618,9 @@ async function carregarAssociados() {
   if (
     resultado.error
   ) {
+
     throw resultado.error;
+
   }
 
 
@@ -514,6 +629,12 @@ async function carregarAssociados() {
       resultado.data ||
       []
     )
+
+      /*
+        Primeiro verificamos se a pessoa
+        pertence à lista pela função.
+      */
+
       .filter(
         (usuario) => {
 
@@ -535,8 +656,28 @@ async function carregarAssociados() {
                 funcao
               )
           );
+
         }
       )
+
+      /*
+        Depois verificamos se a pessoa
+        já havia entrado no TUFRA
+        na data da atividade.
+      */
+
+      .filter(
+        (usuario) =>
+          associadoParticipavaNaData(
+            usuario
+          )
+      )
+
+      /*
+        Finalmente mantemos a lista
+        em ordem alfabética.
+      */
+
       .sort(
         (a, b) =>
           String(
@@ -547,10 +688,12 @@ async function carregarAssociados() {
             ),
             "pt-BR",
             {
-              sensitivity: "base"
+              sensitivity:
+                "base"
             }
           )
       );
+
 }
 
 
@@ -583,12 +726,16 @@ async function carregarPresencasExistentes() {
   if (
     resultado.error
   ) {
+
     throw resultado.error;
+
   }
 
 
   presencasExistentes =
-    resultado.data || [];
+    resultado.data ||
+    [];
+
 }
 
 
@@ -608,7 +755,9 @@ function obterStatusExistente(
     );
 
 
-  return registro?.status || "";
+  return registro?.status ||
+    "";
+
 }
 
 
@@ -671,6 +820,7 @@ function criarItemChamada(
 
 
   const statuses = [
+
     {
       valor:
         "presente",
@@ -703,6 +853,7 @@ function criarItemChamada(
       classe:
         "status-justificada"
     }
+
   ];
 
 
@@ -799,7 +950,8 @@ function renderizarChamada() {
 
 
   mensagemSemAssociadosPresenca.hidden =
-    associadosDaLista.length > 0;
+    associadosDaLista.length >
+    0;
 
 
   associadosDaLista.forEach(
@@ -818,6 +970,7 @@ function renderizarChamada() {
   botaoSalvarPresenca.disabled =
     associadosDaLista.length ===
     0;
+
 }
 
 
@@ -845,11 +998,13 @@ function obterMarcacoes() {
       ) {
 
         marcacoes.push({
+
           usuario_id:
             associado.id,
 
           status:
             selecionado.value
+
         });
 
       }
@@ -884,7 +1039,9 @@ async function salvarLista() {
       "Defina P, F ou J para todos os associados antes de salvar."
     );
 
+
     return;
+
   }
 
 
@@ -901,6 +1058,7 @@ async function salvarLista() {
     const registros =
       marcacoes.map(
         (item) => ({
+
           tipo_lista_id:
             tipoListaId,
 
@@ -912,6 +1070,7 @@ async function salvarLista() {
 
           status:
             item.status
+
         })
       );
 
@@ -933,7 +1092,9 @@ async function salvarLista() {
     if (
       resultado.error
     ) {
+
       throw resultado.error;
+
     }
 
 
@@ -949,11 +1110,13 @@ async function salvarLista() {
     presencasExistentes =
       registros.map(
         (item) => ({
+
           usuario_id:
             item.usuario_id,
 
           status:
             item.status
+
         })
       );
 
@@ -992,7 +1155,9 @@ async function salvarLista() {
 
     botaoSalvarPresenca.textContent =
       "Salvar lista de presença";
+
   }
+
 }
 
 
@@ -1022,7 +1187,9 @@ async function iniciarPagina() {
     window.location.href =
       "listas-presenca.html";
 
+
     return;
+
   }
 
 
@@ -1035,6 +1202,14 @@ async function iniciarPagina() {
     await validarResponsavel();
 
     await carregarTipoLista();
+
+    /*
+      IMPORTANTE:
+      carregarAtividade precisa acontecer
+      antes de carregarAssociados porque
+      agora usamos a data da atividade
+      para montar a chamada.
+    */
 
     await carregarAtividade();
 
@@ -1055,7 +1230,9 @@ async function iniciarPagina() {
 
     listaChamadaPresenca.innerHTML =
       "<p>Não foi possível carregar a lista de presença.</p>";
+
   }
+
 }
 
 
