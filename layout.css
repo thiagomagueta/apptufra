@@ -1704,3 +1704,42 @@ input:checked + span {
   }
 
 }
+/* ==========================================
+   STATUS DA LISTA DE PRESENÇA
+========================================== */
+
+.status-atividade-presenca {
+  display: inline-block !important;
+
+  width: fit-content;
+
+  margin-top: 5px !important;
+
+  padding: 3px 7px;
+
+  border-radius: 999px;
+
+  font-size: 10px !important;
+
+  font-weight: 700;
+
+  line-height: 1.2 !important;
+}
+
+
+/* PREENCHIDA */
+
+.status-atividade-presenca.preenchida {
+  background: #e2f2e6;
+
+  color: #28703b !important;
+}
+
+
+/* PENDENTE */
+
+.status-atividade-presenca.pendente {
+  background: #f1ece8;
+
+  color: #806f68 !important;
+}
