@@ -31,6 +31,9 @@ let tipoListaId =
 let tipoAtividadeLista =
   null;
 
+let atividadesPreenchidas =
+  new Set();
+
 
 /* ==========================================
    PARÂMETRO
@@ -124,18 +127,28 @@ function removerSegundos(
   horario
 ) {
 
-  if (
-    !horario
-  ) {
-
+  if (!horario) {
     return "";
-
   }
 
 
   return horario.slice(
     0,
     5
+  );
+}
+
+
+/* ==========================================
+   VERIFICAR SE ATIVIDADE FOI PREENCHIDA
+========================================== */
+
+function atividadeFoiPreenchida(
+  atividadeId
+) {
+
+  return atividadesPreenchidas.has(
+    atividadeId
   );
 }
 
@@ -162,6 +175,10 @@ function criarItemAtividade(
     `preencher-presenca.html?lista=${tipoListaId}&atividade=${atividade.id}`;
 
 
+  /* --------------------------------------
+     DATA
+  -------------------------------------- */
+
   const data =
     document.createElement(
       "div"
@@ -177,6 +194,10 @@ function criarItemAtividade(
       atividade.data
     );
 
+
+  /* --------------------------------------
+     DADOS
+  -------------------------------------- */
 
   const dados =
     document.createElement(
@@ -221,6 +242,34 @@ function criarItemAtividade(
     );
 
 
+  /* --------------------------------------
+     STATUS
+  -------------------------------------- */
+
+  const preenchida =
+    atividadeFoiPreenchida(
+      atividade.id
+    );
+
+
+  const status =
+    document.createElement(
+      "span"
+    );
+
+
+  status.className =
+    preenchida
+      ? "status-atividade-presenca preenchida"
+      : "status-atividade-presenca pendente";
+
+
+  status.textContent =
+    preenchida
+      ? "✓ Preenchida"
+      : "Pendente";
+
+
   dados.appendChild(
     titulo
   );
@@ -230,6 +279,15 @@ function criarItemAtividade(
     complemento
   );
 
+
+  dados.appendChild(
+    status
+  );
+
+
+  /* --------------------------------------
+     SETA
+  -------------------------------------- */
 
   const seta =
     document.createElement(
@@ -348,6 +406,7 @@ async function validarResponsavel() {
     window.location.href =
       "index.html";
 
+
     throw new Error(
       "Sessão não encontrada."
     );
@@ -419,12 +478,57 @@ async function validarResponsavel() {
     window.location.href =
       "listas-presenca.html";
 
+
     throw new Error(
       "Usuário não autorizado para esta lista."
     );
 
   }
 
+}
+
+
+/* ==========================================
+   CARREGAR ATIVIDADES JÁ PREENCHIDAS
+========================================== */
+
+async function carregarAtividadesPreenchidas() {
+
+  const resultado =
+    await window.supabaseClient
+      .from(
+        "presencas"
+      )
+      .select(
+        "atividade_id"
+      )
+      .eq(
+        "tipo_lista_id",
+        tipoListaId
+      );
+
+
+  if (
+    resultado.error
+  ) {
+
+    throw resultado.error;
+
+  }
+
+
+  atividadesPreenchidas =
+    new Set(
+      (
+        resultado.data ||
+        []
+      )
+        .map(
+          (item) =>
+            item.atividade_id
+        )
+        .filter(Boolean)
+    );
 }
 
 
@@ -536,6 +640,8 @@ async function iniciarPagina() {
     await validarResponsavel();
 
     await carregarTipoLista();
+
+    await carregarAtividadesPreenchidas();
 
     await carregarAtividades();
 
