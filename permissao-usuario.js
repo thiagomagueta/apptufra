@@ -1,5 +1,6 @@
 "use strict";
 
+
 /* ==========================================
    ELEMENTOS DA TELA
 ========================================== */
@@ -68,6 +69,7 @@ const mensagemSalvarFuncoes =
   document.getElementById(
     "mensagemSalvarFuncoes"
   );
+
 const modalFotoUsuario =
   document.getElementById(
     "modalFotoUsuario"
@@ -103,25 +105,37 @@ const resetarZoomFoto =
     "resetarZoomFoto"
   );
 
+
 let zoomFoto = 1;
-let distanciaToqueInicial = null;
+
+let distanciaToqueInicial =
+  null;
+
 
 /* ==========================================
    PARÂMETROS DA PÁGINA
 ========================================== */
 
 function obterParametros() {
+
   const parametros =
     new URLSearchParams(
       window.location.search
     );
 
+
   return {
+
     usuarioId:
-      parametros.get("id"),
+      parametros.get(
+        "id"
+      ),
 
     tipo:
-      parametros.get("tipo")
+      parametros.get(
+        "tipo"
+      )
+
   };
 }
 
@@ -130,8 +144,13 @@ function obterParametros() {
    FORMATAÇÃO
 ========================================== */
 
-function formatarNome(nomeCompleto) {
-  return String(nomeCompleto || "")
+function formatarNome(
+  nomeCompleto
+) {
+
+  return String(
+    nomeCompleto || ""
+  )
     .trim()
     .toLowerCase()
     .replace(
@@ -143,46 +162,96 @@ function formatarNome(nomeCompleto) {
 
 
 /* ==========================================
+   DATA LOCAL
+========================================== */
+
+function obterDataHojeISO() {
+
+  const agora =
+    new Date();
+
+
+  const ano =
+    agora.getFullYear();
+
+
+  const mes =
+    String(
+      agora.getMonth() + 1
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  const dia =
+    String(
+      agora.getDate()
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  return `${ano}-${mes}-${dia}`;
+}
+
+
+/* ==========================================
    FOTO
 ========================================== */
 
 async function carregarFoto(
   fotoPath
 ) {
+
   if (!fotoPath) {
     return;
   }
 
+
   try {
+
     const resultadoFoto =
       await window.supabaseClient.storage
-        .from("fotos-associados")
+        .from(
+          "fotos-associados"
+        )
         .createSignedUrl(
           fotoPath,
           60 * 60
         );
 
+
     if (
       resultadoFoto.error ||
       !resultadoFoto.data?.signedUrl
     ) {
+
       return;
+
     }
+
 
     fotoUsuarioPermissao.src =
       resultadoFoto.data.signedUrl;
 
+
     fotoUsuarioPermissao.hidden =
       false;
+
 
     fotoUsuarioPermissaoPadrao.hidden =
       true;
 
+
   } catch (erro) {
+
     console.error(
       "Erro ao carregar foto:",
       erro
     );
+
   }
 }
 
@@ -195,43 +264,62 @@ function criarCheckboxFuncao(
   funcao,
   funcoesUsuario
 ) {
+
   const linha =
-    document.createElement("label");
+    document.createElement(
+      "label"
+    );
+
 
   linha.className =
     funcao.funcao_pai_id
       ? "linha-funcao linha-subfuncao"
       : "linha-funcao";
 
-  const checkbox =
-    document.createElement("input");
 
-  checkbox.type = "checkbox";
+  const checkbox =
+    document.createElement(
+      "input"
+    );
+
+
+  checkbox.type =
+    "checkbox";
+
 
   checkbox.value =
     funcao.id;
 
+
   checkbox.dataset.funcaoId =
     funcao.id;
+
 
   checkbox.checked =
     funcoesUsuario.includes(
       funcao.id
     );
 
+
   const texto =
-    document.createElement("span");
+    document.createElement(
+      "span"
+    );
+
 
   texto.textContent =
     funcao.nome;
+
 
   linha.appendChild(
     checkbox
   );
 
+
   linha.appendChild(
     texto
   );
+
 
   return linha;
 }
@@ -245,8 +333,10 @@ function montarListaFuncoes(
   funcoes,
   funcoesUsuario
 ) {
+
   listaFuncoesPermissao.innerHTML =
     "";
+
 
   const principais =
     funcoes
@@ -256,17 +346,23 @@ function montarListaFuncoes(
       )
       .sort(
         (a, b) =>
-          a.ordem - b.ordem
+          a.ordem -
+          b.ordem
       );
+
 
   principais.forEach(
     (funcaoPrincipal) => {
 
       const bloco =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       bloco.className =
         "bloco-funcao-permissao";
+
 
       bloco.appendChild(
         criarCheckboxFuncao(
@@ -274,6 +370,7 @@ function montarListaFuncoes(
           funcoesUsuario
         )
       );
+
 
       const filhas =
         funcoes
@@ -284,8 +381,10 @@ function montarListaFuncoes(
           )
           .sort(
             (a, b) =>
-              a.ordem - b.ordem
+              a.ordem -
+              b.ordem
           );
+
 
       filhas.forEach(
         (funcaoFilha) => {
@@ -299,6 +398,7 @@ function montarListaFuncoes(
 
         }
       );
+
 
       listaFuncoesPermissao.appendChild(
         bloco
@@ -316,9 +416,12 @@ function montarListaFuncoes(
 async function carregarFuncoes(
   usuarioId
 ) {
+
   const resultadoFuncoes =
     await window.supabaseClient
-      .from("funcoes")
+      .from(
+        "funcoes"
+      )
       .select(`
         id,
         nome,
@@ -331,36 +434,53 @@ async function carregarFuncoes(
         true
       );
 
-  if (resultadoFuncoes.error) {
+
+  if (
+    resultadoFuncoes.error
+  ) {
+
     throw resultadoFuncoes.error;
+
   }
+
 
   const resultadoFuncoesUsuario =
     await window.supabaseClient
-      .from("usuario_funcoes")
-      .select("funcao_id")
+      .from(
+        "usuario_funcoes"
+      )
+      .select(
+        "funcao_id"
+      )
       .eq(
         "usuario_id",
         usuarioId
       );
 
+
   if (
     resultadoFuncoesUsuario.error
   ) {
+
     throw resultadoFuncoesUsuario.error;
+
   }
+
 
   const funcoesUsuario =
     (
       resultadoFuncoesUsuario.data ||
       []
-    ).map(
-      (item) =>
-        item.funcao_id
-    );
+    )
+      .map(
+        (item) =>
+          item.funcao_id
+      );
+
 
   montarListaFuncoes(
-    resultadoFuncoes.data || [],
+    resultadoFuncoes.data ||
+      [],
     funcoesUsuario
   );
 }
@@ -371,14 +491,17 @@ async function carregarFuncoes(
 ========================================== */
 
 function obterFuncoesMarcadas() {
+
   return Array.from(
-    listaFuncoesPermissao.querySelectorAll(
-      'input[type="checkbox"]:checked'
-    )
-  ).map(
-    (checkbox) =>
-      checkbox.dataset.funcaoId
-  );
+    listaFuncoesPermissao
+      .querySelectorAll(
+        'input[type="checkbox"]:checked'
+      )
+  )
+    .map(
+      (checkbox) =>
+        checkbox.dataset.funcaoId
+    );
 }
 
 
@@ -387,45 +510,72 @@ function obterFuncoesMarcadas() {
 ========================================== */
 
 async function obterUsuarioAdministrador() {
+
   const resultadoSessao =
     await window.supabaseClient.auth
       .getSession();
 
-  if (resultadoSessao.error) {
+
+  if (
+    resultadoSessao.error
+  ) {
+
     throw resultadoSessao.error;
+
   }
+
 
   const sessao =
     resultadoSessao.data.session;
 
+
   if (!sessao) {
+
     window.location.href =
       "index.html";
+
 
     throw new Error(
       "Sessão não encontrada."
     );
+
   }
+
 
   const resultadoUsuario =
     await window.supabaseClient
-      .from("usuarios")
-      .select("id")
+      .from(
+        "usuarios"
+      )
+      .select(
+        "id"
+      )
       .eq(
         "auth_id",
         sessao.user.id
       )
       .maybeSingle();
 
-  if (resultadoUsuario.error) {
+
+  if (
+    resultadoUsuario.error
+  ) {
+
     throw resultadoUsuario.error;
+
   }
 
-  if (!resultadoUsuario.data) {
+
+  if (
+    !resultadoUsuario.data
+  ) {
+
     throw new Error(
       "Usuário administrador não encontrado."
     );
+
   }
+
 
   return resultadoUsuario.data.id;
 }
@@ -439,9 +589,12 @@ async function sincronizarFuncoesUsuario(
   usuarioId,
   atribuidoPor
 ) {
+
   const resultadoAtuais =
     await window.supabaseClient
-      .from("usuario_funcoes")
+      .from(
+        "usuario_funcoes"
+      )
       .select(`
         id,
         funcao_id
@@ -451,15 +604,24 @@ async function sincronizarFuncoesUsuario(
         usuarioId
       );
 
-  if (resultadoAtuais.error) {
+
+  if (
+    resultadoAtuais.error
+  ) {
+
     throw resultadoAtuais.error;
+
   }
 
+
   const atuais =
-    resultadoAtuais.data || [];
+    resultadoAtuais.data ||
+    [];
+
 
   const marcadas =
     obterFuncoesMarcadas();
+
 
   const adicionar =
     marcadas.filter(
@@ -471,6 +633,7 @@ async function sincronizarFuncoesUsuario(
         )
     );
 
+
   const remover =
     atuais.filter(
       (item) =>
@@ -479,30 +642,43 @@ async function sincronizarFuncoesUsuario(
         )
     );
 
-  for (const item of remover) {
+
+  for (
+    const item of remover
+  ) {
 
     const resultadoRemocao =
       await window.supabaseClient
-        .from("usuario_funcoes")
+        .from(
+          "usuario_funcoes"
+        )
         .delete()
         .eq(
           "id",
           item.id
         );
 
+
     if (
       resultadoRemocao.error
     ) {
+
       throw resultadoRemocao.error;
+
     }
 
   }
 
-  if (adicionar.length > 0) {
+
+  if (
+    adicionar.length >
+    0
+  ) {
 
     const novosRegistros =
       adicionar.map(
         (funcaoId) => ({
+
           usuario_id:
             usuarioId,
 
@@ -511,20 +687,27 @@ async function sincronizarFuncoesUsuario(
 
           atribuido_por:
             atribuidoPor
+
         })
       );
 
+
     const resultadoInsercao =
       await window.supabaseClient
-        .from("usuario_funcoes")
+        .from(
+          "usuario_funcoes"
+        )
         .insert(
           novosRegistros
         );
 
+
     if (
       resultadoInsercao.error
     ) {
+
       throw resultadoInsercao.error;
+
     }
 
   }
@@ -536,49 +719,66 @@ async function sincronizarFuncoesUsuario(
 ========================================== */
 
 async function salvarFuncoesUsuario() {
+
   const {
     usuarioId,
     tipo
-  } = obterParametros();
+  } =
+    obterParametros();
+
 
   if (
     !usuarioId ||
     tipo !== "ativo"
   ) {
+
     return;
+
   }
+
 
   mensagemSalvarFuncoes.textContent =
     "";
 
+
   botaoSalvarFuncoes.disabled =
     true;
 
+
   botaoSalvarFuncoes.textContent =
     "SALVANDO...";
+
 
   try {
 
     const atribuidoPor =
       await obterUsuarioAdministrador();
 
+
     await sincronizarFuncoesUsuario(
       usuarioId,
       atribuidoPor
     );
 
+
     mensagemSalvarFuncoes.textContent =
       "Funções atualizadas com sucesso.";
+
 
     botaoSalvarFuncoes.textContent =
       "Salvo";
 
-    setTimeout(() => {
 
-      window.location.href =
-        "permissoes.html";
+    setTimeout(
+      () => {
 
-    }, 900);
+        window.location.href =
+          "permissoes.html";
+
+      },
+      900
+    );
+
 
   } catch (erro) {
 
@@ -587,11 +787,14 @@ async function salvarFuncoesUsuario() {
       erro
     );
 
+
     mensagemSalvarFuncoes.textContent =
       "Não foi possível salvar as funções.";
 
+
     botaoSalvarFuncoes.disabled =
       false;
+
 
     botaoSalvarFuncoes.textContent =
       "Salvar funções";
@@ -605,45 +808,61 @@ async function salvarFuncoesUsuario() {
 ========================================== */
 
 async function aprovarCadastro() {
+
   const {
     usuarioId,
     tipo
-  } = obterParametros();
+  } =
+    obterParametros();
+
 
   if (
     !usuarioId ||
     tipo !== "pendente"
   ) {
+
     return;
+
   }
+
 
   const funcoesMarcadas =
     obterFuncoesMarcadas();
+
 
   /*
     Não permitimos aprovar alguém
     sem nenhuma função.
   */
 
-  if (funcoesMarcadas.length === 0) {
+  if (
+    funcoesMarcadas.length ===
+    0
+  ) {
 
     alert(
       "Selecione pelo menos uma função antes de aprovar o cadastro."
     );
 
+
     return;
+
   }
+
 
   botaoAprovarCadastro.disabled =
     true;
 
+
   botaoAprovarCadastro.textContent =
     "APROVANDO...";
+
 
   try {
 
     const aprovadoPor =
       await obterUsuarioAdministrador();
+
 
     /*
       Primeiro gravamos as funções.
@@ -654,43 +873,79 @@ async function aprovarCadastro() {
       aprovadoPor
     );
 
+
     /*
       Depois aprovamos o cadastro.
+
+      data_aprovacao:
+      registra data e horário técnico
+      da aprovação.
+
+      data_entrada_tufra:
+      registra a data oficial inicial
+      da entrada no TUFRA.
+
+      Essa data poderá ser corrigida
+      posteriormente pela Diretoria.
     */
+
+    const agora =
+      new Date();
+
+
+    const dataEntradaTufra =
+      obterDataHojeISO();
+
 
     const resultadoAprovacao =
       await window.supabaseClient
-        .from("usuarios")
+        .from(
+          "usuarios"
+        )
         .update({
+
           status:
             "ativo",
 
           data_aprovacao:
-            new Date().toISOString(),
+            agora.toISOString(),
+
+          data_entrada_tufra:
+            dataEntradaTufra,
 
           aprovado_por:
             aprovadoPor
+
         })
         .eq(
           "id",
           usuarioId
         );
 
+
     if (
       resultadoAprovacao.error
     ) {
+
       throw resultadoAprovacao.error;
+
     }
+
 
     botaoAprovarCadastro.textContent =
       "Cadastro aprovado";
 
-    setTimeout(() => {
 
-      window.location.href =
-        "permissoes.html";
+    setTimeout(
+      () => {
 
-    }, 900);
+        window.location.href =
+          "permissoes.html";
+
+      },
+      900
+    );
+
 
   } catch (erro) {
 
@@ -699,12 +954,15 @@ async function aprovarCadastro() {
       erro
     );
 
+
     alert(
       "Não foi possível aprovar o cadastro. Tente novamente."
     );
 
+
     botaoAprovarCadastro.disabled =
       false;
+
 
     botaoAprovarCadastro.textContent =
       "Aprovar cadastro";
@@ -718,28 +976,43 @@ async function aprovarCadastro() {
 ========================================== */
 
 async function carregarUsuario() {
-  if (!window.supabaseClient) {
+
+  if (
+    !window.supabaseClient
+  ) {
+
     return;
+
   }
+
 
   const {
     usuarioId,
     tipo
-  } = obterParametros();
+  } =
+    obterParametros();
 
-  if (!usuarioId) {
+
+  if (
+    !usuarioId
+  ) {
 
     window.location.href =
       "permissoes.html";
 
+
     return;
+
   }
+
 
   try {
 
     const resultadoUsuario =
       await window.supabaseClient
-        .from("usuarios")
+        .from(
+          "usuarios"
+        )
         .select(`
           id,
           nome_completo,
@@ -753,56 +1026,78 @@ async function carregarUsuario() {
         )
         .maybeSingle();
 
+
     if (
       resultadoUsuario.error
     ) {
+
       throw resultadoUsuario.error;
+
     }
+
 
     const usuario =
       resultadoUsuario.data;
 
-    if (!usuario) {
+
+    if (
+      !usuario
+    ) {
+
       throw new Error(
         "Usuário não encontrado."
       );
+
     }
+
 
     const nomeFormatado =
       formatarNome(
         usuario.nome_completo
       );
 
+
     tituloPermissaoUsuario.textContent =
       nomeFormatado;
+
 
     subtituloPermissaoUsuario.textContent =
       tipo === "pendente"
         ? "Cadastro aguardando aprovação"
         : "Gerencie as funções deste usuário.";
 
+
     nomeUsuarioPermissao.textContent =
       nomeFormatado;
 
+
     emailUsuarioPermissao.textContent =
-      usuario.email || "";
+      usuario.email ||
+      "";
+
 
     statusUsuarioPermissao.textContent =
-      usuario.status || "";
+      usuario.status ||
+      "";
+
 
     await carregarFoto(
       usuario.foto_path
     );
 
+
     await carregarFuncoes(
       usuario.id
     );
 
+
     areaAprovacaoCadastro.hidden =
       tipo !== "pendente";
 
+
     areaSalvarFuncoes.hidden =
       tipo !== "ativo";
+
 
   } catch (erro) {
 
@@ -811,94 +1106,148 @@ async function carregarUsuario() {
       erro
     );
 
+
     subtituloPermissaoUsuario.textContent =
       "Não foi possível carregar os dados deste usuário.";
+
 
     listaFuncoesPermissao.innerHTML =
       "<p>Não foi possível carregar as funções.</p>";
 
   }
 }
+
+
+/* ==========================================
+   ZOOM DA FOTO
+========================================== */
+
 function aplicarZoomFoto() {
+
   fotoUsuarioAmpliada.style.transform =
     `scale(${zoomFoto})`;
 
+
   resetarZoomFoto.textContent =
-    `${Math.round(zoomFoto * 100)}%`;
+    `${Math.round(
+      zoomFoto * 100
+    )}%`;
 }
 
+
 function abrirFotoAmpliada() {
-  if (!fotoUsuarioPermissao.src) {
+
+  if (
+    !fotoUsuarioPermissao.src
+  ) {
+
     return;
+
   }
+
 
   fotoUsuarioAmpliada.src =
     fotoUsuarioPermissao.src;
 
-  zoomFoto = 1;
+
+  zoomFoto =
+    1;
+
 
   aplicarZoomFoto();
 
+
   modalFotoUsuario.hidden =
     false;
+
 
   document.body.style.overflow =
     "hidden";
 }
 
+
 function fecharFotoAmpliada() {
+
   modalFotoUsuario.hidden =
     true;
+
 
   document.body.style.overflow =
     "";
 
-  zoomFoto = 1;
+
+  zoomFoto =
+    1;
 }
 
+
 function aumentarZoom() {
+
   zoomFoto =
     Math.min(
       zoomFoto + 0.25,
       4
     );
 
+
   aplicarZoomFoto();
 }
 
+
 function diminuirZoom() {
+
   zoomFoto =
     Math.max(
       zoomFoto - 0.25,
       1
     );
 
+
   aplicarZoomFoto();
 }
+
 
 function resetarZoom() {
-  zoomFoto = 1;
+
+  zoomFoto =
+    1;
+
+
   aplicarZoomFoto();
 }
 
-function calcularDistanciaToques(evento) {
-  if (evento.touches.length < 2) {
+
+function calcularDistanciaToques(
+  evento
+) {
+
+  if (
+    evento.touches.length <
+    2
+  ) {
+
     return null;
+
   }
+
 
   const toque1 =
     evento.touches[0];
 
+
   const toque2 =
     evento.touches[1];
+
 
   const distanciaX =
     toque2.clientX -
     toque1.clientX;
 
+
   const distanciaY =
     toque2.clientY -
     toque1.clientY;
+
 
   return Math.hypot(
     distanciaX,
@@ -906,11 +1255,14 @@ function calcularDistanciaToques(evento) {
   );
 }
 
+
 /* ==========================================
    EVENTOS
 ========================================== */
 
-if (botaoSalvarFuncoes) {
+if (
+  botaoSalvarFuncoes
+) {
 
   botaoSalvarFuncoes.addEventListener(
     "click",
@@ -919,7 +1271,10 @@ if (botaoSalvarFuncoes) {
 
 }
 
-if (botaoAprovarCadastro) {
+
+if (
+  botaoAprovarCadastro
+) {
 
   botaoAprovarCadastro.addEventListener(
     "click",
@@ -928,42 +1283,70 @@ if (botaoAprovarCadastro) {
 
 }
 
-if (fotoUsuarioPermissao) {
+
+if (
+  fotoUsuarioPermissao
+) {
+
   fotoUsuarioPermissao.addEventListener(
     "click",
     abrirFotoAmpliada
   );
+
 }
 
-if (fecharModalFoto) {
+
+if (
+  fecharModalFoto
+) {
+
   fecharModalFoto.addEventListener(
     "click",
     fecharFotoAmpliada
   );
+
 }
 
-if (aumentarZoomFoto) {
+
+if (
+  aumentarZoomFoto
+) {
+
   aumentarZoomFoto.addEventListener(
     "click",
     aumentarZoom
   );
+
 }
 
-if (diminuirZoomFoto) {
+
+if (
+  diminuirZoomFoto
+) {
+
   diminuirZoomFoto.addEventListener(
     "click",
     diminuirZoom
   );
+
 }
 
-if (resetarZoomFoto) {
+
+if (
+  resetarZoomFoto
+) {
+
   resetarZoomFoto.addEventListener(
     "click",
     resetarZoom
   );
+
 }
 
-if (areaZoomFoto) {
+
+if (
+  areaZoomFoto
+) {
 
   areaZoomFoto.addEventListener(
     "wheel",
@@ -971,10 +1354,18 @@ if (areaZoomFoto) {
 
       evento.preventDefault();
 
-      if (evento.deltaY < 0) {
+
+      if (
+        evento.deltaY <
+        0
+      ) {
+
         aumentarZoom();
+
       } else {
+
         diminuirZoom();
+
       }
 
     },
@@ -982,18 +1373,22 @@ if (areaZoomFoto) {
       passive: false
     }
   );
+
 
   areaZoomFoto.addEventListener(
     "touchstart",
     (evento) => {
 
       if (
-        evento.touches.length === 2
+        evento.touches.length ===
+        2
       ) {
+
         distanciaToqueInicial =
           calcularDistanciaToques(
             evento
           );
+
       }
 
     },
@@ -1002,52 +1397,82 @@ if (areaZoomFoto) {
     }
   );
 
+
   areaZoomFoto.addEventListener(
     "touchmove",
     (evento) => {
 
       if (
-        evento.touches.length !== 2 ||
+        evento.touches.length !==
+          2 ||
         !distanciaToqueInicial
       ) {
+
         return;
+
       }
 
+
       evento.preventDefault();
+
 
       const distanciaAtual =
         calcularDistanciaToques(
           evento
         );
 
-      if (!distanciaAtual) {
+
+      if (
+        !distanciaAtual
+      ) {
+
         return;
+
       }
+
 
       const diferenca =
         distanciaAtual -
         distanciaToqueInicial;
 
-      if (Math.abs(diferenca) < 8) {
+
+      if (
+        Math.abs(
+          diferenca
+        ) <
+        8
+      ) {
+
         return;
+
       }
 
-      if (diferenca > 0) {
+
+      if (
+        diferenca >
+        0
+      ) {
+
         zoomFoto =
           Math.min(
             zoomFoto + 0.05,
             4
           );
+
       } else {
+
         zoomFoto =
           Math.max(
             zoomFoto - 0.05,
             1
           );
+
       }
+
 
       distanciaToqueInicial =
         distanciaAtual;
+
 
       aplicarZoomFoto();
 
@@ -1057,14 +1482,20 @@ if (areaZoomFoto) {
     }
   );
 
+
   areaZoomFoto.addEventListener(
     "touchend",
     () => {
+
       distanciaToqueInicial =
         null;
+
     }
   );
+
 }
+
+
 /* ==========================================
    INICIALIZAÇÃO
 ========================================== */
