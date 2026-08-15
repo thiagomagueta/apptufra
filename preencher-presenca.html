@@ -21,7 +21,7 @@
 
   <link
     rel="stylesheet"
-    href="layout.css?v=21"
+    href="layout.css?v=23"
   >
 
 </head>
@@ -77,18 +77,35 @@
 
       <section class="cartao-app">
 
-        <h2>
-          Associados
-        </h2>
+        <div class="cabecalho-lista-presenca">
+
+          <h2>
+            Associados
+          </h2>
+
+          <button
+            id="botaoMarcarPendentes"
+            class="botao-marcar-pendentes"
+            type="button"
+            disabled
+          >
+            Marcar pendentes como P
+          </button>
+
+        </div>
+
 
         <div
           id="listaChamadaPresenca"
           class="lista-chamada-presenca"
         >
+
           <p>
             Carregando associados...
           </p>
+
         </div>
+
 
         <div
           id="mensagemSemAssociadosPresenca"
@@ -191,7 +208,7 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="preencher-presenca.js?v=2"></script>
+  <script src="preencher-presenca.js?v=4"></script>
 
 </body>
 
