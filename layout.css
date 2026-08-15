@@ -1871,3 +1871,54 @@ input:checked + span {
   background: #eeeeee;
   color: #777777;
 }
+/* ==========================================
+   CONSULTA DE PRESENÇA - STATUS EM TEXTO
+========================================== */
+
+.item-consulta-presenca {
+  justify-content: space-between;
+  gap: 16px;
+}
+
+
+.status-consulta-presenca {
+  width: auto;
+  height: auto;
+  flex: 0 0 auto;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 6px 10px;
+
+  border-radius: 8px;
+
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+
+.status-consulta-presenca.presente {
+  background: #e3f4e6;
+  color: #247335;
+}
+
+
+.status-consulta-presenca.falta {
+  background: #f8dddd;
+  color: #a32a2a;
+}
+
+
+.status-consulta-presenca.justificada {
+  background: #fff0cc;
+  color: #8a6500;
+}
+
+
+.status-consulta-presenca.pendente {
+  background: #eeeeee;
+  color: #777777;
+}
