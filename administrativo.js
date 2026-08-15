@@ -25,6 +25,11 @@ const opcaoPresencaAdmin =
     "opcaoPresencaAdmin"
   );
 
+const opcaoConsultarPresenca =
+  document.getElementById(
+    "opcaoConsultarPresenca"
+  );
+
 const opcaoConfigurarResponsaveis =
   document.getElementById(
     "opcaoConfigurarResponsaveis"
@@ -290,7 +295,25 @@ async function carregarOpcoesAdministrativas() {
       ).length > 0;
 
 
-    /* CONFIGURAR RESPONSÁVEIS */
+    /* ======================================
+       CONSULTAR LISTAS
+       TODA DIRETORIA
+    ====================================== */
+
+    if (
+      opcaoConsultarPresenca
+    ) {
+
+      opcaoConsultarPresenca.hidden =
+        !pertenceDiretoria;
+
+    }
+
+
+    /* ======================================
+       CONFIGURAR RESPONSÁVEIS
+       SOMENTE TESOURARIA
+    ====================================== */
 
     if (
       opcaoConfigurarResponsaveis
@@ -302,7 +325,10 @@ async function carregarOpcoesAdministrativas() {
     }
 
 
-    /* PREENCHER PRESENÇA */
+    /* ======================================
+       PREENCHER PRESENÇA
+       RESPONSÁVEIS
+    ====================================== */
 
     if (
       opcaoPreencherPresenca
@@ -314,9 +340,12 @@ async function carregarOpcoesAdministrativas() {
     }
 
 
-    /* BLOCO PRESENÇA */
+    /* ======================================
+       BLOCO PRESENÇA
+    ====================================== */
 
     const podeVerPresenca =
+      pertenceDiretoria ||
       ehTesoureiro ||
       ehResponsavelPresenca;
 
