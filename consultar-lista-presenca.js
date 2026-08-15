@@ -733,10 +733,6 @@ function criarStatusConsulta(
 
 
     elemento.textContent =
-      "P";
-
-
-    elemento.title =
       "Presente";
 
 
@@ -756,10 +752,6 @@ function criarStatusConsulta(
 
 
     elemento.textContent =
-      "F";
-
-
-    elemento.title =
       "Falta";
 
 
@@ -779,11 +771,7 @@ function criarStatusConsulta(
 
 
     elemento.textContent =
-      "J";
-
-
-    elemento.title =
-      "Falta Justificada";
+      "Justificado";
 
 
     return elemento;
@@ -797,10 +785,6 @@ function criarStatusConsulta(
 
 
   elemento.textContent =
-    "—";
-
-
-  elemento.title =
     "Pendente";
 
 
