@@ -1922,3 +1922,238 @@ input:checked + span {
   background: #eeeeee;
   color: #777777;
 }
+/* ==========================================
+   RELATÓRIO GERAL DE PRESENÇA
+========================================== */
+
+.cabecalho-relatorio-presenca {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+
+  margin-bottom: 14px;
+}
+
+
+.cabecalho-relatorio-presenca h2 {
+  margin-bottom: 0;
+}
+
+
+.campo-ano-relatorio {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+
+.campo-ano-relatorio label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #555555;
+}
+
+
+.campo-ano-relatorio select {
+  min-width: 90px;
+
+  padding: 8px 10px;
+
+  border: 1px solid #d4d4d4;
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+
+.legenda-relatorio-presenca {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+
+  margin-bottom: 16px;
+
+  font-size: 12px;
+  color: #555555;
+}
+
+
+.legenda-relatorio-presenca span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+
+.legenda-relatorio-presenca strong {
+  color: #651b1d;
+}
+
+
+.legenda-relatorio-presenca .legenda-nao-participava {
+  color: #999999;
+  font-size: 10px;
+}
+
+
+.container-tabela-relatorio-presenca {
+  width: 100%;
+  overflow-x: auto;
+
+  border: 1px solid #e3e3e3;
+  border-radius: 10px;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+
+.tabela-relatorio-presenca {
+  width: max-content;
+  min-width: 100%;
+
+  border-collapse: separate;
+  border-spacing: 0;
+
+  background: #ffffff;
+
+  font-size: 13px;
+}
+
+
+.tabela-relatorio-presenca th,
+.tabela-relatorio-presenca td {
+  height: 42px;
+
+  padding: 7px 9px;
+
+  border-right: 1px solid #e7e7e7;
+  border-bottom: 1px solid #e7e7e7;
+
+  text-align: center;
+  vertical-align: middle;
+}
+
+
+.tabela-relatorio-presenca thead th {
+  position: sticky;
+  top: 0;
+
+  z-index: 2;
+
+  background: #651b1d;
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+.tabela-relatorio-presenca .coluna-nome-relatorio {
+  position: sticky;
+  left: 0;
+
+  min-width: 170px;
+  max-width: 170px;
+
+  text-align: left;
+
+  z-index: 1;
+}
+
+
+.tabela-relatorio-presenca thead .coluna-nome-relatorio {
+  z-index: 4;
+
+  background: #651b1d;
+  color: #ffffff;
+}
+
+
+.tabela-relatorio-presenca tbody .coluna-nome-relatorio {
+  background: #ffffff;
+
+  font-weight: 600;
+}
+
+
+.coluna-data-relatorio {
+  min-width: 58px;
+}
+
+
+.celula-status-relatorio {
+  min-width: 58px;
+
+  font-weight: 700;
+  font-size: 14px;
+}
+
+
+.status-relatorio-presente {
+  background: #e3f4e6;
+  color: #247335;
+}
+
+
+.status-relatorio-falta {
+  background: #f8dddd;
+  color: #a32a2a;
+}
+
+
+.status-relatorio-justificado {
+  background: #fff0cc;
+  color: #8a6500;
+}
+
+
+.status-relatorio-pendente {
+  background: #f2f2f2;
+  color: #777777;
+}
+
+
+.status-relatorio-nao-participava {
+  background: #f7f7f7;
+
+  color: #aaaaaa;
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+
+.tabela-relatorio-presenca tr:last-child td {
+  border-bottom: none;
+}
+
+
+.tabela-relatorio-presenca th:last-child,
+.tabela-relatorio-presenca td:last-child {
+  border-right: none;
+}
+
+
+@media (max-width: 600px) {
+
+  .cabecalho-relatorio-presenca {
+    align-items: center;
+  }
+
+
+  .tabela-relatorio-presenca .coluna-nome-relatorio {
+    min-width: 145px;
+    max-width: 145px;
+  }
+
+
+  .coluna-data-relatorio,
+  .celula-status-relatorio {
+    min-width: 54px;
+  }
+
+}
