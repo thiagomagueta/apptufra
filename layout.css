@@ -2157,3 +2157,56 @@ input:checked + span {
   }
 
 }
+/* ==========================================
+   RELATÓRIO DE PRESENÇA - COLUNAS COMPACTAS
+========================================== */
+
+.tabela-relatorio-presenca thead th.coluna-data-relatorio {
+  min-width: 34px;
+  width: 34px;
+  height: 78px;
+
+  padding: 4px 2px;
+
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+
+  text-align: center;
+  vertical-align: middle;
+
+  font-size: 11px;
+  line-height: 1;
+}
+
+
+.tabela-relatorio-presenca td.celula-status-relatorio {
+  min-width: 34px;
+  width: 34px;
+
+  padding: 5px 2px;
+
+  font-size: 13px;
+}
+
+
+.tabela-relatorio-presenca .coluna-nome-relatorio {
+  min-width: 155px;
+  max-width: 155px;
+}
+
+
+@media (max-width: 600px) {
+
+  .tabela-relatorio-presenca .coluna-nome-relatorio {
+    min-width: 140px;
+    max-width: 140px;
+  }
+
+
+  .tabela-relatorio-presenca thead th.coluna-data-relatorio,
+  .tabela-relatorio-presenca td.celula-status-relatorio {
+    min-width: 32px;
+    width: 32px;
+  }
+
+}
