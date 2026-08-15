@@ -35,6 +35,11 @@ const botaoSalvarPresenca =
     "botaoSalvarPresenca"
   );
 
+const botaoMarcarPendentes =
+  document.getElementById(
+    "botaoMarcarPendentes"
+  );
+
 const voltarAtividadesPresenca =
   document.getElementById(
     "voltarAtividadesPresenca"
@@ -476,14 +481,6 @@ async function carregarAtividade() {
     resultado.data;
 
 
-  /*
-    Guardamos a data da atividade.
-
-    Ela será utilizada para descobrir
-    quem já fazia parte do TUFRA
-    naquela data.
-  */
-
   dataAtividade =
     atividade.data;
 
@@ -516,15 +513,6 @@ function associadoParticipavaNaData(
   usuario
 ) {
 
-  /*
-    Enquanto os associados antigos ainda
-    estiverem sem data de entrada, mantemos
-    essas pessoas normalmente nas listas.
-
-    Assim ninguém desaparece enquanto a
-    Diretoria não corrigir as datas antigas.
-  */
-
   if (
     !usuario.data_entrada_tufra
   ) {
@@ -534,11 +522,6 @@ function associadoParticipavaNaData(
   }
 
 
-  /*
-    Se não houver data da atividade,
-    mantemos o associado por segurança.
-  */
-
   if (
     !dataAtividade
   ) {
@@ -547,19 +530,6 @@ function associadoParticipavaNaData(
 
   }
 
-
-  /*
-    As duas datas estão no formato
-    YYYY-MM-DD.
-
-    Nesse formato podemos compará-las
-    diretamente sem problemas de fuso
-    horário.
-
-    Entrada anterior à gira = aparece
-    Entrada no mesmo dia = aparece
-    Entrada posterior à gira = não aparece
-  */
 
   return (
     usuario.data_entrada_tufra <=
@@ -629,12 +599,6 @@ async function carregarAssociados() {
       resultado.data ||
       []
     )
-
-      /*
-        Primeiro verificamos se a pessoa
-        pertence à lista pela função.
-      */
-
       .filter(
         (usuario) => {
 
@@ -659,25 +623,12 @@ async function carregarAssociados() {
 
         }
       )
-
-      /*
-        Depois verificamos se a pessoa
-        já havia entrado no TUFRA
-        na data da atividade.
-      */
-
       .filter(
         (usuario) =>
           associadoParticipavaNaData(
             usuario
           )
       )
-
-      /*
-        Finalmente mantemos a lista
-        em ordem alfabética.
-      */
-
       .sort(
         (a, b) =>
           String(
@@ -779,10 +730,6 @@ function criarItemChamada(
     "item-chamada-presenca";
 
 
-  /* --------------------------------------
-     NOME
-  -------------------------------------- */
-
   const nome =
     document.createElement(
       "strong"
@@ -798,10 +745,6 @@ function criarItemChamada(
       associado.nome_completo
     );
 
-
-  /* --------------------------------------
-     OPÇÕES
-  -------------------------------------- */
 
   const opcoes =
     document.createElement(
@@ -967,9 +910,98 @@ function renderizarChamada() {
   );
 
 
-  botaoSalvarPresenca.disabled =
-    associadosDaLista.length ===
+  const possuiAssociados =
+    associadosDaLista.length >
     0;
+
+
+  botaoSalvarPresenca.disabled =
+    !possuiAssociados;
+
+
+  botaoMarcarPendentes.disabled =
+    !possuiAssociados;
+
+}
+
+
+/* ==========================================
+   MARCAR PENDENTES COMO PRESENTES
+========================================== */
+
+function marcarPendentesComoPresente() {
+
+  esconderMensagem();
+
+
+  let quantidadeMarcada =
+    0;
+
+
+  associadosDaLista.forEach(
+    (associado) => {
+
+      const jaSelecionado =
+        document.querySelector(
+          `input[name="presenca_${associado.id}"]:checked`
+        );
+
+
+      /*
+        Se já existe P, F ou J,
+        não alteramos nada.
+      */
+
+      if (
+        jaSelecionado
+      ) {
+
+        return;
+
+      }
+
+
+      const radioPresente =
+        document.querySelector(
+          `input[name="presenca_${associado.id}"][value="presente"]`
+        );
+
+
+      if (
+        radioPresente
+      ) {
+
+        radioPresente.checked =
+          true;
+
+
+        quantidadeMarcada +=
+          1;
+
+      }
+
+    }
+  );
+
+
+  if (
+    quantidadeMarcada ===
+    0
+  ) {
+
+    mostrarMensagem(
+      "Não existem associados pendentes nesta lista."
+    );
+
+
+    return;
+
+  }
+
+
+  mostrarMensagem(
+    `${quantidadeMarcada} associado(s) pendente(s) marcado(s) como presente.`
+  );
 
 }
 
@@ -1203,14 +1235,6 @@ async function iniciarPagina() {
 
     await carregarTipoLista();
 
-    /*
-      IMPORTANTE:
-      carregarAtividade precisa acontecer
-      antes de carregarAssociados porque
-      agora usamos a data da atividade
-      para montar a chamada.
-    */
-
     await carregarAtividade();
 
     await carregarAssociados();
@@ -1237,12 +1261,18 @@ async function iniciarPagina() {
 
 
 /* ==========================================
-   EVENTO
+   EVENTOS
 ========================================== */
 
 botaoSalvarPresenca.addEventListener(
   "click",
   salvarLista
+);
+
+
+botaoMarcarPendentes.addEventListener(
+  "click",
+  marcarPendentesComoPresente
 );
 
 
