@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta
+    name="theme-color"
+    content="#651b1d"
+  >
+
+  <title>
+    Relatório Geral de Presença | TUFRA
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="layout.css?v=26"
+  >
+
+</head>
+
+
+<body>
+
+  <main class="app">
+
+    <div class="conteudo-app">
+
+
+      <header class="cabecalho-app">
+
+        <img
+          class="logo-app"
+          src="logo-tufra.png"
+          alt="Logo da TUFRA"
+        >
+
+        <div class="identidade-app">
+
+          <strong>
+            TUFRA
+          </strong>
+
+          <span>
+            Tenda de Umbanda Francisco de Assis
+          </span>
+
+        </div>
+
+      </header>
+
+
+      <section>
+
+        <h1
+          id="tituloRelatorioLista"
+          class="titulo-pagina"
+        >
+          Relatório Geral de Presença
+        </h1>
+
+        <p class="subtitulo-pagina">
+          Consulte a frequência anual da lista selecionada.
+        </p>
+
+      </section>
+
+
+      <section class="cartao-app">
+
+        <div class="cabecalho-relatorio-presenca">
+
+          <h2>
+            Frequência anual
+          </h2>
+
+
+          <div class="campo-ano-relatorio">
+
+            <label for="anoRelatorioPresenca">
+              Ano
+            </label>
+
+            <select
+              id="anoRelatorioPresenca"
+            >
+
+              <option value="2026">
+                2026
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <div class="legenda-relatorio-presenca">
+
+          <span>
+            <strong>P</strong>
+            Presente
+          </span>
+
+          <span>
+            <strong>F</strong>
+            Falta
+          </span>
+
+          <span>
+            <strong>J</strong>
+            Justificado
+          </span>
+
+          <span>
+            <strong>—</strong>
+            Pendente
+          </span>
+
+          <span>
+            <strong class="legenda-nao-participava">
+              x
+            </strong>
+            Ainda não participava
+          </span>
+
+        </div>
+
+
+        <div
+          id="containerTabelaRelatorio"
+          class="container-tabela-relatorio-presenca"
+        >
+
+          <table
+            id="tabelaRelatorioPresenca"
+            class="tabela-relatorio-presenca"
+          >
+
+            <thead
+              id="cabecalhoTabelaRelatorio"
+            >
+            </thead>
+
+            <tbody
+              id="corpoTabelaRelatorio"
+            >
+            </tbody>
+
+          </table>
+
+        </div>
+
+
+        <div
+          id="mensagemSemDadosRelatorio"
+          class="mensagem-sem-atividades"
+          hidden
+        >
+          Nenhuma atividade encontrada para este ano.
+        </div>
+
+      </section>
+
+
+      <a
+        class="link-administrativo"
+        href="relatorio-presenca.html"
+      >
+        Voltar para listas de presença
+      </a>
+
+
+    </div>
+
+  </main>
+
+
+  <nav
+    class="menu-inferior"
+    aria-label="Navegação principal"
+  >
+
+    <div class="menu-inferior-conteudo">
+
+      <a
+        class="item-menu"
+        href="dashboard.html"
+      >
+        <span class="icone-menu">⌂</span>
+        <span class="texto-menu">Início</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="calendario.html"
+      >
+        <span class="icone-menu">📅</span>
+        <span class="texto-menu">Calendário</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="minha-ficha.html"
+      >
+        <span class="icone-menu">👤</span>
+        <span class="texto-menu">Minha ficha</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="mais.html"
+      >
+        <span class="icone-menu">☰</span>
+        <span class="texto-menu">Mais</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="#"
+        id="botaoSair"
+      >
+        <span class="icone-menu">🚪</span>
+        <span class="texto-menu">Sair</span>
+      </a>
+
+    </div>
+
+  </nav>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="supabase.js?v=2"></script>
+
+  <script src="app.js?v=2"></script>
+
+  <script src="relatorio-presenca-lista.js?v=1"></script>
+
+</body>
+
+</html>
