@@ -76,89 +76,23 @@
           Listas de presença
         </h2>
 
-        <div class="lista-acoes-administrativas">
+        <div
+          id="listasConsultaPresenca"
+          class="lista-acoes-administrativas"
+        >
 
+          <p>
+            Carregando listas...
+          </p>
 
-          <a
-            class="item-acao-administrativa"
-            href="consultar-atividades-presenca.html?lista=corrente-principal"
-          >
+        </div>
 
-            <span>
-              Corrente Principal
-            </span>
-
-            <span class="seta-permissao-lista">
-              ›
-            </span>
-
-          </a>
-
-
-          <a
-            class="item-acao-administrativa"
-            href="consultar-atividades-presenca.html?lista=desenvolvimento"
-          >
-
-            <span>
-              Desenvolvimento
-            </span>
-
-            <span class="seta-permissao-lista">
-              ›
-            </span>
-
-          </a>
-
-
-          <a
-            class="item-acao-administrativa"
-            href="consultar-atividades-presenca.html?lista=ogans"
-          >
-
-            <span>
-              Ogans
-            </span>
-
-            <span class="seta-permissao-lista">
-              ›
-            </span>
-
-          </a>
-
-
-          <a
-            class="item-acao-administrativa"
-            href="consultar-atividades-presenca.html?lista=cantina"
-          >
-
-            <span>
-              Cantina
-            </span>
-
-            <span class="seta-permissao-lista">
-              ›
-            </span>
-
-          </a>
-
-
-          <a
-            class="item-acao-administrativa"
-            href="consultar-atividades-presenca.html?lista=cambones"
-          >
-
-            <span>
-              Cambones
-            </span>
-
-            <span class="seta-permissao-lista">
-              ›
-            </span>
-
-          </a>
-
-
+        <div
+          id="mensagemSemListasConsulta"
+          class="mensagem-sem-atividades"
+          hidden
+        >
+          Nenhuma lista de presença encontrada.
         </div>
 
       </section>
@@ -235,6 +169,8 @@
   <script src="supabase.js?v=2"></script>
 
   <script src="app.js?v=2"></script>
+
+  <script src="consultar-presenca.js?v=1"></script>
 
 </body>
 
