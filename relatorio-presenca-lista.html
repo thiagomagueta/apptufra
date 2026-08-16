@@ -21,7 +21,7 @@
 
   <link
     rel="stylesheet"
-    href="layout.css?v=33"
+    href="layout.css?v=35"
   >
 
 </head>
@@ -59,30 +59,51 @@
 
       <section>
 
-        <h1
-          id="tituloRelatorioLista"
-          class="titulo-pagina"
-        >
+        <h1 class="titulo-pagina">
           Relatório Geral de Presença
         </h1>
 
         <p class="subtitulo-pagina">
-          Consulte a frequência anual da lista selecionada.
+          Consulte a frequência anual das listas de presença.
         </p>
 
       </section>
 
 
+      <!-- =====================================
+           FILTROS
+      ====================================== -->
+
       <section class="cartao-app">
 
-        <div class="cabecalho-relatorio-presenca">
+        <h2>
+          Filtros
+        </h2>
 
-          <h2>
-            Frequência anual
-          </h2>
+        <div class="filtros-relatorio-geral">
 
 
-          <div class="campo-ano-relatorio">
+          <div class="campo-filtro-relatorio-geral">
+
+            <label for="listaRelatorioPresenca">
+              Lista
+            </label>
+
+            <select
+              id="listaRelatorioPresenca"
+              disabled
+            >
+
+              <option value="">
+                Carregando...
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="campo-filtro-relatorio-geral">
 
             <label for="anoRelatorioPresenca">
               Ano
@@ -94,12 +115,35 @@
             >
 
               <option value="">
-                Carregando...
+                Selecione a lista
               </option>
 
             </select>
 
           </div>
+
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================
+           RELATÓRIO
+      ====================================== -->
+
+      <section
+        id="areaRelatorioGeral"
+        class="cartao-app"
+        hidden
+      >
+
+
+        <div class="cabecalho-relatorio-presenca">
+
+          <h2 id="tituloListaRelatorioGeral">
+            Frequência anual
+          </h2>
 
         </div>
 
@@ -303,17 +347,18 @@
           class="mensagem-sem-atividades"
           hidden
         >
-          Nenhuma atividade encontrada para esta lista.
+          Nenhuma atividade encontrada para esta seleção.
         </div>
+
 
       </section>
 
 
       <a
         class="link-administrativo"
-        href="relatorio-presenca.html"
+        href="administrativo.html"
       >
-        Voltar para listas de presença
+        Voltar ao Administrativo
       </a>
 
 
@@ -381,7 +426,7 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="relatorio-presenca-lista.js?v=6"></script>
+  <script src="relatorio-presenca-lista.js?v=7"></script>
 
 </body>
 
