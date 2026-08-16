@@ -19,7 +19,7 @@
 
   <link
     rel="stylesheet"
-    href="layout.css?v=19"
+    href="layout.css?v=29"
   >
 
 </head>
@@ -71,6 +71,10 @@
       </section>
 
 
+      <!-- =====================================
+           FOTO
+      ====================================== -->
+
       <section class="cartao-app">
 
         <div class="resumo-associado-cabecalho">
@@ -94,6 +98,10 @@
       </section>
 
 
+      <!-- =====================================
+           DADOS DO ASSOCIADO
+      ====================================== -->
+
       <section class="cartao-app">
 
         <h2>
@@ -104,6 +112,159 @@
           id="dadosAssociadoResumo"
           class="dados-associado-resumo"
         ></div>
+
+      </section>
+
+
+      <!-- =====================================
+           DADOS ADMINISTRATIVOS
+      ====================================== -->
+
+      <section class="cartao-app">
+
+        <div class="cabecalho-dados-administrativos">
+
+          <h2>
+            Dados administrativos
+          </h2>
+
+          <button
+            id="botaoEditarDatasAdministrativas"
+            class="botao-editar-datas-administrativas"
+            type="button"
+          >
+            Editar datas
+          </button>
+
+        </div>
+
+
+        <!-- VISUALIZAÇÃO -->
+
+        <div
+          id="visualizacaoDatasAdministrativas"
+          class="dados-associado-resumo"
+        >
+
+          <div class="item-resumo-associado">
+
+            <span>
+              Data de entrada na TUFRA
+            </span>
+
+            <strong id="textoDataEntradaTufra">
+              Não informado
+            </strong>
+
+          </div>
+
+
+          <div class="item-resumo-associado">
+
+            <span>
+              Data para Corrente do Desenvolvimento
+            </span>
+
+            <strong id="textoDataCorrenteDesenvolvimento">
+              Não informado
+            </strong>
+
+          </div>
+
+
+          <div class="item-resumo-associado">
+
+            <span>
+              Data para Corrente Principal
+            </span>
+
+            <strong id="textoDataCorrentePrincipal">
+              Não informado
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <!-- EDIÇÃO -->
+
+        <div
+          id="edicaoDatasAdministrativas"
+          class="edicao-datas-administrativas"
+          hidden
+        >
+
+          <div class="campo-data-administrativa">
+
+            <label for="dataEntradaTufra">
+              Data de entrada na TUFRA
+            </label>
+
+            <input
+              id="dataEntradaTufra"
+              type="date"
+            >
+
+          </div>
+
+
+          <div class="campo-data-administrativa">
+
+            <label for="dataCorrenteDesenvolvimento">
+              Data para Corrente do Desenvolvimento
+            </label>
+
+            <input
+              id="dataCorrenteDesenvolvimento"
+              type="date"
+            >
+
+          </div>
+
+
+          <div class="campo-data-administrativa">
+
+            <label for="dataCorrentePrincipal">
+              Data para Corrente Principal
+            </label>
+
+            <input
+              id="dataCorrentePrincipal"
+              type="date"
+            >
+
+          </div>
+
+
+          <div
+            id="mensagemDatasAdministrativas"
+            class="mensagem-formulario"
+            hidden
+          ></div>
+
+
+          <div class="acoes-datas-administrativas">
+
+            <button
+              id="botaoCancelarDatasAdministrativas"
+              class="botao-cancelar-datas-administrativas"
+              type="button"
+            >
+              Cancelar
+            </button>
+
+            <button
+              id="botaoSalvarDatasAdministrativas"
+              class="botao-principal-app"
+              type="button"
+            >
+              Salvar datas
+            </button>
+
+          </div>
+
+        </div>
 
       </section>
 
@@ -200,6 +361,10 @@
   </div>
 
 
+  <!-- =====================================
+       MENU
+  ====================================== -->
+
   <nav
     class="menu-inferior"
     aria-label="Navegação principal"
@@ -259,7 +424,7 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="associado-resumo.js?v=3"></script>
+  <script src="associado-resumo.js?v=4"></script>
 
 </body>
 
