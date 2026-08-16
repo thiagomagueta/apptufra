@@ -21,7 +21,7 @@
 
   <link
     rel="stylesheet"
-    href="layout.css?v=19"
+    href="layout.css?v=34"
   >
 
 </head>
@@ -64,35 +64,153 @@
         </h1>
 
         <p class="subtitulo-pagina">
-          Selecione a lista que deseja visualizar.
+          Consulte a frequência individual dos associados da lista.
         </p>
 
       </section>
 
 
+      <!-- =====================================
+           FILTROS
+      ====================================== -->
+
       <section class="cartao-app">
 
         <h2>
-          Listas de presença
+          Filtros
         </h2>
 
-        <div
-          id="listasRelatorioAssociado"
-          class="lista-acoes-administrativas"
-        >
 
-          <p>
-            Carregando listas...
-          </p>
+        <div class="filtros-relatorio-associado">
+
+
+          <div class="campo-filtro-relatorio-associado">
+
+            <label for="listaRelatorioAssociado">
+              Lista
+            </label>
+
+            <select
+              id="listaRelatorioAssociado"
+              disabled
+            >
+
+              <option value="">
+                Carregando...
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="campo-filtro-relatorio-associado">
+
+            <label for="anoRelatorioAssociado">
+              Ano
+            </label>
+
+            <select
+              id="anoRelatorioAssociado"
+              disabled
+            >
+
+              <option value="">
+                Selecione a lista
+              </option>
+
+            </select>
+
+          </div>
+
 
         </div>
 
+      </section>
+
+
+      <!-- =====================================
+           RELATÓRIO
+      ====================================== -->
+
+      <section
+        id="areaRelatorioAssociado"
+        class="cartao-app"
+        hidden
+      >
+
+        <h2 id="tituloListaRelatorioAssociado">
+          Frequência dos associados
+        </h2>
+
+
         <div
-          id="mensagemSemListasRelatorioAssociado"
+          id="containerTabelaRelatorioAssociado"
+          class="container-tabela-associado-relatorio"
+        >
+
+          <table
+            class="tabela-associado-relatorio"
+          >
+
+            <thead>
+
+              <tr>
+
+                <th class="coluna-nome-associado-relatorio">
+                  Associado
+                </th>
+
+                <th>
+                  P
+                </th>
+
+                <th>
+                  F
+                </th>
+
+                <th>
+                  J
+                </th>
+
+                <th>
+                  Pend.
+                </th>
+
+                <th>
+                  Freq.
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody
+              id="corpoRelatorioAssociado"
+            >
+
+              <tr>
+
+                <td colspan="6">
+                  Carregando relatório...
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+
+        <div
+          id="mensagemSemDadosRelatorioAssociado"
           class="mensagem-sem-atividades"
           hidden
         >
-          Nenhuma lista de presença encontrada.
+          Nenhum dado encontrado para esta seleção.
         </div>
 
       </section>
@@ -170,7 +288,7 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="relatorio-associado-presenca.js?v=1"></script>
+  <script src="relatorio-associado-presenca.js?v=2"></script>
 
 </body>
 
