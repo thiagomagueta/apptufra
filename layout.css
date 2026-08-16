@@ -3239,7 +3239,7 @@ input:checked + span {
 .tabela-resumo-presenca-associado
 .coluna-resumo-presenca-frequencia {
 
-  width: 72px;
+  width: 44px;
   min-width: 72px;
   max-width: 72px;
 
@@ -3265,7 +3265,7 @@ input:checked + span {
 .tabela-resumo-presenca-associado
 .coluna-data-relatorio {
 
-  height: 46px;
+  height: 62px;
   padding-top: 4px;
   padding-bottom: 4px;
 }
