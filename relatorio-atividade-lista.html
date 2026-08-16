@@ -21,7 +21,7 @@
 
   <link
     rel="stylesheet"
-    href="layout.css?v=33"
+    href="layout.css?v=36"
   >
 
 </head>
@@ -59,10 +59,7 @@
 
       <section>
 
-        <h1
-          id="tituloRelatorioAtividade"
-          class="titulo-pagina"
-        >
+        <h1 class="titulo-pagina">
           Relatório por Atividade
         </h1>
 
@@ -73,23 +70,27 @@
       </section>
 
 
+      <!-- =====================================
+           FILTROS
+      ====================================== -->
+
       <section class="cartao-app">
 
-        <div class="cabecalho-relatorio-presenca">
+        <h2>
+          Filtros
+        </h2>
 
-          <h2>
-            Frequência por atividade
-          </h2>
+        <div class="filtros-relatorio-atividade">
 
 
-          <div class="campo-ano-relatorio">
+          <div class="campo-filtro-relatorio-atividade">
 
-            <label for="anoRelatorioAtividade">
-              Ano
+            <label for="listaRelatorioAtividade">
+              Lista
             </label>
 
             <select
-              id="anoRelatorioAtividade"
+              id="listaRelatorioAtividade"
               disabled
             >
 
@@ -101,7 +102,45 @@
 
           </div>
 
+
+          <div class="campo-filtro-relatorio-atividade">
+
+            <label for="anoRelatorioAtividade">
+              Ano
+            </label>
+
+            <select
+              id="anoRelatorioAtividade"
+              disabled
+            >
+
+              <option value="">
+                Selecione a lista
+              </option>
+
+            </select>
+
+          </div>
+
+
         </div>
+
+      </section>
+
+
+      <!-- =====================================
+           RELATÓRIO
+      ====================================== -->
+
+      <section
+        id="areaRelatorioAtividade"
+        class="cartao-app"
+        hidden
+      >
+
+        <h2 id="tituloListaRelatorioAtividade">
+          Frequência por atividade
+        </h2>
 
 
         <div
@@ -182,9 +221,9 @@
 
       <a
         class="link-administrativo"
-        href="relatorio-atividade-presenca.html"
+        href="administrativo.html"
       >
-        Voltar para listas de presença
+        Voltar ao Administrativo
       </a>
 
 
@@ -252,7 +291,7 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="relatorio-atividade-lista.js?v=1"></script>
+  <script src="relatorio-atividade-lista.js?v=2"></script>
 
 </body>
 
