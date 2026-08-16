@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -8,18 +10,29 @@
     content="width=device-width, initial-scale=1, viewport-fit=cover"
   >
 
-  <meta name="theme-color" content="#651b1d">
+  <meta
+    name="theme-color"
+    content="#651b1d"
+  >
 
-  <title>Permissões | TUFRA</title>
+  <title>
+    Permissões | TUFRA
+  </title>
 
-  <link rel="stylesheet" href="layout.css?v=8">
+  <link
+    rel="stylesheet"
+    href="layout.css?v=39"
+  >
+
 </head>
+
 
 <body>
 
   <main class="app">
 
     <div class="conteudo-app">
+
 
       <header class="cabecalho-app">
 
@@ -30,58 +43,103 @@
         >
 
         <div class="identidade-app">
-          <strong>TUFRA</strong>
-          <span>Tenda de Umbanda Francisco de Assis</span>
+
+          <strong>
+            TUFRA
+          </strong>
+
+          <span>
+            Tenda de Umbanda Francisco de Assis
+          </span>
+
         </div>
 
       </header>
 
+
       <section>
-        <h1 class="titulo-pagina">
+
+        <h1
+          id="tituloPermissoes"
+          class="titulo-pagina"
+        >
           Permissões
         </h1>
 
-        <p class="subtitulo-pagina">
-          Aprove novos cadastros e gerencie as funções dos usuários.
+        <p
+          id="subtituloPermissoes"
+          class="subtitulo-pagina"
+        >
+          Carregando...
         </p>
+
       </section>
 
-      <section class="cartao-app">
 
-        <h2>Cadastros aguardando aprovação</h2>
+      <!-- =====================================
+           CADASTROS PENDENTES
+      ====================================== -->
+
+      <section
+        id="secaoCadastrosPendentes"
+        class="cartao-app"
+        hidden
+      >
+
+        <h2>
+          Cadastros aguardando aprovação
+        </h2>
 
         <div
           id="listaCadastrosPendentes"
           class="lista-permissoes"
         >
-          <p>Carregando cadastros...</p>
+          <p>
+            Carregando cadastros...
+          </p>
         </div>
 
       </section>
 
-      <section class="cartao-app">
 
-        <h2>Usuários ativos</h2>
+      <!-- =====================================
+           ATRIBUIR FUNÇÕES
+      ====================================== -->
+
+      <section
+        id="secaoAtribuirFuncoes"
+        class="cartao-app"
+        hidden
+      >
+
+        <h2>
+          Atribuir Funções
+        </h2>
 
         <div
           id="listaUsuariosAtivos"
           class="lista-permissoes"
         >
-          <p>Carregando usuários...</p>
+          <p>
+            Carregando usuários...
+          </p>
         </div>
 
       </section>
 
+
       <a
         class="link-administrativo"
-        href="administrativo.html"
+        href="adm-permissoes.html"
       >
-        Voltar ao Administrativo
+        Voltar para Permissões
       </a>
+
 
     </div>
 
   </main>
+
 
   <nav
     class="menu-inferior"
@@ -135,10 +193,15 @@
 
   </nav>
 
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script src="supabase.js?v=2"></script>
+
   <script src="app.js?v=2"></script>
-  <script src="permissoes.js?v=3"></script>
+
+  <script src="permissoes.js?v=4"></script>
 
 </body>
+
 </html>
