@@ -3160,3 +3160,100 @@ input:checked + span {
   }
 
 }
+/* ==========================================
+   RESUMO DE PRESENÇA DO ASSOCIADO
+   AJUSTE DAS COLUNAS
+========================================== */
+
+.tabela-resumo-presenca-associado {
+  width: max-content;
+  min-width: 100%;
+  table-layout: fixed;
+}
+
+
+/* COLUNAS DAS 10 ATIVIDADES */
+
+.tabela-resumo-presenca-associado
+.coluna-data-relatorio,
+.tabela-resumo-presenca-associado
+.celula-status-relatorio {
+
+  width: 35px;
+  min-width: 35px;
+  max-width: 35px;
+
+  padding-left: 4px;
+  padding-right: 4px;
+
+  text-align: center;
+}
+
+
+/* DATAS VERTICAIS */
+
+.tabela-resumo-presenca-associado
+.coluna-data-relatorio {
+
+  height: 96px;
+  padding: 6px 0;
+
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+
+  vertical-align: middle;
+}
+
+
+/* ==========================================
+   RESUMO P / F / J
+========================================== */
+
+.tabela-resumo-presenca-associado
+.coluna-resumo-presenca-final {
+
+  width: 44px;
+  min-width: 44px;
+  max-width: 44px;
+
+  text-align: center;
+}
+
+
+/* ==========================================
+   PEQUENA SEPARAÇÃO ENTRE
+   ATIVIDADES E RESUMO
+========================================== */
+
+.tabela-resumo-presenca-associado
+.coluna-resumo-presenca-final:nth-last-child(4) {
+
+  border-left: 7px solid #ffffff;
+}
+
+
+/* ==========================================
+   FREQUÊNCIA
+========================================== */
+
+.tabela-resumo-presenca-associado
+.coluna-resumo-presenca-frequencia {
+
+  width: 72px;
+  min-width: 72px;
+  max-width: 72px;
+
+  text-align: center;
+  white-space: nowrap;
+}
+
+
+/* ==========================================
+   CELULAS
+========================================== */
+
+.tabela-resumo-presenca-associado td {
+
+  height: 42px;
+  vertical-align: middle;
+}
