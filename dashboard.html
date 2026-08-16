@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -8,12 +10,22 @@
     content="width=device-width, initial-scale=1, viewport-fit=cover"
   >
 
-  <meta name="theme-color" content="#651b1d">
+  <meta
+    name="theme-color"
+    content="#651b1d"
+  >
 
-  <title>Início | TUFRA</title>
+  <title>
+    Início | TUFRA
+  </title>
 
-  <link rel="stylesheet" href="layout.css?v=6">
+  <link
+    rel="stylesheet"
+    href="layout.css?v=39"
+  >
+
 </head>
+
 
 <body>
 
@@ -21,203 +33,282 @@
 
     <div class="conteudo-app">
 
-     <header class="cabecalho-app">
 
-  <img
-    class="logo-app"
-    src="logo-tufra.png"
-    alt="Logo da TUFRA"
-  >
+      <!-- =====================================
+           CABEÇALHO
+      ====================================== -->
 
-  <div class="identidade-app">
-    <strong>TUFRA</strong>
-    <span>Tenda de Umbanda Francisco de Assis</span>
-  </div>
+      <header class="cabecalho-app">
 
-  <div class="area-foto-usuario">
+        <img
+          class="logo-app"
+          src="logo-tufra.png"
+          alt="Logo da TUFRA"
+        >
 
-    <img
-      id="fotoUsuarioDashboard"
-      class="foto-usuario-dashboard"
-      alt="Foto do usuário"
-      hidden
-    >
 
-    <div
-      id="fotoUsuarioPadrao"
-      class="foto-usuario-padrao"
-      aria-hidden="true"
-    >
-      👤
-    </div>
+        <div class="identidade-app">
 
-  </div>
+          <strong>
+            TUFRA
+          </strong>
 
-</header>
+          <span>
+            Tenda de Umbanda Francisco de Assis
+          </span>
+
+        </div>
+
+
+        <div class="area-foto-usuario">
+
+          <img
+            id="fotoUsuarioDashboard"
+            class="foto-usuario-dashboard"
+            alt="Foto do usuário"
+            hidden
+          >
+
+          <div
+            id="fotoUsuarioPadrao"
+            class="foto-usuario-padrao"
+            aria-hidden="true"
+          >
+            👤
+          </div>
+
+        </div>
+
+      </header>
+
+
+      <!-- =====================================
+           SAUDAÇÃO
+      ====================================== -->
+
       <section>
-<h1
-  id="saudacaoDashboard"
-  class="titulo-pagina"
->
-  Seja bem-vindo!
-</h1>
 
-<p class="subtitulo-pagina">
-  Seja bem-vindo à Tenda de Umbanda Francisco de Assis.
-</p>
+        <h1
+          id="saudacaoDashboard"
+          class="titulo-pagina"
+        >
+          Seja bem-vindo!
+        </h1>
+
+        <p class="subtitulo-pagina">
+          Seja bem-vindo à Tenda de Umbanda Francisco de Assis.
+        </p>
+
       </section>
 
-<section class="cartao-app">
 
-  <h2>Próxima atividade</h2>
+      <!-- =====================================
+           PRÓXIMA ATIVIDADE
+      ====================================== -->
 
-  <div
-    id="proximaAtividadeDashboard"
-    class="item-atividade"
-  >
-    <div class="dados-atividade">
-      <span>Carregando próxima atividade...</span>
-    </div>
-  </div>
-
-</section>
       <section class="cartao-app">
 
-  <div
-    id="listaFuncoesDashboard"
-    class="lista-funcoes-dashboard"
-  >
-    <p>Carregando funções...</p>
-  </div>
+        <h2>
+          Próxima atividade
+        </h2>
 
-  <a
-    id="areaAdministrativo"
-    class="link-administrativo"
-    href="#"
-    hidden
-  >
-    Funções administrativas
-  </a>
+        <div
+          id="proximaAtividadeDashboard"
+          class="item-atividade"
+        >
 
-</section>
-<!-- PRESENÇAS -->
-<section class="cartao-app">
+          <div class="dados-atividade">
 
-  <h2>Últimas 5 atividades</h2>
+            <span>
+              Carregando próxima atividade...
+            </span>
 
-  <div class="lista-resumo-dashboard">
+          </div>
 
-    <div class="linha-resumo-dashboard">
-      <div>
-        <strong>Gira de Caboclo</strong>
-        <span>15 AGO</span>
-      </div>
+        </div>
 
-      <span class="status-resumo status-presente">
-        Presente
-      </span>
-    </div>
-
-    <div class="linha-resumo-dashboard">
-      <div>
-        <strong>Desenvolvimento</strong>
-        <span>05 AGO</span>
-      </div>
-
-      <span class="status-resumo status-falta">
-        Falta
-      </span>
-    </div>
-
-    <div class="linha-resumo-dashboard">
-      <div>
-        <strong>Gira de Preto Velho</strong>
-        <span>26 JUL</span>
-      </div>
-
-      <span class="status-resumo status-presente">
-        Presente
-      </span>
-    </div>
-
-    <div class="linha-resumo-dashboard">
-      <div>
-        <strong>Desenvolvimento</strong>
-        <span>19 JUL</span>
-      </div>
-
-      <span class="status-resumo status-presente">
-        Presente
-      </span>
-    </div>
-
-    <div class="linha-resumo-dashboard">
-      <div>
-        <strong>Gira de Baiano</strong>
-        <span>12 JUL</span>
-      </div>
-
-      <span class="status-resumo status-presente">
-        Presente
-      </span>
-    </div>
-
-  </div>
-
-  <small class="aviso-dados-exemplo">
-    Exemplo visual. O controle de presença será implementado posteriormente.
-  </small>
-
-</section>
+      </section>
 
 
-<!-- PAGAMENTOS -->
-<section class="cartao-app">
+      <!-- =====================================
+           FUNÇÕES
+      ====================================== -->
 
-  <h2>Pagamentos — últimos 6 meses</h2>
-
-  <div class="lista-resumo-dashboard">
-
-    <div class="linha-resumo-dashboard">
-      <strong>Agosto/2026</strong>
-      <span class="status-resumo status-pago">Pago</span>
-    </div>
-
-    <div class="linha-resumo-dashboard">
-      <strong>Julho/2026</strong>
-      <span class="status-resumo status-pago">Pago</span>
-    </div>
-
-    <div class="linha-resumo-dashboard">
-      <strong>Junho/2026</strong>
-      <span class="status-resumo status-pago">Pago</span>
-    </div>
-
-    <div class="linha-resumo-dashboard">
-      <strong>Maio/2026</strong>
-      <span class="status-resumo status-pago">Pago</span>
-    </div>
-
-    <div class="linha-resumo-dashboard">
-      <strong>Abril/2026</strong>
-      <span class="status-resumo status-pago">Pago</span>
-    </div>
-
-    <div class="linha-resumo-dashboard">
-      <strong>Março/2026</strong>
-      <span class="status-resumo status-pago">Pago</span>
-    </div>
-
-  </div>
-
-  <small class="aviso-dados-exemplo">
-    Exemplo visual. A integração financeira será implementada posteriormente.
-  </small>
-
-</section>
       <section class="cartao-app">
 
-        <h2>Situação cadastral</h2>
+        <div
+          id="listaFuncoesDashboard"
+          class="lista-funcoes-dashboard"
+        >
+
+          <p>
+            Carregando funções...
+          </p>
+
+        </div>
+
+
+        <a
+          id="areaAdministrativo"
+          class="link-administrativo"
+          href="#"
+          hidden
+        >
+          Funções administrativas
+        </a>
+
+      </section>
+
+
+      <!-- =====================================
+           PRESENÇA REAL DO USUÁRIO
+      ====================================== -->
+
+      <section
+        id="areaPresencaDashboard"
+        class="cartao-app"
+        hidden
+      >
+
+        <h2>
+          Presença
+        </h2>
+
+        <p class="texto-explicativo-relatorio-atividade">
+          Últimas atividades das listas em que você participa atualmente.
+        </p>
+
+
+        <div
+          id="listasPresencaDashboard"
+          class="listas-resumo-presenca-associado"
+        >
+        </div>
+
+
+        <div
+          id="mensagemSemPresencaDashboard"
+          class="mensagem-sem-atividades"
+          hidden
+        >
+          Nenhuma lista de presença disponível.
+        </div>
+
+      </section>
+
+
+      <!-- =====================================
+           PAGAMENTOS
+           AINDA EXEMPLO
+      ====================================== -->
+
+      <section class="cartao-app">
+
+        <h2>
+          Pagamentos — últimos 6 meses
+        </h2>
+
+
+        <div class="lista-resumo-dashboard">
+
+
+          <div class="linha-resumo-dashboard">
+
+            <strong>
+              Agosto/2026
+            </strong>
+
+            <span class="status-resumo status-pago">
+              Pago
+            </span>
+
+          </div>
+
+
+          <div class="linha-resumo-dashboard">
+
+            <strong>
+              Julho/2026
+            </strong>
+
+            <span class="status-resumo status-pago">
+              Pago
+            </span>
+
+          </div>
+
+
+          <div class="linha-resumo-dashboard">
+
+            <strong>
+              Junho/2026
+            </strong>
+
+            <span class="status-resumo status-pago">
+              Pago
+            </span>
+
+          </div>
+
+
+          <div class="linha-resumo-dashboard">
+
+            <strong>
+              Maio/2026
+            </strong>
+
+            <span class="status-resumo status-pago">
+              Pago
+            </span>
+
+          </div>
+
+
+          <div class="linha-resumo-dashboard">
+
+            <strong>
+              Abril/2026
+            </strong>
+
+            <span class="status-resumo status-pago">
+              Pago
+            </span>
+
+          </div>
+
+
+          <div class="linha-resumo-dashboard">
+
+            <strong>
+              Março/2026
+            </strong>
+
+            <span class="status-resumo status-pago">
+              Pago
+            </span>
+
+          </div>
+
+
+        </div>
+
+
+        <small class="aviso-dados-exemplo">
+          Exemplo visual. A integração financeira será implementada posteriormente.
+        </small>
+
+      </section>
+
+
+      <!-- =====================================
+           SITUAÇÃO CADASTRAL
+      ====================================== -->
+
+      <section class="cartao-app">
+
+        <h2>
+          Situação cadastral
+        </h2>
 
         <p>
           Associado ativo
@@ -225,9 +316,15 @@
 
       </section>
 
+
     </div>
 
   </main>
+
+
+  <!-- =====================================
+       MENU
+  ====================================== -->
 
   <nav
     class="menu-inferior"
@@ -236,53 +333,101 @@
 
     <div class="menu-inferior-conteudo">
 
+
       <a
         class="item-menu ativo"
         href="dashboard.html"
       >
-        <span class="icone-menu">⌂</span>
-        <span class="texto-menu">Início</span>
+
+        <span class="icone-menu">
+          ⌂
+        </span>
+
+        <span class="texto-menu">
+          Início
+        </span>
+
       </a>
+
 
       <a
         class="item-menu"
         href="calendario.html"
       >
-        <span class="icone-menu">📅</span>
-        <span class="texto-menu">Calendário</span>
+
+        <span class="icone-menu">
+          📅
+        </span>
+
+        <span class="texto-menu">
+          Calendário
+        </span>
+
       </a>
+
 
       <a
         class="item-menu"
         href="minha-ficha.html"
       >
-        <span class="icone-menu">👤</span>
-        <span class="texto-menu">Minha ficha</span>
+
+        <span class="icone-menu">
+          👤
+        </span>
+
+        <span class="texto-menu">
+          Minha ficha
+        </span>
+
       </a>
+
 
       <a
         class="item-menu"
         href="mais.html"
       >
-        <span class="icone-menu">☰</span>
-        <span class="texto-menu">Mais</span>
+
+        <span class="icone-menu">
+          ☰
+        </span>
+
+        <span class="texto-menu">
+          Mais
+        </span>
+
       </a>
 
+
       <a
-  class="item-menu"
-  href="#"
-  id="botaoSair"
->
-  <span class="icone-menu">🚪</span>
-  <span class="texto-menu">Sair</span>
-</a>
+        class="item-menu"
+        href="#"
+        id="botaoSair"
+      >
+
+        <span class="icone-menu">
+          🚪
+        </span>
+
+        <span class="texto-menu">
+          Sair
+        </span>
+
+      </a>
+
+
     </div>
 
   </nav>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js?v=2"></script>
-<script src="app.js?v=2"></script>
-<script src="dashboard.js?v=6"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="supabase.js?v=2"></script>
+
+  <script src="app.js?v=2"></script>
+
+  <script src="dashboard.js?v=7"></script>
+
 </body>
+
 </html>
