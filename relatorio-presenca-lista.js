@@ -380,6 +380,44 @@ function nomesFuncoesDaLista(
 
 
 /* ==========================================
+   DATA DE ENTRADA DA LISTA
+========================================== */
+
+function obterDataEntradaNaLista(
+  associado
+) {
+
+  if (
+    tipoListaNome ===
+    "Corrente Principal"
+  ) {
+
+    return associado.data_corrente_principal ||
+      associado.data_entrada_tufra ||
+      null;
+
+  }
+
+
+  if (
+    tipoListaNome ===
+    "Desenvolvimento"
+  ) {
+
+    return associado.data_corrente_desenvolvimento ||
+      associado.data_entrada_tufra ||
+      null;
+
+  }
+
+
+  return associado.data_entrada_tufra ||
+    null;
+
+}
+
+
+/* ==========================================
    CARREGAR TIPO DA LISTA
 ========================================== */
 
@@ -652,6 +690,8 @@ async function carregarAssociados() {
         nome_completo,
         status,
         data_entrada_tufra,
+        data_corrente_desenvolvimento,
+        data_corrente_principal,
 
         usuario_funcoes!usuario_funcoes_usuario_id_fkey (
           funcoes (
@@ -706,10 +746,12 @@ async function carregarAssociados() {
       .sort(
         (a, b) =>
           String(
-            a.nome_completo || ""
+            a.nome_completo ||
+            ""
           ).localeCompare(
             String(
-              b.nome_completo || ""
+              b.nome_completo ||
+              ""
             ),
             "pt-BR",
             {
@@ -836,12 +878,18 @@ function obterSituacaoCelula(
 
 
   /* --------------------------------------
-     AINDA NÃO PARTICIPAVA
+     AINDA NÃO PARTICIPAVA DESTA LISTA
   -------------------------------------- */
 
+  const dataEntradaLista =
+    obterDataEntradaNaLista(
+      associado
+    );
+
+
   if (
-    associado.data_entrada_tufra &&
-    associado.data_entrada_tufra >
+    dataEntradaLista &&
+    dataEntradaLista >
       atividade.data
   ) {
 
