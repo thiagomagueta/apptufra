@@ -21,7 +21,7 @@
 
   <link
     rel="stylesheet"
-    href="layout.css?v=17"
+    href="layout.css?v=39"
   >
 
 </head>
@@ -33,10 +33,6 @@
 
     <div class="conteudo-app">
 
-
-      <!-- =====================================
-           CABEÇALHO
-      ====================================== -->
 
       <header class="cabecalho-app">
 
@@ -61,10 +57,6 @@
       </header>
 
 
-      <!-- =====================================
-           TÍTULO
-      ====================================== -->
-
       <section>
 
         <h1 class="titulo-pagina">
@@ -77,10 +69,6 @@
 
       </section>
 
-
-      <!-- =====================================
-           LISTAS
-      ====================================== -->
 
       <section class="cartao-app">
 
@@ -110,15 +98,11 @@
       </section>
 
 
-      <!-- =====================================
-           VOLTAR
-      ====================================== -->
-
       <a
         class="link-administrativo"
-        href="administrativo.html"
+        href="adm-permissoes.html"
       >
-        Voltar ao Administrativo
+        Voltar para Permissões
       </a>
 
 
@@ -126,10 +110,6 @@
 
   </main>
 
-
-  <!-- =====================================
-       MENU INFERIOR
-  ====================================== -->
 
   <nav
     class="menu-inferior"
@@ -163,11 +143,13 @@
       </a>
 
       <a
-        class="item-menu"
-        href="mais.html"
+        id="itemMenuAdm"
+        class="item-menu ativo"
+        href="administrativo.html"
+        hidden
       >
         <span class="icone-menu">☰</span>
-        <span class="texto-menu">Mais</span>
+        <span class="texto-menu">ADM</span>
       </a>
 
       <a
@@ -184,10 +166,6 @@
   </nav>
 
 
-  <!-- =====================================
-       SCRIPTS
-  ====================================== -->
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script src="supabase.js?v=2"></script>
@@ -196,6 +174,7 @@
 
   <script src="responsaveis-presenca.js?v=1"></script>
 
+  <script src="menu-adm.js?v=1"></script>
 
 </body>
 
