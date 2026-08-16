@@ -35,6 +35,11 @@ const opcaoRelatorioPresenca =
     "opcaoRelatorioPresenca"
   );
 
+const opcaoRelatorioAtividadePresenca =
+  document.getElementById(
+    "opcaoRelatorioAtividadePresenca"
+  );
+
 const opcaoConfigurarResponsaveis =
   document.getElementById(
     "opcaoConfigurarResponsaveis"
@@ -325,6 +330,21 @@ async function carregarOpcoesAdministrativas() {
     ) {
 
       opcaoRelatorioPresenca.hidden =
+        !pertenceDiretoria;
+
+    }
+
+
+    /* ======================================
+       RELATÓRIO POR ATIVIDADE
+       TODA DIRETORIA
+    ====================================== */
+
+    if (
+      opcaoRelatorioAtividadePresenca
+    ) {
+
+      opcaoRelatorioAtividadePresenca.hidden =
         !pertenceDiretoria;
 
     }
