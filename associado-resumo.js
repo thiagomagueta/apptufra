@@ -42,6 +42,71 @@ const voltarAssociados =
 
 
 /* ==========================================
+   DATAS ADMINISTRATIVAS
+========================================== */
+
+const botaoEditarDatasAdministrativas =
+  document.getElementById(
+    "botaoEditarDatasAdministrativas"
+  );
+
+const visualizacaoDatasAdministrativas =
+  document.getElementById(
+    "visualizacaoDatasAdministrativas"
+  );
+
+const edicaoDatasAdministrativas =
+  document.getElementById(
+    "edicaoDatasAdministrativas"
+  );
+
+const textoDataEntradaTufra =
+  document.getElementById(
+    "textoDataEntradaTufra"
+  );
+
+const textoDataCorrenteDesenvolvimento =
+  document.getElementById(
+    "textoDataCorrenteDesenvolvimento"
+  );
+
+const textoDataCorrentePrincipal =
+  document.getElementById(
+    "textoDataCorrentePrincipal"
+  );
+
+const dataEntradaTufra =
+  document.getElementById(
+    "dataEntradaTufra"
+  );
+
+const dataCorrenteDesenvolvimento =
+  document.getElementById(
+    "dataCorrenteDesenvolvimento"
+  );
+
+const dataCorrentePrincipal =
+  document.getElementById(
+    "dataCorrentePrincipal"
+  );
+
+const botaoSalvarDatasAdministrativas =
+  document.getElementById(
+    "botaoSalvarDatasAdministrativas"
+  );
+
+const botaoCancelarDatasAdministrativas =
+  document.getElementById(
+    "botaoCancelarDatasAdministrativas"
+  );
+
+const mensagemDatasAdministrativas =
+  document.getElementById(
+    "mensagemDatasAdministrativas"
+  );
+
+
+/* ==========================================
    FOTO AMPLIADA
 ========================================== */
 
@@ -84,6 +149,14 @@ const resetarZoomFotoAssociado =
 let zoomFoto = 1;
 
 let distanciaToqueInicial =
+  null;
+
+
+/* ==========================================
+   DADOS
+========================================== */
+
+let associadoAtual =
   null;
 
 
@@ -192,6 +265,38 @@ function valorOuTraco(
 }
 
 
+function formatarData(
+  dataISO
+) {
+
+  if (
+    !dataISO
+  ) {
+
+    return "Não informado";
+
+  }
+
+
+  const partes =
+    String(
+      dataISO
+    ).split("-");
+
+
+  if (
+    partes.length !== 3
+  ) {
+
+    return dataISO;
+
+  }
+
+
+  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+
 /* ==========================================
    ITEM DO RESUMO
 ========================================== */
@@ -267,6 +372,313 @@ function mostrarMensagem(
 
 
 /* ==========================================
+   EXIBIR DATAS
+========================================== */
+
+function atualizarVisualizacaoDatas() {
+
+  if (
+    !associadoAtual
+  ) {
+
+    return;
+
+  }
+
+
+  textoDataEntradaTufra.textContent =
+    formatarData(
+      associadoAtual.data_entrada_tufra
+    );
+
+
+  textoDataCorrenteDesenvolvimento.textContent =
+    formatarData(
+      associadoAtual.data_corrente_desenvolvimento
+    );
+
+
+  textoDataCorrentePrincipal.textContent =
+    formatarData(
+      associadoAtual.data_corrente_principal
+    );
+}
+
+
+/* ==========================================
+   ABRIR EDIÇÃO
+========================================== */
+
+function abrirEdicaoDatas() {
+
+  if (
+    !associadoAtual
+  ) {
+
+    return;
+
+  }
+
+
+  dataEntradaTufra.value =
+    associadoAtual.data_entrada_tufra ||
+    "";
+
+
+  dataCorrenteDesenvolvimento.value =
+    associadoAtual.data_corrente_desenvolvimento ||
+    "";
+
+
+  dataCorrentePrincipal.value =
+    associadoAtual.data_corrente_principal ||
+    "";
+
+
+  mensagemDatasAdministrativas.hidden =
+    true;
+
+
+  mensagemDatasAdministrativas.textContent =
+    "";
+
+
+  visualizacaoDatasAdministrativas.hidden =
+    true;
+
+
+  botaoEditarDatasAdministrativas.hidden =
+    true;
+
+
+  edicaoDatasAdministrativas.hidden =
+    false;
+}
+
+
+/* ==========================================
+   CANCELAR EDIÇÃO
+========================================== */
+
+function cancelarEdicaoDatas() {
+
+  edicaoDatasAdministrativas.hidden =
+    true;
+
+
+  visualizacaoDatasAdministrativas.hidden =
+    false;
+
+
+  botaoEditarDatasAdministrativas.hidden =
+    false;
+
+
+  mensagemDatasAdministrativas.hidden =
+    true;
+}
+
+
+/* ==========================================
+   VALIDAR DATAS
+========================================== */
+
+function validarDatasAdministrativas() {
+
+  const entrada =
+    dataEntradaTufra.value;
+
+  const desenvolvimento =
+    dataCorrenteDesenvolvimento.value;
+
+  const principal =
+    dataCorrentePrincipal.value;
+
+
+  if (
+    entrada &&
+    desenvolvimento &&
+    desenvolvimento < entrada
+  ) {
+
+    return "A data da Corrente do Desenvolvimento não pode ser anterior à entrada na TUFRA.";
+
+  }
+
+
+  if (
+    entrada &&
+    principal &&
+    principal < entrada
+  ) {
+
+    return "A data da Corrente Principal não pode ser anterior à entrada na TUFRA.";
+
+  }
+
+
+  if (
+    desenvolvimento &&
+    principal &&
+    principal < desenvolvimento
+  ) {
+
+    return "A data da Corrente Principal não pode ser anterior à Corrente do Desenvolvimento.";
+
+  }
+
+
+  return "";
+}
+
+
+/* ==========================================
+   SALVAR DATAS
+========================================== */
+
+async function salvarDatasAdministrativas() {
+
+  if (
+    !associadoAtual
+  ) {
+
+    return;
+
+  }
+
+
+  const erroValidacao =
+    validarDatasAdministrativas();
+
+
+  if (
+    erroValidacao
+  ) {
+
+    mensagemDatasAdministrativas.textContent =
+      erroValidacao;
+
+
+    mensagemDatasAdministrativas.hidden =
+      false;
+
+
+    return;
+
+  }
+
+
+  botaoSalvarDatasAdministrativas.disabled =
+    true;
+
+
+  botaoSalvarDatasAdministrativas.textContent =
+    "Salvando...";
+
+
+  mensagemDatasAdministrativas.hidden =
+    true;
+
+
+  try {
+
+    const novasDatas = {
+
+      data_entrada_tufra:
+        dataEntradaTufra.value ||
+        null,
+
+      data_corrente_desenvolvimento:
+        dataCorrenteDesenvolvimento.value ||
+        null,
+
+      data_corrente_principal:
+        dataCorrentePrincipal.value ||
+        null
+
+    };
+
+
+    const resultado =
+      await window.supabaseClient
+        .from(
+          "usuarios"
+        )
+        .update(
+          novasDatas
+        )
+        .eq(
+          "id",
+          associadoAtual.id
+        );
+
+
+    if (
+      resultado.error
+    ) {
+
+      throw resultado.error;
+
+    }
+
+
+    associadoAtual.data_entrada_tufra =
+      novasDatas.data_entrada_tufra;
+
+
+    associadoAtual.data_corrente_desenvolvimento =
+      novasDatas.data_corrente_desenvolvimento;
+
+
+    associadoAtual.data_corrente_principal =
+      novasDatas.data_corrente_principal;
+
+
+    atualizarVisualizacaoDatas();
+
+
+    edicaoDatasAdministrativas.hidden =
+      true;
+
+
+    visualizacaoDatasAdministrativas.hidden =
+      false;
+
+
+    botaoEditarDatasAdministrativas.hidden =
+      false;
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao salvar datas administrativas:",
+      erro
+    );
+
+
+    mensagemDatasAdministrativas.textContent =
+      "Não foi possível salvar as datas.";
+
+
+    mensagemDatasAdministrativas.hidden =
+      false;
+
+
+  } finally {
+
+    botaoSalvarDatasAdministrativas.disabled =
+      false;
+
+
+    botaoSalvarDatasAdministrativas.textContent =
+      "Salvar datas";
+
+  }
+}
+
+
+/* ==========================================
    CARREGAR ASSOCIADO
 ========================================== */
 
@@ -310,7 +722,10 @@ async function carregarAssociado() {
         .select(`
           id,
           nome_completo,
-          foto_path
+          foto_path,
+          data_entrada_tufra,
+          data_corrente_desenvolvimento,
+          data_corrente_principal
         `)
         .eq(
           "id",
@@ -341,6 +756,10 @@ async function carregarAssociado() {
 
     const usuario =
       resultadoUsuario.data;
+
+
+    associadoAtual =
+      usuario;
 
 
     const resultadoFicha =
@@ -430,10 +849,8 @@ async function carregarAssociado() {
     );
 
 
-    /*
-      Também preservamos a origem ao
-      abrir o cadastro completo.
-    */
+    atualizarVisualizacaoDatas();
+
 
     botaoCadastroCompleto.href =
       `associado-ficha.html?id=${associadoId}&origem=${origem}`;
@@ -645,6 +1062,24 @@ function calcularDistanciaToques(
 /* ==========================================
    EVENTOS
 ========================================== */
+
+botaoEditarDatasAdministrativas.addEventListener(
+  "click",
+  abrirEdicaoDatas
+);
+
+
+botaoCancelarDatasAdministrativas.addEventListener(
+  "click",
+  cancelarEdicaoDatas
+);
+
+
+botaoSalvarDatasAdministrativas.addEventListener(
+  "click",
+  salvarDatasAdministrativas
+);
+
 
 fotoAssociadoResumo.addEventListener(
   "click",
