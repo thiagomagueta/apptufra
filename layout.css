@@ -2210,3 +2210,64 @@ input:checked + span {
   }
 
 }
+/* ==========================================
+   RELATÓRIO DE PRESENÇA - MAIS COMPACTO
+========================================== */
+
+/* DIMINUI A ALTURA DAS LINHAS */
+
+.tabela-relatorio-presenca th,
+.tabela-relatorio-presenca td {
+  height: 34px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+
+/* COLUNAS DAS DATAS MAIS ESTREITAS */
+
+.tabela-relatorio-presenca thead th.coluna-data-relatorio {
+  min-width: 28px;
+  width: 28px;
+
+  padding-left: 1px;
+  padding-right: 1px;
+}
+
+
+/* CÉLULAS P / F / J / — / X MAIS ESTREITAS */
+
+.tabela-relatorio-presenca td.celula-status-relatorio {
+  min-width: 28px;
+  width: 28px;
+
+  padding-left: 1px;
+  padding-right: 1px;
+}
+
+
+/* NOME CONTINUA COM ESPAÇO SUFICIENTE */
+
+.tabela-relatorio-presenca .coluna-nome-relatorio {
+  min-width: 145px;
+  max-width: 145px;
+}
+
+
+/* CELULAR */
+
+@media (max-width: 600px) {
+
+  .tabela-relatorio-presenca .coluna-nome-relatorio {
+    min-width: 135px;
+    max-width: 135px;
+  }
+
+
+  .tabela-relatorio-presenca thead th.coluna-data-relatorio,
+  .tabela-relatorio-presenca td.celula-status-relatorio {
+    min-width: 28px;
+    width: 28px;
+  }
+
+}
