@@ -5,14 +5,24 @@
    ELEMENTOS
 ========================================== */
 
-const tituloRelatorioAtividade =
+const listaRelatorioAtividade =
   document.getElementById(
-    "tituloRelatorioAtividade"
+    "listaRelatorioAtividade"
   );
 
 const anoRelatorioAtividade =
   document.getElementById(
     "anoRelatorioAtividade"
+  );
+
+const areaRelatorioAtividade =
+  document.getElementById(
+    "areaRelatorioAtividade"
+  );
+
+const tituloListaRelatorioAtividade =
+  document.getElementById(
+    "tituloListaRelatorioAtividade"
   );
 
 const containerTabelaAtividade =
@@ -35,13 +45,10 @@ const mensagemSemAtividadesRelatorio =
    DADOS
 ========================================== */
 
-let tipoListaId =
-  null;
+let listasPresenca =
+  [];
 
-let tipoListaNome =
-  "";
-
-let tipoAtividadeLista =
+let tipoListaAtual =
   null;
 
 let todasAtividades =
@@ -65,25 +72,6 @@ const funcoesDiretoria = [
   "Secretária",
   "Presidente"
 ];
-
-
-/* ==========================================
-   PARÂMETRO
-========================================== */
-
-function obterTipoListaId() {
-
-  const parametros =
-    new URLSearchParams(
-      window.location.search
-    );
-
-
-  return parametros.get(
-    "id"
-  );
-
-}
 
 
 /* ==========================================
@@ -119,7 +107,6 @@ function obterDataAtualISO() {
 
 
   return `${ano}-${mes}-${dia}`;
-
 }
 
 
@@ -140,7 +127,6 @@ function formatarDataCurta(
 
 
   return `${dia}/${mes}`;
-
 }
 
 
@@ -277,7 +263,6 @@ async function validarDiretoria() {
     );
 
   }
-
 }
 
 
@@ -351,7 +336,6 @@ function nomesFuncoesDaLista(
 
 
   return [];
-
 }
 
 
@@ -364,7 +348,16 @@ function obterDataEntradaNaLista(
 ) {
 
   if (
-    tipoListaNome ===
+    !tipoListaAtual
+  ) {
+
+    return null;
+
+  }
+
+
+  if (
+    tipoListaAtual.nome ===
     "Corrente Principal"
   ) {
 
@@ -376,7 +369,7 @@ function obterDataEntradaNaLista(
 
 
   if (
-    tipoListaNome ===
+    tipoListaAtual.nome ===
     "Desenvolvimento"
   ) {
 
@@ -389,15 +382,14 @@ function obterDataEntradaNaLista(
 
   return associado.data_entrada_tufra ||
     null;
-
 }
 
 
 /* ==========================================
-   CARREGAR TIPO DA LISTA
+   CARREGAR LISTAS
 ========================================== */
 
-async function carregarTipoLista() {
+async function carregarListas() {
 
   const resultado =
     await window.supabaseClient
@@ -408,13 +400,19 @@ async function carregarTipoLista() {
         id,
         nome,
         tipo_atividade,
-        ativo
+        ativo,
+        ordem
       `)
       .eq(
-        "id",
-        tipoListaId
+        "ativo",
+        true
       )
-      .maybeSingle();
+      .order(
+        "ordem",
+        {
+          ascending: true
+        }
+      );
 
 
   if (
@@ -426,28 +424,83 @@ async function carregarTipoLista() {
   }
 
 
+  listasPresenca =
+    resultado.data ||
+    [];
+
+
+  listaRelatorioAtividade.innerHTML =
+    "";
+
+
   if (
-    !resultado.data
+    listasPresenca.length ===
+    0
   ) {
 
-    throw new Error(
-      "Lista de presença não encontrada."
+    const opcao =
+      document.createElement(
+        "option"
+      );
+
+
+    opcao.value =
+      "";
+
+
+    opcao.textContent =
+      "Nenhuma lista";
+
+
+    listaRelatorioAtividade.appendChild(
+      opcao
     );
+
+
+    listaRelatorioAtividade.disabled =
+      true;
+
+
+    return;
 
   }
 
 
-  tipoListaNome =
-    resultado.data.nome;
+  listasPresenca.forEach(
+    (lista) => {
+
+      const opcao =
+        document.createElement(
+          "option"
+        );
 
 
-  tipoAtividadeLista =
-    resultado.data.tipo_atividade;
+      opcao.value =
+        lista.id;
 
 
-  tituloRelatorioAtividade.textContent =
-    tipoListaNome;
+      opcao.textContent =
+        lista.nome;
 
+
+      listaRelatorioAtividade.appendChild(
+        opcao
+      );
+
+    }
+  );
+
+
+  listaRelatorioAtividade.disabled =
+    false;
+
+
+  tipoListaAtual =
+    listasPresenca[0];
+
+
+  listaRelatorioAtividade.value =
+    tipoListaAtual.id;
 }
 
 
@@ -455,7 +508,20 @@ async function carregarTipoLista() {
    CARREGAR ATIVIDADES
 ========================================== */
 
-async function carregarTodasAtividades() {
+async function carregarAtividades() {
+
+  todasAtividades =
+    [];
+
+
+  if (
+    !tipoListaAtual
+  ) {
+
+    return;
+
+  }
+
 
   const resultado =
     await window.supabaseClient
@@ -471,7 +537,7 @@ async function carregarTodasAtividades() {
       `)
       .eq(
         "tipo_atividade",
-        tipoAtividadeLista
+        tipoListaAtual.tipo_atividade
       )
       .order(
         "data",
@@ -499,7 +565,6 @@ async function carregarTodasAtividades() {
   todasAtividades =
     resultado.data ||
     [];
-
 }
 
 
@@ -627,7 +692,6 @@ function carregarAnosDisponiveis() {
 
   anoRelatorioAtividade.disabled =
     false;
-
 }
 
 
@@ -637,9 +701,22 @@ function carregarAnosDisponiveis() {
 
 async function carregarAssociados() {
 
+  associadosDaLista =
+    [];
+
+
+  if (
+    !tipoListaAtual
+  ) {
+
+    return;
+
+  }
+
+
   const funcoesNecessarias =
     nomesFuncoesDaLista(
-      tipoListaNome
+      tipoListaAtual.nome
     );
 
 
@@ -647,9 +724,6 @@ async function carregarAssociados() {
     funcoesNecessarias.length ===
     0
   ) {
-
-    associadosDaLista =
-      [];
 
     return;
 
@@ -719,7 +793,6 @@ async function carregarAssociados() {
 
         }
       );
-
 }
 
 
@@ -728,6 +801,19 @@ async function carregarAssociados() {
 ========================================== */
 
 async function carregarPresencas() {
+
+  presencas =
+    [];
+
+
+  if (
+    !tipoListaAtual
+  ) {
+
+    return;
+
+  }
+
 
   const resultado =
     await window.supabaseClient
@@ -741,7 +827,7 @@ async function carregarPresencas() {
       `)
       .eq(
         "tipo_lista_id",
-        tipoListaId
+        tipoListaAtual.id
       );
 
 
@@ -757,7 +843,6 @@ async function carregarPresencas() {
   presencas =
     resultado.data ||
     [];
-
 }
 
 
@@ -777,7 +862,6 @@ function obterAtividadesDoAno(
         `${ano}-`
       )
   );
-
 }
 
 
@@ -797,7 +881,6 @@ function obterPresenca(
       registro.atividade_id ===
         atividadeId
   );
-
 }
 
 
@@ -865,7 +948,6 @@ function obterSituacao(
 
 
   return "pendente";
-
 }
 
 
@@ -983,7 +1065,6 @@ function calcularDadosAtividade(
     pendentes,
     frequencia
   };
-
 }
 
 
@@ -1002,20 +1083,24 @@ function renderizarRelatorio() {
 
 
   if (
+    !tipoListaAtual ||
     !ano
   ) {
 
-    containerTabelaAtividade.hidden =
+    areaRelatorioAtividade.hidden =
       true;
-
-
-    mensagemSemAtividadesRelatorio.hidden =
-      false;
-
 
     return;
 
   }
+
+
+  areaRelatorioAtividade.hidden =
+    false;
+
+
+  tituloListaRelatorioAtividade.textContent =
+    tipoListaAtual.nome;
 
 
   const hojeISO =
@@ -1074,6 +1159,8 @@ function renderizarRelatorio() {
         );
 
 
+      /* DATA */
+
       const colunaData =
         document.createElement(
           "td"
@@ -1085,6 +1172,8 @@ function renderizarRelatorio() {
           atividade.data
         );
 
+
+      /* ATIVIDADE */
 
       const colunaAtividade =
         document.createElement(
@@ -1099,6 +1188,8 @@ function renderizarRelatorio() {
       colunaAtividade.textContent =
         atividade.titulo;
 
+
+      /* PRESENTES */
 
       const colunaP =
         document.createElement(
@@ -1116,6 +1207,8 @@ function renderizarRelatorio() {
         );
 
 
+      /* FALTAS */
+
       const colunaF =
         document.createElement(
           "td"
@@ -1131,6 +1224,8 @@ function renderizarRelatorio() {
           dados.faltas
         );
 
+
+      /* JUSTIFICADAS */
 
       const colunaJ =
         document.createElement(
@@ -1148,6 +1243,8 @@ function renderizarRelatorio() {
         );
 
 
+      /* PENDENTES */
+
       const colunaPendentes =
         document.createElement(
           "td"
@@ -1163,6 +1260,8 @@ function renderizarRelatorio() {
           dados.pendentes
         );
 
+
+      /* FREQUÊNCIA */
 
       const colunaFrequencia =
         document.createElement(
@@ -1196,25 +1295,31 @@ function renderizarRelatorio() {
         colunaData
       );
 
+
       linha.appendChild(
         colunaAtividade
       );
+
 
       linha.appendChild(
         colunaP
       );
 
+
       linha.appendChild(
         colunaF
       );
+
 
       linha.appendChild(
         colunaJ
       );
 
+
       linha.appendChild(
         colunaPendentes
       );
+
 
       linha.appendChild(
         colunaFrequencia
@@ -1227,7 +1332,80 @@ function renderizarRelatorio() {
 
     }
   );
+}
 
+
+/* ==========================================
+   TROCAR LISTA
+========================================== */
+
+async function trocarLista() {
+
+  const listaId =
+    listaRelatorioAtividade.value;
+
+
+  tipoListaAtual =
+    listasPresenca.find(
+      (lista) =>
+        lista.id ===
+        listaId
+    ) || null;
+
+
+  areaRelatorioAtividade.hidden =
+    true;
+
+
+  anoRelatorioAtividade.disabled =
+    true;
+
+
+  anoRelatorioAtividade.innerHTML =
+    `
+      <option value="">
+        Carregando...
+      </option>
+    `;
+
+
+  try {
+
+    await carregarAtividades();
+
+    carregarAnosDisponiveis();
+
+    await carregarAssociados();
+
+    await carregarPresencas();
+
+    renderizarRelatorio();
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao trocar lista do relatório por atividade:",
+      erro
+    );
+
+
+    areaRelatorioAtividade.hidden =
+      false;
+
+
+    containerTabelaAtividade.hidden =
+      true;
+
+
+    mensagemSemAtividadesRelatorio.hidden =
+      false;
+
+
+    mensagemSemAtividadesRelatorio.textContent =
+      "Não foi possível carregar o relatório.";
+
+  }
 }
 
 
@@ -1236,22 +1414,6 @@ function renderizarRelatorio() {
 ========================================== */
 
 async function iniciarPagina() {
-
-  tipoListaId =
-    obterTipoListaId();
-
-
-  if (
-    !tipoListaId
-  ) {
-
-    window.location.href =
-      "relatorio-atividade-presenca.html";
-
-    return;
-
-  }
-
 
   if (
     !window.supabaseClient
@@ -1266,44 +1428,57 @@ async function iniciarPagina() {
 
     await validarDiretoria();
 
-    await carregarTipoLista();
+    await carregarListas();
 
-    await carregarTodasAtividades();
 
-    carregarAnosDisponiveis();
+    if (
+      !tipoListaAtual
+    ) {
 
-    await carregarAssociados();
+      return;
 
-    await carregarPresencas();
+    }
 
-    renderizarRelatorio();
+
+    await trocarLista();
 
 
   } catch (erro) {
 
     console.error(
-      "Erro ao carregar relatório por atividade:",
+      "Erro ao iniciar relatório por atividade:",
       erro
     );
 
 
-    corpoRelatorioAtividade.innerHTML =
-      `
-        <tr>
-          <td colspan="7">
-            Não foi possível carregar o relatório.
-          </td>
-        </tr>
-      `;
+    areaRelatorioAtividade.hidden =
+      false;
+
+
+    containerTabelaAtividade.hidden =
+      true;
+
+
+    mensagemSemAtividadesRelatorio.hidden =
+      false;
+
+
+    mensagemSemAtividadesRelatorio.textContent =
+      "Não foi possível carregar o relatório.";
 
   }
-
 }
 
 
 /* ==========================================
-   TROCAR ANO
+   EVENTOS
 ========================================== */
+
+listaRelatorioAtividade.addEventListener(
+  "change",
+  trocarLista
+);
+
 
 anoRelatorioAtividade.addEventListener(
   "change",
