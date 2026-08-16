@@ -2565,3 +2565,138 @@ input:checked + span {
   }
 
 }
+/* ==========================================
+   RESUMO - HISTÓRICO DE FUNÇÕES
+========================================== */
+
+.aviso-associado-assistencia {
+  margin-bottom: 16px;
+
+  padding: 12px;
+
+  border: 1px solid #d9c4c4;
+  border-radius: 9px;
+
+  background: #f6eeee;
+
+  color: #651b1d;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  text-align: center;
+}
+
+
+.area-historico-funcoes {
+  margin-top: 18px;
+}
+
+
+.area-historico-funcoes h3,
+.area-edicao-historico-funcoes h3 {
+  margin: 0 0 10px 0;
+
+  font-size: 15px;
+
+  color: #651b1d;
+}
+
+
+.lista-historico-funcoes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+
+.bloco-historico-funcao {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  padding: 10px 0;
+
+  border-bottom: 1px solid #e5e0dc;
+}
+
+
+.bloco-historico-funcao:last-child {
+  border-bottom: 0;
+}
+
+
+.titulo-historico-funcao {
+  font-size: 14px;
+
+  color: #222222;
+}
+
+
+.periodo-historico-funcao {
+  font-size: 13px;
+
+  color: #666666;
+}
+
+
+/* ==========================================
+   EDIÇÃO DO HISTÓRICO
+========================================== */
+
+.area-edicao-historico-funcoes {
+  margin-top: 4px;
+  padding-top: 14px;
+
+  border-top: 1px solid #e5e0dc;
+}
+
+
+.lista-edicao-historico-funcoes {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+
+.item-edicao-historico-funcao {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  padding: 12px;
+
+  border: 1px solid #e5e0dc;
+  border-radius: 9px;
+
+  background: #fafafa;
+}
+
+
+.titulo-edicao-historico-funcao {
+  color: #651b1d;
+
+  font-size: 14px;
+}
+
+
+.funcao-historico-atual {
+  display: flex;
+  align-items: center;
+
+  min-height: 44px;
+
+  padding: 10px 12px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #d7d7d7;
+  border-radius: 8px;
+
+  background: #eeeeee;
+
+  color: #666666;
+
+  font-size: 14px;
+  font-weight: 700;
+}
