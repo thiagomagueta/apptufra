@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
 
   <meta charset="UTF-8">
@@ -14,14 +15,17 @@
     content="#651b1d"
   >
 
-  <title>Importar Excel | TUFRA</title>
+  <title>
+    Importar Excel | TUFRA
+  </title>
 
   <link
     rel="stylesheet"
-    href="layout.css?v=14"
+    href="layout.css?v=39"
   >
 
 </head>
+
 
 <body>
 
@@ -72,6 +76,7 @@
           Selecionar arquivo
         </h2>
 
+
         <label
           class="botao-selecionar-excel"
           for="arquivoExcel"
@@ -79,12 +84,14 @@
           Selecionar planilha
         </label>
 
+
         <input
           id="arquivoExcel"
           type="file"
           accept=".xlsx,.xls"
           hidden
         >
+
 
         <div
           id="dadosArquivoExcel"
@@ -97,6 +104,7 @@
           <span id="resumoArquivoExcel"></span>
 
         </div>
+
 
         <p
           id="mensagemImportarExcel"
@@ -145,10 +153,11 @@
 
       <a
         class="link-administrativo"
-        href="administrativo.html"
+        href="adm-calendario.html"
       >
-        Voltar ao Administrativo
+        Voltar para Calendário
       </a>
+
 
     </div>
 
@@ -187,11 +196,13 @@
       </a>
 
       <a
-        class="item-menu"
-        href="mais.html"
+        id="itemMenuAdm"
+        class="item-menu ativo"
+        href="administrativo.html"
+        hidden
       >
         <span class="icone-menu">☰</span>
-        <span class="texto-menu">Mais</span>
+        <span class="texto-menu">ADM</span>
       </a>
 
       <a
@@ -214,11 +225,17 @@
 
   <script src="app.js?v=2"></script>
 
+
   <script
     src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"
   ></script>
 
+
   <script src="importar-excel.js?v=3"></script>
 
+  <script src="menu-adm.js?v=1"></script>
+
+
 </body>
+
 </html>
