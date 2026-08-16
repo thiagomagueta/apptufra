@@ -14,7 +14,9 @@ jobs:
           version: latest
 
       - name: Criar pasta de backup
-        run: mkdir -p supabase-backup
+        run: |
+          mkdir -p supabase-backup
+          mkdir -p supabase-backup/storage/fotos-associados
 
       - name: Backup dos roles
         run: supabase db dump --db-url "$SUPABASE_DB_URL" -f supabase-backup/roles.sql --role-only
@@ -31,9 +33,105 @@ jobs:
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
 
-      - name: Guardar backup para download
+      - name: Preparar backup do Storage
+        run: npm install @supabase/supabase-js
+
+      - name: Baixar fotos do Storage
+        env:
+          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          cat > backup-storage.mjs <<'EOF'
+          import { createClient } from '@supabase/supabase-js'
+          import fs from 'fs'
+          import path from 'path'
+
+          const projectId = process.env.SUPABASE_PROJECT_ID
+          const serviceKey = process.env.SUPABASE_SERVICE_KEY
+
+          if (!projectId || !serviceKey) {
+            throw new Error('Credenciais do Storage não configuradas.')
+          }
+
+          const supabaseUrl = `https://${projectId}.supabase.co`
+          const supabase = createClient(supabaseUrl, serviceKey, {
+            auth: {
+              persistSession: false,
+              autoRefreshToken: false
+            }
+          })
+
+          const bucket = 'fotos-associados'
+          const destinoBase = 'supabase-backup/storage/fotos-associados'
+
+          let totalArquivos = 0
+
+          async function baixarPasta(prefixo = '') {
+            let offset = 0
+            const limit = 100
+
+            while (true) {
+              const { data: itens, error } = await supabase.storage
+                .from(bucket)
+                .list(prefixo, {
+                  limit,
+                  offset,
+                  sortBy: { column: 'name', order: 'asc' }
+                })
+
+              if (error) {
+                throw error
+              }
+
+              if (!itens || itens.length === 0) {
+                break
+              }
+
+              for (const item of itens) {
+                const caminhoRemoto = prefixo
+                  ? `${prefixo}/${item.name}`
+                  : item.name
+
+                if (item.id === null) {
+                  await baixarPasta(caminhoRemoto)
+                  continue
+                }
+
+                const { data, error: downloadError } = await supabase.storage
+                  .from(bucket)
+                  .download(caminhoRemoto)
+
+                if (downloadError) {
+                  throw downloadError
+                }
+
+                const caminhoLocal = path.join(destinoBase, caminhoRemoto)
+                fs.mkdirSync(path.dirname(caminhoLocal), { recursive: true })
+
+                const buffer = Buffer.from(await data.arrayBuffer())
+                fs.writeFileSync(caminhoLocal, buffer)
+
+                totalArquivos++
+              }
+
+              if (itens.length < limit) {
+                break
+              }
+
+              offset += limit
+            }
+          }
+
+          await baixarPasta()
+
+          console.log(`Backup do Storage concluído: ${totalArquivos} arquivo(s).`)
+          EOF
+
+          node backup-storage.mjs
+
+      - name: Guardar backup completo para download
         uses: actions/upload-artifact@v4
         with:
-          name: backup-supabase
+          name: backup-supabase-completo
           path: supabase-backup/
           retention-days: 1
