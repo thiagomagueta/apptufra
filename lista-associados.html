@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
 
   <meta charset="UTF-8">
@@ -14,20 +15,24 @@
     content="#651b1d"
   >
 
-  <title>Lista de Associados | TUFRA</title>
+  <title>
+    Lista de Associados Ativos | TUFRA
+  </title>
 
   <link
     rel="stylesheet"
-    href="layout.css?v=17"
+    href="layout.css?v=39"
   >
 
 </head>
+
 
 <body>
 
   <main class="app">
 
     <div class="conteudo-app">
+
 
       <header class="cabecalho-app">
 
@@ -55,11 +60,11 @@
       <section>
 
         <h1 class="titulo-pagina">
-          Lista de Associados
+          Lista de Associados Ativos
         </h1>
 
         <p class="subtitulo-pagina">
-          Consulte os associados cadastrados na TUFRA.
+          Consulte os associados ativos da TUFRA.
         </p>
 
       </section>
@@ -89,10 +94,11 @@
 
       <a
         class="link-administrativo"
-        href="administrativo.html"
+        href="adm-associados.html"
       >
-        Voltar ao Administrativo
+        Voltar para Associados
       </a>
+
 
     </div>
 
@@ -131,11 +137,13 @@
       </a>
 
       <a
-        class="item-menu"
-        href="mais.html"
+        id="itemMenuAdm"
+        class="item-menu ativo"
+        href="administrativo.html"
+        hidden
       >
         <span class="icone-menu">☰</span>
-        <span class="texto-menu">Mais</span>
+        <span class="texto-menu">ADM</span>
       </a>
 
       <a
@@ -160,5 +168,8 @@
 
   <script src="lista-associados.js?v=3"></script>
 
+  <script src="menu-adm.js?v=1"></script>
+
 </body>
+
 </html>
