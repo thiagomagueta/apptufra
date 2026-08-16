@@ -295,6 +295,16 @@ function criarCheckboxFuncao(
     funcao.id;
 
 
+  /*
+    Guardamos também o nome da função
+    para descobrir automaticamente
+    quais datas devem ser preenchidas.
+  */
+
+  checkbox.dataset.funcaoNome =
+    funcao.nome;
+
+
   checkbox.checked =
     funcoesUsuario.includes(
       funcao.id
@@ -502,6 +512,26 @@ function obterFuncoesMarcadas() {
       (checkbox) =>
         checkbox.dataset.funcaoId
     );
+}
+
+
+/* ==========================================
+   NOMES DAS FUNÇÕES MARCADAS
+========================================== */
+
+function obterNomesFuncoesMarcadas() {
+
+  return Array.from(
+    listaFuncoesPermissao
+      .querySelectorAll(
+        'input[type="checkbox"]:checked'
+      )
+  )
+    .map(
+      (checkbox) =>
+        checkbox.dataset.funcaoNome
+    )
+    .filter(Boolean);
 }
 
 
@@ -715,6 +745,178 @@ async function sincronizarFuncoesUsuario(
 
 
 /* ==========================================
+   ATUALIZAR DATAS AUTOMÁTICAS
+========================================== */
+
+async function atualizarDatasAutomaticas(
+  usuarioId,
+  preencherEntradaTufra
+) {
+
+  /*
+    Primeiro buscamos as datas atuais.
+
+    Dessa forma, uma data preenchida
+    manualmente pela Diretoria nunca
+    será sobrescrita.
+  */
+
+  const resultadoUsuario =
+    await window.supabaseClient
+      .from(
+        "usuarios"
+      )
+      .select(`
+        id,
+        data_entrada_tufra,
+        data_corrente_desenvolvimento,
+        data_corrente_principal
+      `)
+      .eq(
+        "id",
+        usuarioId
+      )
+      .maybeSingle();
+
+
+  if (
+    resultadoUsuario.error
+  ) {
+
+    throw resultadoUsuario.error;
+
+  }
+
+
+  if (
+    !resultadoUsuario.data
+  ) {
+
+    throw new Error(
+      "Usuário não encontrado para atualizar as datas."
+    );
+
+  }
+
+
+  const usuario =
+    resultadoUsuario.data;
+
+
+  const nomesFuncoes =
+    obterNomesFuncoesMarcadas();
+
+
+  const dataHoje =
+    obterDataHojeISO();
+
+
+  const atualizacoes =
+    {};
+
+
+  /* --------------------------------------
+     ENTRADA NA TUFRA
+  -------------------------------------- */
+
+  if (
+    preencherEntradaTufra &&
+    !usuario.data_entrada_tufra
+  ) {
+
+    atualizacoes.data_entrada_tufra =
+      dataHoje;
+
+  }
+
+
+  /* --------------------------------------
+     CORRENTE DO DESENVOLVIMENTO
+  -------------------------------------- */
+
+  const entrouCorrenteDesenvolvimento =
+    nomesFuncoes.includes(
+      "Corrente do Desenvolvimento"
+    );
+
+
+  if (
+    entrouCorrenteDesenvolvimento &&
+    !usuario.data_corrente_desenvolvimento
+  ) {
+
+    atualizacoes.data_corrente_desenvolvimento =
+      dataHoje;
+
+  }
+
+
+  /* --------------------------------------
+     CORRENTE PRINCIPAL
+  -------------------------------------- */
+
+  const entrouCorrentePrincipal =
+    nomesFuncoes.includes(
+      "Médium Corrente Principal"
+    ) ||
+    nomesFuncoes.includes(
+      "Médium Principal"
+    );
+
+
+  if (
+    entrouCorrentePrincipal &&
+    !usuario.data_corrente_principal
+  ) {
+
+    atualizacoes.data_corrente_principal =
+      dataHoje;
+
+  }
+
+
+  /* --------------------------------------
+     NADA PARA ATUALIZAR
+  -------------------------------------- */
+
+  if (
+    Object.keys(
+      atualizacoes
+    ).length ===
+    0
+  ) {
+
+    return;
+
+  }
+
+
+  const resultadoAtualizacao =
+    await window.supabaseClient
+      .from(
+        "usuarios"
+      )
+      .update(
+        atualizacoes
+      )
+      .eq(
+        "id",
+        usuarioId
+      );
+
+
+  if (
+    resultadoAtualizacao.error
+  ) {
+
+    throw resultadoAtualizacao.error;
+
+  }
+
+}
+
+
+/* ==========================================
    SALVAR FUNÇÕES DE USUÁRIO ATIVO
 ========================================== */
 
@@ -755,9 +957,29 @@ async function salvarFuncoesUsuario() {
       await obterUsuarioAdministrador();
 
 
+    /*
+      Primeiro sincronizamos as funções.
+    */
+
     await sincronizarFuncoesUsuario(
       usuarioId,
       atribuidoPor
+    );
+
+
+    /*
+      Depois verificamos se alguma das
+      funções exige o preenchimento
+      automático de uma data.
+
+      Como o usuário já é ativo,
+      não alteramos a data de entrada
+      na TUFRA aqui.
+    */
+
+    await atualizarDatasAutomaticas(
+      usuarioId,
+      false
     );
 
 
@@ -875,26 +1097,31 @@ async function aprovarCadastro() {
 
 
     /*
+      Preenche automaticamente:
+
+      - Data de entrada na TUFRA
+      - Data da Corrente do Desenvolvimento
+      - Data da Corrente Principal
+
+      somente quando aplicável e somente
+      se a respectiva data estiver vazia.
+    */
+
+    await atualizarDatasAutomaticas(
+      usuarioId,
+      true
+    );
+
+
+    /*
       Depois aprovamos o cadastro.
 
-      data_aprovacao:
-      registra data e horário técnico
-      da aprovação.
-
-      data_entrada_tufra:
-      registra a data oficial inicial
-      da entrada no TUFRA.
-
-      Essa data poderá ser corrigida
-      posteriormente pela Diretoria.
+      data_aprovacao registra a data
+      e o horário técnico da aprovação.
     */
 
     const agora =
       new Date();
-
-
-    const dataEntradaTufra =
-      obterDataHojeISO();
 
 
     const resultadoAprovacao =
@@ -909,9 +1136,6 @@ async function aprovarCadastro() {
 
           data_aprovacao:
             agora.toISOString(),
-
-          data_entrada_tufra:
-            dataEntradaTufra,
 
           aprovado_por:
             aprovadoPor
