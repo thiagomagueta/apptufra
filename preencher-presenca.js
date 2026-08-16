@@ -158,8 +158,12 @@ function removerSegundos(
   horario
 ) {
 
-  if (!horario) {
+  if (
+    !horario
+  ) {
+
     return "";
+
   }
 
 
@@ -181,6 +185,7 @@ function mostrarMensagem(
   mensagemSalvarPresenca.textContent =
     texto;
 
+
   mensagemSalvarPresenca.hidden =
     false;
 }
@@ -190,6 +195,7 @@ function esconderMensagem() {
 
   mensagemSalvarPresenca.textContent =
     "";
+
 
   mensagemSalvarPresenca.hidden =
     true;
@@ -345,7 +351,9 @@ async function validarResponsavel() {
     resultadoSessao.data.session;
 
 
-  if (!sessao) {
+  if (
+    !sessao
+  ) {
 
     window.location.href =
       "index.html";
@@ -360,8 +368,12 @@ async function validarResponsavel() {
 
   const resultadoUsuario =
     await window.supabaseClient
-      .from("usuarios")
-      .select("id")
+      .from(
+        "usuarios"
+      )
+      .select(
+        "id"
+      )
       .eq(
         "auth_id",
         sessao.user.id
@@ -394,7 +406,9 @@ async function validarResponsavel() {
       .from(
         "responsaveis_lista_presenca"
       )
-      .select("id")
+      .select(
+        "id"
+      )
       .eq(
         "tipo_lista_id",
         tipoListaId
@@ -428,7 +442,6 @@ async function validarResponsavel() {
     );
 
   }
-
 }
 
 
@@ -502,6 +515,26 @@ async function carregarAtividade() {
         : ""
     );
 
+
+  /* --------------------------------------
+     VOLTAR PARA A MESMA LISTA E ANO
+  -------------------------------------- */
+
+  const anoAtividade =
+    String(
+      atividade.data
+    ).slice(
+      0,
+      4
+    );
+
+
+  voltarAtividadesPresenca.href =
+    `listas-presenca.html?lista=${encodeURIComponent(
+      tipoListaId
+    )}&ano=${encodeURIComponent(
+      anoAtividade
+    )}`;
 }
 
 
@@ -535,7 +568,6 @@ function associadoParticipavaNaData(
     usuario.data_entrada_tufra <=
     dataAtividade
   );
-
 }
 
 
@@ -566,7 +598,9 @@ async function carregarAssociados() {
 
   const resultado =
     await window.supabaseClient
-      .from("usuarios")
+      .from(
+        "usuarios"
+      )
       .select(`
         id,
         nome_completo,
@@ -632,10 +666,12 @@ async function carregarAssociados() {
       .sort(
         (a, b) =>
           String(
-            a.nome_completo || ""
+            a.nome_completo ||
+            ""
           ).localeCompare(
             String(
-              b.nome_completo || ""
+              b.nome_completo ||
+              ""
             ),
             "pt-BR",
             {
@@ -644,7 +680,6 @@ async function carregarAssociados() {
             }
           )
       );
-
 }
 
 
@@ -686,7 +721,6 @@ async function carregarPresencasExistentes() {
   presencasExistentes =
     resultado.data ||
     [];
-
 }
 
 
@@ -708,7 +742,6 @@ function obterStatusExistente(
 
   return registro?.status ||
     "";
-
 }
 
 
@@ -921,7 +954,6 @@ function renderizarChamada() {
 
   botaoMarcarPendentes.disabled =
     !possuiAssociados;
-
 }
 
 
@@ -946,11 +978,6 @@ function marcarPendentesComoPresente() {
           `input[name="presenca_${associado.id}"]:checked`
         );
 
-
-      /*
-        Se já existe P, F ou J,
-        não alteramos nada.
-      */
 
       if (
         jaSelecionado
@@ -1002,7 +1029,6 @@ function marcarPendentesComoPresente() {
   mostrarMensagem(
     `${quantidadeMarcada} associado(s) pendente(s) marcado(s) como presente.`
   );
-
 }
 
 
@@ -1189,7 +1215,6 @@ async function salvarLista() {
       "Salvar lista de presença";
 
   }
-
 }
 
 
@@ -1225,10 +1250,6 @@ async function iniciarPagina() {
   }
 
 
-  voltarAtividadesPresenca.href =
-    `presenca-atividades.html?id=${tipoListaId}`;
-
-
   try {
 
     await validarResponsavel();
@@ -1256,7 +1277,6 @@ async function iniciarPagina() {
       "<p>Não foi possível carregar a lista de presença.</p>";
 
   }
-
 }
 
 
