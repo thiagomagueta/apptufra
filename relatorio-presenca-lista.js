@@ -37,6 +37,51 @@ const mensagemSemDadosRelatorio =
 
 
 /* ==========================================
+   RESUMO DO ANO
+========================================== */
+
+const resumoAnualPresenca =
+  document.getElementById(
+    "resumoAnualPresenca"
+  );
+
+const anoResumoPresenca =
+  document.getElementById(
+    "anoResumoPresenca"
+  );
+
+const totalAtividadesRealizadas =
+  document.getElementById(
+    "totalAtividadesRealizadas"
+  );
+
+const totalPresencas =
+  document.getElementById(
+    "totalPresencas"
+  );
+
+const totalFaltas =
+  document.getElementById(
+    "totalFaltas"
+  );
+
+const totalJustificadas =
+  document.getElementById(
+    "totalJustificadas"
+  );
+
+const totalPendentes =
+  document.getElementById(
+    "totalPendentes"
+  );
+
+const frequenciaGeralPresenca =
+  document.getElementById(
+    "frequenciaGeralPresenca"
+  );
+
+
+/* ==========================================
    DADOS
 ========================================== */
 
@@ -870,7 +915,10 @@ function obterSituacaoCelula(
         "",
 
       classe:
-        ""
+        "",
+
+      tipo:
+        "futuro"
 
     };
 
@@ -899,7 +947,10 @@ function obterSituacaoCelula(
         "x",
 
       classe:
-        "status-relatorio-nao-participava"
+        "status-relatorio-nao-participava",
+
+      tipo:
+        "nao_participava"
 
     };
 
@@ -928,7 +979,10 @@ function obterSituacaoCelula(
         "P",
 
       classe:
-        "status-relatorio-presente"
+        "status-relatorio-presente",
+
+      tipo:
+        "presente"
 
     };
 
@@ -946,7 +1000,10 @@ function obterSituacaoCelula(
         "F",
 
       classe:
-        "status-relatorio-falta"
+        "status-relatorio-falta",
+
+      tipo:
+        "falta"
 
     };
 
@@ -964,7 +1021,10 @@ function obterSituacaoCelula(
         "J",
 
       classe:
-        "status-relatorio-justificado"
+        "status-relatorio-justificado",
+
+      tipo:
+        "justificada"
 
     };
 
@@ -981,9 +1041,234 @@ function obterSituacaoCelula(
       "—",
 
     classe:
-      "status-relatorio-pendente"
+      "status-relatorio-pendente",
+
+    tipo:
+      "pendente"
 
   };
+
+}
+
+
+/* ==========================================
+   CALCULAR RESUMO DO ANO
+========================================== */
+
+function calcularResumoAno(
+  atividades
+) {
+
+  const hojeISO =
+    obterDataAtualISO();
+
+
+  const atividadesRealizadas =
+    atividades.filter(
+      (atividade) =>
+        atividade.data <=
+        hojeISO
+    );
+
+
+  let quantidadePresencas =
+    0;
+
+  let quantidadeFaltas =
+    0;
+
+  let quantidadeJustificadas =
+    0;
+
+  let quantidadePendentes =
+    0;
+
+
+  associadosDaLista.forEach(
+    (associado) => {
+
+      atividadesRealizadas.forEach(
+        (atividade) => {
+
+          const situacao =
+            obterSituacaoCelula(
+              associado,
+              atividade
+            );
+
+
+          /*
+            FUTURO e X não entram
+            nos indicadores.
+          */
+
+          if (
+            situacao.tipo ===
+              "presente"
+          ) {
+
+            quantidadePresencas +=
+              1;
+
+          }
+
+
+          if (
+            situacao.tipo ===
+              "falta"
+          ) {
+
+            quantidadeFaltas +=
+              1;
+
+          }
+
+
+          if (
+            situacao.tipo ===
+              "justificada"
+          ) {
+
+            quantidadeJustificadas +=
+              1;
+
+          }
+
+
+          if (
+            situacao.tipo ===
+              "pendente"
+          ) {
+
+            quantidadePendentes +=
+              1;
+
+          }
+
+        }
+      );
+
+    }
+  );
+
+
+  const totalMarcacoesValidas =
+    quantidadePresencas +
+    quantidadeFaltas +
+    quantidadeJustificadas;
+
+
+  let frequencia =
+    null;
+
+
+  if (
+    totalMarcacoesValidas >
+    0
+  ) {
+
+    frequencia =
+      (
+        quantidadePresencas /
+        totalMarcacoesValidas
+      ) * 100;
+
+  }
+
+
+  return {
+
+    atividadesRealizadas:
+      atividadesRealizadas.length,
+
+    presencas:
+      quantidadePresencas,
+
+    faltas:
+      quantidadeFaltas,
+
+    justificadas:
+      quantidadeJustificadas,
+
+    pendentes:
+      quantidadePendentes,
+
+    frequencia:
+      frequencia
+
+  };
+
+}
+
+
+/* ==========================================
+   RENDERIZAR RESUMO
+========================================== */
+
+function renderizarResumoAno(
+  ano,
+  atividades
+) {
+
+  const resumo =
+    calcularResumoAno(
+      atividades
+    );
+
+
+  anoResumoPresenca.textContent =
+    ano;
+
+
+  totalAtividadesRealizadas.textContent =
+    String(
+      resumo.atividadesRealizadas
+    );
+
+
+  totalPresencas.textContent =
+    String(
+      resumo.presencas
+    );
+
+
+  totalFaltas.textContent =
+    String(
+      resumo.faltas
+    );
+
+
+  totalJustificadas.textContent =
+    String(
+      resumo.justificadas
+    );
+
+
+  totalPendentes.textContent =
+    String(
+      resumo.pendentes
+    );
+
+
+  if (
+    resumo.frequencia ===
+    null
+  ) {
+
+    frequenciaGeralPresenca.textContent =
+      "—";
+
+  } else {
+
+    frequenciaGeralPresenca.textContent =
+      `${resumo.frequencia.toFixed(
+        1
+      ).replace(
+        ".",
+        ","
+      )}%`;
+
+  }
 
 }
 
@@ -1172,6 +1457,10 @@ function renderizarAnoSelecionado() {
     !ano
   ) {
 
+    resumoAnualPresenca.hidden =
+      true;
+
+
     containerTabelaRelatorio.hidden =
       true;
 
@@ -1196,6 +1485,10 @@ function renderizarAnoSelecionado() {
     0
   ) {
 
+    resumoAnualPresenca.hidden =
+      true;
+
+
     containerTabelaRelatorio.hidden =
       true;
 
@@ -1209,12 +1502,22 @@ function renderizarAnoSelecionado() {
   }
 
 
+  resumoAnualPresenca.hidden =
+    false;
+
+
   containerTabelaRelatorio.hidden =
     false;
 
 
   mensagemSemDadosRelatorio.hidden =
     true;
+
+
+  renderizarResumoAno(
+    ano,
+    atividades
+  );
 
 
   criarCabecalho(
