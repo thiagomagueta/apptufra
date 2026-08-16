@@ -3257,3 +3257,15 @@ input:checked + span {
   height: 42px;
   vertical-align: middle;
 }
+/* ==========================================
+   RESUMO DE PRESENÇA DO ASSOCIADO
+   CABEÇALHO MAIS COMPACTO
+========================================== */
+
+.tabela-resumo-presenca-associado
+.coluna-data-relatorio {
+
+  height: 62px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
