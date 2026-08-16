@@ -2,31 +2,44 @@
 <html lang="pt-BR">
 
 <head>
+
   <meta charset="UTF-8">
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1.0"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
   >
 
-  <title>Nova atividade - TUFRA</title>
+  <meta
+    name="theme-color"
+    content="#651b1d"
+  >
+
+  <title>
+    Nova atividade | TUFRA
+  </title>
 
   <link
     rel="stylesheet"
-    href="layout.css"
+    href="layout.css?v=39"
   >
 
   <link
     rel="stylesheet"
     href="nova-atividade.css"
   >
+
 </head>
+
 
 <body>
 
   <main class="pagina-nova-atividade">
 
-    <!-- CABEÇALHO -->
+
+    <!-- =====================================
+         CABEÇALHO
+    ====================================== -->
 
     <header class="cabecalho-nova-atividade">
 
@@ -39,11 +52,15 @@
         >
 
         <div>
-          <strong>TUFRA</strong>
+
+          <strong>
+            TUFRA
+          </strong>
 
           <span>
             Tenda de Umbanda Francisco de Assis
           </span>
+
         </div>
 
       </div>
@@ -51,7 +68,9 @@
     </header>
 
 
-    <!-- TÍTULO -->
+    <!-- =====================================
+         TÍTULO
+    ====================================== -->
 
     <section class="titulo-pagina">
 
@@ -66,11 +85,14 @@
     </section>
 
 
-    <!-- FORMULÁRIO -->
+    <!-- =====================================
+         FORMULÁRIO
+    ====================================== -->
 
     <section class="cartao-nova-atividade">
 
       <form id="formNovaAtividade">
+
 
         <!-- TÍTULO -->
 
@@ -259,28 +281,100 @@
           Cadastrar atividade
         </button>
 
+
       </form>
 
     </section>
 
 
-    <!-- VOLTAR -->
+    <!-- =====================================
+         VOLTAR
+    ====================================== -->
 
     <a
-      href="administrativo.html"
+      href="adm-calendario.html"
       class="voltar-administrativo"
     >
-      Voltar ao Administrativo
+      Voltar para Calendário
     </a>
+
 
   </main>
 
 
-  <!-- SCRIPTS -->
+  <!-- =====================================
+       MENU INFERIOR
+  ====================================== -->
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js?v=2"></script>
-<script src="nova-atividade.js?v=1"></script>
+  <nav
+    class="menu-inferior"
+    aria-label="Navegação principal"
+  >
+
+    <div class="menu-inferior-conteudo">
+
+      <a
+        class="item-menu"
+        href="dashboard.html"
+      >
+        <span class="icone-menu">⌂</span>
+        <span class="texto-menu">Início</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="calendario.html"
+      >
+        <span class="icone-menu">📅</span>
+        <span class="texto-menu">Calendário</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="minha-ficha.html"
+      >
+        <span class="icone-menu">👤</span>
+        <span class="texto-menu">Minha ficha</span>
+      </a>
+
+      <a
+        id="itemMenuAdm"
+        class="item-menu ativo"
+        href="administrativo.html"
+        hidden
+      >
+        <span class="icone-menu">☰</span>
+        <span class="texto-menu">ADM</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="#"
+        id="botaoSair"
+      >
+        <span class="icone-menu">🚪</span>
+        <span class="texto-menu">Sair</span>
+      </a>
+
+    </div>
+
+  </nav>
+
+
+  <!-- =====================================
+       SCRIPTS
+  ====================================== -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="supabase.js?v=2"></script>
+
+  <script src="app.js?v=2"></script>
+
+  <script src="nova-atividade.js?v=1"></script>
+
+  <script src="menu-adm.js?v=1"></script>
+
 
 </body>
 
