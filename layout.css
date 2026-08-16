@@ -2928,3 +2928,61 @@ input:checked + span {
   }
 
 }
+/* ==========================================
+   FILTROS DO RELATÓRIO GERAL
+========================================== */
+
+.filtros-relatorio-geral {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 12px;
+}
+
+
+.campo-filtro-relatorio-geral {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+
+.campo-filtro-relatorio-geral label {
+  font-size: 12px;
+  font-weight: 700;
+
+  color: #555555;
+}
+
+
+.campo-filtro-relatorio-geral select {
+  width: 100%;
+  height: 42px;
+
+  box-sizing: border-box;
+
+  padding: 0 10px;
+
+  border: 1px solid #d7d7d7;
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  font: inherit;
+  font-size: 14px;
+
+  color: #222222;
+}
+
+
+@media (max-width: 420px) {
+
+  .filtros-relatorio-geral {
+    grid-template-columns:
+      1fr;
+  }
+
+}
