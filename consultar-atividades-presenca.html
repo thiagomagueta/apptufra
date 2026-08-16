@@ -16,12 +16,12 @@
   >
 
   <title>
-    Consultar Atividades | TUFRA
+    Consultar Presença | TUFRA
   </title>
 
   <link
     rel="stylesheet"
-    href="layout.css?v=22"
+    href="layout.css?v=37"
   >
 
 </head>
@@ -59,25 +59,90 @@
 
       <section>
 
-        <h1
-          id="tituloListaPresenca"
-          class="titulo-pagina"
-        >
+        <h1 class="titulo-pagina">
           Consultar Presença
         </h1>
 
         <p class="subtitulo-pagina">
-          Selecione a atividade que deseja consultar.
+          Consulte as listas de presença preenchidas.
         </p>
 
       </section>
 
 
+      <!-- =====================================
+           FILTROS
+      ====================================== -->
+
       <section class="cartao-app">
 
         <h2>
+          Filtros
+        </h2>
+
+
+        <div class="filtros-consulta-presenca">
+
+
+          <div class="campo-filtro-consulta-presenca">
+
+            <label for="listaConsultaPresenca">
+              Lista
+            </label>
+
+            <select
+              id="listaConsultaPresenca"
+              disabled
+            >
+
+              <option value="">
+                Carregando...
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="campo-filtro-consulta-presenca">
+
+            <label for="anoConsultaPresenca">
+              Ano
+            </label>
+
+            <select
+              id="anoConsultaPresenca"
+              disabled
+            >
+
+              <option value="">
+                Selecione a lista
+              </option>
+
+            </select>
+
+          </div>
+
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================
+           ATIVIDADES
+      ====================================== -->
+
+      <section
+        id="areaAtividadesConsultaPresenca"
+        class="cartao-app"
+        hidden
+      >
+
+        <h2 id="tituloListaConsultaPresenca">
           Atividades
         </h2>
+
 
         <div
           id="listaAtividadesPresenca"
@@ -90,12 +155,13 @@
 
         </div>
 
+
         <div
           id="mensagemSemAtividadesPresenca"
           class="mensagem-sem-atividades"
           hidden
         >
-          Nenhuma atividade encontrada para esta lista.
+          Nenhuma atividade encontrada para esta seleção.
         </div>
 
       </section>
@@ -103,9 +169,9 @@
 
       <a
         class="link-administrativo"
-        href="consultar-presenca.html"
+        href="administrativo.html"
       >
-        Voltar para Listas de Presença
+        Voltar ao Administrativo
       </a>
 
 
@@ -173,7 +239,7 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="consultar-atividades-presenca.js?v=1"></script>
+  <script src="consultar-atividades-presenca.js?v=2"></script>
 
 </body>
 
