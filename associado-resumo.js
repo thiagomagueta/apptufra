@@ -42,7 +42,7 @@ const voltarAssociados =
 
 
 /* ==========================================
-   DATAS ADMINISTRATIVAS
+   ADMINISTRATIVO
 ========================================== */
 
 const botaoEditarDatasAdministrativas =
@@ -60,6 +60,26 @@ const edicaoDatasAdministrativas =
     "edicaoDatasAdministrativas"
   );
 
+const avisoAssociadoAssistencia =
+  document.getElementById(
+    "avisoAssociadoAssistencia"
+  );
+
+
+/* ==========================================
+   CAMPOS DE VISUALIZAÇÃO
+========================================== */
+
+const itemDataCorrenteDesenvolvimento =
+  document.getElementById(
+    "itemDataCorrenteDesenvolvimento"
+  );
+
+const itemDataCorrentePrincipal =
+  document.getElementById(
+    "itemDataCorrentePrincipal"
+  );
+
 const textoDataEntradaTufra =
   document.getElementById(
     "textoDataEntradaTufra"
@@ -73,6 +93,21 @@ const textoDataCorrenteDesenvolvimento =
 const textoDataCorrentePrincipal =
   document.getElementById(
     "textoDataCorrentePrincipal"
+  );
+
+
+/* ==========================================
+   CAMPOS DE EDIÇÃO
+========================================== */
+
+const campoEdicaoCorrenteDesenvolvimento =
+  document.getElementById(
+    "campoEdicaoCorrenteDesenvolvimento"
+  );
+
+const campoEdicaoCorrentePrincipal =
+  document.getElementById(
+    "campoEdicaoCorrentePrincipal"
   );
 
 const dataEntradaTufra =
@@ -103,6 +138,31 @@ const botaoCancelarDatasAdministrativas =
 const mensagemDatasAdministrativas =
   document.getElementById(
     "mensagemDatasAdministrativas"
+  );
+
+
+/* ==========================================
+   HISTÓRICO
+========================================== */
+
+const areaHistoricoFuncoes =
+  document.getElementById(
+    "areaHistoricoFuncoes"
+  );
+
+const listaHistoricoFuncoes =
+  document.getElementById(
+    "listaHistoricoFuncoes"
+  );
+
+const areaEdicaoHistoricoFuncoes =
+  document.getElementById(
+    "areaEdicaoHistoricoFuncoes"
+  );
+
+const listaEdicaoHistoricoFuncoes =
+  document.getElementById(
+    "listaEdicaoHistoricoFuncoes"
   );
 
 
@@ -146,7 +206,8 @@ const resetarZoomFotoAssociado =
   );
 
 
-let zoomFoto = 1;
+let zoomFoto =
+  1;
 
 let distanciaToqueInicial =
   null;
@@ -158,6 +219,12 @@ let distanciaToqueInicial =
 
 let associadoAtual =
   null;
+
+let funcoesAtuais =
+  [];
+
+let historicoFuncoes =
+  [];
 
 
 /* ==========================================
@@ -358,8 +425,7 @@ function aplicarMascaraData(
 
 
   if (
-    numeros.length >
-    4
+    numeros.length > 4
   ) {
 
     numeros =
@@ -374,8 +440,7 @@ function aplicarMascaraData(
       )}`;
 
   } else if (
-    numeros.length >
-    2
+    numeros.length > 2
   ) {
 
     numeros =
@@ -468,20 +533,10 @@ function converterDataParaISO(
     );
 
 
-  /*
-    Confirmamos que a data realmente existe.
-
-    Exemplo:
-    31/02/2020 será rejeitado.
-  */
-
   if (
-    data.getFullYear() !==
-      ano ||
-    data.getMonth() !==
-      mes - 1 ||
-    data.getDate() !==
-      dia
+    data.getFullYear() !== ano ||
+    data.getMonth() !== mes - 1 ||
+    data.getDate() !== dia
   ) {
 
     return false;
@@ -586,7 +641,70 @@ function mostrarMensagem(
 
 
 /* ==========================================
-   EXIBIR DATAS
+   FUNÇÕES ATUAIS
+========================================== */
+
+function possuiFuncaoPrincipal(
+  nome
+) {
+
+  return funcoesAtuais.some(
+    (funcao) =>
+      funcao.nome === nome &&
+      !funcao.funcao_pai_id
+  );
+}
+
+
+function estaNoDesenvolvimento() {
+
+  return possuiFuncaoPrincipal(
+    "Médium em Desenvolvimento"
+  );
+}
+
+
+function estaNaCorrentePrincipal() {
+
+  return (
+    possuiFuncaoPrincipal(
+      "Médium Corrente Principal"
+    ) ||
+    possuiFuncaoPrincipal(
+      "Médium Principal"
+    )
+  );
+}
+
+
+function estaNaAssistencia() {
+
+  /*
+    Verificamos apenas a função principal
+    Assistência.
+
+    Assim, uma subfunção "Assistência"
+    de Cambone não será confundida
+    com a Assistência da casa.
+  */
+
+  return possuiFuncaoPrincipal(
+    "Assistência"
+  );
+}
+
+
+function mostrarTrajetoriaMediunica() {
+
+  return (
+    estaNoDesenvolvimento() ||
+    estaNaCorrentePrincipal()
+  );
+}
+
+
+/* ==========================================
+   VISUALIZAÇÃO ADMINISTRATIVA
 ========================================== */
 
 function atualizarVisualizacaoDatas() {
@@ -606,16 +724,513 @@ function atualizarVisualizacaoDatas() {
     );
 
 
-  textoDataCorrenteDesenvolvimento.textContent =
+  const mostrarTrajetoria =
+    mostrarTrajetoriaMediunica();
+
+
+  itemDataCorrenteDesenvolvimento.hidden =
+    !mostrarTrajetoria;
+
+
+  itemDataCorrentePrincipal.hidden =
+    !mostrarTrajetoria;
+
+
+  if (
+    mostrarTrajetoria
+  ) {
+
+    textoDataCorrenteDesenvolvimento.textContent =
+      formatarData(
+        associadoAtual.data_corrente_desenvolvimento
+      );
+
+
+    textoDataCorrentePrincipal.textContent =
+      formatarData(
+        associadoAtual.data_corrente_principal
+      );
+
+  }
+
+
+  avisoAssociadoAssistencia.hidden =
+    !estaNaAssistencia();
+}
+
+
+/* ==========================================
+   HISTÓRICO - ORDENAÇÃO
+========================================== */
+
+function ordenarHistorico(
+  historico
+) {
+
+  const ordemFuncoes = {
+    "Ogam": 1,
+    "Cambone": 2,
+    "Cantina": 3
+  };
+
+
+  return [
+    ...historico
+  ].sort(
+    (a, b) => {
+
+      const ordemA =
+        ordemFuncoes[
+          a.funcao_nome
+        ] || 99;
+
+
+      const ordemB =
+        ordemFuncoes[
+          b.funcao_nome
+        ] || 99;
+
+
+      if (
+        ordemA !== ordemB
+      ) {
+
+        return ordemA - ordemB;
+
+      }
+
+
+      return String(
+        a.data_inicio || ""
+      ).localeCompare(
+        String(
+          b.data_inicio || ""
+        )
+      );
+
+    }
+  );
+}
+
+
+/* ==========================================
+   HISTÓRICO - TEXTO DO PERÍODO
+========================================== */
+
+function formatarPeriodoHistorico(
+  registro
+) {
+
+  const inicio =
     formatarData(
-      associadoAtual.data_corrente_desenvolvimento
+      registro.data_inicio
     );
 
 
-  textoDataCorrentePrincipal.textContent =
-    formatarData(
-      associadoAtual.data_corrente_principal
+  if (
+    !registro.data_fim
+  ) {
+
+    return `Desde ${inicio}`;
+
+  }
+
+
+  return `${inicio} a ${formatarData(
+    registro.data_fim
+  )}`;
+}
+
+
+/* ==========================================
+   RENDERIZAR HISTÓRICO
+========================================== */
+
+function renderizarHistoricoFuncoes() {
+
+  listaHistoricoFuncoes.innerHTML =
+    "";
+
+
+  if (
+    historicoFuncoes.length === 0
+  ) {
+
+    areaHistoricoFuncoes.hidden =
+      true;
+
+    return;
+
+  }
+
+
+  areaHistoricoFuncoes.hidden =
+    false;
+
+
+  const historicoOrdenado =
+    ordenarHistorico(
+      historicoFuncoes
     );
+
+
+  const nomesFuncoes =
+    [
+      ...new Set(
+        historicoOrdenado.map(
+          (registro) =>
+            registro.funcao_nome
+        )
+      )
+    ];
+
+
+  nomesFuncoes.forEach(
+    (funcaoNome) => {
+
+      const bloco =
+        document.createElement(
+          "div"
+        );
+
+
+      bloco.className =
+        "bloco-historico-funcao";
+
+
+      const titulo =
+        document.createElement(
+          "strong"
+        );
+
+
+      titulo.className =
+        "titulo-historico-funcao";
+
+
+      titulo.textContent =
+        funcaoNome;
+
+
+      bloco.appendChild(
+        titulo
+      );
+
+
+      const registros =
+        historicoOrdenado.filter(
+          (registro) =>
+            registro.funcao_nome ===
+            funcaoNome
+        );
+
+
+      registros.forEach(
+        (registro) => {
+
+          const periodo =
+            document.createElement(
+              "span"
+            );
+
+
+          periodo.className =
+            "periodo-historico-funcao";
+
+
+          periodo.textContent =
+            formatarPeriodoHistorico(
+              registro
+            );
+
+
+          bloco.appendChild(
+            periodo
+          );
+
+        }
+      );
+
+
+      listaHistoricoFuncoes.appendChild(
+        bloco
+      );
+
+    }
+  );
+}
+
+
+/* ==========================================
+   RENDERIZAR HISTÓRICO PARA EDIÇÃO
+========================================== */
+
+function renderizarHistoricoEdicao() {
+
+  listaEdicaoHistoricoFuncoes.innerHTML =
+    "";
+
+
+  if (
+    historicoFuncoes.length === 0
+  ) {
+
+    areaEdicaoHistoricoFuncoes.hidden =
+      true;
+
+    return;
+
+  }
+
+
+  areaEdicaoHistoricoFuncoes.hidden =
+    false;
+
+
+  const historicoOrdenado =
+    ordenarHistorico(
+      historicoFuncoes
+    );
+
+
+  historicoOrdenado.forEach(
+    (registro) => {
+
+      const bloco =
+        document.createElement(
+          "div"
+        );
+
+
+      bloco.className =
+        "item-edicao-historico-funcao";
+
+
+      bloco.dataset.historicoId =
+        registro.id;
+
+
+      const titulo =
+        document.createElement(
+          "strong"
+        );
+
+
+      titulo.className =
+        "titulo-edicao-historico-funcao";
+
+
+      titulo.textContent =
+        registro.funcao_nome;
+
+
+      bloco.appendChild(
+        titulo
+      );
+
+
+      /* DATA INÍCIO */
+
+      const grupoInicio =
+        document.createElement(
+          "div"
+        );
+
+
+      grupoInicio.className =
+        "campo-data-administrativa";
+
+
+      const labelInicio =
+        document.createElement(
+          "label"
+        );
+
+
+      labelInicio.textContent =
+        "Data de entrada";
+
+
+      const inputInicio =
+        document.createElement(
+          "input"
+        );
+
+
+      inputInicio.type =
+        "text";
+
+
+      inputInicio.inputMode =
+        "numeric";
+
+
+      inputInicio.maxLength =
+        10;
+
+
+      inputInicio.autocomplete =
+        "off";
+
+
+      inputInicio.placeholder =
+        "dd/mm/aaaa";
+
+
+      inputInicio.className =
+        "historico-data-inicio";
+
+
+      inputInicio.value =
+        dataISOParaCampo(
+          registro.data_inicio
+        );
+
+
+      inputInicio.addEventListener(
+        "input",
+        () => {
+
+          aplicarMascaraData(
+            inputInicio
+          );
+
+        }
+      );
+
+
+      grupoInicio.appendChild(
+        labelInicio
+      );
+
+
+      grupoInicio.appendChild(
+        inputInicio
+      );
+
+
+      bloco.appendChild(
+        grupoInicio
+      );
+
+
+      /* DATA FIM */
+
+      const grupoFim =
+        document.createElement(
+          "div"
+        );
+
+
+      grupoFim.className =
+        "campo-data-administrativa";
+
+
+      const labelFim =
+        document.createElement(
+          "label"
+        );
+
+
+      labelFim.textContent =
+        "Data de saída";
+
+
+      grupoFim.appendChild(
+        labelFim
+      );
+
+
+      if (
+        registro.data_fim
+      ) {
+
+        const inputFim =
+          document.createElement(
+            "input"
+          );
+
+
+        inputFim.type =
+          "text";
+
+
+        inputFim.inputMode =
+          "numeric";
+
+
+        inputFim.maxLength =
+          10;
+
+
+        inputFim.autocomplete =
+          "off";
+
+
+        inputFim.placeholder =
+          "dd/mm/aaaa";
+
+
+        inputFim.className =
+          "historico-data-fim";
+
+
+        inputFim.value =
+          dataISOParaCampo(
+            registro.data_fim
+          );
+
+
+        inputFim.addEventListener(
+          "input",
+          () => {
+
+            aplicarMascaraData(
+              inputFim
+            );
+
+          }
+        );
+
+
+        grupoFim.appendChild(
+          inputFim
+        );
+
+      } else {
+
+        const atual =
+          document.createElement(
+            "span"
+          );
+
+
+        atual.className =
+          "funcao-historico-atual";
+
+
+        atual.textContent =
+          "Função atual";
+
+
+        grupoFim.appendChild(
+          atual
+        );
+
+      }
+
+
+      bloco.appendChild(
+        grupoFim
+      );
+
+
+      listaEdicaoHistoricoFuncoes.appendChild(
+        bloco
+      );
+
+    }
+  );
 }
 
 
@@ -640,16 +1255,37 @@ function abrirEdicaoDatas() {
     );
 
 
-  dataCorrenteDesenvolvimento.value =
-    dataISOParaCampo(
-      associadoAtual.data_corrente_desenvolvimento
-    );
+  const mostrarTrajetoria =
+    mostrarTrajetoriaMediunica();
 
 
-  dataCorrentePrincipal.value =
-    dataISOParaCampo(
-      associadoAtual.data_corrente_principal
-    );
+  campoEdicaoCorrenteDesenvolvimento.hidden =
+    !mostrarTrajetoria;
+
+
+  campoEdicaoCorrentePrincipal.hidden =
+    !mostrarTrajetoria;
+
+
+  if (
+    mostrarTrajetoria
+  ) {
+
+    dataCorrenteDesenvolvimento.value =
+      dataISOParaCampo(
+        associadoAtual.data_corrente_desenvolvimento
+      );
+
+
+    dataCorrentePrincipal.value =
+      dataISOParaCampo(
+        associadoAtual.data_corrente_principal
+      );
+
+  }
+
+
+  renderizarHistoricoEdicao();
 
 
   mensagemDatasAdministrativas.hidden =
@@ -661,6 +1297,10 @@ function abrirEdicaoDatas() {
 
 
   visualizacaoDatasAdministrativas.hidden =
+    true;
+
+
+  areaHistoricoFuncoes.hidden =
     true;
 
 
@@ -697,11 +1337,14 @@ function cancelarEdicaoDatas() {
 
   mensagemDatasAdministrativas.textContent =
     "";
+
+
+  renderizarHistoricoFuncoes();
 }
 
 
 /* ==========================================
-   LER DATAS
+   LER DATAS PRINCIPAIS
 ========================================== */
 
 function obterDatasDigitadas() {
@@ -712,16 +1355,34 @@ function obterDatasDigitadas() {
     );
 
 
-  const desenvolvimento =
-    converterDataParaISO(
-      dataCorrenteDesenvolvimento.value
-    );
+  let desenvolvimento =
+    associadoAtual
+      ?.data_corrente_desenvolvimento ||
+    null;
 
 
-  const principal =
-    converterDataParaISO(
-      dataCorrentePrincipal.value
-    );
+  let principal =
+    associadoAtual
+      ?.data_corrente_principal ||
+    null;
+
+
+  if (
+    mostrarTrajetoriaMediunica()
+  ) {
+
+    desenvolvimento =
+      converterDataParaISO(
+        dataCorrenteDesenvolvimento.value
+      );
+
+
+    principal =
+      converterDataParaISO(
+        dataCorrentePrincipal.value
+      );
+
+  }
 
 
   return {
@@ -733,7 +1394,7 @@ function obterDatasDigitadas() {
 
 
 /* ==========================================
-   VALIDAR DATAS
+   VALIDAR DATAS PRINCIPAIS
 ========================================== */
 
 function validarDatasAdministrativas() {
@@ -756,55 +1417,58 @@ function validarDatasAdministrativas() {
 
 
   if (
-    desenvolvimento === false
+    mostrarTrajetoriaMediunica()
   ) {
 
-    return "Informe uma data válida para a Corrente do Desenvolvimento.";
+    if (
+      desenvolvimento === false
+    ) {
 
-  }
+      return "Informe uma data válida para a Corrente do Desenvolvimento.";
 
-
-  if (
-    principal === false
-  ) {
-
-    return "Informe uma data válida para a Corrente Principal.";
-
-  }
+    }
 
 
-  if (
-    entrada &&
-    desenvolvimento &&
-    desenvolvimento <
-      entrada
-  ) {
+    if (
+      principal === false
+    ) {
 
-    return "A data da Corrente do Desenvolvimento não pode ser anterior à entrada na TUFRA.";
+      return "Informe uma data válida para a Corrente Principal.";
 
-  }
+    }
 
 
-  if (
-    entrada &&
-    principal &&
-    principal <
-      entrada
-  ) {
+    if (
+      entrada &&
+      desenvolvimento &&
+      desenvolvimento < entrada
+    ) {
 
-    return "A data da Corrente Principal não pode ser anterior à entrada na TUFRA.";
+      return "A data da Corrente do Desenvolvimento não pode ser anterior à entrada na TUFRA.";
 
-  }
+    }
 
 
-  if (
-    desenvolvimento &&
-    principal &&
-    principal <
-      desenvolvimento
-  ) {
+    if (
+      entrada &&
+      principal &&
+      principal < entrada
+    ) {
 
-    return "A data da Corrente Principal não pode ser anterior à Corrente do Desenvolvimento.";
+      return "A data da Corrente Principal não pode ser anterior à entrada na TUFRA.";
+
+    }
+
+
+    if (
+      desenvolvimento &&
+      principal &&
+      principal < desenvolvimento
+    ) {
+
+      return "A data da Corrente Principal não pode ser anterior à Corrente do Desenvolvimento.";
+
+    }
 
   }
 
@@ -814,7 +1478,268 @@ function validarDatasAdministrativas() {
 
 
 /* ==========================================
-   SALVAR DATAS
+   LER HISTÓRICO EDITADO
+========================================== */
+
+function obterHistoricoDigitado() {
+
+  const blocos =
+    Array.from(
+      listaEdicaoHistoricoFuncoes
+        .querySelectorAll(
+          ".item-edicao-historico-funcao"
+        )
+    );
+
+
+  return blocos.map(
+    (bloco) => {
+
+      const id =
+        bloco.dataset.historicoId;
+
+
+      const registroOriginal =
+        historicoFuncoes.find(
+          (registro) =>
+            registro.id === id
+        );
+
+
+      const campoInicio =
+        bloco.querySelector(
+          ".historico-data-inicio"
+        );
+
+
+      const campoFim =
+        bloco.querySelector(
+          ".historico-data-fim"
+        );
+
+
+      return {
+
+        id,
+
+        funcao_nome:
+          registroOriginal?.funcao_nome ||
+          "",
+
+        data_inicio:
+          converterDataParaISO(
+            campoInicio?.value
+          ),
+
+        data_fim:
+          campoFim
+            ? converterDataParaISO(
+                campoFim.value
+              )
+            : null,
+
+        possuiDataFimOriginal:
+          Boolean(
+            registroOriginal?.data_fim
+          )
+
+      };
+
+    }
+  );
+}
+
+
+/* ==========================================
+   VALIDAR HISTÓRICO
+========================================== */
+
+function validarHistoricoFuncoes() {
+
+  const registros =
+    obterHistoricoDigitado();
+
+
+  const entradaTufra =
+    converterDataParaISO(
+      dataEntradaTufra.value
+    );
+
+
+  for (
+    const registro of registros
+  ) {
+
+    if (
+      registro.data_inicio === false
+    ) {
+
+      return `Informe uma data de entrada válida para ${registro.funcao_nome}.`;
+
+    }
+
+
+    if (
+      !registro.data_inicio
+    ) {
+
+      return `A data de entrada de ${registro.funcao_nome} é obrigatória.`;
+
+    }
+
+
+    if (
+      registro.data_fim === false
+    ) {
+
+      return `Informe uma data de saída válida para ${registro.funcao_nome}.`;
+
+    }
+
+
+    if (
+      entradaTufra &&
+      registro.data_inicio <
+        entradaTufra
+    ) {
+
+      return `A entrada em ${registro.funcao_nome} não pode ser anterior à entrada na TUFRA.`;
+
+    }
+
+
+    if (
+      registro.data_fim &&
+      registro.data_fim <
+        registro.data_inicio
+    ) {
+
+      return `A saída de ${registro.funcao_nome} não pode ser anterior à entrada na função.`;
+
+    }
+
+  }
+
+
+  return "";
+}
+
+
+/* ==========================================
+   SALVAR HISTÓRICO
+========================================== */
+
+async function salvarHistoricoFuncoes() {
+
+  const registros =
+    obterHistoricoDigitado();
+
+
+  for (
+    const registro of registros
+  ) {
+
+    const atualizacao = {
+
+      data_inicio:
+        registro.data_inicio,
+
+      atualizado_em:
+        new Date().toISOString()
+
+    };
+
+
+    /*
+      Para períodos que já estão fechados,
+      permitimos corrigir também a saída.
+
+      Período atualmente aberto continua
+      aberto enquanto a função estiver ativa.
+    */
+
+    if (
+      registro.possuiDataFimOriginal
+    ) {
+
+      atualizacao.data_fim =
+        registro.data_fim;
+
+    }
+
+
+    const resultado =
+      await window.supabaseClient
+        .from(
+          "historico_funcoes_associado"
+        )
+        .update(
+          atualizacao
+        )
+        .eq(
+          "id",
+          registro.id
+        );
+
+
+    if (
+      resultado.error
+    ) {
+
+      throw resultado.error;
+
+    }
+
+  }
+
+
+  /*
+    Atualizamos também os dados locais,
+    para a tela refletir imediatamente.
+  */
+
+  historicoFuncoes =
+    historicoFuncoes.map(
+      (registroOriginal) => {
+
+        const registroEditado =
+          registros.find(
+            (registro) =>
+              registro.id ===
+              registroOriginal.id
+          );
+
+
+        if (
+          !registroEditado
+        ) {
+
+          return registroOriginal;
+
+        }
+
+
+        return {
+
+          ...registroOriginal,
+
+          data_inicio:
+            registroEditado.data_inicio,
+
+          data_fim:
+            registroEditado.possuiDataFimOriginal
+              ? registroEditado.data_fim
+              : registroOriginal.data_fim
+
+        };
+
+      }
+    );
+}
+
+
+/* ==========================================
+   SALVAR DADOS ADMINISTRATIVOS
 ========================================== */
 
 async function salvarDatasAdministrativas() {
@@ -828,16 +1753,37 @@ async function salvarDatasAdministrativas() {
   }
 
 
-  const erroValidacao =
+  const erroDatas =
     validarDatasAdministrativas();
 
 
   if (
-    erroValidacao
+    erroDatas
   ) {
 
     mensagemDatasAdministrativas.textContent =
-      erroValidacao;
+      erroDatas;
+
+
+    mensagemDatasAdministrativas.hidden =
+      false;
+
+
+    return;
+
+  }
+
+
+  const erroHistorico =
+    validarHistoricoFuncoes();
+
+
+  if (
+    erroHistorico
+  ) {
+
+    mensagemDatasAdministrativas.textContent =
+      erroHistorico;
 
 
     mensagemDatasAdministrativas.hidden =
@@ -874,15 +1820,33 @@ async function salvarDatasAdministrativas() {
     const novasDatas = {
 
       data_entrada_tufra:
-        entrada,
-
-      data_corrente_desenvolvimento:
-        desenvolvimento,
-
-      data_corrente_principal:
-        principal
+        entrada
 
     };
+
+
+    /*
+      Só alteramos Desenvolvimento e
+      Principal se a pessoa estiver
+      nesse caminho atualmente.
+
+      Se já tiver datas históricas mas
+      hoje exercer outra função, elas
+      permanecem guardadas no banco.
+    */
+
+    if (
+      mostrarTrajetoriaMediunica()
+    ) {
+
+      novasDatas.data_corrente_desenvolvimento =
+        desenvolvimento;
+
+
+      novasDatas.data_corrente_principal =
+        principal;
+
+    }
 
 
     const resultado =
@@ -909,18 +1873,29 @@ async function salvarDatasAdministrativas() {
 
 
     associadoAtual.data_entrada_tufra =
-      novasDatas.data_entrada_tufra;
+      entrada;
 
 
-    associadoAtual.data_corrente_desenvolvimento =
-      novasDatas.data_corrente_desenvolvimento;
+    if (
+      mostrarTrajetoriaMediunica()
+    ) {
+
+      associadoAtual.data_corrente_desenvolvimento =
+        desenvolvimento;
 
 
-    associadoAtual.data_corrente_principal =
-      novasDatas.data_corrente_principal;
+      associadoAtual.data_corrente_principal =
+        principal;
+
+    }
+
+
+    await salvarHistoricoFuncoes();
 
 
     atualizarVisualizacaoDatas();
+
+    renderizarHistoricoFuncoes();
 
 
     edicaoDatasAdministrativas.hidden =
@@ -938,13 +1913,13 @@ async function salvarDatasAdministrativas() {
   } catch (erro) {
 
     console.error(
-      "Erro ao salvar datas administrativas:",
+      "Erro ao salvar dados administrativos:",
       erro
     );
 
 
     mensagemDatasAdministrativas.textContent =
-      "Não foi possível salvar as datas.";
+      "Não foi possível salvar os dados administrativos.";
 
 
     mensagemDatasAdministrativas.hidden =
@@ -958,9 +1933,58 @@ async function salvarDatasAdministrativas() {
 
 
     botaoSalvarDatasAdministrativas.textContent =
-      "Salvar datas";
+      "Salvar dados";
 
   }
+}
+
+
+/* ==========================================
+   CARREGAR HISTÓRICO
+========================================== */
+
+async function carregarHistoricoFuncoes(
+  associadoId
+) {
+
+  const resultado =
+    await window.supabaseClient
+      .from(
+        "historico_funcoes_associado"
+      )
+      .select(`
+        id,
+        usuario_id,
+        funcao_nome,
+        data_inicio,
+        data_fim,
+        criado_em,
+        atualizado_em
+      `)
+      .eq(
+        "usuario_id",
+        associadoId
+      )
+      .order(
+        "data_inicio",
+        {
+          ascending: true
+        }
+      );
+
+
+  if (
+    resultado.error
+  ) {
+
+    throw resultado.error;
+
+  }
+
+
+  historicoFuncoes =
+    resultado.data ||
+    [];
 }
 
 
@@ -1004,14 +2028,24 @@ async function carregarAssociado() {
 
     const resultadoUsuario =
       await window.supabaseClient
-        .from("usuarios")
+        .from(
+          "usuarios"
+        )
         .select(`
           id,
           nome_completo,
           foto_path,
           data_entrada_tufra,
           data_corrente_desenvolvimento,
-          data_corrente_principal
+          data_corrente_principal,
+
+          usuario_funcoes!usuario_funcoes_usuario_id_fkey (
+            funcoes (
+              id,
+              nome,
+              funcao_pai_id
+            )
+          )
         `)
         .eq(
           "id",
@@ -1046,6 +2080,23 @@ async function carregarAssociado() {
 
     associadoAtual =
       usuario;
+
+
+    funcoesAtuais =
+      (
+        usuario.usuario_funcoes ||
+        []
+      )
+        .map(
+          (item) =>
+            item.funcoes
+        )
+        .filter(Boolean);
+
+
+    await carregarHistoricoFuncoes(
+      associadoId
+    );
 
 
     const resultadoFicha =
@@ -1140,6 +2191,8 @@ async function carregarAssociado() {
 
 
     atualizarVisualizacaoDatas();
+
+    renderizarHistoricoFuncoes();
 
 
     botaoCadastroCompleto.href =
@@ -1355,9 +2408,11 @@ function calcularDistanciaToques(
 dataEntradaTufra.addEventListener(
   "input",
   () => {
+
     aplicarMascaraData(
       dataEntradaTufra
     );
+
   }
 );
 
@@ -1365,9 +2420,11 @@ dataEntradaTufra.addEventListener(
 dataCorrenteDesenvolvimento.addEventListener(
   "input",
   () => {
+
     aplicarMascaraData(
       dataCorrenteDesenvolvimento
     );
+
   }
 );
 
@@ -1375,9 +2432,11 @@ dataCorrenteDesenvolvimento.addEventListener(
 dataCorrentePrincipal.addEventListener(
   "input",
   () => {
+
     aplicarMascaraData(
       dataCorrentePrincipal
     );
+
   }
 );
 
