@@ -82,26 +82,6 @@ const frequenciaGeralPresenca =
 
 
 /* ==========================================
-   RELATÓRIO POR ATIVIDADE
-========================================== */
-
-const areaRelatorioPorAtividade =
-  document.getElementById(
-    "areaRelatorioPorAtividade"
-  );
-
-const corpoRelatorioPorAtividade =
-  document.getElementById(
-    "corpoRelatorioPorAtividade"
-  );
-
-const mensagemSemAtividadesRealizadas =
-  document.getElementById(
-    "mensagemSemAtividadesRealizadas"
-  );
-
-
-/* ==========================================
    DADOS
 ========================================== */
 
@@ -1230,348 +1210,6 @@ function renderizarResumoAno(
 
 
 /* ==========================================
-   DADOS DE UMA ATIVIDADE
-========================================== */
-
-function calcularDadosAtividade(
-  atividade
-) {
-
-  let presentes =
-    0;
-
-  let faltas =
-    0;
-
-  let justificadas =
-    0;
-
-  let pendentes =
-    0;
-
-  let participantesPrevistos =
-    0;
-
-
-  associadosDaLista.forEach(
-    (associado) => {
-
-      const situacao =
-        obterSituacaoCelula(
-          associado,
-          atividade
-        );
-
-
-      if (
-        situacao.tipo ===
-        "nao_participava" ||
-        situacao.tipo ===
-        "futuro"
-      ) {
-
-        return;
-
-      }
-
-
-      participantesPrevistos++;
-
-
-      if (
-        situacao.tipo ===
-        "presente"
-      ) {
-
-        presentes++;
-
-      }
-
-
-      if (
-        situacao.tipo ===
-        "falta"
-      ) {
-
-        faltas++;
-
-      }
-
-
-      if (
-        situacao.tipo ===
-        "justificada"
-      ) {
-
-        justificadas++;
-
-      }
-
-
-      if (
-        situacao.tipo ===
-        "pendente"
-      ) {
-
-        pendentes++;
-
-      }
-
-    }
-  );
-
-
-  const totalValidos =
-    presentes +
-    faltas +
-    justificadas;
-
-
-  let frequencia =
-    null;
-
-
-  if (
-    totalValidos > 0
-  ) {
-
-    frequencia =
-      (
-        presentes /
-        totalValidos
-      ) * 100;
-
-  }
-
-
-  return {
-
-    presentes,
-    faltas,
-    justificadas,
-    pendentes,
-    participantesPrevistos,
-    frequencia
-
-  };
-
-}
-
-
-/* ==========================================
-   RELATÓRIO POR ATIVIDADE
-========================================== */
-
-function renderizarRelatorioPorAtividade(
-  atividades
-) {
-
-  const hojeISO =
-    obterDataAtualISO();
-
-
-  const atividadesRealizadas =
-    atividades.filter(
-      (atividade) =>
-        atividade.data <=
-        hojeISO
-    );
-
-
-  corpoRelatorioPorAtividade.innerHTML =
-    "";
-
-
-  areaRelatorioPorAtividade.hidden =
-    false;
-
-
-  mensagemSemAtividadesRealizadas.hidden =
-    atividadesRealizadas.length > 0;
-
-
-  if (
-    atividadesRealizadas.length ===
-    0
-  ) {
-
-    return;
-
-  }
-
-
-  atividadesRealizadas.forEach(
-    (atividade) => {
-
-      const dados =
-        calcularDadosAtividade(
-          atividade
-        );
-
-
-      const linha =
-        document.createElement(
-          "tr"
-        );
-
-
-      const colunaData =
-        document.createElement(
-          "td"
-        );
-
-
-      colunaData.textContent =
-        formatarDataCurta(
-          atividade.data
-        );
-
-
-      const colunaAtividade =
-        document.createElement(
-          "td"
-        );
-
-
-      colunaAtividade.className =
-        "coluna-atividade-relatorio";
-
-
-      colunaAtividade.textContent =
-        atividade.titulo;
-
-
-      const colunaP =
-        document.createElement(
-          "td"
-        );
-
-
-      colunaP.className =
-        "valor-atividade-presente";
-
-
-      colunaP.textContent =
-        String(
-          dados.presentes
-        );
-
-
-      const colunaF =
-        document.createElement(
-          "td"
-        );
-
-
-      colunaF.className =
-        "valor-atividade-falta";
-
-
-      colunaF.textContent =
-        String(
-          dados.faltas
-        );
-
-
-      const colunaJ =
-        document.createElement(
-          "td"
-        );
-
-
-      colunaJ.className =
-        "valor-atividade-justificada";
-
-
-      colunaJ.textContent =
-        String(
-          dados.justificadas
-        );
-
-
-      const colunaPendentes =
-        document.createElement(
-          "td"
-        );
-
-
-      colunaPendentes.className =
-        "valor-atividade-pendente";
-
-
-      colunaPendentes.textContent =
-        String(
-          dados.pendentes
-        );
-
-
-      const colunaFrequencia =
-        document.createElement(
-          "td"
-        );
-
-
-      colunaFrequencia.className =
-        "valor-frequencia-atividade";
-
-
-      if (
-        dados.frequencia === null
-      ) {
-
-        colunaFrequencia.textContent =
-          "—";
-
-      } else {
-
-        colunaFrequencia.textContent =
-          `${dados.frequencia
-            .toFixed(1)
-            .replace(".", ",")}%`;
-
-      }
-
-
-      linha.appendChild(
-        colunaData
-      );
-
-      linha.appendChild(
-        colunaAtividade
-      );
-
-      linha.appendChild(
-        colunaP
-      );
-
-      linha.appendChild(
-        colunaF
-      );
-
-      linha.appendChild(
-        colunaJ
-      );
-
-      linha.appendChild(
-        colunaPendentes
-      );
-
-      linha.appendChild(
-        colunaFrequencia
-      );
-
-
-      corpoRelatorioPorAtividade.appendChild(
-        linha
-      );
-
-    }
-  );
-
-}
-
-
-/* ==========================================
    CABEÇALHO DA MATRIZ
 ========================================== */
 
@@ -1758,14 +1396,14 @@ function renderizarAnoSelecionado() {
     resumoAnualPresenca.hidden =
       true;
 
+
     containerTabelaRelatorio.hidden =
       true;
 
-    areaRelatorioPorAtividade.hidden =
-      true;
 
     mensagemSemDadosRelatorio.hidden =
       false;
+
 
     return;
 
@@ -1786,14 +1424,14 @@ function renderizarAnoSelecionado() {
     resumoAnualPresenca.hidden =
       true;
 
+
     containerTabelaRelatorio.hidden =
       true;
 
-    areaRelatorioPorAtividade.hidden =
-      true;
 
     mensagemSemDadosRelatorio.hidden =
       false;
+
 
     return;
 
@@ -1824,11 +1462,6 @@ function renderizarAnoSelecionado() {
 
 
   criarCorpo(
-    atividades
-  );
-
-
-  renderizarRelatorioPorAtividade(
     atividades
   );
 
