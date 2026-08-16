@@ -21,7 +21,7 @@
 
   <link
     rel="stylesheet"
-    href="layout.css?v=37"
+    href="layout.css?v=39"
   >
 
 </head>
@@ -169,9 +169,9 @@
 
       <a
         class="link-administrativo"
-        href="administrativo.html"
+        href="adm-presenca.html"
       >
-        Voltar ao Administrativo
+        Voltar para Presença
       </a>
 
 
@@ -212,11 +212,13 @@
       </a>
 
       <a
-        class="item-menu"
-        href="mais.html"
+        id="itemMenuAdm"
+        class="item-menu ativo"
+        href="administrativo.html"
+        hidden
       >
         <span class="icone-menu">☰</span>
-        <span class="texto-menu">Mais</span>
+        <span class="texto-menu">ADM</span>
       </a>
 
       <a
@@ -240,6 +242,8 @@
   <script src="app.js?v=2"></script>
 
   <script src="consultar-atividades-presenca.js?v=2"></script>
+
+  <script src="menu-adm.js?v=1"></script>
 
 </body>
 
