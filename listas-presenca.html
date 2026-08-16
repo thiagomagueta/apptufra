@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta
+    name="theme-color"
+    content="#651b1d"
+  >
+
+  <title>
+    Preencher Presença | TUFRA
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="layout.css?v=38"
+  >
+
+</head>
+
+
+<body>
+
+  <main class="app">
+
+    <div class="conteudo-app">
+
+
+      <header class="cabecalho-app">
+
+        <img
+          class="logo-app"
+          src="logo-tufra.png"
+          alt="Logo da TUFRA"
+        >
+
+        <div class="identidade-app">
+
+          <strong>
+            TUFRA
+          </strong>
+
+          <span>
+            Tenda de Umbanda Francisco de Assis
+          </span>
+
+        </div>
+
+      </header>
+
+
+      <section>
+
+        <h1 class="titulo-pagina">
+          Preencher Lista de Presença
+        </h1>
+
+        <p class="subtitulo-pagina">
+          Selecione a lista e a atividade que deseja preencher.
+        </p>
+
+      </section>
+
+
+      <!-- =====================================
+           FILTROS
+      ====================================== -->
+
+      <section class="cartao-app">
+
+        <h2>
+          Filtros
+        </h2>
+
+
+        <div class="filtros-preencher-presenca">
+
+
+          <div class="campo-filtro-preencher-presenca">
+
+            <label for="listaPreencherPresenca">
+              Lista
+            </label>
+
+            <select
+              id="listaPreencherPresenca"
+              disabled
+            >
+
+              <option value="">
+                Carregando...
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="campo-filtro-preencher-presenca">
+
+            <label for="anoPreencherPresenca">
+              Ano
+            </label>
+
+            <select
+              id="anoPreencherPresenca"
+              disabled
+            >
+
+              <option value="">
+                Selecione a lista
+              </option>
+
+            </select>
+
+          </div>
+
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================
+           ATIVIDADES
+      ====================================== -->
+
+      <section
+        id="areaAtividadesPreencherPresenca"
+        class="cartao-app"
+        hidden
+      >
+
+        <h2 id="tituloListaPreencherPresenca">
+          Atividades
+        </h2>
+
+
+        <div
+          id="listaAtividadesPreencherPresenca"
+          class="lista-atividades-presenca"
+        >
+
+          <p>
+            Carregando atividades...
+          </p>
+
+        </div>
+
+
+        <div
+          id="mensagemSemAtividadesPreencherPresenca"
+          class="mensagem-sem-atividades"
+          hidden
+        >
+          Nenhuma atividade encontrada para esta seleção.
+        </div>
+
+      </section>
+
+
+      <div
+        id="mensagemSemListasPresenca"
+        class="mensagem-sem-atividades"
+        hidden
+      >
+        Você não possui listas de presença atribuídas.
+      </div>
+
+
+      <a
+        class="link-administrativo"
+        href="administrativo.html"
+      >
+        Voltar ao Administrativo
+      </a>
+
+
+    </div>
+
+  </main>
+
+
+  <nav
+    class="menu-inferior"
+    aria-label="Navegação principal"
+  >
+
+    <div class="menu-inferior-conteudo">
+
+      <a
+        class="item-menu"
+        href="dashboard.html"
+      >
+        <span class="icone-menu">⌂</span>
+        <span class="texto-menu">Início</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="calendario.html"
+      >
+        <span class="icone-menu">📅</span>
+        <span class="texto-menu">Calendário</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="minha-ficha.html"
+      >
+        <span class="icone-menu">👤</span>
+        <span class="texto-menu">Minha ficha</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="mais.html"
+      >
+        <span class="icone-menu">☰</span>
+        <span class="texto-menu">Mais</span>
+      </a>
+
+      <a
+        class="item-menu"
+        href="#"
+        id="botaoSair"
+      >
+        <span class="icone-menu">🚪</span>
+        <span class="texto-menu">Sair</span>
+      </a>
+
+    </div>
+
+  </nav>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="supabase.js?v=2"></script>
+
+  <script src="app.js?v=2"></script>
+
+  <script src="listas-presenca.js?v=3"></script>
+
+</body>
+
+</html>
