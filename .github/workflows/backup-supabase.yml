@@ -136,4 +136,4 @@ jobs:
         with:
           name: backup-supabase-completo
           path: supabase-backup/
-          retention-days: 1
+          retention-days: 7
