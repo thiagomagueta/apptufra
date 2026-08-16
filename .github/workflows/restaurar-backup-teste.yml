@@ -1,0 +1,86 @@
+name: Restaurar Backup - TESTE
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "ID da execução do Backup Supabase que será restaurada"
+        required: true
+        type: string
+      confirmacao:
+        description: 'Digite RESTAURAR-TESTE para confirmar'
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  restaurar:
+    if: ${{ inputs.confirmacao == 'RESTAURAR-TESTE' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar backup escolhido
+        uses: actions/download-artifact@v4
+        with:
+          name: backup-supabase-completo
+          path: backup
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Conferir arquivos do backup
+        run: |
+          echo "Arquivos encontrados:"
+          find backup -type f | sort
+
+          test -f backup/roles.sql
+          test -f backup/schema.sql
+          test -f backup/data.sql
+
+      - name: Instalar cliente PostgreSQL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: PROTECAO - conferir banco de destino
+        env:
+          TEST_DB_URL: ${{ secrets.SUPABASE_TEST_DB_URL }}
+          TEST_PROJECT_REF: ${{ secrets.SUPABASE_TEST_PROJECT_REF }}
+        run: |
+          if [ -z "$TEST_DB_URL" ] || [ -z "$TEST_PROJECT_REF" ]; then
+            echo "Secrets do ambiente de teste nao configurados."
+            exit 1
+          fi
+
+          if [[ "$TEST_DB_URL" != *"$TEST_PROJECT_REF"* ]]; then
+            echo "ERRO DE SEGURANCA: a URL nao corresponde ao projeto de teste."
+            exit 1
+          fi
+
+          echo "Destino de teste validado."
+
+      - name: Restaurar roles
+        env:
+          TEST_DB_URL: ${{ secrets.SUPABASE_TEST_DB_URL }}
+        run: |
+          psql "$TEST_DB_URL" \
+            --set ON_ERROR_STOP=1 \
+            --file=backup/roles.sql
+
+      - name: Restaurar estrutura
+        env:
+          TEST_DB_URL: ${{ secrets.SUPABASE_TEST_DB_URL }}
+        run: |
+          psql "$TEST_DB_URL" \
+            --set ON_ERROR_STOP=1 \
+            --file=backup/schema.sql
+
+      - name: Restaurar dados
+        env:
+          TEST_DB_URL: ${{ secrets.SUPABASE_TEST_DB_URL }}
+        run: |
+          psql "$TEST_DB_URL" \
+            --set ON_ERROR_STOP=1 \
+            --file=backup/data.sql
