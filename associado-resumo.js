@@ -2637,3 +2637,1236 @@ areaZoomFotoAssociado.addEventListener(
 configurarVoltar();
 
 carregarAssociado();
+
+/* ==========================================
+   PRESENÇA NO RESUMO DO ASSOCIADO
+========================================== */
+
+const areaResumoPresencaAssociado =
+  document.getElementById(
+    "areaResumoPresencaAssociado"
+  );
+
+const listasResumoPresencaAssociado =
+  document.getElementById(
+    "listasResumoPresencaAssociado"
+  );
+
+const mensagemSemPresencaAssociado =
+  document.getElementById(
+    "mensagemSemPresencaAssociado"
+  );
+
+
+/* ==========================================
+   DATA ATUAL
+========================================== */
+
+function obterDataAtualISOResumoPresenca() {
+
+  const hoje =
+    new Date();
+
+
+  const ano =
+    hoje.getFullYear();
+
+
+  const mes =
+    String(
+      hoje.getMonth() + 1
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  const dia =
+    String(
+      hoje.getDate()
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  return `${ano}-${mes}-${dia}`;
+}
+
+
+/* ==========================================
+   DATA CURTA
+========================================== */
+
+function formatarDataCurtaResumoPresenca(
+  dataISO
+) {
+
+  if (
+    !dataISO
+  ) {
+
+    return "";
+
+  }
+
+
+  const partes =
+    String(
+      dataISO
+    ).split("-");
+
+
+  if (
+    partes.length !== 3
+  ) {
+
+    return dataISO;
+
+  }
+
+
+  return `${partes[2]}/${partes[1]}`;
+}
+
+
+/* ==========================================
+   LISTAS DAS FUNÇÕES ATUAIS
+========================================== */
+
+function obterNomesListasAtuaisAssociado() {
+
+  const listas =
+    [];
+
+
+  if (
+    estaNaCorrentePrincipal()
+  ) {
+
+    listas.push(
+      "Corrente Principal"
+    );
+
+  }
+
+
+  if (
+    estaNoDesenvolvimento()
+  ) {
+
+    listas.push(
+      "Desenvolvimento"
+    );
+
+  }
+
+
+  if (
+    possuiFuncaoPrincipal(
+      "Ogam"
+    )
+  ) {
+
+    listas.push(
+      "Ogans"
+    );
+
+  }
+
+
+  if (
+    possuiFuncaoPrincipal(
+      "Cambone"
+    )
+  ) {
+
+    listas.push(
+      "Cambones"
+    );
+
+  }
+
+
+  if (
+    possuiFuncaoPrincipal(
+      "Cantina"
+    )
+  ) {
+
+    listas.push(
+      "Cantina"
+    );
+
+  }
+
+
+  return listas;
+}
+
+
+/* ==========================================
+   DATA DE ENTRADA NA LISTA
+========================================== */
+
+function obterDataEntradaListaResumo(
+  nomeLista
+) {
+
+  if (
+    !associadoAtual
+  ) {
+
+    return null;
+
+  }
+
+
+  if (
+    nomeLista ===
+    "Corrente Principal"
+  ) {
+
+    return (
+      associadoAtual.data_corrente_principal ||
+      associadoAtual.data_entrada_tufra ||
+      null
+    );
+
+  }
+
+
+  if (
+    nomeLista ===
+    "Desenvolvimento"
+  ) {
+
+    return (
+      associadoAtual.data_corrente_desenvolvimento ||
+      associadoAtual.data_entrada_tufra ||
+      null
+    );
+
+  }
+
+
+  let nomeHistorico =
+    null;
+
+
+  if (
+    nomeLista ===
+    "Ogans"
+  ) {
+
+    nomeHistorico =
+      "Ogam";
+
+  }
+
+
+  if (
+    nomeLista ===
+    "Cambones"
+  ) {
+
+    nomeHistorico =
+      "Cambone";
+
+  }
+
+
+  if (
+    nomeLista ===
+    "Cantina"
+  ) {
+
+    nomeHistorico =
+      "Cantina";
+
+  }
+
+
+  if (
+    nomeHistorico
+  ) {
+
+    const periodoAtual =
+      historicoFuncoes.find(
+        (registro) =>
+          registro.funcao_nome ===
+            nomeHistorico &&
+          !registro.data_fim
+      );
+
+
+    if (
+      periodoAtual?.data_inicio
+    ) {
+
+      return periodoAtual.data_inicio;
+
+    }
+
+  }
+
+
+  return (
+    associadoAtual.data_entrada_tufra ||
+    null
+  );
+}
+
+
+/* ==========================================
+   BUSCAR TIPO DA LISTA
+========================================== */
+
+async function buscarTipoListaResumo(
+  nomeLista
+) {
+
+  const resultado =
+    await window.supabaseClient
+      .from(
+        "tipos_lista_presenca"
+      )
+      .select(`
+        id,
+        nome,
+        tipo_atividade,
+        ativo,
+        ordem
+      `)
+      .eq(
+        "nome",
+        nomeLista
+      )
+      .eq(
+        "ativo",
+        true
+      )
+      .maybeSingle();
+
+
+  if (
+    resultado.error
+  ) {
+
+    throw resultado.error;
+
+  }
+
+
+  return resultado.data ||
+    null;
+}
+
+
+/* ==========================================
+   BUSCAR ÚLTIMAS 10 ATIVIDADES
+========================================== */
+
+async function buscarUltimasAtividadesResumo(
+  tipoAtividade
+) {
+
+  const hojeISO =
+    obterDataAtualISOResumoPresenca();
+
+
+  const resultado =
+    await window.supabaseClient
+      .from(
+        "atividades"
+      )
+      .select(`
+        id,
+        titulo,
+        data,
+        hora_inicio,
+        tipo_atividade
+      `)
+      .eq(
+        "tipo_atividade",
+        tipoAtividade
+      )
+      .lte(
+        "data",
+        hojeISO
+      )
+      .order(
+        "data",
+        {
+          ascending: false
+        }
+      )
+      .order(
+        "hora_inicio",
+        {
+          ascending: false
+        }
+      )
+      .limit(
+        10
+      );
+
+
+  if (
+    resultado.error
+  ) {
+
+    throw resultado.error;
+
+  }
+
+
+  /*
+    O banco entrega da mais recente
+    para a mais antiga.
+
+    Invertemos para a tabela ficar
+    em ordem cronológica da esquerda
+    para a direita.
+  */
+
+  return (
+    resultado.data ||
+    []
+  ).reverse();
+}
+
+
+/* ==========================================
+   BUSCAR PRESENÇAS DA LISTA
+========================================== */
+
+async function buscarPresencasResumo(
+  tipoListaId,
+  atividades
+) {
+
+  if (
+    !associadoAtual ||
+    atividades.length === 0
+  ) {
+
+    return [];
+
+  }
+
+
+  const idsAtividades =
+    atividades.map(
+      (atividade) =>
+        atividade.id
+    );
+
+
+  const resultado =
+    await window.supabaseClient
+      .from(
+        "presencas"
+      )
+      .select(`
+        atividade_id,
+        usuario_id,
+        status
+      `)
+      .eq(
+        "tipo_lista_id",
+        tipoListaId
+      )
+      .eq(
+        "usuario_id",
+        associadoAtual.id
+      )
+      .in(
+        "atividade_id",
+        idsAtividades
+      );
+
+
+  if (
+    resultado.error
+  ) {
+
+    throw resultado.error;
+
+  }
+
+
+  return resultado.data ||
+    [];
+}
+
+
+/* ==========================================
+   SITUAÇÃO DA ATIVIDADE
+========================================== */
+
+function obterSituacaoResumoPresenca(
+  atividade,
+  presencas,
+  dataEntradaLista
+) {
+
+  if (
+    dataEntradaLista &&
+    atividade.data <
+      dataEntradaLista
+  ) {
+
+    return {
+      texto:
+        "x",
+
+      tipo:
+        "nao_participava",
+
+      classe:
+        "status-relatorio-nao-participava"
+    };
+
+  }
+
+
+  const registro =
+    presencas.find(
+      (item) =>
+        item.atividade_id ===
+        atividade.id
+    );
+
+
+  if (
+    registro?.status ===
+    "presente"
+  ) {
+
+    return {
+      texto:
+        "P",
+
+      tipo:
+        "presente",
+
+      classe:
+        "status-relatorio-presente"
+    };
+
+  }
+
+
+  if (
+    registro?.status ===
+    "falta"
+  ) {
+
+    return {
+      texto:
+        "F",
+
+      tipo:
+        "falta",
+
+      classe:
+        "status-relatorio-falta"
+    };
+
+  }
+
+
+  if (
+    registro?.status ===
+    "justificada"
+  ) {
+
+    return {
+      texto:
+        "J",
+
+      tipo:
+        "justificada",
+
+      classe:
+        "status-relatorio-justificado"
+    };
+
+  }
+
+
+  return {
+    texto:
+      "—",
+
+    tipo:
+      "pendente",
+
+    classe:
+      "status-relatorio-pendente"
+  };
+}
+
+
+/* ==========================================
+   CALCULAR RESUMO
+========================================== */
+
+function calcularResumoPresencaLista(
+  atividades,
+  presencas,
+  dataEntradaLista
+) {
+
+  let presentes =
+    0;
+
+  let faltas =
+    0;
+
+  let justificadas =
+    0;
+
+
+  atividades.forEach(
+    (atividade) => {
+
+      const situacao =
+        obterSituacaoResumoPresenca(
+          atividade,
+          presencas,
+          dataEntradaLista
+        );
+
+
+      if (
+        situacao.tipo ===
+        "presente"
+      ) {
+
+        presentes++;
+
+      }
+
+
+      if (
+        situacao.tipo ===
+        "falta"
+      ) {
+
+        faltas++;
+
+      }
+
+
+      if (
+        situacao.tipo ===
+        "justificada"
+      ) {
+
+        justificadas++;
+
+      }
+
+    }
+  );
+
+
+  const totalValidos =
+    presentes +
+    faltas +
+    justificadas;
+
+
+  let frequencia =
+    null;
+
+
+  if (
+    totalValidos > 0
+  ) {
+
+    frequencia =
+      (
+        presentes /
+        totalValidos
+      ) * 100;
+
+  }
+
+
+  return {
+    presentes,
+    faltas,
+    justificadas,
+    frequencia
+  };
+}
+
+
+/* ==========================================
+   CRIAR BLOCO DE UMA LISTA
+========================================== */
+
+function criarBlocoResumoPresenca(
+  tipoLista,
+  atividades,
+  presencas
+) {
+
+  const bloco =
+    document.createElement(
+      "div"
+    );
+
+
+  bloco.className =
+    "bloco-resumo-presenca-associado";
+
+
+  const titulo =
+    document.createElement(
+      "h3"
+    );
+
+
+  titulo.className =
+    "titulo-resumo-presenca-associado";
+
+
+  titulo.textContent =
+    tipoLista.nome;
+
+
+  bloco.appendChild(
+    titulo
+  );
+
+
+  if (
+    atividades.length === 0
+  ) {
+
+    const mensagem =
+      document.createElement(
+        "p"
+      );
+
+
+    mensagem.className =
+      "mensagem-sem-atividades";
+
+
+    mensagem.textContent =
+      "Nenhuma atividade realizada.";
+
+
+    bloco.appendChild(
+      mensagem
+    );
+
+
+    return bloco;
+
+  }
+
+
+  const dataEntradaLista =
+    obterDataEntradaListaResumo(
+      tipoLista.nome
+    );
+
+
+  const resumo =
+    calcularResumoPresencaLista(
+      atividades,
+      presencas,
+      dataEntradaLista
+    );
+
+
+  const container =
+    document.createElement(
+      "div"
+    );
+
+
+  container.className =
+    "container-tabela-relatorio-presenca";
+
+
+  const tabela =
+    document.createElement(
+      "table"
+    );
+
+
+  tabela.className =
+    "tabela-relatorio-presenca tabela-resumo-presenca-associado";
+
+
+  /* ======================================
+     CABEÇALHO
+  ====================================== */
+
+  const thead =
+    document.createElement(
+      "thead"
+    );
+
+
+  const linhaCabecalho =
+    document.createElement(
+      "tr"
+    );
+
+
+  atividades.forEach(
+    (atividade) => {
+
+      const th =
+        document.createElement(
+          "th"
+        );
+
+
+      th.className =
+        "coluna-data-relatorio";
+
+
+      th.textContent =
+        formatarDataCurtaResumoPresenca(
+          atividade.data
+        );
+
+
+      th.title =
+        atividade.titulo;
+
+
+      linhaCabecalho.appendChild(
+        th
+      );
+
+    }
+  );
+
+
+  const resumoCabecalhos =
+    [
+      "P",
+      "F",
+      "J",
+      "Freq."
+    ];
+
+
+  resumoCabecalhos.forEach(
+    (texto) => {
+
+      const th =
+        document.createElement(
+          "th"
+        );
+
+
+      th.className =
+        "coluna-resumo-presenca-final";
+
+
+      th.textContent =
+        texto;
+
+
+      linhaCabecalho.appendChild(
+        th
+      );
+
+    }
+  );
+
+
+  thead.appendChild(
+    linhaCabecalho
+  );
+
+
+  tabela.appendChild(
+    thead
+  );
+
+
+  /* ======================================
+     CORPO
+  ====================================== */
+
+  const tbody =
+    document.createElement(
+      "tbody"
+    );
+
+
+  const linha =
+    document.createElement(
+      "tr"
+    );
+
+
+  atividades.forEach(
+    (atividade) => {
+
+      const td =
+        document.createElement(
+          "td"
+        );
+
+
+      td.className =
+        "celula-status-relatorio";
+
+
+      const situacao =
+        obterSituacaoResumoPresenca(
+          atividade,
+          presencas,
+          dataEntradaLista
+        );
+
+
+      td.textContent =
+        situacao.texto;
+
+
+      if (
+        situacao.classe
+      ) {
+
+        td.classList.add(
+          situacao.classe
+        );
+
+      }
+
+
+      linha.appendChild(
+        td
+      );
+
+    }
+  );
+
+
+  /* P */
+
+  const tdPresencas =
+    document.createElement(
+      "td"
+    );
+
+
+  tdPresencas.className =
+    "valor-atividade-presente coluna-resumo-presenca-final";
+
+
+  tdPresencas.textContent =
+    String(
+      resumo.presentes
+    );
+
+
+  linha.appendChild(
+    tdPresencas
+  );
+
+
+  /* F */
+
+  const tdFaltas =
+    document.createElement(
+      "td"
+    );
+
+
+  tdFaltas.className =
+    "valor-atividade-falta coluna-resumo-presenca-final";
+
+
+  tdFaltas.textContent =
+    String(
+      resumo.faltas
+    );
+
+
+  linha.appendChild(
+    tdFaltas
+  );
+
+
+  /* J */
+
+  const tdJustificadas =
+    document.createElement(
+      "td"
+    );
+
+
+  tdJustificadas.className =
+    "valor-atividade-justificada coluna-resumo-presenca-final";
+
+
+  tdJustificadas.textContent =
+    String(
+      resumo.justificadas
+    );
+
+
+  linha.appendChild(
+    tdJustificadas
+  );
+
+
+  /* FREQUÊNCIA */
+
+  const tdFrequencia =
+    document.createElement(
+      "td"
+    );
+
+
+  tdFrequencia.className =
+    "valor-frequencia-atividade coluna-resumo-presenca-frequencia";
+
+
+  if (
+    resumo.frequencia ===
+    null
+  ) {
+
+    tdFrequencia.textContent =
+      "—";
+
+  } else {
+
+    tdFrequencia.textContent =
+      `${resumo.frequencia
+        .toFixed(1)
+        .replace(".", ",")}%`;
+
+  }
+
+
+  linha.appendChild(
+    tdFrequencia
+  );
+
+
+  tbody.appendChild(
+    linha
+  );
+
+
+  tabela.appendChild(
+    tbody
+  );
+
+
+  container.appendChild(
+    tabela
+  );
+
+
+  bloco.appendChild(
+    container
+  );
+
+
+  return bloco;
+}
+
+
+/* ==========================================
+   CARREGAR PRESENÇA DO ASSOCIADO
+========================================== */
+
+async function carregarResumoPresencaAssociado() {
+
+  if (
+    !associadoAtual
+  ) {
+
+    return;
+
+  }
+
+
+  listasResumoPresencaAssociado.innerHTML =
+    "";
+
+
+  const nomesListas =
+    obterNomesListasAtuaisAssociado();
+
+
+  if (
+    nomesListas.length === 0
+  ) {
+
+    areaResumoPresencaAssociado.hidden =
+      true;
+
+
+    mensagemSemPresencaAssociado.hidden =
+      false;
+
+
+    return;
+
+  }
+
+
+  areaResumoPresencaAssociado.hidden =
+    false;
+
+
+  mensagemSemPresencaAssociado.hidden =
+    true;
+
+
+  for (
+    const nomeLista of nomesListas
+  ) {
+
+    const tipoLista =
+      await buscarTipoListaResumo(
+        nomeLista
+      );
+
+
+    if (
+      !tipoLista
+    ) {
+
+      continue;
+
+    }
+
+
+    const atividades =
+      await buscarUltimasAtividadesResumo(
+        tipoLista.tipo_atividade
+      );
+
+
+    const presencas =
+      await buscarPresencasResumo(
+        tipoLista.id,
+        atividades
+      );
+
+
+    const bloco =
+      criarBlocoResumoPresenca(
+        tipoLista,
+        atividades,
+        presencas
+      );
+
+
+    listasResumoPresencaAssociado.appendChild(
+      bloco
+    );
+
+  }
+
+
+  if (
+    listasResumoPresencaAssociado.children.length ===
+    0
+  ) {
+
+    areaResumoPresencaAssociado.hidden =
+      true;
+
+
+    mensagemSemPresencaAssociado.hidden =
+      false;
+
+  }
+}
+
+
+/* ==========================================
+   AGUARDAR ASSOCIADO E CARREGAR PRESENÇA
+========================================== */
+
+async function iniciarResumoPresencaAssociado() {
+
+  /*
+    carregarAssociado() já está sendo executado
+    pelo código original.
+
+    Aguardamos o objeto ficar disponível para
+    não alterar a lógica administrativa atual.
+  */
+
+  let tentativas =
+    0;
+
+
+  while (
+    !associadoAtual &&
+    tentativas < 100
+  ) {
+
+    await new Promise(
+      (resolver) =>
+        setTimeout(
+          resolver,
+          50
+        )
+    );
+
+
+    tentativas++;
+
+  }
+
+
+  if (
+    !associadoAtual
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    await carregarResumoPresencaAssociado();
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao carregar resumo de presença do associado:",
+      erro
+    );
+
+
+    areaResumoPresencaAssociado.hidden =
+      false;
+
+
+    listasResumoPresencaAssociado.innerHTML =
+      "<p>Não foi possível carregar as presenças deste associado.</p>";
+
+  }
+}
+
+
+/* ==========================================
+   INICIAR PRESENÇA
+========================================== */
+
+iniciarResumoPresencaAssociado();
