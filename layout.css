@@ -2986,3 +2986,61 @@ input:checked + span {
   }
 
 }
+/* ==========================================
+   FILTROS DO RELATÓRIO POR ATIVIDADE
+========================================== */
+
+.filtros-relatorio-atividade {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 12px;
+}
+
+
+.campo-filtro-relatorio-atividade {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+
+.campo-filtro-relatorio-atividade label {
+  font-size: 12px;
+  font-weight: 700;
+
+  color: #555555;
+}
+
+
+.campo-filtro-relatorio-atividade select {
+  width: 100%;
+  height: 42px;
+
+  box-sizing: border-box;
+
+  padding: 0 10px;
+
+  border: 1px solid #d7d7d7;
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  font: inherit;
+  font-size: 14px;
+
+  color: #222222;
+}
+
+
+@media (max-width: 420px) {
+
+  .filtros-relatorio-atividade {
+    grid-template-columns:
+      1fr;
+  }
+
+}
