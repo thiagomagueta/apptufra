@@ -21,7 +21,7 @@
 
   <link
     rel="stylesheet"
-    href="layout.css?v=38"
+    href="layout.css?v=39"
   >
 
 </head>
@@ -33,6 +33,10 @@
 
     <div class="conteudo-app">
 
+
+      <!-- =====================================
+           CABEÇALHO
+      ====================================== -->
 
       <header class="cabecalho-app">
 
@@ -56,6 +60,10 @@
 
       </header>
 
+
+      <!-- =====================================
+           TÍTULO
+      ====================================== -->
 
       <section>
 
@@ -176,11 +184,15 @@
       </div>
 
 
+      <!-- =====================================
+           VOLTAR
+      ====================================== -->
+
       <a
         class="link-administrativo"
-        href="administrativo.html"
+        href="adm-presenca.html"
       >
-        Voltar ao Administrativo
+        Voltar para Presença
       </a>
 
 
@@ -189,12 +201,17 @@
   </main>
 
 
+  <!-- =====================================
+       MENU INFERIOR
+  ====================================== -->
+
   <nav
     class="menu-inferior"
     aria-label="Navegação principal"
   >
 
     <div class="menu-inferior-conteudo">
+
 
       <a
         class="item-menu"
@@ -204,6 +221,7 @@
         <span class="texto-menu">Início</span>
       </a>
 
+
       <a
         class="item-menu"
         href="calendario.html"
@@ -211,6 +229,7 @@
         <span class="icone-menu">📅</span>
         <span class="texto-menu">Calendário</span>
       </a>
+
 
       <a
         class="item-menu"
@@ -220,13 +239,17 @@
         <span class="texto-menu">Minha ficha</span>
       </a>
 
+
       <a
-        class="item-menu"
-        href="mais.html"
+        id="itemMenuAdm"
+        class="item-menu ativo"
+        href="administrativo.html"
+        hidden
       >
         <span class="icone-menu">☰</span>
-        <span class="texto-menu">Mais</span>
+        <span class="texto-menu">ADM</span>
       </a>
+
 
       <a
         class="item-menu"
@@ -236,6 +259,7 @@
         <span class="icone-menu">🚪</span>
         <span class="texto-menu">Sair</span>
       </a>
+
 
     </div>
 
@@ -249,6 +273,8 @@
   <script src="app.js?v=2"></script>
 
   <script src="listas-presenca.js?v=3"></script>
+
+  <script src="menu-adm.js?v=1"></script>
 
 </body>
 
