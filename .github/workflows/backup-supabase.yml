@@ -1,0 +1,39 @@
+name: Backup Supabase
+
+on:
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Instalar Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Criar pasta de backup
+        run: mkdir -p supabase-backup
+
+      - name: Backup dos roles
+        run: supabase db dump --db-url "$SUPABASE_DB_URL" -f supabase-backup/roles.sql --role-only
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+
+      - name: Backup da estrutura
+        run: supabase db dump --db-url "$SUPABASE_DB_URL" -f supabase-backup/schema.sql
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+
+      - name: Backup dos dados
+        run: supabase db dump --db-url "$SUPABASE_DB_URL" -f supabase-backup/data.sql --use-copy --data-only
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+
+      - name: Guardar backup para download
+        uses: actions/upload-artifact@v4
+        with:
+          name: backup-supabase
+          path: supabase-backup/
+          retention-days: 1
