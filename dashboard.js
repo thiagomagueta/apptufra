@@ -25,9 +25,9 @@ const listaFuncoesDashboard =
     "listaFuncoesDashboard"
   );
 
-const areaAdministrativo =
+const itemMenuAdm =
   document.getElementById(
-    "areaAdministrativo"
+    "itemMenuAdm"
   );
 
 const proximaAtividadeDashboard =
@@ -440,6 +440,10 @@ async function carregarFuncoesUsuario() {
       "";
 
 
+    const nomesFuncoes =
+      [];
+
+
     if (
       funcoes.length === 0
     ) {
@@ -448,13 +452,15 @@ async function carregarFuncoesUsuario() {
         "<p>Nenhuma função atribuída.</p>";
 
 
+      await verificarAcessoAdm(
+        nomesFuncoes,
+        usuarioId
+      );
+
+
       return;
 
     }
-
-
-    const nomesFuncoes =
-      [];
 
 
     funcoes.forEach(
@@ -500,8 +506,9 @@ async function carregarFuncoesUsuario() {
     );
 
 
-    verificarAdministrativo(
-      nomesFuncoes
+    await verificarAcessoAdm(
+      nomesFuncoes,
+      usuarioId
     );
 
 
@@ -521,15 +528,16 @@ async function carregarFuncoesUsuario() {
 
 
 /* ==========================================
-   ACESSO ADMINISTRATIVO
+   ACESSO AO ADM
 ========================================== */
 
-function verificarAdministrativo(
-  funcoes
+async function verificarAcessoAdm(
+  funcoes,
+  usuarioId
 ) {
 
   if (
-    !areaAdministrativo
+    !itemMenuAdm
   ) {
 
     return;
@@ -537,42 +545,100 @@ function verificarAdministrativo(
   }
 
 
-  const funcoesAdministrativas = [
+  /*
+    Começa sempre escondido.
+  */
+
+  itemMenuAdm.hidden =
+    true;
+
+
+  /* ======================================
+     DIRETORIA
+  ====================================== */
+
+  const funcoesDiretoria = [
     "Presidente",
     "Secretária",
     "Tesoureiro",
     "Pai/Mãe Pequeno (a)",
-    "Sacerdote",
-    "Líder dos Ogans",
-    "Líder dos Cambones",
-    "Líder da Cantina"
+    "Sacerdote"
   ];
 
 
-  const possuiAcesso =
+  const pertenceDiretoria =
     funcoes.some(
       (funcao) =>
-        funcoesAdministrativas.includes(
+        funcoesDiretoria.includes(
           funcao
         )
     );
 
 
-  areaAdministrativo.hidden =
-    !possuiAcesso;
+  /* ======================================
+     RESPONSÁVEL POR PRESENÇA
+  ====================================== */
+
+  let ehResponsavelPresenca =
+    false;
 
 
-  if (
-    !possuiAcesso
-  ) {
+  try {
 
-    return;
+    const resultadoResponsavel =
+      await window.supabaseClient
+        .from(
+          "responsaveis_lista_presenca"
+        )
+        .select(
+          "id"
+        )
+        .eq(
+          "usuario_id",
+          usuarioId
+        )
+        .limit(
+          1
+        );
+
+
+    if (
+      resultadoResponsavel.error
+    ) {
+
+      throw resultadoResponsavel.error;
+
+    }
+
+
+    ehResponsavelPresenca =
+      (
+        resultadoResponsavel.data ||
+        []
+      ).length > 0;
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao verificar responsável por presença:",
+      erro
+    );
 
   }
 
 
-  areaAdministrativo.href =
-    "administrativo.html";
+  /* ======================================
+     EXIBIR ADM
+  ====================================== */
+
+  const possuiAcessoAdm =
+    pertenceDiretoria ||
+    ehResponsavelPresenca;
+
+
+  itemMenuAdm.hidden =
+    !possuiAcessoAdm;
 }
 
 
@@ -2246,12 +2312,6 @@ async function carregarResumoPresencaDashboard() {
   const nomesListas =
     obterListasAtuaisDashboard();
 
-
-  /*
-    Assistência ou usuário sem uma lista
-    de presença não precisa visualizar
-    um quadro vazio.
-  */
 
   if (
     nomesListas.length === 0
