@@ -2442,3 +2442,126 @@ input:checked + span {
   opacity: 0.6;
   cursor: default;
 }
+/* ==========================================
+   RESUMO ANUAL DE PRESENÇA
+========================================== */
+
+.resumo-anual-presenca {
+  margin-bottom: 18px;
+
+  padding: 12px;
+
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+
+  background: #fafafa;
+}
+
+
+.titulo-resumo-anual {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-bottom: 10px;
+}
+
+
+.titulo-resumo-anual strong {
+  font-size: 14px;
+  color: #333333;
+}
+
+
+.titulo-resumo-anual span {
+  font-size: 13px;
+  font-weight: 700;
+  color: #651b1d;
+}
+
+
+.grade-resumo-anual {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 8px;
+}
+
+
+.item-resumo-anual {
+  min-width: 0;
+
+  padding: 9px 8px;
+
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  text-align: center;
+}
+
+
+.item-resumo-anual span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  font-size: 11px;
+  line-height: 1.2;
+
+  color: #666666;
+}
+
+
+.item-resumo-anual strong {
+  display: block;
+
+  font-size: 18px;
+  line-height: 1;
+
+  color: #333333;
+}
+
+
+.numero-resumo-presente {
+  color: #247335 !important;
+}
+
+
+.numero-resumo-falta {
+  color: #a32a2a !important;
+}
+
+
+.numero-resumo-justificada {
+  color: #8a6500 !important;
+}
+
+
+.numero-resumo-pendente {
+  color: #777777 !important;
+}
+
+
+.item-frequencia-geral {
+  background: #f3eded;
+}
+
+
+.item-frequencia-geral strong {
+  color: #651b1d;
+}
+
+
+@media (max-width: 420px) {
+
+  .grade-resumo-anual {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+}
