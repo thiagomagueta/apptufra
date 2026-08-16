@@ -5,14 +5,24 @@
    ELEMENTOS
 ========================================== */
 
-const tituloRelatorioLista =
+const listaRelatorioPresenca =
   document.getElementById(
-    "tituloRelatorioLista"
+    "listaRelatorioPresenca"
   );
 
 const anoRelatorioPresenca =
   document.getElementById(
     "anoRelatorioPresenca"
+  );
+
+const areaRelatorioGeral =
+  document.getElementById(
+    "areaRelatorioGeral"
+  );
+
+const tituloListaRelatorioGeral =
+  document.getElementById(
+    "tituloListaRelatorioGeral"
   );
 
 const containerTabelaRelatorio =
@@ -85,13 +95,10 @@ const frequenciaGeralPresenca =
    DADOS
 ========================================== */
 
-let tipoListaId =
-  null;
+let listasPresenca =
+  [];
 
-let tipoListaNome =
-  "";
-
-let tipoAtividadeLista =
+let tipoListaAtual =
   null;
 
 let todasAtividades =
@@ -115,25 +122,6 @@ const funcoesDiretoria = [
   "Secretária",
   "Presidente"
 ];
-
-
-/* ==========================================
-   PARÂMETRO
-========================================== */
-
-function obterTipoListaId() {
-
-  const parametros =
-    new URLSearchParams(
-      window.location.search
-    );
-
-
-  return parametros.get(
-    "id"
-  );
-
-}
 
 
 /* ==========================================
@@ -169,7 +157,6 @@ function obterDataAtualISO() {
 
 
   return `${ano}-${mes}-${dia}`;
-
 }
 
 
@@ -191,7 +178,6 @@ function formatarNome(
       (letra) =>
         letra.toUpperCase()
     );
-
 }
 
 
@@ -208,7 +194,6 @@ function formatarDataCurta(
 
 
   return `${dia}/${mes}`;
-
 }
 
 
@@ -345,7 +330,6 @@ async function validarDiretoria() {
     );
 
   }
-
 }
 
 
@@ -419,7 +403,6 @@ function nomesFuncoesDaLista(
 
 
   return [];
-
 }
 
 
@@ -432,7 +415,16 @@ function obterDataEntradaNaLista(
 ) {
 
   if (
-    tipoListaNome ===
+    !tipoListaAtual
+  ) {
+
+    return null;
+
+  }
+
+
+  if (
+    tipoListaAtual.nome ===
     "Corrente Principal"
   ) {
 
@@ -444,7 +436,7 @@ function obterDataEntradaNaLista(
 
 
   if (
-    tipoListaNome ===
+    tipoListaAtual.nome ===
     "Desenvolvimento"
   ) {
 
@@ -457,15 +449,14 @@ function obterDataEntradaNaLista(
 
   return associado.data_entrada_tufra ||
     null;
-
 }
 
 
 /* ==========================================
-   CARREGAR TIPO DA LISTA
+   CARREGAR LISTAS
 ========================================== */
 
-async function carregarTipoLista() {
+async function carregarListas() {
 
   const resultado =
     await window.supabaseClient
@@ -476,13 +467,19 @@ async function carregarTipoLista() {
         id,
         nome,
         tipo_atividade,
-        ativo
+        ativo,
+        ordem
       `)
       .eq(
-        "id",
-        tipoListaId
+        "ativo",
+        true
       )
-      .maybeSingle();
+      .order(
+        "ordem",
+        {
+          ascending: true
+        }
+      );
 
 
   if (
@@ -494,28 +491,83 @@ async function carregarTipoLista() {
   }
 
 
+  listasPresenca =
+    resultado.data ||
+    [];
+
+
+  listaRelatorioPresenca.innerHTML =
+    "";
+
+
   if (
-    !resultado.data
+    listasPresenca.length ===
+    0
   ) {
 
-    throw new Error(
-      "Lista de presença não encontrada."
+    const opcao =
+      document.createElement(
+        "option"
+      );
+
+
+    opcao.value =
+      "";
+
+
+    opcao.textContent =
+      "Nenhuma lista";
+
+
+    listaRelatorioPresenca.appendChild(
+      opcao
     );
+
+
+    listaRelatorioPresenca.disabled =
+      true;
+
+
+    return;
 
   }
 
 
-  tipoListaNome =
-    resultado.data.nome;
+  listasPresenca.forEach(
+    (lista) => {
+
+      const opcao =
+        document.createElement(
+          "option"
+        );
 
 
-  tipoAtividadeLista =
-    resultado.data.tipo_atividade;
+      opcao.value =
+        lista.id;
 
 
-  tituloRelatorioLista.textContent =
-    tipoListaNome;
+      opcao.textContent =
+        lista.nome;
 
+
+      listaRelatorioPresenca.appendChild(
+        opcao
+      );
+
+    }
+  );
+
+
+  listaRelatorioPresenca.disabled =
+    false;
+
+
+  tipoListaAtual =
+    listasPresenca[0];
+
+
+  listaRelatorioPresenca.value =
+    tipoListaAtual.id;
 }
 
 
@@ -523,7 +575,20 @@ async function carregarTipoLista() {
    CARREGAR ATIVIDADES
 ========================================== */
 
-async function carregarTodasAtividades() {
+async function carregarAtividades() {
+
+  todasAtividades =
+    [];
+
+
+  if (
+    !tipoListaAtual
+  ) {
+
+    return;
+
+  }
+
 
   const resultado =
     await window.supabaseClient
@@ -539,7 +604,7 @@ async function carregarTodasAtividades() {
       `)
       .eq(
         "tipo_atividade",
-        tipoAtividadeLista
+        tipoListaAtual.tipo_atividade
       )
       .order(
         "data",
@@ -567,7 +632,6 @@ async function carregarTodasAtividades() {
   todasAtividades =
     resultado.data ||
     [];
-
 }
 
 
@@ -695,7 +759,6 @@ function carregarAnosDisponiveis() {
 
   anoRelatorioPresenca.disabled =
     false;
-
 }
 
 
@@ -705,9 +768,22 @@ function carregarAnosDisponiveis() {
 
 async function carregarAssociados() {
 
+  associadosDaLista =
+    [];
+
+
+  if (
+    !tipoListaAtual
+  ) {
+
+    return;
+
+  }
+
+
   const funcoesNecessarias =
     nomesFuncoesDaLista(
-      tipoListaNome
+      tipoListaAtual.nome
     );
 
 
@@ -715,9 +791,6 @@ async function carregarAssociados() {
     funcoesNecessarias.length ===
     0
   ) {
-
-    associadosDaLista =
-      [];
 
     return;
 
@@ -804,7 +877,6 @@ async function carregarAssociados() {
             }
           )
       );
-
 }
 
 
@@ -813,6 +885,19 @@ async function carregarAssociados() {
 ========================================== */
 
 async function carregarPresencas() {
+
+  presencas =
+    [];
+
+
+  if (
+    !tipoListaAtual
+  ) {
+
+    return;
+
+  }
+
 
   const resultado =
     await window.supabaseClient
@@ -826,7 +911,7 @@ async function carregarPresencas() {
       `)
       .eq(
         "tipo_lista_id",
-        tipoListaId
+        tipoListaAtual.id
       );
 
 
@@ -842,7 +927,6 @@ async function carregarPresencas() {
   presencas =
     resultado.data ||
     [];
-
 }
 
 
@@ -862,7 +946,6 @@ function obterAtividadesDoAno(
         `${ano}-`
       )
   );
-
 }
 
 
@@ -882,7 +965,6 @@ function obterPresenca(
       registro.atividade_id ===
         atividadeId
   );
-
 }
 
 
@@ -998,7 +1080,6 @@ function obterSituacaoCelula(
     tipo:
       "pendente"
   };
-
 }
 
 
@@ -1137,7 +1218,6 @@ function calcularResumoAno(
     frequencia
 
   };
-
 }
 
 
@@ -1191,7 +1271,8 @@ function renderizarResumoAno(
 
 
   if (
-    resumo.frequencia === null
+    resumo.frequencia ===
+    null
   ) {
 
     frequenciaGeralPresenca.textContent =
@@ -1205,12 +1286,11 @@ function renderizarResumoAno(
         .replace(".", ",")}%`;
 
   }
-
 }
 
 
 /* ==========================================
-   CABEÇALHO DA MATRIZ
+   CABEÇALHO
 ========================================== */
 
 function criarCabecalho(
@@ -1280,12 +1360,11 @@ function criarCabecalho(
   cabecalhoTabelaRelatorio.appendChild(
     linha
   );
-
 }
 
 
 /* ==========================================
-   CORPO DA MATRIZ
+   CORPO
 ========================================== */
 
 function criarCorpo(
@@ -1375,7 +1454,6 @@ function criarCorpo(
 
     }
   );
-
 }
 
 
@@ -1390,20 +1468,12 @@ function renderizarAnoSelecionado() {
 
 
   if (
+    !tipoListaAtual ||
     !ano
   ) {
 
-    resumoAnualPresenca.hidden =
+    areaRelatorioGeral.hidden =
       true;
-
-
-    containerTabelaRelatorio.hidden =
-      true;
-
-
-    mensagemSemDadosRelatorio.hidden =
-      false;
-
 
     return;
 
@@ -1414,6 +1484,14 @@ function renderizarAnoSelecionado() {
     obterAtividadesDoAno(
       ano
     );
+
+
+  areaRelatorioGeral.hidden =
+    false;
+
+
+  tituloListaRelatorioGeral.textContent =
+    tipoListaAtual.nome;
 
 
   if (
@@ -1464,7 +1542,84 @@ function renderizarAnoSelecionado() {
   criarCorpo(
     atividades
   );
+}
 
+
+/* ==========================================
+   TROCAR LISTA
+========================================== */
+
+async function trocarLista() {
+
+  const listaId =
+    listaRelatorioPresenca.value;
+
+
+  tipoListaAtual =
+    listasPresenca.find(
+      (lista) =>
+        lista.id ===
+        listaId
+    ) || null;
+
+
+  areaRelatorioGeral.hidden =
+    true;
+
+
+  anoRelatorioPresenca.disabled =
+    true;
+
+
+  anoRelatorioPresenca.innerHTML =
+    `
+      <option value="">
+        Carregando...
+      </option>
+    `;
+
+
+  try {
+
+    await carregarAtividades();
+
+    carregarAnosDisponiveis();
+
+    await carregarAssociados();
+
+    await carregarPresencas();
+
+    renderizarAnoSelecionado();
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao trocar lista do relatório geral:",
+      erro
+    );
+
+
+    areaRelatorioGeral.hidden =
+      false;
+
+
+    resumoAnualPresenca.hidden =
+      true;
+
+
+    containerTabelaRelatorio.hidden =
+      true;
+
+
+    mensagemSemDadosRelatorio.hidden =
+      false;
+
+
+    mensagemSemDadosRelatorio.textContent =
+      "Não foi possível carregar o relatório.";
+
+  }
 }
 
 
@@ -1473,22 +1628,6 @@ function renderizarAnoSelecionado() {
 ========================================== */
 
 async function iniciarPagina() {
-
-  tipoListaId =
-    obterTipoListaId();
-
-
-  if (
-    !tipoListaId
-  ) {
-
-    window.location.href =
-      "relatorio-presenca.html";
-
-    return;
-
-  }
-
 
   if (
     !window.supabaseClient
@@ -1503,38 +1642,61 @@ async function iniciarPagina() {
 
     await validarDiretoria();
 
-    await carregarTipoLista();
+    await carregarListas();
 
-    await carregarTodasAtividades();
 
-    carregarAnosDisponiveis();
+    if (
+      !tipoListaAtual
+    ) {
 
-    await carregarAssociados();
+      return;
 
-    await carregarPresencas();
+    }
 
-    renderizarAnoSelecionado();
+
+    await trocarLista();
 
 
   } catch (erro) {
 
     console.error(
-      "Erro ao carregar relatório geral de presença:",
+      "Erro ao iniciar relatório geral:",
       erro
     );
 
 
-    corpoTabelaRelatorio.innerHTML =
-      "<tr><td>Não foi possível carregar o relatório.</td></tr>";
+    areaRelatorioGeral.hidden =
+      false;
+
+
+    resumoAnualPresenca.hidden =
+      true;
+
+
+    containerTabelaRelatorio.hidden =
+      true;
+
+
+    mensagemSemDadosRelatorio.hidden =
+      false;
+
+
+    mensagemSemDadosRelatorio.textContent =
+      "Não foi possível carregar o relatório.";
 
   }
-
 }
 
 
 /* ==========================================
-   TROCAR ANO
+   EVENTOS
 ========================================== */
+
+listaRelatorioPresenca.addEventListener(
+  "change",
+  trocarLista
+);
+
 
 anoRelatorioPresenca.addEventListener(
   "change",
