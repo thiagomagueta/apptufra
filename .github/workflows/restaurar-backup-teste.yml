@@ -61,14 +61,6 @@ jobs:
 
           echo "Destino de teste validado."
 
-      - name: Restaurar roles
-        env:
-          TEST_DB_URL: ${{ secrets.SUPABASE_TEST_DB_URL }}
-        run: |
-          psql "$TEST_DB_URL" \
-            --set ON_ERROR_STOP=1 \
-            --file=backup/roles.sql
-
       - name: Restaurar estrutura
         env:
           TEST_DB_URL: ${{ secrets.SUPABASE_TEST_DB_URL }}
