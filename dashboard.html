@@ -147,21 +147,11 @@
 
         </div>
 
-
-        <a
-          id="areaAdministrativo"
-          class="link-administrativo"
-          href="#"
-          hidden
-        >
-          Funções administrativas
-        </a>
-
       </section>
 
 
       <!-- =====================================
-           PRESENÇA REAL DO USUÁRIO
+           PRESENÇA
       ====================================== -->
 
       <section
@@ -173,6 +163,7 @@
         <h2>
           Presença - Últimas 10 giras
         </h2>
+
 
         <div
           id="listasPresencaDashboard"
@@ -192,21 +183,21 @@
       </section>
 
 
-<!-- =====================================
-     FINANCEIRO
-====================================== -->
+      <!-- =====================================
+           FINANCEIRO
+      ====================================== -->
 
-<section class="cartao-app">
+      <section class="cartao-app">
 
-  <h2>
-    Financeiro - 2026
-  </h2>
+        <h2>
+          Financeiro - 2026
+        </h2>
 
-  <p>
-    Em Construção
-  </p>
+        <p>
+          Em Construção
+        </p>
 
-</section>
+      </section>
 
 
       <!-- =====================================
@@ -232,7 +223,7 @@
 
 
   <!-- =====================================
-       MENU
+       MENU INFERIOR
   ====================================== -->
 
   <nav
@@ -291,9 +282,16 @@
       </a>
 
 
+      <!-- =================================
+           ADM
+           SÓ APARECE PARA QUEM TEM ACESSO
+      ================================== -->
+
       <a
+        id="itemMenuAdm"
         class="item-menu"
-        href="mais.html"
+        href="administrativo.html"
+        hidden
       >
 
         <span class="icone-menu">
@@ -301,7 +299,7 @@
         </span>
 
         <span class="texto-menu">
-          Mais
+          ADM
         </span>
 
       </a>
@@ -335,7 +333,7 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="dashboard.js?v=7"></script>
+  <script src="dashboard.js?v=8"></script>
 
 </body>
 
