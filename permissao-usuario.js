@@ -295,12 +295,6 @@ function criarCheckboxFuncao(
     funcao.id;
 
 
-  /*
-    Guardamos também o nome da função
-    para descobrir automaticamente
-    quais datas devem ser preenchidas.
-  */
-
   checkbox.dataset.funcaoNome =
     funcao.nome;
 
@@ -612,6 +606,179 @@ async function obterUsuarioAdministrador() {
 
 
 /* ==========================================
+   ATUALIZAR HISTÓRICO
+   OGAM / CAMBONE / CANTINA
+========================================== */
+
+async function atualizarHistoricoFuncoes(
+  usuarioId,
+  nomesAtuais,
+  nomesMarcados
+) {
+
+  const funcoesComHistorico = [
+    "Ogam",
+    "Cambone",
+    "Cantina"
+  ];
+
+
+  const hoje =
+    obterDataHojeISO();
+
+
+  for (
+    const funcaoNome of
+    funcoesComHistorico
+  ) {
+
+    const tinhaAntes =
+      nomesAtuais.includes(
+        funcaoNome
+      );
+
+
+    const temAgora =
+      nomesMarcados.includes(
+        funcaoNome
+      );
+
+
+    /* --------------------------------------
+       ENTROU NA FUNÇÃO
+    -------------------------------------- */
+
+    if (
+      !tinhaAntes &&
+      temAgora
+    ) {
+
+      const resultadoPeriodoAberto =
+        await window.supabaseClient
+          .from(
+            "historico_funcoes_associado"
+          )
+          .select("id")
+          .eq(
+            "usuario_id",
+            usuarioId
+          )
+          .eq(
+            "funcao_nome",
+            funcaoNome
+          )
+          .is(
+            "data_fim",
+            null
+          )
+          .limit(1);
+
+
+      if (
+        resultadoPeriodoAberto.error
+      ) {
+
+        throw resultadoPeriodoAberto.error;
+
+      }
+
+
+      const possuiPeriodoAberto =
+        (
+          resultadoPeriodoAberto.data ||
+          []
+        ).length > 0;
+
+
+      if (
+        !possuiPeriodoAberto
+      ) {
+
+        const resultadoInsercao =
+          await window.supabaseClient
+            .from(
+              "historico_funcoes_associado"
+            )
+            .insert({
+
+              usuario_id:
+                usuarioId,
+
+              funcao_nome:
+                funcaoNome,
+
+              data_inicio:
+                hoje
+
+            });
+
+
+        if (
+          resultadoInsercao.error
+        ) {
+
+          throw resultadoInsercao.error;
+
+        }
+
+      }
+
+    }
+
+
+    /* --------------------------------------
+       SAIU DA FUNÇÃO
+    -------------------------------------- */
+
+    if (
+      tinhaAntes &&
+      !temAgora
+    ) {
+
+      const resultadoFechamento =
+        await window.supabaseClient
+          .from(
+            "historico_funcoes_associado"
+          )
+          .update({
+
+            data_fim:
+              hoje,
+
+            atualizado_em:
+              new Date().toISOString()
+
+          })
+          .eq(
+            "usuario_id",
+            usuarioId
+          )
+          .eq(
+            "funcao_nome",
+            funcaoNome
+          )
+          .is(
+            "data_fim",
+            null
+          );
+
+
+      if (
+        resultadoFechamento.error
+      ) {
+
+        throw resultadoFechamento.error;
+
+      }
+
+    }
+
+  }
+
+}
+
+
+/* ==========================================
    SINCRONIZA FUNÇÕES DO USUÁRIO
 ========================================== */
 
@@ -627,7 +794,10 @@ async function sincronizarFuncoesUsuario(
       )
       .select(`
         id,
-        funcao_id
+        funcao_id,
+        funcoes (
+          nome
+        )
       `)
       .eq(
         "usuario_id",
@@ -649,8 +819,34 @@ async function sincronizarFuncoesUsuario(
     [];
 
 
+  const nomesAtuais =
+    atuais
+      .map(
+        (item) =>
+          item.funcoes?.nome
+      )
+      .filter(Boolean);
+
+
   const marcadas =
     obterFuncoesMarcadas();
+
+
+  const nomesMarcados =
+    obterNomesFuncoesMarcadas();
+
+
+  /*
+    Antes de alterar usuario_funcoes,
+    registramos as mudanças históricas
+    de Ogam, Cambone e Cantina.
+  */
+
+  await atualizarHistoricoFuncoes(
+    usuarioId,
+    nomesAtuais,
+    nomesMarcados
+  );
 
 
   const adicionar =
@@ -752,14 +948,6 @@ async function atualizarDatasAutomaticas(
   usuarioId,
   preencherEntradaTufra
 ) {
-
-  /*
-    Primeiro buscamos as datas atuais.
-
-    Dessa forma, uma data preenchida
-    manualmente pela Diretoria nunca
-    será sobrescrita.
-  */
 
   const resultadoUsuario =
     await window.supabaseClient
@@ -875,10 +1063,6 @@ async function atualizarDatasAutomaticas(
   }
 
 
-  /* --------------------------------------
-     NADA PARA ATUALIZAR
-  -------------------------------------- */
-
   if (
     Object.keys(
       atualizacoes
@@ -957,25 +1141,11 @@ async function salvarFuncoesUsuario() {
       await obterUsuarioAdministrador();
 
 
-    /*
-      Primeiro sincronizamos as funções.
-    */
-
     await sincronizarFuncoesUsuario(
       usuarioId,
       atribuidoPor
     );
 
-
-    /*
-      Depois verificamos se alguma das
-      funções exige o preenchimento
-      automático de uma data.
-
-      Como o usuário já é ativo,
-      não alteramos a data de entrada
-      na TUFRA aqui.
-    */
 
     await atualizarDatasAutomaticas(
       usuarioId,
@@ -1052,11 +1222,6 @@ async function aprovarCadastro() {
     obterFuncoesMarcadas();
 
 
-  /*
-    Não permitimos aprovar alguém
-    sem nenhuma função.
-  */
-
   if (
     funcoesMarcadas.length ===
     0
@@ -1086,39 +1251,17 @@ async function aprovarCadastro() {
       await obterUsuarioAdministrador();
 
 
-    /*
-      Primeiro gravamos as funções.
-    */
-
     await sincronizarFuncoesUsuario(
       usuarioId,
       aprovadoPor
     );
 
 
-    /*
-      Preenche automaticamente:
-
-      - Data de entrada na TUFRA
-      - Data da Corrente do Desenvolvimento
-      - Data da Corrente Principal
-
-      somente quando aplicável e somente
-      se a respectiva data estiver vazia.
-    */
-
     await atualizarDatasAutomaticas(
       usuarioId,
       true
     );
 
-
-    /*
-      Depois aprovamos o cadastro.
-
-      data_aprovacao registra a data
-      e o horário técnico da aprovação.
-    */
 
     const agora =
       new Date();
