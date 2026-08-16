@@ -3103,6 +3103,66 @@ input:checked + span {
 
 }
 /* ==========================================
+   FILTROS DA CONSULTA DE PRESENÇA
+========================================== */
+
+.filtros-consulta-presenca {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 12px;
+}
+
+
+.campo-filtro-consulta-presenca {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+
+.campo-filtro-consulta-presenca label {
+  font-size: 12px;
+  font-weight: 700;
+
+  color: #555555;
+}
+
+
+.campo-filtro-consulta-presenca select {
+  width: 100%;
+  height: 42px;
+
+  box-sizing: border-box;
+
+  padding: 0 10px;
+
+  border: 1px solid #d7d7d7;
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  font: inherit;
+  font-size: 14px;
+
+  color: #222222;
+}
+
+
+@media (max-width: 420px) {
+
+  .filtros-consulta-presenca {
+    grid-template-columns:
+      1fr;
+  }
+
+}
+
+
+/* ==========================================
    FILTROS DE PREENCHIMENTO DA PRESENÇA
 ========================================== */
 
@@ -3160,19 +3220,23 @@ input:checked + span {
   }
 
 }
+
+
 /* ==========================================
    RESUMO DE PRESENÇA DO ASSOCIADO
-   AJUSTE DAS COLUNAS
 ========================================== */
 
 .tabela-resumo-presenca-associado {
   width: max-content;
   min-width: 100%;
+
   table-layout: fixed;
 }
 
 
-/* COLUNAS DAS 10 ATIVIDADES */
+/* ==========================================
+   COLUNAS DAS ATIVIDADES
+========================================== */
 
 .tabela-resumo-presenca-associado
 .coluna-data-relatorio,
@@ -3190,18 +3254,36 @@ input:checked + span {
 }
 
 
-/* DATAS VERTICAIS */
+/* ==========================================
+   CABEÇALHO
+========================================== */
+
+.tabela-resumo-presenca-associado thead tr {
+  height: 46px !important;
+}
+
+
+/* ==========================================
+   DATAS VERTICAIS
+========================================== */
 
 .tabela-resumo-presenca-associado
-.coluna-data-relatorio {
+th.coluna-data-relatorio {
 
-  height: 96px;
-  padding: 6px 0;
+  height: 46px !important;
+  min-height: 46px !important;
+  max-height: 46px !important;
+
+  padding: 2px 0 !important;
+
+  line-height: 1 !important;
 
   writing-mode: vertical-rl;
+
   transform: rotate(180deg);
 
   vertical-align: middle;
+  text-align: center;
 }
 
 
@@ -3221,8 +3303,23 @@ input:checked + span {
 
 
 /* ==========================================
-   PEQUENA SEPARAÇÃO ENTRE
-   ATIVIDADES E RESUMO
+   CABEÇALHO P / F / J
+========================================== */
+
+.tabela-resumo-presenca-associado
+th.coluna-resumo-presenca-final {
+
+  height: 46px !important;
+
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+
+  vertical-align: middle;
+}
+
+
+/* ==========================================
+   ESPAÇO ENTRE ATIVIDADES E RESUMO
 ========================================== */
 
 .tabela-resumo-presenca-associado
@@ -3239,33 +3336,39 @@ input:checked + span {
 .tabela-resumo-presenca-associado
 .coluna-resumo-presenca-frequencia {
 
-  width: 44px;
+  width: 72px;
   min-width: 72px;
   max-width: 72px;
 
   text-align: center;
+
   white-space: nowrap;
 }
 
 
 /* ==========================================
-   CELULAS
+   CABEÇALHO FREQUÊNCIA
+========================================== */
+
+.tabela-resumo-presenca-associado
+th.coluna-resumo-presenca-frequencia {
+
+  height: 46px !important;
+
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+
+  vertical-align: middle;
+}
+
+
+/* ==========================================
+   CÉLULAS
 ========================================== */
 
 .tabela-resumo-presenca-associado td {
 
   height: 42px;
+
   vertical-align: middle;
-}
-/* ==========================================
-   RESUMO DE PRESENÇA DO ASSOCIADO
-   CABEÇALHO MAIS COMPACTO
-========================================== */
-
-.tabela-resumo-presenca-associado
-.coluna-data-relatorio {
-
-  height: 62px;
-  padding-top: 4px;
-  padding-bottom: 4px;
 }
