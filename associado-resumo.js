@@ -265,6 +265,10 @@ function valorOuTraco(
 }
 
 
+/* ==========================================
+   DATA ISO -> DD/MM/AAAA
+========================================== */
+
 function formatarData(
   dataISO
 ) {
@@ -294,6 +298,216 @@ function formatarData(
 
 
   return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+
+/* ==========================================
+   DATA ISO -> CAMPO
+========================================== */
+
+function dataISOParaCampo(
+  dataISO
+) {
+
+  if (
+    !dataISO
+  ) {
+
+    return "";
+
+  }
+
+
+  const partes =
+    String(
+      dataISO
+    ).split("-");
+
+
+  if (
+    partes.length !== 3
+  ) {
+
+    return "";
+
+  }
+
+
+  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+
+/* ==========================================
+   MÁSCARA DD/MM/AAAA
+========================================== */
+
+function aplicarMascaraData(
+  campo
+) {
+
+  let numeros =
+    campo.value
+      .replace(
+        /\D/g,
+        ""
+      )
+      .slice(
+        0,
+        8
+      );
+
+
+  if (
+    numeros.length >
+    4
+  ) {
+
+    numeros =
+      `${numeros.slice(
+        0,
+        2
+      )}/${numeros.slice(
+        2,
+        4
+      )}/${numeros.slice(
+        4
+      )}`;
+
+  } else if (
+    numeros.length >
+    2
+  ) {
+
+    numeros =
+      `${numeros.slice(
+        0,
+        2
+      )}/${numeros.slice(
+        2
+      )}`;
+
+  }
+
+
+  campo.value =
+    numeros;
+}
+
+
+/* ==========================================
+   DD/MM/AAAA -> ISO
+========================================== */
+
+function converterDataParaISO(
+  texto
+) {
+
+  const valor =
+    String(
+      texto || ""
+    ).trim();
+
+
+  if (
+    valor === ""
+  ) {
+
+    return null;
+
+  }
+
+
+  const partes =
+    valor.split("/");
+
+
+  if (
+    partes.length !== 3
+  ) {
+
+    return false;
+
+  }
+
+
+  const dia =
+    Number(
+      partes[0]
+    );
+
+
+  const mes =
+    Number(
+      partes[1]
+    );
+
+
+  const ano =
+    Number(
+      partes[2]
+    );
+
+
+  if (
+    !dia ||
+    !mes ||
+    !ano ||
+    partes[2].length !== 4
+  ) {
+
+    return false;
+
+  }
+
+
+  const data =
+    new Date(
+      ano,
+      mes - 1,
+      dia
+    );
+
+
+  /*
+    Confirmamos que a data realmente existe.
+
+    Exemplo:
+    31/02/2020 será rejeitado.
+  */
+
+  if (
+    data.getFullYear() !==
+      ano ||
+    data.getMonth() !==
+      mes - 1 ||
+    data.getDate() !==
+      dia
+  ) {
+
+    return false;
+
+  }
+
+
+  const diaISO =
+    String(
+      dia
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  const mesISO =
+    String(
+      mes
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  return `${ano}-${mesISO}-${diaISO}`;
 }
 
 
@@ -421,18 +635,21 @@ function abrirEdicaoDatas() {
 
 
   dataEntradaTufra.value =
-    associadoAtual.data_entrada_tufra ||
-    "";
+    dataISOParaCampo(
+      associadoAtual.data_entrada_tufra
+    );
 
 
   dataCorrenteDesenvolvimento.value =
-    associadoAtual.data_corrente_desenvolvimento ||
-    "";
+    dataISOParaCampo(
+      associadoAtual.data_corrente_desenvolvimento
+    );
 
 
   dataCorrentePrincipal.value =
-    associadoAtual.data_corrente_principal ||
-    "";
+    dataISOParaCampo(
+      associadoAtual.data_corrente_principal
+    );
 
 
   mensagemDatasAdministrativas.hidden =
@@ -476,6 +693,42 @@ function cancelarEdicaoDatas() {
 
   mensagemDatasAdministrativas.hidden =
     true;
+
+
+  mensagemDatasAdministrativas.textContent =
+    "";
+}
+
+
+/* ==========================================
+   LER DATAS
+========================================== */
+
+function obterDatasDigitadas() {
+
+  const entrada =
+    converterDataParaISO(
+      dataEntradaTufra.value
+    );
+
+
+  const desenvolvimento =
+    converterDataParaISO(
+      dataCorrenteDesenvolvimento.value
+    );
+
+
+  const principal =
+    converterDataParaISO(
+      dataCorrentePrincipal.value
+    );
+
+
+  return {
+    entrada,
+    desenvolvimento,
+    principal
+  };
 }
 
 
@@ -485,20 +738,46 @@ function cancelarEdicaoDatas() {
 
 function validarDatasAdministrativas() {
 
-  const entrada =
-    dataEntradaTufra.value;
+  const {
+    entrada,
+    desenvolvimento,
+    principal
+  } =
+    obterDatasDigitadas();
 
-  const desenvolvimento =
-    dataCorrenteDesenvolvimento.value;
 
-  const principal =
-    dataCorrentePrincipal.value;
+  if (
+    entrada === false
+  ) {
+
+    return "Informe uma data válida para a entrada na TUFRA.";
+
+  }
+
+
+  if (
+    desenvolvimento === false
+  ) {
+
+    return "Informe uma data válida para a Corrente do Desenvolvimento.";
+
+  }
+
+
+  if (
+    principal === false
+  ) {
+
+    return "Informe uma data válida para a Corrente Principal.";
+
+  }
 
 
   if (
     entrada &&
     desenvolvimento &&
-    desenvolvimento < entrada
+    desenvolvimento <
+      entrada
   ) {
 
     return "A data da Corrente do Desenvolvimento não pode ser anterior à entrada na TUFRA.";
@@ -509,7 +788,8 @@ function validarDatasAdministrativas() {
   if (
     entrada &&
     principal &&
-    principal < entrada
+    principal <
+      entrada
   ) {
 
     return "A data da Corrente Principal não pode ser anterior à entrada na TUFRA.";
@@ -520,7 +800,8 @@ function validarDatasAdministrativas() {
   if (
     desenvolvimento &&
     principal &&
-    principal < desenvolvimento
+    principal <
+      desenvolvimento
   ) {
 
     return "A data da Corrente Principal não pode ser anterior à Corrente do Desenvolvimento.";
@@ -568,6 +849,14 @@ async function salvarDatasAdministrativas() {
   }
 
 
+  const {
+    entrada,
+    desenvolvimento,
+    principal
+  } =
+    obterDatasDigitadas();
+
+
   botaoSalvarDatasAdministrativas.disabled =
     true;
 
@@ -585,16 +874,13 @@ async function salvarDatasAdministrativas() {
     const novasDatas = {
 
       data_entrada_tufra:
-        dataEntradaTufra.value ||
-        null,
+        entrada,
 
       data_corrente_desenvolvimento:
-        dataCorrenteDesenvolvimento.value ||
-        null,
+        desenvolvimento,
 
       data_corrente_principal:
-        dataCorrentePrincipal.value ||
-        null
+        principal
 
     };
 
@@ -789,19 +1075,23 @@ async function carregarAssociado() {
 
 
     const ficha =
-      resultadoFicha.data || {};
+      resultadoFicha.data ||
+      {};
 
 
     const dadosPessoais =
-      ficha.dados_pessoais || {};
+      ficha.dados_pessoais ||
+      {};
 
 
     const enderecoContato =
-      ficha.endereco_contato || {};
+      ficha.endereco_contato ||
+      {};
 
 
     const historicoUmbanda =
-      ficha.historico_umbanda || {};
+      ficha.historico_umbanda ||
+      {};
 
 
     const nome =
@@ -917,7 +1207,6 @@ async function carregarAssociado() {
     );
 
   }
-
 }
 
 
@@ -1062,6 +1351,36 @@ function calcularDistanciaToques(
 /* ==========================================
    EVENTOS
 ========================================== */
+
+dataEntradaTufra.addEventListener(
+  "input",
+  () => {
+    aplicarMascaraData(
+      dataEntradaTufra
+    );
+  }
+);
+
+
+dataCorrenteDesenvolvimento.addEventListener(
+  "input",
+  () => {
+    aplicarMascaraData(
+      dataCorrenteDesenvolvimento
+    );
+  }
+);
+
+
+dataCorrentePrincipal.addEventListener(
+  "input",
+  () => {
+    aplicarMascaraData(
+      dataCorrentePrincipal
+    );
+  }
+);
+
 
 botaoEditarDatasAdministrativas.addEventListener(
   "click",
