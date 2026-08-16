@@ -2360,3 +2360,85 @@ input:checked + span {
   font-weight: 700;
   cursor: pointer;
 }
+/* ==========================================
+   DATAS ADMINISTRATIVAS - AJUSTES
+========================================== */
+
+.campo-data-administrativa input {
+  width: 100%;
+  box-sizing: border-box;
+
+  height: 44px;
+
+  padding: 10px 12px;
+
+  border: 1px solid #d7d7d7;
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  font: inherit;
+  font-size: 16px;
+
+  color: #222222;
+}
+
+
+/* ==========================================
+   BOTÕES DAS DATAS
+========================================== */
+
+.acoes-datas-administrativas {
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap: 10px;
+
+  margin-top: 2px;
+}
+
+
+.botao-cancelar-datas-administrativas,
+.botao-salvar-datas-administrativas {
+  width: 100%;
+  height: 48px;
+
+  margin: 0;
+  padding: 0 12px;
+
+  box-sizing: border-box;
+
+  border-radius: 10px;
+
+  font: inherit;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+.botao-cancelar-datas-administrativas {
+  border: 1px solid #651b1d;
+
+  background: #ffffff;
+
+  color: #651b1d;
+}
+
+
+.botao-salvar-datas-administrativas {
+  border: 1px solid #651b1d;
+
+  background: #651b1d;
+
+  color: #ffffff;
+}
+
+
+.botao-cancelar-datas-administrativas:disabled,
+.botao-salvar-datas-administrativas:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
