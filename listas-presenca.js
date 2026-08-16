@@ -62,6 +62,34 @@ let usuarioAtualId =
 
 
 /* ==========================================
+   PARÂMETROS DE RETORNO
+========================================== */
+
+function obterParametrosRetorno() {
+
+  const parametros =
+    new URLSearchParams(
+      window.location.search
+    );
+
+
+  return {
+
+    lista:
+      parametros.get(
+        "lista"
+      ),
+
+    ano:
+      parametros.get(
+        "ano"
+      )
+
+  };
+}
+
+
+/* ==========================================
    FORMATAÇÃO
 ========================================== */
 
@@ -235,7 +263,9 @@ async function carregarUsuarioAtual() {
    CARREGAR LISTAS ATRIBUÍDAS
 ========================================== */
 
-async function carregarListasResponsavel() {
+async function carregarListasResponsavel(
+  listaDesejada
+) {
 
   const resultado =
     await window.supabaseClient
@@ -374,7 +404,16 @@ async function carregarListasResponsavel() {
     false;
 
 
+  const listaRetorno =
+    listasResponsavel.find(
+      (lista) =>
+        lista.id ===
+        listaDesejada
+    );
+
+
   tipoListaAtual =
+    listaRetorno ||
     listasResponsavel[0];
 
 
@@ -452,7 +491,9 @@ async function carregarAtividades() {
    ANOS DISPONÍVEIS
 ========================================== */
 
-function carregarAnosDisponiveis() {
+function carregarAnosDisponiveis(
+  anoDesejado = null
+) {
 
   const anos =
     [
@@ -544,12 +585,30 @@ function carregarAnosDisponiveis() {
   );
 
 
+  const anoDesejadoNumero =
+    Number(
+      anoDesejado
+    );
+
+
   const anoAtual =
     new Date()
       .getFullYear();
 
 
   if (
+    anoDesejado &&
+    anos.includes(
+      anoDesejadoNumero
+    )
+  ) {
+
+    anoPreencherPresenca.value =
+      String(
+        anoDesejadoNumero
+      );
+
+  } else if (
     anos.includes(
       anoAtual
     )
@@ -944,9 +1003,16 @@ async function iniciarPagina() {
 
   try {
 
+    const retorno =
+      obterParametrosRetorno();
+
+
     await carregarUsuarioAtual();
 
-    await carregarListasResponsavel();
+
+    await carregarListasResponsavel(
+      retorno.lista
+    );
 
 
     if (
@@ -958,7 +1024,18 @@ async function iniciarPagina() {
     }
 
 
-    await trocarLista();
+    await carregarAtividades();
+
+
+    carregarAnosDisponiveis(
+      retorno.ano
+    );
+
+
+    await carregarAtividadesPreenchidas();
+
+
+    renderizarAtividades();
 
 
   } catch (erro) {
