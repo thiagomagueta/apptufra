@@ -40,6 +40,11 @@ const opcaoRelatorioAtividadePresenca =
     "opcaoRelatorioAtividadePresenca"
   );
 
+const opcaoRelatorioAssociadoPresenca =
+  document.getElementById(
+    "opcaoRelatorioAssociadoPresenca"
+  );
+
 const opcaoConfigurarResponsaveis =
   document.getElementById(
     "opcaoConfigurarResponsaveis"
@@ -85,9 +90,14 @@ const funcoesDiretoria = [
 
 async function carregarOpcoesAdministrativas() {
 
-  if (!window.supabaseClient) {
+  if (
+    !window.supabaseClient
+  ) {
+
     return;
+
   }
+
 
   try {
 
@@ -99,8 +109,13 @@ async function carregarOpcoesAdministrativas() {
       await window.supabaseClient.auth
         .getSession();
 
-    if (resultadoSessao.error) {
+
+    if (
+      resultadoSessao.error
+    ) {
+
       throw resultadoSessao.error;
+
     }
 
 
@@ -108,12 +123,15 @@ async function carregarOpcoesAdministrativas() {
       resultadoSessao.data.session;
 
 
-    if (!sessao) {
+    if (
+      !sessao
+    ) {
 
       window.location.href =
         "index.html";
 
       return;
+
     }
 
 
@@ -123,8 +141,12 @@ async function carregarOpcoesAdministrativas() {
 
     const resultadoUsuario =
       await window.supabaseClient
-        .from("usuarios")
-        .select("id")
+        .from(
+          "usuarios"
+        )
+        .select(
+          "id"
+        )
         .eq(
           "auth_id",
           sessao.user.id
@@ -132,17 +154,24 @@ async function carregarOpcoesAdministrativas() {
         .maybeSingle();
 
 
-    if (resultadoUsuario.error) {
+    if (
+      resultadoUsuario.error
+    ) {
+
       throw resultadoUsuario.error;
+
     }
 
 
-    if (!resultadoUsuario.data) {
+    if (
+      !resultadoUsuario.data
+    ) {
 
       semOpcoesAdministrativas.hidden =
         false;
 
       return;
+
     }
 
 
@@ -156,7 +185,9 @@ async function carregarOpcoesAdministrativas() {
 
     const resultadoFuncoes =
       await window.supabaseClient
-        .from("usuario_funcoes")
+        .from(
+          "usuario_funcoes"
+        )
         .select(`
           funcoes (
             nome
@@ -168,8 +199,12 @@ async function carregarOpcoesAdministrativas() {
         );
 
 
-    if (resultadoFuncoes.error) {
+    if (
+      resultadoFuncoes.error
+    ) {
+
       throw resultadoFuncoes.error;
+
     }
 
 
@@ -210,10 +245,11 @@ async function carregarOpcoesAdministrativas() {
 
     /* ======================================
        PERMISSÕES
-       SOMENTE TESOURARIA
     ====================================== */
 
-    if (opcaoPermissoes) {
+    if (
+      opcaoPermissoes
+    ) {
 
       opcaoPermissoes.hidden =
         !ehTesoureiro;
@@ -223,10 +259,11 @@ async function carregarOpcoesAdministrativas() {
 
     /* ======================================
        CALENDÁRIO
-       TODA DIRETORIA
     ====================================== */
 
-    if (opcaoCalendarioAdmin) {
+    if (
+      opcaoCalendarioAdmin
+    ) {
 
       opcaoCalendarioAdmin.hidden =
         !pertenceDiretoria;
@@ -236,10 +273,11 @@ async function carregarOpcoesAdministrativas() {
 
     /* ======================================
        ASSOCIADOS
-       TODA DIRETORIA
     ====================================== */
 
-    if (opcaoAssociadosAdmin) {
+    if (
+      opcaoAssociadosAdmin
+    ) {
 
       opcaoAssociadosAdmin.hidden =
         !pertenceDiretoria;
@@ -249,10 +287,11 @@ async function carregarOpcoesAdministrativas() {
 
     /* ======================================
        EXCEL
-       SOMENTE TESOURARIA
     ====================================== */
 
-    if (opcaoImportarExcel) {
+    if (
+      opcaoImportarExcel
+    ) {
 
       opcaoImportarExcel.hidden =
         !ehTesoureiro;
@@ -260,7 +299,9 @@ async function carregarOpcoesAdministrativas() {
     }
 
 
-    if (opcaoExportarExcel) {
+    if (
+      opcaoExportarExcel
+    ) {
 
       opcaoExportarExcel.hidden =
         !ehTesoureiro;
@@ -269,7 +310,7 @@ async function carregarOpcoesAdministrativas() {
 
 
     /* ======================================
-       PRESENÇA
+       RESPONSÁVEL DE PRESENÇA
     ====================================== */
 
     let ehResponsavelPresenca =
@@ -281,12 +322,16 @@ async function carregarOpcoesAdministrativas() {
         .from(
           "responsaveis_lista_presenca"
         )
-        .select("id")
+        .select(
+          "id"
+        )
         .eq(
           "usuario_id",
           usuarioId
         )
-        .limit(1);
+        .limit(
+          1
+        );
 
 
     if (
@@ -306,8 +351,7 @@ async function carregarOpcoesAdministrativas() {
 
 
     /* ======================================
-       CONSULTAR LISTAS
-       TODA DIRETORIA
+       CONSULTAR PRESENÇA
     ====================================== */
 
     if (
@@ -322,7 +366,6 @@ async function carregarOpcoesAdministrativas() {
 
     /* ======================================
        RELATÓRIO GERAL
-       TODA DIRETORIA
     ====================================== */
 
     if (
@@ -337,7 +380,6 @@ async function carregarOpcoesAdministrativas() {
 
     /* ======================================
        RELATÓRIO POR ATIVIDADE
-       TODA DIRETORIA
     ====================================== */
 
     if (
@@ -351,8 +393,21 @@ async function carregarOpcoesAdministrativas() {
 
 
     /* ======================================
+       RELATÓRIO POR ASSOCIADO
+    ====================================== */
+
+    if (
+      opcaoRelatorioAssociadoPresenca
+    ) {
+
+      opcaoRelatorioAssociadoPresenca.hidden =
+        !pertenceDiretoria;
+
+    }
+
+
+    /* ======================================
        CONFIGURAR RESPONSÁVEIS
-       SOMENTE TESOURARIA
     ====================================== */
 
     if (
@@ -367,7 +422,6 @@ async function carregarOpcoesAdministrativas() {
 
     /* ======================================
        PREENCHER PRESENÇA
-       RESPONSÁVEIS
     ====================================== */
 
     if (
