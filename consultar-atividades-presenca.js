@@ -54,6 +54,34 @@ let atividadesPreenchidas =
 
 
 /* ==========================================
+   PARÂMETROS DE RETORNO
+========================================== */
+
+function obterParametrosRetorno() {
+
+  const parametros =
+    new URLSearchParams(
+      window.location.search
+    );
+
+
+  return {
+
+    lista:
+      parametros.get(
+        "lista"
+      ),
+
+    ano:
+      parametros.get(
+        "ano"
+      )
+
+  };
+}
+
+
+/* ==========================================
    FORMATAÇÃO
 ========================================== */
 
@@ -188,7 +216,9 @@ async function validarSessao() {
    CARREGAR LISTAS
 ========================================== */
 
-async function carregarListas() {
+async function carregarListas(
+  listaDesejada
+) {
 
   const resultado =
     await window.supabaseClient
@@ -294,7 +324,16 @@ async function carregarListas() {
     false;
 
 
+  const listaRetorno =
+    listasPresenca.find(
+      (lista) =>
+        lista.id ===
+        listaDesejada
+    );
+
+
   tipoListaAtual =
+    listaRetorno ||
     listasPresenca[0];
 
 
@@ -372,7 +411,9 @@ async function carregarAtividades() {
    CARREGAR ANOS DISPONÍVEIS
 ========================================== */
 
-function carregarAnosDisponiveis() {
+function carregarAnosDisponiveis(
+  anoDesejado = null
+) {
 
   const anos =
     [
@@ -464,12 +505,30 @@ function carregarAnosDisponiveis() {
   );
 
 
+  const anoDesejadoNumero =
+    Number(
+      anoDesejado
+    );
+
+
   const anoAtual =
     new Date()
       .getFullYear();
 
 
   if (
+    anoDesejado &&
+    anos.includes(
+      anoDesejadoNumero
+    )
+  ) {
+
+    anoConsultaPresenca.value =
+      String(
+        anoDesejadoNumero
+      );
+
+  } else if (
     anos.includes(
       anoAtual
     )
@@ -588,10 +647,6 @@ function criarItemAtividade(
     `consultar-lista-presenca.html?lista=${tipoListaAtual.id}&atividade=${atividade.id}`;
 
 
-  /* --------------------------------------
-     DATA
-  -------------------------------------- */
-
   const data =
     document.createElement(
       "div"
@@ -607,10 +662,6 @@ function criarItemAtividade(
       atividade.data
     );
 
-
-  /* --------------------------------------
-     DADOS
-  -------------------------------------- */
 
   const dados =
     document.createElement(
@@ -655,10 +706,6 @@ function criarItemAtividade(
     );
 
 
-  /* --------------------------------------
-     STATUS
-  -------------------------------------- */
-
   const preenchida =
     atividadeFoiPreenchida(
       atividade.id
@@ -697,10 +744,6 @@ function criarItemAtividade(
     status
   );
 
-
-  /* --------------------------------------
-     SETA
-  -------------------------------------- */
 
   const seta =
     document.createElement(
@@ -894,9 +937,16 @@ async function iniciarPagina() {
 
   try {
 
+    const retorno =
+      obterParametrosRetorno();
+
+
     await validarSessao();
 
-    await carregarListas();
+
+    await carregarListas(
+      retorno.lista
+    );
 
 
     if (
@@ -908,7 +958,18 @@ async function iniciarPagina() {
     }
 
 
-    await trocarLista();
+    await carregarAtividades();
+
+
+    carregarAnosDisponiveis(
+      retorno.ano
+    );
+
+
+    await carregarAtividadesPreenchidas();
+
+
+    renderizarAtividades();
 
 
   } catch (erro) {
