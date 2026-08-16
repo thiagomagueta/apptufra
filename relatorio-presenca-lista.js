@@ -82,6 +82,26 @@ const frequenciaGeralPresenca =
 
 
 /* ==========================================
+   RELATÓRIO POR ATIVIDADE
+========================================== */
+
+const areaRelatorioPorAtividade =
+  document.getElementById(
+    "areaRelatorioPorAtividade"
+  );
+
+const corpoRelatorioPorAtividade =
+  document.getElementById(
+    "corpoRelatorioPorAtividade"
+  );
+
+const mensagemSemAtividadesRealizadas =
+  document.getElementById(
+    "mensagemSemAtividadesRealizadas"
+  );
+
+
+/* ==========================================
    DADOS
 ========================================== */
 
@@ -137,7 +157,7 @@ function obterTipoListaId() {
 
 
 /* ==========================================
-   DATA ATUAL LOCAL
+   DATA ATUAL
 ========================================== */
 
 function obterDataAtualISO() {
@@ -204,8 +224,7 @@ function formatarDataCurta(
     mes,
     dia
   ] =
-    dataISO
-      .split("-");
+    dataISO.split("-");
 
 
   return `${dia}/${mes}`;
@@ -425,7 +444,7 @@ function nomesFuncoesDaLista(
 
 
 /* ==========================================
-   DATA DE ENTRADA DA LISTA
+   DATA DE ENTRADA NA LISTA
 ========================================== */
 
 function obterDataEntradaNaLista(
@@ -521,7 +540,7 @@ async function carregarTipoLista() {
 
 
 /* ==========================================
-   CARREGAR TODAS AS ATIVIDADES
+   CARREGAR ATIVIDADES
 ========================================== */
 
 async function carregarTodasAtividades() {
@@ -573,7 +592,7 @@ async function carregarTodasAtividades() {
 
 
 /* ==========================================
-   CARREGAR ANOS DISPONÍVEIS
+   ANOS DISPONÍVEIS
 ========================================== */
 
 function carregarAnosDisponiveis() {
@@ -900,34 +919,19 @@ function obterSituacaoCelula(
     obterDataAtualISO();
 
 
-  /* --------------------------------------
-     DATA FUTURA
-  -------------------------------------- */
-
   if (
     atividade.data >
     hojeISO
   ) {
 
     return {
-
-      texto:
-        "",
-
-      classe:
-        "",
-
-      tipo:
-        "futuro"
-
+      texto: "",
+      classe: "",
+      tipo: "futuro"
     };
 
   }
 
-
-  /* --------------------------------------
-     AINDA NÃO PARTICIPAVA DESTA LISTA
-  -------------------------------------- */
 
   const dataEntradaLista =
     obterDataEntradaNaLista(
@@ -942,24 +946,15 @@ function obterSituacaoCelula(
   ) {
 
     return {
-
-      texto:
-        "x",
-
+      texto: "x",
       classe:
         "status-relatorio-nao-participava",
-
       tipo:
         "nao_participava"
-
     };
 
   }
 
-
-  /* --------------------------------------
-     PRESENÇA REGISTRADA
-  -------------------------------------- */
 
   const registro =
     obterPresenca(
@@ -974,16 +969,11 @@ function obterSituacaoCelula(
   ) {
 
     return {
-
-      texto:
-        "P",
-
+      texto: "P",
       classe:
         "status-relatorio-presente",
-
       tipo:
         "presente"
-
     };
 
   }
@@ -995,16 +985,11 @@ function obterSituacaoCelula(
   ) {
 
     return {
-
-      texto:
-        "F",
-
+      texto: "F",
       classe:
         "status-relatorio-falta",
-
       tipo:
         "falta"
-
     };
 
   }
@@ -1016,43 +1001,29 @@ function obterSituacaoCelula(
   ) {
 
     return {
-
-      texto:
-        "J",
-
+      texto: "J",
       classe:
         "status-relatorio-justificado",
-
       tipo:
         "justificada"
-
     };
 
   }
 
 
-  /* --------------------------------------
-     PENDENTE
-  -------------------------------------- */
-
   return {
-
-    texto:
-      "—",
-
+    texto: "—",
     classe:
       "status-relatorio-pendente",
-
     tipo:
       "pendente"
-
   };
 
 }
 
 
 /* ==========================================
-   CALCULAR RESUMO DO ANO
+   RESUMO DO ANO
 ========================================== */
 
 function calcularResumoAno(
@@ -1097,51 +1068,42 @@ function calcularResumoAno(
             );
 
 
-          /*
-            FUTURO e X não entram
-            nos indicadores.
-          */
-
           if (
             situacao.tipo ===
-              "presente"
+            "presente"
           ) {
 
-            quantidadePresencas +=
-              1;
+            quantidadePresencas++;
 
           }
 
 
           if (
             situacao.tipo ===
-              "falta"
+            "falta"
           ) {
 
-            quantidadeFaltas +=
-              1;
+            quantidadeFaltas++;
 
           }
 
 
           if (
             situacao.tipo ===
-              "justificada"
+            "justificada"
           ) {
 
-            quantidadeJustificadas +=
-              1;
+            quantidadeJustificadas++;
 
           }
 
 
           if (
             situacao.tipo ===
-              "pendente"
+            "pendente"
           ) {
 
-            quantidadePendentes +=
-              1;
+            quantidadePendentes++;
 
           }
 
@@ -1152,7 +1114,7 @@ function calcularResumoAno(
   );
 
 
-  const totalMarcacoesValidas =
+  const totalValidos =
     quantidadePresencas +
     quantidadeFaltas +
     quantidadeJustificadas;
@@ -1163,14 +1125,13 @@ function calcularResumoAno(
 
 
   if (
-    totalMarcacoesValidas >
-    0
+    totalValidos > 0
   ) {
 
     frequencia =
       (
         quantidadePresencas /
-        totalMarcacoesValidas
+        totalValidos
       ) * 100;
 
   }
@@ -1193,8 +1154,7 @@ function calcularResumoAno(
     pendentes:
       quantidadePendentes,
 
-    frequencia:
-      frequencia
+    frequencia
 
   };
 
@@ -1251,8 +1211,7 @@ function renderizarResumoAno(
 
 
   if (
-    resumo.frequencia ===
-    null
+    resumo.frequencia === null
   ) {
 
     frequenciaGeralPresenca.textContent =
@@ -1261,12 +1220,9 @@ function renderizarResumoAno(
   } else {
 
     frequenciaGeralPresenca.textContent =
-      `${resumo.frequencia.toFixed(
-        1
-      ).replace(
-        ".",
-        ","
-      )}%`;
+      `${resumo.frequencia
+        .toFixed(1)
+        .replace(".", ",")}%`;
 
   }
 
@@ -1274,7 +1230,349 @@ function renderizarResumoAno(
 
 
 /* ==========================================
-   CRIAR CABEÇALHO
+   DADOS DE UMA ATIVIDADE
+========================================== */
+
+function calcularDadosAtividade(
+  atividade
+) {
+
+  let presentes =
+    0;
+
+  let faltas =
+    0;
+
+  let justificadas =
+    0;
+
+  let pendentes =
+    0;
+
+  let participantesPrevistos =
+    0;
+
+
+  associadosDaLista.forEach(
+    (associado) => {
+
+      const situacao =
+        obterSituacaoCelula(
+          associado,
+          atividade
+        );
+
+
+      if (
+        situacao.tipo ===
+        "nao_participava" ||
+        situacao.tipo ===
+        "futuro"
+      ) {
+
+        return;
+
+      }
+
+
+      participantesPrevistos++;
+
+
+      if (
+        situacao.tipo ===
+        "presente"
+      ) {
+
+        presentes++;
+
+      }
+
+
+      if (
+        situacao.tipo ===
+        "falta"
+      ) {
+
+        faltas++;
+
+      }
+
+
+      if (
+        situacao.tipo ===
+        "justificada"
+      ) {
+
+        justificadas++;
+
+      }
+
+
+      if (
+        situacao.tipo ===
+        "pendente"
+      ) {
+
+        pendentes++;
+
+      }
+
+    }
+  );
+
+
+  const totalValidos =
+    presentes +
+    faltas +
+    justificadas;
+
+
+  let frequencia =
+    null;
+
+
+  if (
+    totalValidos > 0
+  ) {
+
+    frequencia =
+      (
+        presentes /
+        totalValidos
+      ) * 100;
+
+  }
+
+
+  return {
+
+    presentes,
+    faltas,
+    justificadas,
+    pendentes,
+    participantesPrevistos,
+    frequencia
+
+  };
+
+}
+
+
+/* ==========================================
+   RELATÓRIO POR ATIVIDADE
+========================================== */
+
+function renderizarRelatorioPorAtividade(
+  atividades
+) {
+
+  const hojeISO =
+    obterDataAtualISO();
+
+
+  const atividadesRealizadas =
+    atividades.filter(
+      (atividade) =>
+        atividade.data <=
+        hojeISO
+    );
+
+
+  corpoRelatorioPorAtividade.innerHTML =
+    "";
+
+
+  areaRelatorioPorAtividade.hidden =
+    false;
+
+
+  mensagemSemAtividadesRealizadas.hidden =
+    atividadesRealizadas.length > 0;
+
+
+  if (
+    atividadesRealizadas.length ===
+    0
+  ) {
+
+    return;
+
+  }
+
+
+  atividadesRealizadas.forEach(
+    (atividade) => {
+
+      const dados =
+        calcularDadosAtividade(
+          atividade
+        );
+
+
+      const linha =
+        document.createElement(
+          "tr"
+        );
+
+
+      const colunaData =
+        document.createElement(
+          "td"
+        );
+
+
+      colunaData.textContent =
+        formatarDataCurta(
+          atividade.data
+        );
+
+
+      const colunaAtividade =
+        document.createElement(
+          "td"
+        );
+
+
+      colunaAtividade.className =
+        "coluna-atividade-relatorio";
+
+
+      colunaAtividade.textContent =
+        atividade.titulo;
+
+
+      const colunaP =
+        document.createElement(
+          "td"
+        );
+
+
+      colunaP.className =
+        "valor-atividade-presente";
+
+
+      colunaP.textContent =
+        String(
+          dados.presentes
+        );
+
+
+      const colunaF =
+        document.createElement(
+          "td"
+        );
+
+
+      colunaF.className =
+        "valor-atividade-falta";
+
+
+      colunaF.textContent =
+        String(
+          dados.faltas
+        );
+
+
+      const colunaJ =
+        document.createElement(
+          "td"
+        );
+
+
+      colunaJ.className =
+        "valor-atividade-justificada";
+
+
+      colunaJ.textContent =
+        String(
+          dados.justificadas
+        );
+
+
+      const colunaPendentes =
+        document.createElement(
+          "td"
+        );
+
+
+      colunaPendentes.className =
+        "valor-atividade-pendente";
+
+
+      colunaPendentes.textContent =
+        String(
+          dados.pendentes
+        );
+
+
+      const colunaFrequencia =
+        document.createElement(
+          "td"
+        );
+
+
+      colunaFrequencia.className =
+        "valor-frequencia-atividade";
+
+
+      if (
+        dados.frequencia === null
+      ) {
+
+        colunaFrequencia.textContent =
+          "—";
+
+      } else {
+
+        colunaFrequencia.textContent =
+          `${dados.frequencia
+            .toFixed(1)
+            .replace(".", ",")}%`;
+
+      }
+
+
+      linha.appendChild(
+        colunaData
+      );
+
+      linha.appendChild(
+        colunaAtividade
+      );
+
+      linha.appendChild(
+        colunaP
+      );
+
+      linha.appendChild(
+        colunaF
+      );
+
+      linha.appendChild(
+        colunaJ
+      );
+
+      linha.appendChild(
+        colunaPendentes
+      );
+
+      linha.appendChild(
+        colunaFrequencia
+      );
+
+
+      corpoRelatorioPorAtividade.appendChild(
+        linha
+      );
+
+    }
+  );
+
+}
+
+
+/* ==========================================
+   CABEÇALHO DA MATRIZ
 ========================================== */
 
 function criarCabecalho(
@@ -1349,7 +1647,7 @@ function criarCabecalho(
 
 
 /* ==========================================
-   CRIAR CORPO
+   CORPO DA MATRIZ
 ========================================== */
 
 function criarCorpo(
@@ -1460,14 +1758,14 @@ function renderizarAnoSelecionado() {
     resumoAnualPresenca.hidden =
       true;
 
-
     containerTabelaRelatorio.hidden =
       true;
 
+    areaRelatorioPorAtividade.hidden =
+      true;
 
     mensagemSemDadosRelatorio.hidden =
       false;
-
 
     return;
 
@@ -1488,14 +1786,14 @@ function renderizarAnoSelecionado() {
     resumoAnualPresenca.hidden =
       true;
 
-
     containerTabelaRelatorio.hidden =
       true;
 
+    areaRelatorioPorAtividade.hidden =
+      true;
 
     mensagemSemDadosRelatorio.hidden =
       false;
-
 
     return;
 
@@ -1526,6 +1824,11 @@ function renderizarAnoSelecionado() {
 
 
   criarCorpo(
+    atividades
+  );
+
+
+  renderizarRelatorioPorAtividade(
     atividades
   );
 
