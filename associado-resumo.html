@@ -19,7 +19,7 @@
 
   <link
     rel="stylesheet"
-    href="layout.css?v=30"
+    href="layout.css?v=32"
   >
 
 </head>
@@ -133,20 +133,39 @@
             class="botao-editar-datas-administrativas"
             type="button"
           >
-            Editar datas
+            Editar dados
           </button>
 
         </div>
 
 
-        <!-- VISUALIZAÇÃO -->
+        <!-- =====================================
+             AVISO ASSISTÊNCIA
+        ====================================== -->
+
+        <div
+          id="avisoAssociadoAssistencia"
+          class="aviso-associado-assistencia"
+          hidden
+        >
+          ASSOCIADO(A) À CASA COMO ASSISTÊNCIA
+        </div>
+
+
+        <!-- =====================================
+             VISUALIZAÇÃO DAS DATAS
+        ====================================== -->
 
         <div
           id="visualizacaoDatasAdministrativas"
           class="dados-associado-resumo"
         >
 
-          <div class="item-resumo-associado">
+
+          <div
+            id="itemDataEntradaTufra"
+            class="item-resumo-associado"
+          >
 
             <span>
               Data de entrada na TUFRA
@@ -159,7 +178,11 @@
           </div>
 
 
-          <div class="item-resumo-associado">
+          <div
+            id="itemDataCorrenteDesenvolvimento"
+            class="item-resumo-associado"
+            hidden
+          >
 
             <span>
               Data para Corrente do Desenvolvimento
@@ -172,7 +195,11 @@
           </div>
 
 
-          <div class="item-resumo-associado">
+          <div
+            id="itemDataCorrentePrincipal"
+            class="item-resumo-associado"
+            hidden
+          >
 
             <span>
               Data para Corrente Principal
@@ -184,16 +211,42 @@
 
           </div>
 
+
         </div>
 
 
-        <!-- EDIÇÃO -->
+        <!-- =====================================
+             HISTÓRICO DE FUNÇÕES
+        ====================================== -->
+
+        <div
+          id="areaHistoricoFuncoes"
+          class="area-historico-funcoes"
+          hidden
+        >
+
+          <h3>
+            Histórico de funções
+          </h3>
+
+          <div
+            id="listaHistoricoFuncoes"
+            class="lista-historico-funcoes"
+          ></div>
+
+        </div>
+
+
+        <!-- =====================================
+             EDIÇÃO
+        ====================================== -->
 
         <div
           id="edicaoDatasAdministrativas"
           class="edicao-datas-administrativas"
           hidden
         >
+
 
           <div class="campo-data-administrativa">
 
@@ -213,7 +266,11 @@
           </div>
 
 
-          <div class="campo-data-administrativa">
+          <div
+            id="campoEdicaoCorrenteDesenvolvimento"
+            class="campo-data-administrativa"
+            hidden
+          >
 
             <label for="dataCorrenteDesenvolvimento">
               Data para Corrente do Desenvolvimento
@@ -231,7 +288,11 @@
           </div>
 
 
-          <div class="campo-data-administrativa">
+          <div
+            id="campoEdicaoCorrentePrincipal"
+            class="campo-data-administrativa"
+            hidden
+          >
 
             <label for="dataCorrentePrincipal">
               Data para Corrente Principal
@@ -245,6 +306,26 @@
               autocomplete="off"
               placeholder="dd/mm/aaaa"
             >
+
+          </div>
+
+
+          <!-- HISTÓRICO EDITÁVEL -->
+
+          <div
+            id="areaEdicaoHistoricoFuncoes"
+            class="area-edicao-historico-funcoes"
+            hidden
+          >
+
+            <h3>
+              Histórico de funções
+            </h3>
+
+            <div
+              id="listaEdicaoHistoricoFuncoes"
+              class="lista-edicao-historico-funcoes"
+            ></div>
 
           </div>
 
@@ -271,7 +352,7 @@
               class="botao-salvar-datas-administrativas"
               type="button"
             >
-              Salvar datas
+              Salvar dados
             </button>
 
           </div>
@@ -436,7 +517,7 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="associado-resumo.js?v=5"></script>
+  <script src="associado-resumo.js?v=6"></script>
 
 </body>
 
