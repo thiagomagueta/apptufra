@@ -5,64 +5,29 @@
    ELEMENTOS
 ========================================== */
 
-const opcaoPermissoes =
+const moduloPermissoes =
   document.getElementById(
-    "opcaoPermissoes"
+    "moduloPermissoes"
   );
 
-const opcaoCalendarioAdmin =
+const moduloCalendario =
   document.getElementById(
-    "opcaoCalendarioAdmin"
+    "moduloCalendario"
   );
 
-const opcaoAssociadosAdmin =
+const moduloAssociados =
   document.getElementById(
-    "opcaoAssociadosAdmin"
+    "moduloAssociados"
   );
 
-const opcaoPresencaAdmin =
+const moduloPresenca =
   document.getElementById(
-    "opcaoPresencaAdmin"
+    "moduloPresenca"
   );
 
-const opcaoConsultarPresenca =
+const moduloRelatorios =
   document.getElementById(
-    "opcaoConsultarPresenca"
-  );
-
-const opcaoRelatorioPresenca =
-  document.getElementById(
-    "opcaoRelatorioPresenca"
-  );
-
-const opcaoRelatorioAtividadePresenca =
-  document.getElementById(
-    "opcaoRelatorioAtividadePresenca"
-  );
-
-const opcaoRelatorioAssociadoPresenca =
-  document.getElementById(
-    "opcaoRelatorioAssociadoPresenca"
-  );
-
-const opcaoConfigurarResponsaveis =
-  document.getElementById(
-    "opcaoConfigurarResponsaveis"
-  );
-
-const opcaoPreencherPresenca =
-  document.getElementById(
-    "opcaoPreencherPresenca"
-  );
-
-const opcaoImportarExcel =
-  document.getElementById(
-    "opcaoImportarExcel"
-  );
-
-const opcaoExportarExcel =
-  document.getElementById(
-    "opcaoExportarExcel"
+    "moduloRelatorios"
   );
 
 const semOpcoesAdministrativas =
@@ -72,7 +37,7 @@ const semOpcoesAdministrativas =
 
 
 /* ==========================================
-   DIRETORIA
+   FUNÇÕES DA DIRETORIA
 ========================================== */
 
 const funcoesDiretoria = [
@@ -85,10 +50,10 @@ const funcoesDiretoria = [
 
 
 /* ==========================================
-   CARREGAR OPÇÕES ADMINISTRATIVAS
+   CARREGAR MÓDULOS
 ========================================== */
 
-async function carregarOpcoesAdministrativas() {
+async function carregarModulosAdministrativos() {
 
   if (
     !window.supabaseClient
@@ -217,7 +182,9 @@ async function carregarOpcoesAdministrativas() {
           (item) =>
             item.funcoes?.nome
         )
-        .filter(Boolean);
+        .filter(
+          Boolean
+        );
 
 
     /* ======================================
@@ -244,78 +211,8 @@ async function carregarOpcoesAdministrativas() {
 
 
     /* ======================================
-       PERMISSÕES
+       RESPONSÁVEL POR PRESENÇA
     ====================================== */
-
-    if (
-      opcaoPermissoes
-    ) {
-
-      opcaoPermissoes.hidden =
-        !ehTesoureiro;
-
-    }
-
-
-    /* ======================================
-       CALENDÁRIO
-    ====================================== */
-
-    if (
-      opcaoCalendarioAdmin
-    ) {
-
-      opcaoCalendarioAdmin.hidden =
-        !pertenceDiretoria;
-
-    }
-
-
-    /* ======================================
-       ASSOCIADOS
-    ====================================== */
-
-    if (
-      opcaoAssociadosAdmin
-    ) {
-
-      opcaoAssociadosAdmin.hidden =
-        !pertenceDiretoria;
-
-    }
-
-
-    /* ======================================
-       EXCEL
-    ====================================== */
-
-    if (
-      opcaoImportarExcel
-    ) {
-
-      opcaoImportarExcel.hidden =
-        !ehTesoureiro;
-
-    }
-
-
-    if (
-      opcaoExportarExcel
-    ) {
-
-      opcaoExportarExcel.hidden =
-        !ehTesoureiro;
-
-    }
-
-
-    /* ======================================
-       RESPONSÁVEL DE PRESENÇA
-    ====================================== */
-
-    let ehResponsavelPresenca =
-      false;
-
 
     const resultadoResponsavel =
       await window.supabaseClient
@@ -343,7 +240,7 @@ async function carregarOpcoesAdministrativas() {
     }
 
 
-    ehResponsavelPresenca =
+    const ehResponsavelPresenca =
       (
         resultadoResponsavel.data ||
         []
@@ -351,105 +248,81 @@ async function carregarOpcoesAdministrativas() {
 
 
     /* ======================================
-       CONSULTAR PRESENÇA
+       PERMISSÕES
+       SOMENTE TESOURARIA
     ====================================== */
 
     if (
-      opcaoConsultarPresenca
+      moduloPermissoes
     ) {
 
-      opcaoConsultarPresenca.hidden =
-        !pertenceDiretoria;
-
-    }
-
-
-    /* ======================================
-       RELATÓRIO GERAL
-    ====================================== */
-
-    if (
-      opcaoRelatorioPresenca
-    ) {
-
-      opcaoRelatorioPresenca.hidden =
-        !pertenceDiretoria;
-
-    }
-
-
-    /* ======================================
-       RELATÓRIO POR ATIVIDADE
-    ====================================== */
-
-    if (
-      opcaoRelatorioAtividadePresenca
-    ) {
-
-      opcaoRelatorioAtividadePresenca.hidden =
-        !pertenceDiretoria;
-
-    }
-
-
-    /* ======================================
-       RELATÓRIO POR ASSOCIADO
-    ====================================== */
-
-    if (
-      opcaoRelatorioAssociadoPresenca
-    ) {
-
-      opcaoRelatorioAssociadoPresenca.hidden =
-        !pertenceDiretoria;
-
-    }
-
-
-    /* ======================================
-       CONFIGURAR RESPONSÁVEIS
-    ====================================== */
-
-    if (
-      opcaoConfigurarResponsaveis
-    ) {
-
-      opcaoConfigurarResponsaveis.hidden =
+      moduloPermissoes.hidden =
         !ehTesoureiro;
 
     }
 
 
     /* ======================================
-       PREENCHER PRESENÇA
+       CALENDÁRIO
+       DIRETORIA
     ====================================== */
 
     if (
-      opcaoPreencherPresenca
+      moduloCalendario
     ) {
 
-      opcaoPreencherPresenca.hidden =
-        !ehResponsavelPresenca;
+      moduloCalendario.hidden =
+        !pertenceDiretoria;
 
     }
 
 
     /* ======================================
-       BLOCO PRESENÇA
+       ASSOCIADOS
+       DIRETORIA
+    ====================================== */
+
+    if (
+      moduloAssociados
+    ) {
+
+      moduloAssociados.hidden =
+        !pertenceDiretoria;
+
+    }
+
+
+    /* ======================================
+       PRESENÇA
+       DIRETORIA OU RESPONSÁVEL
     ====================================== */
 
     const podeVerPresenca =
       pertenceDiretoria ||
-      ehTesoureiro ||
       ehResponsavelPresenca;
 
 
     if (
-      opcaoPresencaAdmin
+      moduloPresenca
     ) {
 
-      opcaoPresencaAdmin.hidden =
+      moduloPresenca.hidden =
         !podeVerPresenca;
+
+    }
+
+
+    /* ======================================
+       RELATÓRIOS
+       DIRETORIA
+    ====================================== */
+
+    if (
+      moduloRelatorios
+    ) {
+
+      moduloRelatorios.hidden =
+        !pertenceDiretoria;
 
     }
 
@@ -458,7 +331,7 @@ async function carregarOpcoesAdministrativas() {
        SEM OPÇÕES
     ====================================== */
 
-    const possuiAlgumaOpcao =
+    const possuiAlgumModulo =
       ehTesoureiro ||
       pertenceDiretoria ||
       ehResponsavelPresenca;
@@ -469,7 +342,7 @@ async function carregarOpcoesAdministrativas() {
     ) {
 
       semOpcoesAdministrativas.hidden =
-        possuiAlgumaOpcao;
+        possuiAlgumModulo;
 
     }
 
@@ -477,7 +350,7 @@ async function carregarOpcoesAdministrativas() {
   } catch (erro) {
 
     console.error(
-      "Erro ao carregar opções administrativas:",
+      "Erro ao carregar módulos administrativos:",
       erro
     );
 
@@ -500,4 +373,4 @@ async function carregarOpcoesAdministrativas() {
    INICIALIZAÇÃO
 ========================================== */
 
-carregarOpcoesAdministrativas();
+carregarModulosAdministrativos();
