@@ -2271,3 +2271,92 @@ input:checked + span {
   }
 
 }
+/* ==========================================
+   DATAS ADMINISTRATIVAS DO ASSOCIADO
+========================================== */
+
+.cabecalho-dados-administrativos {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+
+.cabecalho-dados-administrativos h2 {
+  margin: 0;
+}
+
+
+.botao-editar-datas-administrativas {
+  border: 0;
+  background: transparent;
+  color: #651b1d;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 6px 0;
+}
+
+
+.edicao-datas-administrativas {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+
+.edicao-datas-administrativas[hidden] {
+  display: none;
+}
+
+
+.campo-data-administrativa {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+
+.campo-data-administrativa label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+
+.campo-data-administrativa input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #d7d7d7;
+  border-radius: 8px;
+  background: #ffffff;
+  font: inherit;
+  color: inherit;
+}
+
+
+.acoes-datas-administrativas {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+
+.acoes-datas-administrativas button {
+  flex: 1;
+}
+
+
+.botao-cancelar-datas-administrativas {
+  min-height: 44px;
+  border: 1px solid #651b1d;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #651b1d;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
