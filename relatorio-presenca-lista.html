@@ -21,7 +21,7 @@
 
   <link
     rel="stylesheet"
-    href="layout.css?v=31"
+    href="layout.css?v=33"
   >
 
 </head>
@@ -72,6 +72,10 @@
 
       </section>
 
+
+      <!-- =====================================
+           MATRIZ E RESUMO
+      ====================================== -->
 
       <section class="cartao-app">
 
@@ -309,6 +313,90 @@
       </section>
 
 
+      <!-- =====================================
+           FREQUÊNCIA POR ATIVIDADE
+      ====================================== -->
+
+      <section
+        id="areaRelatorioPorAtividade"
+        class="cartao-app"
+        hidden
+      >
+
+        <h2>
+          Frequência por atividade
+        </h2>
+
+        <p class="texto-explicativo-relatorio-atividade">
+          Resultado das atividades já realizadas no ano selecionado.
+        </p>
+
+
+        <div
+          class="container-tabela-atividade-relatorio"
+        >
+
+          <table
+            class="tabela-atividade-relatorio"
+          >
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Data
+                </th>
+
+                <th class="coluna-atividade-relatorio">
+                  Atividade
+                </th>
+
+                <th>
+                  P
+                </th>
+
+                <th>
+                  F
+                </th>
+
+                <th>
+                  J
+                </th>
+
+                <th>
+                  Pend.
+                </th>
+
+                <th>
+                  Freq.
+                </th>
+
+              </tr>
+
+            </thead>
+
+            <tbody
+              id="corpoRelatorioPorAtividade"
+            >
+            </tbody>
+
+          </table>
+
+        </div>
+
+
+        <div
+          id="mensagemSemAtividadesRealizadas"
+          class="mensagem-sem-atividades"
+          hidden
+        >
+          Nenhuma atividade realizada neste ano.
+        </div>
+
+      </section>
+
+
       <a
         class="link-administrativo"
         href="relatorio-presenca.html"
@@ -381,7 +469,7 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="relatorio-presenca-lista.js?v=4"></script>
+  <script src="relatorio-presenca-lista.js?v=5"></script>
 
 </body>
 
