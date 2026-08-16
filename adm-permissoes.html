@@ -165,7 +165,6 @@
 
   <!-- =====================================
        MENU INFERIOR
-       AINDA SERÁ ALTERADO PARA ADM
   ====================================== -->
 
   <nav
@@ -225,8 +224,10 @@
 
 
       <a
-        class="item-menu"
-        href="mais.html"
+        id="itemMenuAdm"
+        class="item-menu ativo"
+        href="administrativo.html"
+        hidden
       >
 
         <span class="icone-menu">
@@ -234,7 +235,7 @@
         </span>
 
         <span class="texto-menu">
-          Mais
+          ADM
         </span>
 
       </a>
@@ -262,11 +263,17 @@
   </nav>
 
 
+  <!-- =====================================
+       SCRIPTS
+  ====================================== -->
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script src="supabase.js?v=2"></script>
 
   <script src="app.js?v=2"></script>
+
+  <script src="menu-adm.js?v=1"></script>
 
 
 </body>
