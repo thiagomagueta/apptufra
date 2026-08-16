@@ -5,9 +5,24 @@
    ELEMENTOS
 ========================================== */
 
-const tituloListaPresenca =
+const listaConsultaPresenca =
   document.getElementById(
-    "tituloListaPresenca"
+    "listaConsultaPresenca"
+  );
+
+const anoConsultaPresenca =
+  document.getElementById(
+    "anoConsultaPresenca"
+  );
+
+const areaAtividadesConsultaPresenca =
+  document.getElementById(
+    "areaAtividadesConsultaPresenca"
+  );
+
+const tituloListaConsultaPresenca =
+  document.getElementById(
+    "tituloListaConsultaPresenca"
   );
 
 const listaAtividadesPresenca =
@@ -25,31 +40,17 @@ const mensagemSemAtividadesPresenca =
    DADOS
 ========================================== */
 
-let tipoListaId =
+let listasPresenca =
+  [];
+
+let tipoListaAtual =
   null;
 
-let tipoAtividadeLista =
-  null;
+let todasAtividades =
+  [];
 
 let atividadesPreenchidas =
   new Set();
-
-
-/* ==========================================
-   PARÂMETRO
-========================================== */
-
-function obterTipoListaId() {
-
-  const parametros =
-    new URLSearchParams(
-      window.location.search
-    );
-
-  return parametros.get(
-    "id"
-  );
-}
 
 
 /* ==========================================
@@ -127,8 +128,12 @@ function removerSegundos(
   horario
 ) {
 
-  if (!horario) {
+  if (
+    !horario
+  ) {
+
     return "";
+
   }
 
 
@@ -140,7 +145,415 @@ function removerSegundos(
 
 
 /* ==========================================
-   VERIFICAR SE ATIVIDADE FOI PREENCHIDA
+   VALIDAR SESSÃO
+========================================== */
+
+async function validarSessao() {
+
+  const resultadoSessao =
+    await window.supabaseClient.auth
+      .getSession();
+
+
+  if (
+    resultadoSessao.error
+  ) {
+
+    throw resultadoSessao.error;
+
+  }
+
+
+  const sessao =
+    resultadoSessao.data.session;
+
+
+  if (
+    !sessao
+  ) {
+
+    window.location.href =
+      "index.html";
+
+
+    throw new Error(
+      "Sessão não encontrada."
+    );
+
+  }
+}
+
+
+/* ==========================================
+   CARREGAR LISTAS
+========================================== */
+
+async function carregarListas() {
+
+  const resultado =
+    await window.supabaseClient
+      .from(
+        "tipos_lista_presenca"
+      )
+      .select(`
+        id,
+        nome,
+        tipo_atividade,
+        ativo,
+        ordem
+      `)
+      .eq(
+        "ativo",
+        true
+      )
+      .order(
+        "ordem",
+        {
+          ascending: true
+        }
+      );
+
+
+  if (
+    resultado.error
+  ) {
+
+    throw resultado.error;
+
+  }
+
+
+  listasPresenca =
+    resultado.data ||
+    [];
+
+
+  listaConsultaPresenca.innerHTML =
+    "";
+
+
+  if (
+    listasPresenca.length ===
+    0
+  ) {
+
+    const opcao =
+      document.createElement(
+        "option"
+      );
+
+
+    opcao.value =
+      "";
+
+
+    opcao.textContent =
+      "Nenhuma lista";
+
+
+    listaConsultaPresenca.appendChild(
+      opcao
+    );
+
+
+    listaConsultaPresenca.disabled =
+      true;
+
+
+    return;
+
+  }
+
+
+  listasPresenca.forEach(
+    (lista) => {
+
+      const opcao =
+        document.createElement(
+          "option"
+        );
+
+
+      opcao.value =
+        lista.id;
+
+
+      opcao.textContent =
+        lista.nome;
+
+
+      listaConsultaPresenca.appendChild(
+        opcao
+      );
+
+    }
+  );
+
+
+  listaConsultaPresenca.disabled =
+    false;
+
+
+  tipoListaAtual =
+    listasPresenca[0];
+
+
+  listaConsultaPresenca.value =
+    tipoListaAtual.id;
+}
+
+
+/* ==========================================
+   CARREGAR TODAS AS ATIVIDADES
+========================================== */
+
+async function carregarAtividades() {
+
+  todasAtividades =
+    [];
+
+
+  if (
+    !tipoListaAtual
+  ) {
+
+    return;
+
+  }
+
+
+  const resultado =
+    await window.supabaseClient
+      .from(
+        "atividades"
+      )
+      .select(`
+        id,
+        titulo,
+        data,
+        hora_inicio,
+        hora_fim,
+        tipo_atividade
+      `)
+      .eq(
+        "tipo_atividade",
+        tipoListaAtual.tipo_atividade
+      )
+      .order(
+        "data",
+        {
+          ascending: true
+        }
+      )
+      .order(
+        "hora_inicio",
+        {
+          ascending: true
+        }
+      );
+
+
+  if (
+    resultado.error
+  ) {
+
+    throw resultado.error;
+
+  }
+
+
+  todasAtividades =
+    resultado.data ||
+    [];
+}
+
+
+/* ==========================================
+   CARREGAR ANOS DISPONÍVEIS
+========================================== */
+
+function carregarAnosDisponiveis() {
+
+  const anos =
+    [
+      ...new Set(
+        todasAtividades
+          .map(
+            (atividade) =>
+              Number(
+                String(
+                  atividade.data
+                ).slice(
+                  0,
+                  4
+                )
+              )
+          )
+          .filter(Boolean)
+      )
+    ]
+      .sort(
+        (a, b) =>
+          b - a
+      );
+
+
+  anoConsultaPresenca.innerHTML =
+    "";
+
+
+  if (
+    anos.length ===
+    0
+  ) {
+
+    const opcao =
+      document.createElement(
+        "option"
+      );
+
+
+    opcao.value =
+      "";
+
+
+    opcao.textContent =
+      "Sem anos";
+
+
+    anoConsultaPresenca.appendChild(
+      opcao
+    );
+
+
+    anoConsultaPresenca.disabled =
+      true;
+
+
+    return;
+
+  }
+
+
+  anos.forEach(
+    (ano) => {
+
+      const opcao =
+        document.createElement(
+          "option"
+        );
+
+
+      opcao.value =
+        String(
+          ano
+        );
+
+
+      opcao.textContent =
+        String(
+          ano
+        );
+
+
+      anoConsultaPresenca.appendChild(
+        opcao
+      );
+
+    }
+  );
+
+
+  const anoAtual =
+    new Date()
+      .getFullYear();
+
+
+  if (
+    anos.includes(
+      anoAtual
+    )
+  ) {
+
+    anoConsultaPresenca.value =
+      String(
+        anoAtual
+      );
+
+  } else {
+
+    anoConsultaPresenca.value =
+      String(
+        anos[0]
+      );
+
+  }
+
+
+  anoConsultaPresenca.disabled =
+    false;
+}
+
+
+/* ==========================================
+   ATIVIDADES JÁ PREENCHIDAS
+========================================== */
+
+async function carregarAtividadesPreenchidas() {
+
+  atividadesPreenchidas =
+    new Set();
+
+
+  if (
+    !tipoListaAtual
+  ) {
+
+    return;
+
+  }
+
+
+  const resultado =
+    await window.supabaseClient
+      .from(
+        "presencas"
+      )
+      .select(
+        "atividade_id"
+      )
+      .eq(
+        "tipo_lista_id",
+        tipoListaAtual.id
+      );
+
+
+  if (
+    resultado.error
+  ) {
+
+    throw resultado.error;
+
+  }
+
+
+  atividadesPreenchidas =
+    new Set(
+      (
+        resultado.data ||
+        []
+      )
+        .map(
+          (item) =>
+            item.atividade_id
+        )
+        .filter(Boolean)
+    );
+}
+
+
+/* ==========================================
+   ATIVIDADE FOI PREENCHIDA
 ========================================== */
 
 function atividadeFoiPreenchida(
@@ -172,7 +585,7 @@ function criarItemAtividade(
 
 
   link.href =
-    `consultar-lista-presenca.html?lista=${tipoListaId}&atividade=${atividade.id}`;
+    `consultar-lista-presenca.html?lista=${tipoListaAtual.id}&atividade=${atividade.id}`;
 
 
   /* --------------------------------------
@@ -323,199 +736,63 @@ function criarItemAtividade(
 
 
 /* ==========================================
-   CARREGAR CONFIGURAÇÃO DA LISTA
+   RENDERIZAR ATIVIDADES
 ========================================== */
 
-async function carregarTipoLista() {
+function renderizarAtividades() {
 
-  const resultado =
-    await window.supabaseClient
-      .from(
-        "tipos_lista_presenca"
-      )
-      .select(`
-        id,
-        nome,
-        tipo_atividade,
-        ativo
-      `)
-      .eq(
-        "id",
-        tipoListaId
-      )
-      .maybeSingle();
-
-
-  if (
-    resultado.error
-  ) {
-
-    throw resultado.error;
-
-  }
-
-
-  if (
-    !resultado.data
-  ) {
-
-    throw new Error(
-      "Lista de presença não encontrada."
-    );
-
-  }
-
-
-  tituloListaPresenca.textContent =
-    resultado.data.nome;
-
-
-  tipoAtividadeLista =
-    resultado.data.tipo_atividade;
-}
-
-
-/* ==========================================
-   VALIDAR SESSÃO
-========================================== */
-
-async function validarSessao() {
-
-  const resultadoSessao =
-    await window.supabaseClient.auth
-      .getSession();
-
-
-  if (
-    resultadoSessao.error
-  ) {
-
-    throw resultadoSessao.error;
-
-  }
-
-
-  const sessao =
-    resultadoSessao.data.session;
-
-
-  if (
-    !sessao
-  ) {
-
-    window.location.href =
-      "index.html";
-
-
-    throw new Error(
-      "Sessão não encontrada."
-    );
-
-  }
-
-}
-
-
-/* ==========================================
-   CARREGAR ATIVIDADES JÁ PREENCHIDAS
-========================================== */
-
-async function carregarAtividadesPreenchidas() {
-
-  const resultado =
-    await window.supabaseClient
-      .from(
-        "presencas"
-      )
-      .select(
-        "atividade_id"
-      )
-      .eq(
-        "tipo_lista_id",
-        tipoListaId
-      );
-
-
-  if (
-    resultado.error
-  ) {
-
-    throw resultado.error;
-
-  }
-
-
-  atividadesPreenchidas =
-    new Set(
-      (
-        resultado.data ||
-        []
-      )
-        .map(
-          (item) =>
-            item.atividade_id
-        )
-        .filter(Boolean)
-    );
-}
-
-
-/* ==========================================
-   CARREGAR ATIVIDADES
-========================================== */
-
-async function carregarAtividades() {
-
-  const resultado =
-    await window.supabaseClient
-      .from(
-        "atividades"
-      )
-      .select(`
-        id,
-        titulo,
-        data,
-        hora_inicio,
-        hora_fim,
-        tipo_atividade
-      `)
-      .eq(
-        "tipo_atividade",
-        tipoAtividadeLista
-      )
-      .order(
-        "data",
-        {
-          ascending: true
-        }
-      )
-      .order(
-        "hora_inicio",
-        {
-          ascending: true
-        }
-      );
-
-
-  if (
-    resultado.error
-  ) {
-
-    throw resultado.error;
-
-  }
-
-
-  const atividades =
-    resultado.data || [];
+  const ano =
+    anoConsultaPresenca.value;
 
 
   listaAtividadesPresenca.innerHTML =
     "";
 
 
+  if (
+    !tipoListaAtual ||
+    !ano
+  ) {
+
+    areaAtividadesConsultaPresenca.hidden =
+      true;
+
+    return;
+
+  }
+
+
+  areaAtividadesConsultaPresenca.hidden =
+    false;
+
+
+  tituloListaConsultaPresenca.textContent =
+    tipoListaAtual.nome;
+
+
+  const atividades =
+    todasAtividades.filter(
+      (atividade) =>
+        String(
+          atividade.data
+        ).startsWith(
+          `${ano}-`
+        )
+    );
+
+
   mensagemSemAtividadesPresenca.hidden =
     atividades.length > 0;
+
+
+  if (
+    atividades.length ===
+    0
+  ) {
+
+    return;
+
+  }
 
 
   atividades.forEach(
@@ -533,26 +810,78 @@ async function carregarAtividades() {
 
 
 /* ==========================================
+   TROCAR LISTA
+========================================== */
+
+async function trocarLista() {
+
+  const listaId =
+    listaConsultaPresenca.value;
+
+
+  tipoListaAtual =
+    listasPresenca.find(
+      (lista) =>
+        lista.id ===
+        listaId
+    ) || null;
+
+
+  areaAtividadesConsultaPresenca.hidden =
+    true;
+
+
+  anoConsultaPresenca.disabled =
+    true;
+
+
+  anoConsultaPresenca.innerHTML =
+    `
+      <option value="">
+        Carregando...
+      </option>
+    `;
+
+
+  try {
+
+    await carregarAtividades();
+
+    carregarAnosDisponiveis();
+
+    await carregarAtividadesPreenchidas();
+
+    renderizarAtividades();
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao trocar lista da consulta de presença:",
+      erro
+    );
+
+
+    areaAtividadesConsultaPresenca.hidden =
+      false;
+
+
+    listaAtividadesPresenca.innerHTML =
+      "<p>Não foi possível carregar as atividades.</p>";
+
+
+    mensagemSemAtividadesPresenca.hidden =
+      true;
+
+  }
+}
+
+
+/* ==========================================
    INICIALIZAÇÃO
 ========================================== */
 
 async function iniciarPagina() {
-
-  tipoListaId =
-    obterTipoListaId();
-
-
-  if (
-    !tipoListaId
-  ) {
-
-    window.location.href =
-      "consultar-presenca.html";
-
-    return;
-
-  }
-
 
   if (
     !window.supabaseClient
@@ -567,27 +896,54 @@ async function iniciarPagina() {
 
     await validarSessao();
 
-    await carregarTipoLista();
+    await carregarListas();
 
-    await carregarAtividadesPreenchidas();
 
-    await carregarAtividades();
+    if (
+      !tipoListaAtual
+    ) {
+
+      return;
+
+    }
+
+
+    await trocarLista();
 
 
   } catch (erro) {
 
     console.error(
-      "Erro ao carregar atividades para consulta:",
+      "Erro ao iniciar consulta de presença:",
       erro
     );
+
+
+    areaAtividadesConsultaPresenca.hidden =
+      false;
 
 
     listaAtividadesPresenca.innerHTML =
       "<p>Não foi possível carregar as atividades.</p>";
 
   }
-
 }
+
+
+/* ==========================================
+   EVENTOS
+========================================== */
+
+listaConsultaPresenca.addEventListener(
+  "change",
+  trocarLista
+);
+
+
+anoConsultaPresenca.addEventListener(
+  "change",
+  renderizarAtividades
+);
 
 
 /* ==========================================
