@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
 
   <meta charset="UTF-8">
@@ -14,20 +15,24 @@
     content="#651b1d"
   >
 
-  <title>Exportar Excel | TUFRA</title>
+  <title>
+    Exportar Excel | TUFRA
+  </title>
 
   <link
     rel="stylesheet"
-    href="layout.css?v=15"
+    href="layout.css?v=39"
   >
 
 </head>
+
 
 <body>
 
   <main class="app">
 
     <div class="conteudo-app">
+
 
       <header class="cabecalho-app">
 
@@ -108,10 +113,11 @@
 
       <a
         class="link-administrativo"
-        href="administrativo.html"
+        href="adm-calendario.html"
       >
-        Voltar ao Administrativo
+        Voltar para Calendário
       </a>
+
 
     </div>
 
@@ -150,11 +156,13 @@
       </a>
 
       <a
-        class="item-menu"
-        href="mais.html"
+        id="itemMenuAdm"
+        class="item-menu ativo"
+        href="administrativo.html"
+        hidden
       >
         <span class="icone-menu">☰</span>
-        <span class="texto-menu">Mais</span>
+        <span class="texto-menu">ADM</span>
       </a>
 
       <a
@@ -177,11 +185,17 @@
 
   <script src="app.js?v=2"></script>
 
+
   <script
     src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"
   ></script>
 
+
   <script src="exportar-excel.js?v=1"></script>
 
+  <script src="menu-adm.js?v=1"></script>
+
+
 </body>
+
 </html>
