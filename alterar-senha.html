@@ -26,7 +26,7 @@
 
   <link
     rel="stylesheet"
-    href="style.css?v=14"
+    href="style.css?v=15"
   >
 
 </head>
@@ -38,10 +38,6 @@
 
     <div class="conteudo-app">
 
-
-      <!-- =====================================
-           CABEÇALHO
-      ====================================== -->
 
       <header class="cabecalho-app">
 
@@ -66,10 +62,6 @@
       </header>
 
 
-      <!-- =====================================
-           TÍTULO
-      ====================================== -->
-
       <section>
 
         <h1 class="titulo-pagina">
@@ -83,73 +75,63 @@
       </section>
 
 
-      <!-- =====================================
-           FORMULÁRIO
-      ====================================== -->
+      <section class="cartao-alterar-senha">
 
-      <section class="secao-revisao">
+        <div class="campo-alterar-senha">
 
-        <div class="formulario-alterar-senha">
+          <label for="novaSenha">
+            Nova senha
+          </label>
 
+          <input
+            id="novaSenha"
+            type="password"
+            autocomplete="new-password"
+            placeholder="Digite a nova senha"
+          >
 
-          <div class="campo-formulario">
-
-            <label for="novaSenha">
-              Nova senha
-            </label>
-
-            <input
-              id="novaSenha"
-              type="password"
-              autocomplete="new-password"
-              placeholder="Digite a nova senha"
-            >
-
-          </div>
+        </div>
 
 
-          <div class="campo-formulario">
+        <div class="campo-alterar-senha">
 
-            <label for="confirmarNovaSenha">
-              Confirmar nova senha
-            </label>
+          <label for="confirmarNovaSenha">
+            Confirmar nova senha
+          </label>
 
-            <input
-              id="confirmarNovaSenha"
-              type="password"
-              autocomplete="new-password"
-              placeholder="Digite novamente a nova senha"
-            >
+          <input
+            id="confirmarNovaSenha"
+            type="password"
+            autocomplete="new-password"
+            placeholder="Digite novamente a nova senha"
+          >
 
-          </div>
-
-
-          <small
-            id="mensagemAlterarSenha"
-            class="mensagem-campo"
-            hidden
-          ></small>
+        </div>
 
 
-          <div class="acoes-foto-dupla">
+        <small
+          id="mensagemAlterarSenha"
+          class="mensagem-campo mensagem-alterar-senha"
+          hidden
+        ></small>
 
-            <a
-              class="botao-anterior"
-              href="minha-ficha.html"
-            >
-              Voltar
-            </a>
 
-            <button
-              id="botaoAlterarSenha"
-              class="botao-solicitar"
-              type="button"
-            >
-              Alterar senha
-            </button>
+        <div class="acoes-alterar-senha">
 
-          </div>
+          <a
+            class="botao-voltar-senha"
+            href="minha-ficha.html"
+          >
+            Voltar
+          </a>
 
+          <button
+            id="botaoAlterarSenha"
+            class="botao-confirmar-senha"
+            type="button"
+          >
+            Alterar senha
+          </button>
 
         </div>
 
@@ -160,10 +142,6 @@
 
   </main>
 
-
-  <!-- =====================================
-       SCRIPTS
-  ====================================== -->
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
