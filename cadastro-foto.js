@@ -197,6 +197,51 @@ function tirarNovamente() {
   abrirCamera();
 }
 
+function erroEhCpfDuplicado(erro) {
+  const partesErro = [
+    erro?.message,
+    erro?.details,
+    erro?.hint,
+    erro?.code,
+    erro?.context?.message,
+    erro?.context?.error,
+    erro?.context?.body,
+    erro?.context
+  ];
+
+  const textoErro = partesErro
+    .map((parte) => {
+      if (!parte) {
+        return "";
+      }
+
+      if (typeof parte === "string") {
+        return parte;
+      }
+
+      try {
+        return JSON.stringify(parte);
+      } catch {
+        return String(parte);
+      }
+    })
+    .join(" ")
+    .toLowerCase();
+
+  const mencionaCpf =
+    textoErro.includes("cpf");
+
+  const indicaDuplicidade =
+    textoErro.includes("duplicate") ||
+    textoErro.includes("duplicado") ||
+    textoErro.includes("already exists") ||
+    textoErro.includes("já existe") ||
+    textoErro.includes("unique") ||
+    textoErro.includes("23505");
+
+  return mencionaCpf && indicaDuplicidade;
+}
+
 async function solicitarCadastro() {
   mostrarMensagem("");
 
@@ -292,26 +337,27 @@ async function solicitarCadastro() {
     }
 
     const respostaFoto = await fetch(
-  fotoPreview.src
-);
+      fotoPreview.src
+    );
 
-if (!respostaFoto.ok) {
-  throw new Error(
-    "Não foi possível preparar a foto."
-  );
-}
+    if (!respostaFoto.ok) {
+      throw new Error(
+        "Não foi possível preparar a foto."
+      );
+    }
 
-const fotoBlob =
-  await respostaFoto.blob();
+    const fotoBlob =
+      await respostaFoto.blob();
 
-if (
-  !fotoBlob ||
-  fotoBlob.size === 0
-) {
-  throw new Error(
-    "A foto capturada está vazia."
-  );
-}
+    if (
+      !fotoBlob ||
+      fotoBlob.size === 0
+    ) {
+      throw new Error(
+        "A foto capturada está vazia."
+      );
+    }
+
     const formularioFoto =
       new FormData();
 
@@ -409,9 +455,15 @@ if (
       erro?.context
     );
 
-    mostrarMensagem(
-      "Não foi possível concluir o cadastro. Tente novamente."
-    );
+    if (erroEhCpfDuplicado(erro)) {
+      mostrarMensagem(
+        "Este CPF já possui um cadastro no TUFRA. Se você acredita que isso seja um erro, procure a administração."
+      );
+    } else {
+      mostrarMensagem(
+        "Não foi possível concluir o cadastro. Tente novamente."
+      );
+    }
 
     botaoEnviarCadastro.disabled = false;
     botaoNovaFoto.disabled = false;
