@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta
+    name="theme-color"
+    content="#651b1d"
+  >
+
+  <title>
+    Alterar senha | TUFRA
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="layout.css?v=39"
+  >
+
+  <link
+    rel="stylesheet"
+    href="style.css?v=14"
+  >
+
+</head>
+
+
+<body>
+
+  <main class="app">
+
+    <div class="conteudo-app">
+
+
+      <!-- =====================================
+           CABEÇALHO
+      ====================================== -->
+
+      <header class="cabecalho-app">
+
+        <img
+          class="logo-app"
+          src="logo-tufra.png"
+          alt="Logo da TUFRA"
+        >
+
+        <div class="identidade-app">
+
+          <strong>
+            TUFRA
+          </strong>
+
+          <span>
+            Tenda de Umbanda Francisco de Assis
+          </span>
+
+        </div>
+
+      </header>
+
+
+      <!-- =====================================
+           TÍTULO
+      ====================================== -->
+
+      <section>
+
+        <h1 class="titulo-pagina">
+          Alterar senha
+        </h1>
+
+        <p class="subtitulo-pagina">
+          Defina uma nova senha para acessar sua conta.
+        </p>
+
+      </section>
+
+
+      <!-- =====================================
+           FORMULÁRIO
+      ====================================== -->
+
+      <section class="secao-revisao">
+
+        <div class="formulario-alterar-senha">
+
+
+          <div class="campo-formulario">
+
+            <label for="novaSenha">
+              Nova senha
+            </label>
+
+            <input
+              id="novaSenha"
+              type="password"
+              autocomplete="new-password"
+              placeholder="Digite a nova senha"
+            >
+
+          </div>
+
+
+          <div class="campo-formulario">
+
+            <label for="confirmarNovaSenha">
+              Confirmar nova senha
+            </label>
+
+            <input
+              id="confirmarNovaSenha"
+              type="password"
+              autocomplete="new-password"
+              placeholder="Digite novamente a nova senha"
+            >
+
+          </div>
+
+
+          <small
+            id="mensagemAlterarSenha"
+            class="mensagem-campo"
+            hidden
+          ></small>
+
+
+          <div class="acoes-foto-dupla">
+
+            <a
+              class="botao-anterior"
+              href="minha-ficha.html"
+            >
+              Voltar
+            </a>
+
+            <button
+              id="botaoAlterarSenha"
+              class="botao-solicitar"
+              type="button"
+            >
+              Alterar senha
+            </button>
+
+          </div>
+
+
+        </div>
+
+      </section>
+
+
+    </div>
+
+  </main>
+
+
+  <!-- =====================================
+       SCRIPTS
+  ====================================== -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="supabase.js?v=2"></script>
+
+  <script src="alterar-senha.js?v=1"></script>
+
+
+</body>
+
+</html>
