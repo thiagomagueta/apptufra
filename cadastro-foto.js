@@ -228,20 +228,10 @@ function erroEhCpfDuplicado(erro) {
     .join(" ")
     .toLowerCase();
 
-  const mencionaCpf =
-    textoErro.includes("cpf");
-
-  const indicaDuplicidade =
-    textoErro.includes("duplicate") ||
-    textoErro.includes("duplicado") ||
-    textoErro.includes("already exists") ||
-    textoErro.includes("já existe") ||
-    textoErro.includes("unique") ||
-    textoErro.includes("23505");
-
-  return mencionaCpf && indicaDuplicidade;
+  return textoErro.includes(
+    "cpf_ja_cadastrado"
+  );
 }
-
 async function solicitarCadastro() {
   mostrarMensagem("");
 
