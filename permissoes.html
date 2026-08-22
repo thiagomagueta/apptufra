@@ -34,6 +34,10 @@
     <div class="conteudo-app">
 
 
+      <!-- =====================================
+           CABEÇALHO
+      ====================================== -->
+
       <header class="cabecalho-app">
 
         <img
@@ -56,6 +60,10 @@
 
       </header>
 
+
+      <!-- =====================================
+           TÍTULO
+      ====================================== -->
 
       <section>
 
@@ -94,9 +102,11 @@
           id="listaCadastrosPendentes"
           class="lista-permissoes"
         >
+
           <p>
             Carregando cadastros...
           </p>
+
         </div>
 
       </section>
@@ -120,13 +130,164 @@
           id="listaUsuariosAtivos"
           class="lista-permissoes"
         >
+
           <p>
             Carregando usuários...
           </p>
+
         </div>
 
       </section>
 
+
+      <!-- =====================================
+           MIGRAÇÃO HISTÓRICA
+      ====================================== -->
+
+      <section
+        id="secaoMigracaoHistorica"
+        class="cartao-app"
+        hidden
+      >
+
+        <h2>
+          Migração Histórica
+        </h2>
+
+        <p
+          id="resumoMigracao"
+          style="margin-bottom: 18px;"
+        >
+          Carregando...
+        </p>
+
+
+        <div
+          id="listaMigracaoHistorica"
+          class="lista-permissoes"
+        >
+
+          <p>
+            Carregando cadastros...
+          </p>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================
+           ÁREA DE VÍNCULO
+      ====================================== -->
+
+      <section
+        id="painelVinculoHistorico"
+        class="cartao-app"
+        hidden
+      >
+
+        <h2>
+          Vincular histórico
+        </h2>
+
+        <p>
+          Cadastro no APP:
+          <strong id="nomeUsuarioMigracao"></strong>
+        </p>
+
+
+        <div
+          style="
+            margin-top: 18px;
+            margin-bottom: 18px;
+          "
+        >
+
+          <label
+            for="campoBuscaHistorico"
+            style="
+              display: block;
+              margin-bottom: 6px;
+              font-weight: 600;
+            "
+          >
+            Procurar nome na base histórica
+          </label>
+
+          <input
+            id="campoBuscaHistorico"
+            type="search"
+            placeholder="Digite parte do nome"
+            autocomplete="off"
+            style="
+              width: 100%;
+              box-sizing: border-box;
+              padding: 12px;
+              border: 1px solid #ccc;
+              border-radius: 8px;
+              font-size: 16px;
+            "
+          >
+
+        </div>
+
+
+        <div
+          id="listaHistoricosDisponiveis"
+          class="lista-permissoes"
+        >
+
+          <p>
+            Digite um nome para pesquisar.
+          </p>
+
+        </div>
+
+
+        <button
+          id="botaoUsuarioNovo"
+          type="button"
+          style="
+            width: 100%;
+            margin-top: 22px;
+            padding: 12px;
+            border: 0;
+            border-radius: 8px;
+            background: #651b1d;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+          "
+        >
+          Usuário novo
+        </button>
+
+
+        <button
+          id="botaoCancelarMigracao"
+          type="button"
+          style="
+            width: 100%;
+            margin-top: 10px;
+            padding: 12px;
+            border: 1px solid #bbb;
+            border-radius: 8px;
+            background: #fff;
+            color: #333;
+            font-size: 16px;
+            cursor: pointer;
+          "
+        >
+          Cancelar
+        </button>
+
+      </section>
+
+
+      <!-- =====================================
+           VOLTAR
+      ====================================== -->
 
       <a
         class="link-administrativo"
@@ -140,6 +301,10 @@
 
   </main>
 
+
+  <!-- =====================================
+       MENU INFERIOR
+  ====================================== -->
 
   <nav
     class="menu-inferior"
@@ -202,9 +367,10 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="permissoes.js?v=4"></script>
+  <script src="permissoes.js?v=5"></script>
 
   <script src="menu-adm.js?v=1"></script>
+
 
 </body>
 
