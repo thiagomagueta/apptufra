@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta
+    name="theme-color"
+    content="#651b1d"
+  >
+
+  <title>
+    Novo Atendimento | TUFRA
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="layout.css?v=40"
+  >
+
+</head>
+
+
+<body>
+
+  <main class="app">
+
+    <div class="conteudo-app">
+
+
+      <!-- =====================================
+           CABEÇALHO
+      ====================================== -->
+
+      <header class="cabecalho-app">
+
+        <img
+          class="logo-app"
+          src="logo-tufra.png"
+          alt="Logo da TUFRA"
+        >
+
+        <div class="identidade-app">
+
+          <strong>
+            TUFRA
+          </strong>
+
+          <span>
+            Tenda de Umbanda Francisco de Assis
+          </span>
+
+        </div>
+
+      </header>
+
+
+      <!-- =====================================
+           TÍTULO
+      ====================================== -->
+
+      <section>
+
+        <h1 class="titulo-pagina">
+          Novo Atendimento
+        </h1>
+
+        <p class="subtitulo-pagina">
+          Registre um novo atendimento fraterno.
+        </p>
+
+      </section>
+
+
+      <!-- =====================================
+           FORMULÁRIO
+      ====================================== -->
+
+      <section class="cartao-app">
+
+
+        <!-- =================================
+             TIPO DE PESSOA
+        ================================== -->
+
+        <div
+          style="
+            margin-bottom: 24px;
+          "
+        >
+
+          <strong
+            style="
+              display: block;
+              margin-bottom: 12px;
+            "
+          >
+            Pessoa atendida
+          </strong>
+
+
+          <label
+            style="
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              margin-bottom: 10px;
+              cursor: pointer;
+            "
+          >
+
+            <input
+              id="tipoAssociado"
+              type="radio"
+              name="tipoPessoa"
+              value="associado"
+              checked
+            >
+
+            <span>
+              Associado
+            </span>
+
+          </label>
+
+
+          <label
+            style="
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              cursor: pointer;
+            "
+          >
+
+            <input
+              id="tipoNaoAssociado"
+              type="radio"
+              name="tipoPessoa"
+              value="nao_associado"
+            >
+
+            <span>
+              Não associado
+            </span>
+
+          </label>
+
+        </div>
+
+
+        <!-- =================================
+             ASSOCIADO
+        ================================== -->
+
+        <div
+          id="areaAssociado"
+          style="
+            margin-bottom: 24px;
+          "
+        >
+
+          <label
+            for="campoBuscaAssociado"
+            style="
+              display: block;
+              margin-bottom: 6px;
+              font-weight: 600;
+            "
+          >
+            Associado
+          </label>
+
+
+          <input
+            id="campoBuscaAssociado"
+            type="search"
+            placeholder="Digite pelo menos 2 letras do nome"
+            autocomplete="off"
+            style="
+              width: 100%;
+              box-sizing: border-box;
+              padding: 12px;
+              border: 1px solid #ccc;
+              border-radius: 8px;
+              font-size: 16px;
+            "
+          >
+
+
+          <div
+            id="resultadoBuscaAssociado"
+            class="lista-permissoes"
+            style="
+              margin-top: 10px;
+            "
+          >
+
+            <p>
+              Digite o nome do associado.
+            </p>
+
+          </div>
+
+
+          <div
+            id="associadoSelecionado"
+            style="
+              margin-top: 14px;
+              padding: 12px;
+              border: 1px solid #ddd;
+              border-radius: 8px;
+            "
+            hidden
+          >
+
+            <strong>
+              Associado selecionado:
+            </strong>
+
+            <div
+              id="nomeAssociadoSelecionado"
+              style="
+                margin-top: 4px;
+              "
+            ></div>
+
+          </div>
+
+        </div>
+
+
+        <!-- =================================
+             NÃO ASSOCIADO
+        ================================== -->
+
+        <div
+          id="areaNaoAssociado"
+          style="
+            margin-bottom: 24px;
+          "
+          hidden
+        >
+
+          <label
+            for="campoBuscaNaoAssociado"
+            style="
+              display: block;
+              margin-bottom: 6px;
+              font-weight: 600;
+            "
+          >
+            Nome da pessoa
+          </label>
+
+
+          <input
+            id="campoBuscaNaoAssociado"
+            type="search"
+            placeholder="Digite o nome da pessoa"
+            autocomplete="off"
+            style="
+              width: 100%;
+              box-sizing: border-box;
+              padding: 12px;
+              border: 1px solid #ccc;
+              border-radius: 8px;
+              font-size: 16px;
+            "
+          >
+
+
+          <p
+            style="
+              margin-top: 8px;
+              margin-bottom: 10px;
+              font-size: 14px;
+            "
+          >
+            Se essa pessoa já tiver sido atendida, selecione o cadastro existente.
+          </p>
+
+
+          <div
+            id="resultadoBuscaNaoAssociado"
+            class="lista-permissoes"
+          >
+
+            <p>
+              Digite pelo menos 2 letras para procurar.
+            </p>
+
+          </div>
+
+
+          <div
+            id="naoAssociadoSelecionado"
+            style="
+              margin-top: 14px;
+              padding: 12px;
+              border: 1px solid #ddd;
+              border-radius: 8px;
+            "
+            hidden
+          >
+
+            <strong>
+              Pessoa selecionada:
+            </strong>
+
+            <div
+              id="nomeNaoAssociadoSelecionado"
+              style="
+                margin-top: 4px;
+              "
+            ></div>
+
+          </div>
+
+
+          <div
+            id="avisoNovoNaoAssociado"
+            style="
+              margin-top: 14px;
+              padding: 12px;
+              border: 1px solid #ddd;
+              border-radius: 8px;
+            "
+            hidden
+          >
+
+            Esta pessoa será cadastrada como não associada ao salvar o atendimento.
+
+          </div>
+
+        </div>
+
+
+        <!-- =================================
+             DATA
+        ================================== -->
+
+        <div
+          style="
+            margin-bottom: 20px;
+          "
+        >
+
+          <label
+            for="dataAtendimento"
+            style="
+              display: block;
+              margin-bottom: 6px;
+              font-weight: 600;
+            "
+          >
+            Data do atendimento
+          </label>
+
+          <input
+            id="dataAtendimento"
+            type="date"
+            style="
+              width: 100%;
+              box-sizing: border-box;
+              padding: 12px;
+              border: 1px solid #ccc;
+              border-radius: 8px;
+              font-size: 16px;
+            "
+          >
+
+        </div>
+
+
+        <!-- =================================
+             MOTIVO
+        ================================== -->
+
+        <div
+          style="
+            margin-bottom: 20px;
+          "
+        >
+
+          <label
+            for="motivoAtendimento"
+            style="
+              display: block;
+              margin-bottom: 6px;
+              font-weight: 600;
+            "
+          >
+            Motivo do atendimento
+          </label>
+
+          <input
+            id="motivoAtendimento"
+            type="text"
+            placeholder="Ex.: questão familiar, orientação espiritual..."
+            style="
+              width: 100%;
+              box-sizing: border-box;
+              padding: 12px;
+              border: 1px solid #ccc;
+              border-radius: 8px;
+              font-size: 16px;
+            "
+          >
+
+        </div>
+
+
+        <!-- =================================
+             RELATO
+        ================================== -->
+
+        <div
+          style="
+            margin-bottom: 20px;
+          "
+        >
+
+          <label
+            for="relatoAtendimento"
+            style="
+              display: block;
+              margin-bottom: 6px;
+              font-weight: 600;
+            "
+          >
+            Relato
+          </label>
+
+          <textarea
+            id="relatoAtendimento"
+            rows="8"
+            placeholder="Registre aqui o relato da pessoa e os principais pontos da conversa."
+            style="
+              width: 100%;
+              box-sizing: border-box;
+              padding: 12px;
+              border: 1px solid #ccc;
+              border-radius: 8px;
+              font-size: 16px;
+              font-family: inherit;
+              resize: vertical;
+            "
+          ></textarea>
+
+        </div>
+
+
+        <!-- =================================
+             ORIENTAÇÃO / CONDUTA
+        ================================== -->
+
+        <div
+          style="
+            margin-bottom: 22px;
+          "
+        >
+
+          <label
+            for="orientacaoAtendimento"
+            style="
+              display: block;
+              margin-bottom: 6px;
+              font-weight: 600;
+            "
+          >
+            Orientação / Conduta
+          </label>
+
+          <textarea
+            id="orientacaoAtendimento"
+            rows="7"
+            placeholder="Registre aqui as orientações e condutas definidas no atendimento."
+            style="
+              width: 100%;
+              box-sizing: border-box;
+              padding: 12px;
+              border: 1px solid #ccc;
+              border-radius: 8px;
+              font-size: 16px;
+              font-family: inherit;
+              resize: vertical;
+            "
+          ></textarea>
+
+        </div>
+
+
+        <!-- =================================
+             ACOMPANHAMENTO
+        ================================== -->
+
+        <div
+          style="
+            margin-bottom: 20px;
+          "
+        >
+
+          <label
+            style="
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              cursor: pointer;
+            "
+          >
+
+            <input
+              id="precisaAcompanhamento"
+              type="checkbox"
+            >
+
+            <span>
+              Precisa de acompanhamento / retorno
+            </span>
+
+          </label>
+
+        </div>
+
+
+        <!-- =================================
+             DATA DE RETORNO
+        ================================== -->
+
+        <div
+          id="areaDataRetorno"
+          style="
+            margin-bottom: 22px;
+          "
+          hidden
+        >
+
+          <label
+            for="dataRetorno"
+            style="
+              display: block;
+              margin-bottom: 6px;
+              font-weight: 600;
+            "
+          >
+            Data sugerida para retorno
+          </label>
+
+          <input
+            id="dataRetorno"
+            type="date"
+            style="
+              width: 100%;
+              box-sizing: border-box;
+              padding: 12px;
+              border: 1px solid #ccc;
+              border-radius: 8px;
+              font-size: 16px;
+            "
+          >
+
+        </div>
+
+
+      </section>
+
+
+      <!-- =====================================
+           MENSAGEM
+      ====================================== -->
+
+      <p
+        id="mensagemNovoAtendimento"
+        class="mensagem-formulario"
+        hidden
+      ></p>
+
+
+      <!-- =====================================
+           SALVAR
+      ====================================== -->
+
+      <button
+        id="botaoSalvarAtendimento"
+        class="botao-principal-app"
+        type="button"
+        disabled
+      >
+        Salvar atendimento
+      </button>
+
+
+      <!-- =====================================
+           VOLTAR
+      ====================================== -->
+
+      <a
+        class="link-administrativo"
+        href="adm-atendimentos.html"
+      >
+        Voltar para Atendimentos
+      </a>
+
+
+    </div>
+
+  </main>
+
+
+  <!-- =====================================
+       MENU INFERIOR
+  ====================================== -->
+
+  <nav
+    class="menu-inferior"
+    aria-label="Navegação principal"
+  >
+
+    <div class="menu-inferior-conteudo">
+
+
+      <a
+        class="item-menu"
+        href="dashboard.html"
+      >
+
+        <span class="icone-menu">
+          ⌂
+        </span>
+
+        <span class="texto-menu">
+          Início
+        </span>
+
+      </a>
+
+
+      <a
+        class="item-menu"
+        href="calendario.html"
+      >
+
+        <span class="icone-menu">
+          📅
+        </span>
+
+        <span class="texto-menu">
+          Calendário
+        </span>
+
+      </a>
+
+
+      <a
+        class="item-menu"
+        href="minha-ficha.html"
+      >
+
+        <span class="icone-menu">
+          👤
+        </span>
+
+        <span class="texto-menu">
+          Minha ficha
+        </span>
+
+      </a>
+
+
+      <a
+        id="itemMenuAdm"
+        class="item-menu ativo"
+        href="administrativo.html"
+        hidden
+      >
+
+        <span class="icone-menu">
+          ☰
+        </span>
+
+        <span class="texto-menu">
+          ADM
+        </span>
+
+      </a>
+
+
+      <a
+        class="item-menu"
+        href="#"
+        id="botaoSair"
+      >
+
+        <span class="icone-menu">
+          🚪
+        </span>
+
+        <span class="texto-menu">
+          Sair
+        </span>
+
+      </a>
+
+
+    </div>
+
+  </nav>
+
+
+  <!-- =====================================
+       SCRIPTS
+  ====================================== -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="supabase.js?v=2"></script>
+
+  <script src="app.js?v=2"></script>
+
+  <script src="novo-atendimento.js?v=1"></script>
+
+  <script src="menu-adm.js?v=1"></script>
+
+
+</body>
+
+</html>
