@@ -956,9 +956,8 @@ function atualizarBotaoConfirmacaoDashboard() {
       "click",
       () => {
 
-        alert(
-          "O botão está funcionando. Na próxima etapa vamos criar a tela para confirmar presença ou informar ausência."
-        );
+        window.location.href =
+          "confirmar-presenca.html";
 
       }
     );
