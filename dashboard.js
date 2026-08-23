@@ -71,7 +71,7 @@ let historicoPresencaDashboard =
 
 
 /* ==========================================
-   CONFIRMAÇÃO PRÉVIA DA PRÓXIMA ATIVIDADE
+   PRÓXIMA ATIVIDADE
 ========================================== */
 
 let proximaAtividadeAtualDashboard =
@@ -85,6 +85,12 @@ let proximaAtividadeCarregadaDashboard =
 
 let funcoesUsuarioCarregadasDashboard =
   false;
+
+let usuarioIdDashboard =
+  null;
+
+let confirmacaoAtualDashboard =
+  null;
 
 
 /* ==========================================
@@ -377,10 +383,14 @@ async function carregarFuncoesUsuario() {
       nomesFuncoesUsuarioDashboard =
         [];
 
+      usuarioIdDashboard =
+        null;
+
       funcoesUsuarioCarregadasDashboard =
         true;
 
-      atualizarBotoesProximaAtividadeDashboard();
+
+      await atualizarBotoesProximaAtividadeDashboard();
 
 
       return;
@@ -423,10 +433,14 @@ async function carregarFuncoesUsuario() {
       nomesFuncoesUsuarioDashboard =
         [];
 
+      usuarioIdDashboard =
+        null;
+
       funcoesUsuarioCarregadasDashboard =
         true;
 
-      atualizarBotoesProximaAtividadeDashboard();
+
+      await atualizarBotoesProximaAtividadeDashboard();
 
 
       return;
@@ -436,6 +450,10 @@ async function carregarFuncoesUsuario() {
 
     const usuarioId =
       resultadoUsuario.data.id;
+
+
+    usuarioIdDashboard =
+      usuarioId;
 
 
     const resultadoFuncoes =
@@ -493,7 +511,8 @@ async function carregarFuncoesUsuario() {
       funcoesUsuarioCarregadasDashboard =
         true;
 
-      atualizarBotoesProximaAtividadeDashboard();
+
+      await atualizarBotoesProximaAtividadeDashboard();
 
 
       await verificarAcessoAdm(
@@ -556,7 +575,8 @@ async function carregarFuncoesUsuario() {
     funcoesUsuarioCarregadasDashboard =
       true;
 
-    atualizarBotoesProximaAtividadeDashboard();
+
+    await atualizarBotoesProximaAtividadeDashboard();
 
 
     await verificarAcessoAdm(
@@ -580,10 +600,14 @@ async function carregarFuncoesUsuario() {
     nomesFuncoesUsuarioDashboard =
       [];
 
+    usuarioIdDashboard =
+      null;
+
     funcoesUsuarioCarregadasDashboard =
       true;
 
-    atualizarBotoesProximaAtividadeDashboard();
+
+    await atualizarBotoesProximaAtividadeDashboard();
 
   }
 }
@@ -882,7 +906,7 @@ function usuarioPodeConfirmarAtividadeDashboard(
 
 
 /* ==========================================
-   DIRETORIA - REGRAS
+   DIRETORIA
 ========================================== */
 
 function usuarioEhDiretoriaDashboard() {
@@ -928,10 +952,330 @@ function atividadePermiteAusenciasDashboard(
 
 
 /* ==========================================
+   BUSCAR CONFIRMAÇÃO DO MÉDIUM
+========================================== */
+
+async function buscarConfirmacaoDashboard() {
+
+  confirmacaoAtualDashboard =
+    null;
+
+
+  if (
+    !usuarioIdDashboard ||
+    !proximaAtividadeAtualDashboard
+  ) {
+
+    return;
+
+  }
+
+
+  const resultado =
+    await window.supabaseClient
+      .from(
+        "confirmacoes_presenca"
+      )
+      .select(`
+        resposta,
+        justificativa,
+        lido_diretoria
+      `)
+      .eq(
+        "atividade_id",
+        proximaAtividadeAtualDashboard.id
+      )
+      .eq(
+        "usuario_id",
+        usuarioIdDashboard
+      )
+      .limit(
+        1
+      );
+
+
+  if (
+    resultado.error
+  ) {
+
+    console.error(
+      "Erro ao buscar confirmação no dashboard:",
+      resultado.error
+    );
+
+
+    return;
+
+  }
+
+
+  const registros =
+    resultado.data ||
+    [];
+
+
+  if (
+    registros.length === 0
+  ) {
+
+    return;
+
+  }
+
+
+  confirmacaoAtualDashboard =
+    registros[0];
+}
+
+
+/* ==========================================
+   BOTÃO / STATUS DO MÉDIUM
+========================================== */
+
+function criarBotaoConfirmacaoMediumDashboard(
+  area
+) {
+
+  const botao =
+    document.createElement(
+      "button"
+    );
+
+
+  botao.type =
+    "button";
+
+  botao.id =
+    "botaoConfirmarPresencaDashboard";
+
+  botao.className =
+    "botao-confirmar-presenca-dashboard";
+
+
+  /* ======================================
+     AINDA NÃO RESPONDEU
+  ====================================== */
+
+  if (
+    !confirmacaoAtualDashboard
+  ) {
+
+    botao.textContent =
+      "Confirmar presença";
+
+  }
+
+
+  /* ======================================
+     PRESENÇA CONFIRMADA
+  ====================================== */
+
+  if (
+    confirmacaoAtualDashboard
+      ?.resposta ===
+    "presente"
+  ) {
+
+    botao.textContent =
+      "Presença confirmada";
+
+
+    botao.style.background =
+      "#dff3e4";
+
+    botao.style.borderColor =
+      "#70ad7d";
+
+    botao.style.color =
+      "#246b35";
+
+  }
+
+
+  /* ======================================
+     AUSÊNCIA CONFIRMADA
+  ====================================== */
+
+  if (
+    confirmacaoAtualDashboard
+      ?.resposta ===
+    "ausente"
+  ) {
+
+    const possuiJustificativa =
+      Boolean(
+        String(
+          confirmacaoAtualDashboard
+            .justificativa ||
+          ""
+        ).trim()
+      );
+
+
+    if (
+      possuiJustificativa
+    ) {
+
+      botao.textContent =
+        "Ausência confirmada - com justificativa cadastrada";
+
+
+    } else {
+
+      botao.textContent =
+        "Ausência confirmada - sem justificativa cadastrada";
+
+    }
+
+
+    botao.style.background =
+      "#f7dddd";
+
+    botao.style.borderColor =
+      "#c97575";
+
+    botao.style.color =
+      "#9a2929";
+
+  }
+
+
+  botao.addEventListener(
+    "click",
+    () => {
+
+      window.location.href =
+        "confirmar-presenca.html";
+
+    }
+  );
+
+
+  area.appendChild(
+    botao
+  );
+
+
+  /* ======================================
+     ALERTA - FALTA JUSTIFICATIVA
+  ====================================== */
+
+  if (
+    confirmacaoAtualDashboard
+      ?.resposta ===
+      "ausente"
+  ) {
+
+    const possuiJustificativa =
+      Boolean(
+        String(
+          confirmacaoAtualDashboard
+            .justificativa ||
+          ""
+        ).trim()
+      );
+
+
+    if (
+      !possuiJustificativa
+    ) {
+
+      const alerta =
+        document.createElement(
+          "div"
+        );
+
+
+      alerta.textContent =
+        "⚠ Falta justificativa";
+
+
+      alerta.style.marginTop =
+        "6px";
+
+      alerta.style.padding =
+        "7px 10px";
+
+      alerta.style.borderRadius =
+        "9px";
+
+      alerta.style.background =
+        "#fff0c7";
+
+      alerta.style.color =
+        "#8a6500";
+
+      alerta.style.fontSize =
+        "12px";
+
+      alerta.style.fontWeight =
+        "700";
+
+
+      area.appendChild(
+        alerta
+      );
+
+    }
+
+
+    /* ====================================
+       LIDO PELA DIRETORIA ESPIRITUAL
+    ==================================== */
+
+    if (
+      confirmacaoAtualDashboard
+        .lido_diretoria
+    ) {
+
+      const lido =
+        document.createElement(
+          "div"
+        );
+
+
+      lido.textContent =
+        "✓ Lido pela diretoria espiritual";
+
+
+      lido.style.marginTop =
+        "6px";
+
+      lido.style.padding =
+        "7px 10px";
+
+      lido.style.borderRadius =
+        "9px";
+
+      lido.style.background =
+        "#e4f3e8";
+
+      lido.style.color =
+        "#267341";
+
+      lido.style.fontSize =
+        "12px";
+
+      lido.style.fontWeight =
+        "700";
+
+
+      area.appendChild(
+        lido
+      );
+
+    }
+
+  }
+
+}
+
+
+/* ==========================================
    BOTÕES DA PRÓXIMA ATIVIDADE
 ========================================== */
 
-function atualizarBotoesProximaAtividadeDashboard() {
+async function atualizarBotoesProximaAtividadeDashboard() {
 
   if (
     !proximaAtividadeCarregadaDashboard ||
@@ -993,52 +1337,25 @@ function atualizarBotoesProximaAtividadeDashboard() {
 
 
   /* ======================================
-     BOTÃO DO MÉDIUM
+     MÉDIUM
   ====================================== */
 
   if (
     podeConfirmar
   ) {
 
-    const botaoConfirmar =
-      document.createElement(
-        "button"
-      );
+    await buscarConfirmacaoDashboard();
 
 
-    botaoConfirmar.type =
-      "button";
-
-    botaoConfirmar.id =
-      "botaoConfirmarPresencaDashboard";
-
-    botaoConfirmar.className =
-      "botao-confirmar-presenca-dashboard";
-
-    botaoConfirmar.textContent =
-      "Confirmar presença";
-
-
-    botaoConfirmar.addEventListener(
-      "click",
-      () => {
-
-        window.location.href =
-          "confirmar-presenca.html";
-
-      }
-    );
-
-
-    area.appendChild(
-      botaoConfirmar
+    criarBotaoConfirmacaoMediumDashboard(
+      area
     );
 
   }
 
 
   /* ======================================
-     BOTÃO DA DIRETORIA
+     DIRETORIA
   ====================================== */
 
   if (
@@ -1057,24 +1374,12 @@ function atualizarBotoesProximaAtividadeDashboard() {
     botaoAusencias.id =
       "botaoVerAusenciasDashboard";
 
-
-    /*
-      Reaproveitamos o mesmo padrão visual
-      do botão Confirmar presença.
-    */
-
     botaoAusencias.className =
       "botao-confirmar-presenca-dashboard";
-
 
     botaoAusencias.textContent =
       "Ver ausências";
 
-
-    /*
-      Espaçamento entre os dois botões,
-      quando o usuário for médium e diretoria.
-    */
 
     if (
       podeConfirmar
@@ -1291,7 +1596,7 @@ async function carregarProximaAtividade() {
         `;
 
 
-      atualizarBotoesProximaAtividadeDashboard();
+      await atualizarBotoesProximaAtividadeDashboard();
 
 
       return;
@@ -1380,7 +1685,7 @@ async function carregarProximaAtividade() {
       `;
 
 
-    atualizarBotoesProximaAtividadeDashboard();
+    await atualizarBotoesProximaAtividadeDashboard();
 
 
   } catch (erro) {
@@ -1410,7 +1715,7 @@ async function carregarProximaAtividade() {
       `;
 
 
-    atualizarBotoesProximaAtividadeDashboard();
+    await atualizarBotoesProximaAtividadeDashboard();
 
   }
 }
@@ -2747,7 +3052,7 @@ async function carregarResumoPresencaDashboard() {
 
 
 /* ==========================================
-   INICIALIZAÇÃO DO DASHBOARD
+   INICIALIZAÇÃO
 ========================================== */
 
 atualizarSaudacao();
