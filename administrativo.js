@@ -25,6 +25,11 @@ const moduloPresenca =
     "moduloPresenca"
   );
 
+const moduloAtendimentos =
+  document.getElementById(
+    "moduloAtendimentos"
+  );
+
 const moduloRelatorios =
   document.getElementById(
     "moduloRelatorios"
@@ -248,6 +253,43 @@ async function carregarModulosAdministrativos() {
 
 
     /* ======================================
+       RESPONSÁVEL POR ATENDIMENTOS
+    ====================================== */
+
+    const resultadoResponsavelAtendimento =
+      await window.supabaseClient
+        .from(
+          "responsaveis_atendimentos"
+        )
+        .select(
+          "id"
+        )
+        .eq(
+          "usuario_id",
+          usuarioId
+        )
+        .limit(
+          1
+        );
+
+
+    if (
+      resultadoResponsavelAtendimento.error
+    ) {
+
+      throw resultadoResponsavelAtendimento.error;
+
+    }
+
+
+    const ehResponsavelAtendimento =
+      (
+        resultadoResponsavelAtendimento.data ||
+        []
+      ).length > 0;
+
+
+    /* ======================================
        PERMISSÕES
        SOMENTE TESOURARIA
     ====================================== */
@@ -313,6 +355,21 @@ async function carregarModulosAdministrativos() {
 
 
     /* ======================================
+       ATENDIMENTOS
+       SOMENTE RESPONSÁVEL AUTORIZADO
+    ====================================== */
+
+    if (
+      moduloAtendimentos
+    ) {
+
+      moduloAtendimentos.hidden =
+        !ehResponsavelAtendimento;
+
+    }
+
+
+    /* ======================================
        RELATÓRIOS
        DIRETORIA
     ====================================== */
@@ -334,7 +391,8 @@ async function carregarModulosAdministrativos() {
     const possuiAlgumModulo =
       ehTesoureiro ||
       pertenceDiretoria ||
-      ehResponsavelPresenca;
+      ehResponsavelPresenca ||
+      ehResponsavelAtendimento;
 
 
     if (
