@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta
+    name="theme-color"
+    content="#651b1d"
+  >
+
+  <title>
+    Relatório de Justificativas | TUFRA
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="layout.css?v=39"
+  >
+
+</head>
+
+
+<body>
+
+  <main class="app">
+
+    <div class="conteudo-app">
+
+
+      <!-- =====================================
+           CABEÇALHO
+      ====================================== -->
+
+      <header class="cabecalho-app">
+
+        <img
+          class="logo-app"
+          src="logo-tufra.png"
+          alt="Logo da TUFRA"
+        >
+
+        <div class="identidade-app">
+
+          <strong>
+            TUFRA
+          </strong>
+
+          <span>
+            Tenda de Umbanda Francisco de Assis
+          </span>
+
+        </div>
+
+      </header>
+
+
+      <!-- =====================================
+           TÍTULO
+      ====================================== -->
+
+      <section>
+
+        <h1 class="titulo-pagina">
+          Relatório de Justificativas
+        </h1>
+
+        <p class="subtitulo-pagina">
+          Consulte as presenças, faltas e justificativas registradas por associado.
+        </p>
+
+      </section>
+
+
+      <!-- =====================================
+           FILTROS
+      ====================================== -->
+
+      <section class="cartao-app">
+
+        <h2>
+          Filtros
+        </h2>
+
+        <div class="filtros-relatorio-geral">
+
+
+          <div class="campo-filtro-relatorio-geral">
+
+            <label for="associadoRelatorioJustificativas">
+              Associado
+            </label>
+
+            <select
+              id="associadoRelatorioJustificativas"
+              disabled
+            >
+
+              <option value="">
+                Carregando...
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="campo-filtro-relatorio-geral">
+
+            <label for="anoRelatorioJustificativas">
+              Ano
+            </label>
+
+            <select
+              id="anoRelatorioJustificativas"
+              disabled
+            >
+
+              <option value="">
+                Selecione o associado
+              </option>
+
+            </select>
+
+          </div>
+
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================
+           RELATÓRIO
+      ====================================== -->
+
+      <section
+        id="areaRelatorioJustificativas"
+        class="cartao-app"
+        hidden
+      >
+
+        <div class="cabecalho-relatorio-presenca">
+
+          <h2 id="tituloAssociadoRelatorioJustificativas">
+            Justificativas do associado
+          </h2>
+
+        </div>
+
+
+        <div
+          id="listaRelatorioJustificativas"
+          class="lista-relatorio-justificativas"
+        >
+
+          <p>
+            Carregando informações...
+          </p>
+
+        </div>
+
+
+        <div
+          id="mensagemSemDadosJustificativas"
+          class="mensagem-sem-atividades"
+          hidden
+        >
+          Nenhuma atividade encontrada para esta seleção.
+        </div>
+
+      </section>
+
+
+      <!-- =====================================
+           VOLTAR
+      ====================================== -->
+
+      <a
+        class="link-administrativo"
+        href="adm-relatorios.html"
+      >
+        Voltar para Relatórios
+      </a>
+
+
+    </div>
+
+  </main>
+
+
+  <!-- =====================================
+       MENU INFERIOR
+  ====================================== -->
+
+  <nav
+    class="menu-inferior"
+    aria-label="Navegação principal"
+  >
+
+    <div class="menu-inferior-conteudo">
+
+
+      <a
+        class="item-menu"
+        href="dashboard.html"
+      >
+
+        <span class="icone-menu">
+          ⌂
+        </span>
+
+        <span class="texto-menu">
+          Início
+        </span>
+
+      </a>
+
+
+      <a
+        class="item-menu"
+        href="calendario.html"
+      >
+
+        <span class="icone-menu">
+          📅
+        </span>
+
+        <span class="texto-menu">
+          Calendário
+        </span>
+
+      </a>
+
+
+      <a
+        class="item-menu"
+        href="minha-ficha.html"
+      >
+
+        <span class="icone-menu">
+          👤
+        </span>
+
+        <span class="texto-menu">
+          Minha ficha
+        </span>
+
+      </a>
+
+
+      <a
+        id="itemMenuAdm"
+        class="item-menu ativo"
+        href="administrativo.html"
+        hidden
+      >
+
+        <span class="icone-menu">
+          ☰
+        </span>
+
+        <span class="texto-menu">
+          ADM
+        </span>
+
+      </a>
+
+
+      <a
+        class="item-menu"
+        href="#"
+        id="botaoSair"
+      >
+
+        <span class="icone-menu">
+          🚪
+        </span>
+
+        <span class="texto-menu">
+          Sair
+        </span>
+
+      </a>
+
+
+    </div>
+
+  </nav>
+
+
+  <!-- =====================================
+       SCRIPTS
+  ====================================== -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="supabase.js?v=2"></script>
+
+  <script src="app.js?v=2"></script>
+
+  <script src="relatorio-justificativas.js?v=1"></script>
+
+  <script src="menu-adm.js?v=1"></script>
+
+
+</body>
+
+</html>
