@@ -2720,3 +2720,181 @@ th.coluna-resumo-presenca-frequencia {
 .botao-confirmar-presenca-dashboard:active {
   transform: scale(0.985);
 }
+/* ==========================================
+   CONFIRMAÇÃO DE PRESENÇA
+========================================== */
+
+.opcoes-confirmacao-presenca {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.opcao-confirmacao-presenca {
+  position: relative;
+  cursor: pointer;
+}
+
+.opcao-confirmacao-presenca input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.opcao-confirmacao-presenca span {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  padding: 12px 14px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 14px;
+  background: #ffffff;
+  color: var(--cor-texto);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.opcao-confirmacao-presenca input:checked + span {
+  border-color: var(--cor-principal);
+  background: rgba(101, 27, 29, 0.10);
+  color: var(--cor-principal);
+}
+
+
+/* ==========================================
+   JUSTIFICATIVA
+========================================== */
+
+.area-justificativa-presenca {
+  margin-top: 18px;
+}
+
+.area-justificativa-presenca[hidden] {
+  display: none;
+}
+
+.label-justificativa-presenca {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--cor-texto);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.campo-justificativa-presenca {
+  width: 100%;
+  min-height: 120px;
+  padding: 13px 14px;
+  box-sizing: border-box;
+  resize: vertical;
+  border: 1px solid var(--cor-borda);
+  border-radius: 14px;
+  background: #ffffff;
+  color: var(--cor-texto);
+  font-size: 14px;
+  line-height: 1.45;
+  outline: none;
+}
+
+.campo-justificativa-presenca:focus {
+  border-color: var(--cor-principal);
+  box-shadow:
+    0 0 0 3px rgba(101, 27, 29, 0.08);
+}
+
+.aviso-justificativa-presenca {
+  display: block;
+  margin-top: 6px;
+  color: var(--cor-texto-suave);
+  font-size: 11px;
+}
+
+
+/* ==========================================
+   MENSAGEM
+========================================== */
+
+.mensagem-confirmacao-presenca {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.mensagem-confirmacao-presenca[hidden] {
+  display: none;
+}
+
+.mensagem-confirmacao-presenca.sucesso {
+  background: #e4f3e8;
+  color: #267341;
+}
+
+.mensagem-confirmacao-presenca.erro {
+  background: #f9e4e4;
+  color: #a12626;
+}
+
+
+/* ==========================================
+   BOTÕES
+========================================== */
+
+.acoes-confirmacao-presenca {
+  display: grid;
+  grid-template-columns:
+    1fr 1fr;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.botao-voltar-confirmacao-presenca,
+.botao-salvar-confirmacao-presenca {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  padding: 0 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.botao-voltar-confirmacao-presenca {
+  border: 1px solid var(--cor-principal);
+  background: #ffffff;
+  color: var(--cor-principal);
+}
+
+.botao-salvar-confirmacao-presenca {
+  border: none;
+  background: linear-gradient(
+    135deg,
+    var(--cor-principal-clara),
+    #421012
+  );
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.botao-salvar-confirmacao-presenca:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.botao-voltar-confirmacao-presenca:active,
+.botao-salvar-confirmacao-presenca:active {
+  transform: scale(0.985);
+}
+
+@media (max-width: 380px) {
+
+  .acoes-confirmacao-presenca {
+    grid-template-columns:
+      1fr;
+  }
+
+}
