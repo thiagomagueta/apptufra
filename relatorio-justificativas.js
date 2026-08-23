@@ -193,28 +193,6 @@ function formatarDataJustificativas(
 }
 
 
-function formatarHorarioJustificativas(
-  horario
-) {
-
-  if (
-    !horario
-  ) {
-
-    return "";
-
-  }
-
-
-  return String(
-    horario
-  ).slice(
-    0,
-    5
-  );
-}
-
-
 /* ==========================================
    VALIDAR DIRETORIA
 ========================================== */
@@ -892,7 +870,7 @@ function obterSituacaoJustificativas(
         "Pendente",
 
       texto:
-        "Atividade ainda não realizada."
+        ""
 
     };
 
@@ -911,6 +889,10 @@ function obterSituacaoJustificativas(
     );
 
 
+  /* ======================================
+     PRESENTE
+  ====================================== */
+
   if (
     presenca?.status ===
     "presente"
@@ -925,12 +907,16 @@ function obterSituacaoJustificativas(
         "Presente",
 
       texto:
-        "Presente"
+        ""
 
     };
 
   }
 
+
+  /* ======================================
+     AUSÊNCIA INFORMADA PELO MÉDIUM
+  ====================================== */
 
   if (
     confirmacao?.resposta ===
@@ -954,7 +940,7 @@ function obterSituacaoJustificativas(
           "justificada",
 
         titulo:
-          "Justificativa do médium",
+          "Justificado",
 
         texto:
           justificativa
@@ -970,7 +956,7 @@ function obterSituacaoJustificativas(
         "falta",
 
       titulo:
-        "Falta sem justificativa",
+        "Falta",
 
       texto:
         "Falta sem justificativa registrada pelo médium"
@@ -979,6 +965,10 @@ function obterSituacaoJustificativas(
 
   }
 
+
+  /* ======================================
+     FALTA ADICIONADA PELA ADM
+  ====================================== */
 
   if (
     presenca?.status ===
@@ -1001,6 +991,10 @@ function obterSituacaoJustificativas(
   }
 
 
+  /* ======================================
+     JUSTIFICADA SEM TEXTO
+  ====================================== */
+
   if (
     presenca?.status ===
     "justificada"
@@ -1012,7 +1006,7 @@ function obterSituacaoJustificativas(
         "justificada",
 
       titulo:
-        "Justificada",
+        "Justificado",
 
       texto:
         "Justificativa registrada sem texto disponível"
@@ -1021,6 +1015,10 @@ function obterSituacaoJustificativas(
 
   }
 
+
+  /* ======================================
+     PENDENTE
+  ====================================== */
 
   return {
 
@@ -1031,7 +1029,7 @@ function obterSituacaoJustificativas(
       "Pendente",
 
     texto:
-      "Nenhum registro de presença encontrado."
+      ""
 
   };
 }
@@ -1073,34 +1071,73 @@ function criarItemRelatorioJustificativas(
     "#ffffff";
 
 
-  const cabecalho =
+  /* ======================================
+     LINHA PRINCIPAL
+  ====================================== */
+
+  const linhaPrincipal =
     document.createElement(
       "div"
     );
 
 
-  cabecalho.style.display =
+  linhaPrincipal.style.display =
     "flex";
 
-  cabecalho.style.alignItems =
-    "flex-start";
+  linhaPrincipal.style.alignItems =
+    "center";
 
-  cabecalho.style.justifyContent =
-    "space-between";
-
-  cabecalho.style.gap =
+  linhaPrincipal.style.gap =
     "12px";
 
+  linhaPrincipal.style.width =
+    "100%";
 
-  const dados =
+
+  /* ======================================
+     DATA
+  ====================================== */
+
+  const data =
     document.createElement(
-      "div"
+      "span"
     );
 
+
+  data.textContent =
+    formatarDataJustificativas(
+      atividade.data
+    );
+
+
+  data.style.flexShrink =
+    "0";
+
+  data.style.color =
+    "var(--cor-texto)";
+
+  data.style.fontSize =
+    "13px";
+
+  data.style.fontWeight =
+    "400";
+
+  data.style.lineHeight =
+    "1.35";
+
+
+  linhaPrincipal.appendChild(
+    data
+  );
+
+
+  /* ======================================
+     ATIVIDADE
+  ====================================== */
 
   const titulo =
     document.createElement(
-      "strong"
+      "span"
     );
 
 
@@ -1109,65 +1146,33 @@ function criarItemRelatorioJustificativas(
     "Atividade";
 
 
-  titulo.style.display =
-    "block";
+  titulo.style.flex =
+    "1";
+
+  titulo.style.minWidth =
+    "0";
 
   titulo.style.color =
     "var(--cor-texto)";
 
   titulo.style.fontSize =
-    "14px";
+    "13px";
+
+  titulo.style.fontWeight =
+    "400";
+
+  titulo.style.lineHeight =
+    "1.35";
 
 
-  const data =
-    document.createElement(
-      "span"
-    );
-
-
-  const horario =
-    formatarHorarioJustificativas(
-      atividade.hora_inicio
-    );
-
-
-  data.textContent =
-    `${formatarDataJustificativas(
-      atividade.data
-    )}${
-      horario
-        ? ` • ${horario}`
-        : ""
-    }`;
-
-
-  data.style.display =
-    "block";
-
-  data.style.marginTop =
-    "4px";
-
-  data.style.color =
-    "var(--cor-texto-suave)";
-
-  data.style.fontSize =
-    "12px";
-
-
-  dados.appendChild(
+  linhaPrincipal.appendChild(
     titulo
   );
 
 
-  dados.appendChild(
-    data
-  );
-
-
-  cabecalho.appendChild(
-    dados
-  );
-
+  /* ======================================
+     STATUS
+  ====================================== */
 
   const status =
     document.createElement(
@@ -1193,6 +1198,9 @@ function criarItemRelatorioJustificativas(
 
   status.style.fontWeight =
     "700";
+
+  status.style.whiteSpace =
+    "nowrap";
 
 
   if (
@@ -1251,15 +1259,37 @@ function criarItemRelatorioJustificativas(
   }
 
 
-  cabecalho.appendChild(
+  linhaPrincipal.appendChild(
     status
   );
 
 
   item.appendChild(
-    cabecalho
+    linhaPrincipal
   );
 
+
+  /* ======================================
+     PRESENTE E PENDENTE
+     NÃO MOSTRAM QUADRO INFERIOR
+  ====================================== */
+
+  if (
+    situacao.tipo ===
+      "presente" ||
+    situacao.tipo ===
+      "pendente"
+  ) {
+
+    return item;
+
+  }
+
+
+  /* ======================================
+     FALTA E JUSTIFICADO
+     MOSTRAM DETALHE
+  ====================================== */
 
   const texto =
     document.createElement(
@@ -1292,20 +1322,6 @@ function criarItemRelatorioJustificativas(
 
   if (
     situacao.tipo ===
-    "presente"
-  ) {
-
-    texto.style.background =
-      "#f2faf4";
-
-    texto.style.color =
-      "#267341";
-
-  }
-
-
-  if (
-    situacao.tipo ===
     "falta"
   ) {
 
@@ -1314,6 +1330,9 @@ function criarItemRelatorioJustificativas(
 
     texto.style.color =
       "#8f2424";
+
+    texto.style.border =
+      "1px solid #f2caca";
 
   }
 
@@ -1329,19 +1348,8 @@ function criarItemRelatorioJustificativas(
     texto.style.color =
       "#5c4a14";
 
-  }
-
-
-  if (
-    situacao.tipo ===
-    "pendente"
-  ) {
-
-    texto.style.background =
-      "#f5f5f5";
-
-    texto.style.color =
-      "#666666";
+    texto.style.border =
+      "1px solid #f0df9b";
 
   }
 
