@@ -546,10 +546,10 @@ async function carregarAtividadeAusencias() {
 
 
 /* ==========================================
-   BUSCAR AUSÊNCIAS
+   BUSCAR CONFIRMAÇÕES DE AUSÊNCIA
 ========================================== */
 
-async function buscarAusenciasAtividade() {
+async function buscarConfirmacoesAusencia() {
 
   if (
     !atividadeAusenciasAtual
@@ -573,11 +573,7 @@ async function buscarAusenciasAtividade() {
         lido_diretoria,
         lido_em,
         lido_por,
-
-        usuarios (
-          id,
-          nome_completo
-        )
+        criado_em
       `)
       .eq(
         "atividade_id",
@@ -611,6 +607,153 @@ async function buscarAusenciasAtividade() {
 
 
 /* ==========================================
+   BUSCAR NOMES DOS USUÁRIOS
+========================================== */
+
+async function buscarUsuariosDasAusencias(
+  ausencias
+) {
+
+  if (
+    ausencias.length === 0
+  ) {
+
+    return [];
+
+  }
+
+
+  const idsUsuarios =
+    [
+      ...new Set(
+        ausencias
+          .map(
+            (item) =>
+              item.usuario_id
+          )
+          .filter(
+            Boolean
+          )
+      )
+    ];
+
+
+  if (
+    idsUsuarios.length === 0
+  ) {
+
+    return [];
+
+  }
+
+
+  const resultado =
+    await window.supabaseClient
+      .from(
+        "usuarios"
+      )
+      .select(`
+        id,
+        nome_completo
+      `)
+      .in(
+        "id",
+        idsUsuarios
+      );
+
+
+  if (
+    resultado.error
+  ) {
+
+    throw resultado.error;
+
+  }
+
+
+  return resultado.data ||
+    [];
+}
+
+
+/* ==========================================
+   JUNTAR AUSÊNCIAS COM USUÁRIOS
+========================================== */
+
+function juntarAusenciasComUsuarios(
+  ausencias,
+  usuarios
+) {
+
+  const usuariosPorId =
+    new Map();
+
+
+  usuarios.forEach(
+    (usuario) => {
+
+      usuariosPorId.set(
+        usuario.id,
+        usuario
+      );
+
+    }
+  );
+
+
+  return ausencias.map(
+    (ausencia) => {
+
+      return {
+
+        ...ausencia,
+
+        usuario:
+          usuariosPorId.get(
+            ausencia.usuario_id
+          ) ||
+          null
+
+      };
+
+    }
+  );
+}
+
+
+/* ==========================================
+   BUSCAR AUSÊNCIAS COMPLETAS
+========================================== */
+
+async function buscarAusenciasAtividade() {
+
+  const ausencias =
+    await buscarConfirmacoesAusencia();
+
+
+  if (
+    ausencias.length === 0
+  ) {
+
+    return [];
+
+  }
+
+
+  const usuarios =
+    await buscarUsuariosDasAusencias(
+      ausencias
+    );
+
+
+  return juntarAusenciasComUsuarios(
+    ausencias,
+    usuarios
+  );
+}
+
+
+/* ==========================================
    ORDENAR POR NOME
 ========================================== */
 
@@ -623,14 +766,14 @@ function ordenarAusenciasPorNome(
 
       const nomeA =
         String(
-          a.usuarios?.nome_completo ||
+          a.usuario?.nome_completo ||
           ""
         );
 
 
       const nomeB =
         String(
-          b.usuarios?.nome_completo ||
+          b.usuario?.nome_completo ||
           ""
         );
 
@@ -684,7 +827,7 @@ function renderizarListaAusentes(
     (item) => {
 
       const nome =
-        item.usuarios?.nome_completo ||
+        item.usuario?.nome_completo ||
         "Associado";
 
 
@@ -883,7 +1026,7 @@ function renderizarJustificativas(
     (item) => {
 
       const nome =
-        item.usuarios?.nome_completo ||
+        item.usuario?.nome_completo ||
         "Associado";
 
 
@@ -993,7 +1136,6 @@ function renderizarJustificativas(
           );
 
         }
-
 
       } else {
 
