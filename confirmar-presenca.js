@@ -48,6 +48,9 @@ const botaoSalvarConfirmacaoPresenca =
 let atividadeConfirmacaoAtual =
   null;
 
+let usuarioConfirmacaoAtual =
+  null;
+
 
 /* ==========================================
    DATA LOCAL
@@ -249,6 +252,181 @@ function obterHojeISOConfirmacao() {
 
 
   return `${ano}-${mes}-${dia}`;
+}
+
+
+/* ==========================================
+   MENSAGEM
+========================================== */
+
+function mostrarMensagemConfirmacao(
+  texto,
+  tipo
+) {
+
+  if (
+    !mensagemConfirmacaoPresenca
+  ) {
+
+    return;
+
+  }
+
+
+  mensagemConfirmacaoPresenca.hidden =
+    false;
+
+
+  mensagemConfirmacaoPresenca.className =
+    "mensagem-confirmacao-presenca";
+
+
+  if (
+    tipo
+  ) {
+
+    mensagemConfirmacaoPresenca.classList.add(
+      tipo
+    );
+
+  }
+
+
+  mensagemConfirmacaoPresenca.textContent =
+    texto;
+}
+
+
+function esconderMensagemConfirmacao() {
+
+  if (
+    !mensagemConfirmacaoPresenca
+  ) {
+
+    return;
+
+  }
+
+
+  mensagemConfirmacaoPresenca.hidden =
+    true;
+
+  mensagemConfirmacaoPresenca.textContent =
+    "";
+
+  mensagemConfirmacaoPresenca.className =
+    "mensagem-confirmacao-presenca";
+}
+
+
+/* ==========================================
+   MOSTRAR / ESCONDER JUSTIFICATIVA
+========================================== */
+
+function atualizarAreaJustificativa() {
+
+  if (
+    !areaJustificativaPresenca
+  ) {
+
+    return;
+
+  }
+
+
+  const ausente =
+    opcaoNaoEstareiPresente
+      ?.checked;
+
+
+  areaJustificativaPresenca.hidden =
+    !ausente;
+
+
+  if (
+    !ausente &&
+    justificativaPresenca
+  ) {
+
+    justificativaPresenca.value =
+      "";
+
+  }
+}
+
+
+/* ==========================================
+   CARREGAR USUÁRIO ATUAL
+========================================== */
+
+async function carregarUsuarioConfirmacao() {
+
+  const resultadoSessao =
+    await window.supabaseClient.auth
+      .getSession();
+
+
+  if (
+    resultadoSessao.error
+  ) {
+
+    throw resultadoSessao.error;
+
+  }
+
+
+  const sessao =
+    resultadoSessao.data.session;
+
+
+  if (
+    !sessao
+  ) {
+
+    throw new Error(
+      "Usuário não autenticado."
+    );
+
+  }
+
+
+  const resultadoUsuario =
+    await window.supabaseClient
+      .from(
+        "usuarios"
+      )
+      .select(
+        "id"
+      )
+      .eq(
+        "auth_id",
+        sessao.user.id
+      )
+      .maybeSingle();
+
+
+  if (
+    resultadoUsuario.error
+  ) {
+
+    throw resultadoUsuario.error;
+
+  }
+
+
+  if (
+    !resultadoUsuario.data
+  ) {
+
+    throw new Error(
+      "Usuário não encontrado."
+    );
+
+  }
+
+
+  usuarioConfirmacaoAtual =
+    resultadoUsuario.data;
 }
 
 
@@ -510,13 +688,14 @@ async function carregarAtividadeConfirmacao() {
 
 
 /* ==========================================
-   MOSTRAR / ESCONDER JUSTIFICATIVA
+   BUSCAR CONFIRMAÇÃO EXISTENTE
 ========================================== */
 
-function atualizarAreaJustificativa() {
+async function carregarConfirmacaoExistente() {
 
   if (
-    !areaJustificativaPresenca
+    !usuarioConfirmacaoAtual ||
+    !atividadeConfirmacaoAtual
   ) {
 
     return;
@@ -524,106 +703,101 @@ function atualizarAreaJustificativa() {
   }
 
 
-  const ausente =
-    opcaoNaoEstareiPresente
-      ?.checked;
-
-
-  areaJustificativaPresenca.hidden =
-    !ausente;
+  const resultado =
+    await window.supabaseClient
+      .from(
+        "confirmacoes_presenca"
+      )
+      .select(`
+        resposta,
+        justificativa
+      `)
+      .eq(
+        "atividade_id",
+        atividadeConfirmacaoAtual.id
+      )
+      .eq(
+        "usuario_id",
+        usuarioConfirmacaoAtual.id
+      )
+      .maybeSingle();
 
 
   if (
-    !ausente &&
+    resultado.error
+  ) {
+
+    throw resultado.error;
+
+  }
+
+
+  const confirmacao =
+    resultado.data;
+
+
+  if (
+    !confirmacao
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    confirmacao.resposta ===
+    "presente"
+  ) {
+
+    opcaoEstareiPresente.checked =
+      true;
+
+  }
+
+
+  if (
+    confirmacao.resposta ===
+    "ausente"
+  ) {
+
+    opcaoNaoEstareiPresente.checked =
+      true;
+
+  }
+
+
+  if (
     justificativaPresenca
   ) {
 
     justificativaPresenca.value =
+      confirmacao.justificativa ||
       "";
 
   }
+
+
+  atualizarAreaJustificativa();
 }
 
 
 /* ==========================================
-   MENSAGEM
+   SALVAR CONFIRMAÇÃO
 ========================================== */
 
-function mostrarMensagemConfirmacao(
-  texto,
-  tipo
-) {
-
-  if (
-    !mensagemConfirmacaoPresenca
-  ) {
-
-    return;
-
-  }
-
-
-  mensagemConfirmacaoPresenca.hidden =
-    false;
-
-
-  mensagemConfirmacaoPresenca.className =
-    "mensagem-confirmacao-presenca";
-
-
-  if (
-    tipo
-  ) {
-
-    mensagemConfirmacaoPresenca.classList.add(
-      tipo
-    );
-
-  }
-
-
-  mensagemConfirmacaoPresenca.textContent =
-    texto;
-}
-
-
-function esconderMensagemConfirmacao() {
-
-  if (
-    !mensagemConfirmacaoPresenca
-  ) {
-
-    return;
-
-  }
-
-
-  mensagemConfirmacaoPresenca.hidden =
-    true;
-
-  mensagemConfirmacaoPresenca.textContent =
-    "";
-
-  mensagemConfirmacaoPresenca.className =
-    "mensagem-confirmacao-presenca";
-}
-
-
-/* ==========================================
-   SALVAR - TESTE VISUAL
-========================================== */
-
-function salvarConfirmacaoTeste() {
+async function salvarConfirmacaoPresenca() {
 
   esconderMensagemConfirmacao();
 
 
   if (
-    !atividadeConfirmacaoAtual
+    !atividadeConfirmacaoAtual ||
+    !usuarioConfirmacaoAtual
   ) {
 
     mostrarMensagemConfirmacao(
-      "Nenhuma atividade disponível para confirmação.",
+      "Não foi possível identificar a atividade ou o usuário.",
       "erro"
     );
 
@@ -654,45 +828,126 @@ function salvarConfirmacaoTeste() {
   }
 
 
-  if (
-    opcaoSelecionada.value ===
-    "presente"
-  ) {
-
-    mostrarMensagemConfirmacao(
-      "Teste concluído: você marcou que estará presente.",
-      "sucesso"
-    );
-
-
-    return;
-
-  }
+  const resposta =
+    opcaoSelecionada.value;
 
 
   const justificativa =
-    String(
-      justificativaPresenca?.value ||
-      ""
-    ).trim();
+    resposta ===
+      "ausente"
+      ? String(
+          justificativaPresenca?.value ||
+          ""
+        ).trim()
+      : "";
 
 
-  if (
-    justificativa
-  ) {
+  try {
 
-    mostrarMensagemConfirmacao(
-      "Teste concluído: ausência informada com justificativa.",
-      "sucesso"
+    botaoSalvarConfirmacaoPresenca.disabled =
+      true;
+
+    botaoSalvarConfirmacaoPresenca.textContent =
+      "Salvando...";
+
+
+    const dados =
+      {
+
+        atividade_id:
+          atividadeConfirmacaoAtual.id,
+
+        usuario_id:
+          usuarioConfirmacaoAtual.id,
+
+        resposta:
+          resposta,
+
+        justificativa:
+          justificativa ||
+          null,
+
+        atualizado_em:
+          new Date().toISOString()
+
+      };
+
+
+    const resultado =
+      await window.supabaseClient
+        .from(
+          "confirmacoes_presenca"
+        )
+        .upsert(
+          dados,
+          {
+            onConflict:
+              "atividade_id,usuario_id"
+          }
+        );
+
+
+    if (
+      resultado.error
+    ) {
+
+      throw resultado.error;
+
+    }
+
+
+    if (
+      resposta ===
+      "presente"
+    ) {
+
+      mostrarMensagemConfirmacao(
+        "Sua presença foi confirmada.",
+        "sucesso"
+      );
+
+
+    } else if (
+      justificativa
+    ) {
+
+      mostrarMensagemConfirmacao(
+        "Sua ausência e justificativa foram registradas.",
+        "sucesso"
+      );
+
+
+    } else {
+
+      mostrarMensagemConfirmacao(
+        "Sua ausência foi registrada.",
+        "sucesso"
+      );
+
+    }
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao salvar confirmação:",
+      erro
     );
 
 
-  } else {
-
     mostrarMensagemConfirmacao(
-      "Teste concluído: ausência informada sem justificativa.",
-      "sucesso"
+      "Não foi possível salvar sua resposta.",
+      "erro"
     );
+
+
+  } finally {
+
+    botaoSalvarConfirmacaoPresenca.disabled =
+      false;
+
+    botaoSalvarConfirmacaoPresenca.textContent =
+      "Salvar resposta";
 
   }
 }
@@ -744,7 +999,7 @@ if (
 
   botaoSalvarConfirmacaoPresenca.addEventListener(
     "click",
-    salvarConfirmacaoTeste
+    salvarConfirmacaoPresenca
   );
 
 }
@@ -754,6 +1009,55 @@ if (
    INICIALIZAÇÃO
 ========================================== */
 
+async function iniciarConfirmacaoPresenca() {
+
+  if (
+    !window.supabaseClient
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    botaoSalvarConfirmacaoPresenca.disabled =
+      true;
+
+
+    await carregarUsuarioConfirmacao();
+
+    await carregarAtividadeConfirmacao();
+
+    await carregarConfirmacaoExistente();
+
+
+    botaoSalvarConfirmacaoPresenca.disabled =
+      false;
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao iniciar confirmação de presença:",
+      erro
+    );
+
+
+    mostrarMensagemConfirmacao(
+      "Não foi possível carregar sua confirmação de presença.",
+      "erro"
+    );
+
+
+    botaoSalvarConfirmacaoPresenca.disabled =
+      true;
+
+  }
+}
+
+
 atualizarAreaJustificativa();
 
-carregarAtividadeConfirmacao();
+iniciarConfirmacaoPresenca();
