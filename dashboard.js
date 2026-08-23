@@ -1057,11 +1057,33 @@ function atualizarBotoesProximaAtividadeDashboard() {
     botaoAusencias.id =
       "botaoVerAusenciasDashboard";
 
+
+    /*
+      Reaproveitamos o mesmo padrão visual
+      do botão Confirmar presença.
+    */
+
     botaoAusencias.className =
-      "botao-ver-ausencias-dashboard";
+      "botao-confirmar-presenca-dashboard";
+
 
     botaoAusencias.textContent =
       "Ver ausências";
+
+
+    /*
+      Espaçamento entre os dois botões,
+      quando o usuário for médium e diretoria.
+    */
+
+    if (
+      podeConfirmar
+    ) {
+
+      botaoAusencias.style.marginTop =
+        "8px";
+
+    }
 
 
     botaoAusencias.addEventListener(
