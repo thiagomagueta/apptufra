@@ -71,6 +71,23 @@ let historicoPresencaDashboard =
 
 
 /* ==========================================
+   CONFIRMAÇÃO PRÉVIA DA PRÓXIMA ATIVIDADE
+========================================== */
+
+let proximaAtividadeAtualDashboard =
+  null;
+
+let nomesFuncoesUsuarioDashboard =
+  [];
+
+let proximaAtividadeCarregadaDashboard =
+  false;
+
+let funcoesUsuarioCarregadasDashboard =
+  false;
+
+
+/* ==========================================
    USUÁRIO LOGADO
 ========================================== */
 
@@ -357,6 +374,15 @@ async function carregarFuncoesUsuario() {
         "<p>Nenhuma função atribuída.</p>";
 
 
+      nomesFuncoesUsuarioDashboard =
+        [];
+
+      funcoesUsuarioCarregadasDashboard =
+        true;
+
+      atualizarBotaoConfirmacaoDashboard();
+
+
       return;
 
     }
@@ -392,6 +418,15 @@ async function carregarFuncoesUsuario() {
 
       listaFuncoesDashboard.innerHTML =
         "<p>Nenhuma função atribuída.</p>";
+
+
+      nomesFuncoesUsuarioDashboard =
+        [];
+
+      funcoesUsuarioCarregadasDashboard =
+        true;
+
+      atualizarBotaoConfirmacaoDashboard();
 
 
       return;
@@ -452,6 +487,15 @@ async function carregarFuncoesUsuario() {
         "<p>Nenhuma função atribuída.</p>";
 
 
+      nomesFuncoesUsuarioDashboard =
+        [];
+
+      funcoesUsuarioCarregadasDashboard =
+        true;
+
+      atualizarBotaoConfirmacaoDashboard();
+
+
       await verificarAcessoAdm(
         nomesFuncoes,
         usuarioId
@@ -506,6 +550,15 @@ async function carregarFuncoesUsuario() {
     );
 
 
+    nomesFuncoesUsuarioDashboard =
+      [...nomesFuncoes];
+
+    funcoesUsuarioCarregadasDashboard =
+      true;
+
+    atualizarBotaoConfirmacaoDashboard();
+
+
     await verificarAcessoAdm(
       nomesFuncoes,
       usuarioId
@@ -522,6 +575,15 @@ async function carregarFuncoesUsuario() {
 
     listaFuncoesDashboard.innerHTML =
       "<p>Não foi possível carregar suas funções.</p>";
+
+
+    nomesFuncoesUsuarioDashboard =
+      [];
+
+    funcoesUsuarioCarregadasDashboard =
+      true;
+
+    atualizarBotaoConfirmacaoDashboard();
 
   }
 }
@@ -545,17 +607,9 @@ async function verificarAcessoAdm(
   }
 
 
-  /*
-    Começa sempre escondido.
-  */
-
   itemMenuAdm.hidden =
     true;
 
-
-  /* ======================================
-     DIRETORIA
-  ====================================== */
 
   const funcoesDiretoria = [
     "Presidente",
@@ -574,10 +628,6 @@ async function verificarAcessoAdm(
         )
     );
 
-
-  /* ======================================
-     RESPONSÁVEL POR PRESENÇA
-  ====================================== */
 
   let ehResponsavelPresenca =
     false;
@@ -627,10 +677,6 @@ async function verificarAcessoAdm(
 
   }
 
-
-  /* ======================================
-     EXIBIR ADM
-  ====================================== */
 
   const possuiAcessoAdm =
     pertenceDiretoria ||
@@ -787,6 +833,141 @@ function formatarTipoAtividade(
 
 
 /* ==========================================
+   CONFIRMAÇÃO PRÉVIA - REGRAS DE EXIBIÇÃO
+========================================== */
+
+function usuarioPodeConfirmarAtividadeDashboard(
+  atividade
+) {
+
+  if (
+    !atividade
+  ) {
+
+    return false;
+
+  }
+
+
+  if (
+    atividade.tipo_atividade ===
+    "gira_principal"
+  ) {
+
+    return nomesFuncoesUsuarioDashboard.some(
+      (nome) =>
+        nome ===
+          "Médium Corrente Principal" ||
+        nome ===
+          "Médium Principal"
+    );
+
+  }
+
+
+  if (
+    atividade.tipo_atividade ===
+    "gira_desenvolvimento"
+  ) {
+
+    return nomesFuncoesUsuarioDashboard.includes(
+      "Médium em Desenvolvimento"
+    );
+
+  }
+
+
+  return false;
+}
+
+
+function atualizarBotaoConfirmacaoDashboard() {
+
+  if (
+    !proximaAtividadeCarregadaDashboard ||
+    !funcoesUsuarioCarregadasDashboard
+  ) {
+
+    return;
+
+  }
+
+
+  const area =
+    document.getElementById(
+      "areaConfirmacaoProximaAtividadeDashboard"
+    );
+
+
+  if (
+    !area
+  ) {
+
+    return;
+
+  }
+
+
+  const podeConfirmar =
+    usuarioPodeConfirmarAtividadeDashboard(
+      proximaAtividadeAtualDashboard
+    );
+
+
+  area.hidden =
+    !podeConfirmar;
+
+
+  if (
+    !podeConfirmar
+  ) {
+
+    area.innerHTML =
+      "";
+
+    return;
+
+  }
+
+
+  area.innerHTML =
+    `
+      <button
+        type="button"
+        id="botaoConfirmarPresencaDashboard"
+        class="botao-confirmar-presenca-dashboard"
+      >
+        Confirmar presença
+      </button>
+    `;
+
+
+  const botao =
+    document.getElementById(
+      "botaoConfirmarPresencaDashboard"
+    );
+
+
+  if (
+    botao
+  ) {
+
+    botao.addEventListener(
+      "click",
+      () => {
+
+        alert(
+          "O botão está funcionando. Na próxima etapa vamos criar a tela para confirmar presença ou informar ausência."
+        );
+
+      }
+    );
+
+  }
+}
+
+
+/* ==========================================
    PRÓXIMA ATIVIDADE
 ========================================== */
 
@@ -803,6 +984,13 @@ async function carregarProximaAtividade() {
 
 
   try {
+
+    proximaAtividadeAtualDashboard =
+      null;
+
+    proximaAtividadeCarregadaDashboard =
+      false;
+
 
     const agora =
       new Date();
@@ -947,6 +1135,13 @@ async function carregarProximaAtividade() {
       !proxima
     ) {
 
+      proximaAtividadeAtualDashboard =
+        null;
+
+      proximaAtividadeCarregadaDashboard =
+        true;
+
+
       proximaAtividadeDashboard.innerHTML =
         `
           <div class="dados-atividade">
@@ -955,6 +1150,9 @@ async function carregarProximaAtividade() {
             </span>
           </div>
         `;
+
+
+      atualizarBotaoConfirmacaoDashboard();
 
 
       return;
@@ -978,6 +1176,13 @@ async function carregarProximaAtividade() {
       formatarTipoAtividade(
         proxima
       );
+
+
+    proximaAtividadeAtualDashboard =
+      proxima;
+
+    proximaAtividadeCarregadaDashboard =
+      true;
 
 
     proximaAtividadeDashboard.innerHTML =
@@ -1025,7 +1230,18 @@ async function carregarProximaAtividade() {
           </span>
 
         </div>
+
+
+        <div
+          id="areaConfirmacaoProximaAtividadeDashboard"
+          class="area-confirmacao-proxima-atividade"
+          hidden
+        >
+        </div>
       `;
+
+
+    atualizarBotaoConfirmacaoDashboard();
 
 
   } catch (erro) {
@@ -1034,6 +1250,13 @@ async function carregarProximaAtividade() {
       "Erro ao carregar próxima atividade:",
       erro
     );
+
+
+    proximaAtividadeAtualDashboard =
+      null;
+
+    proximaAtividadeCarregadaDashboard =
+      true;
 
 
     proximaAtividadeDashboard.innerHTML =
@@ -1046,6 +1269,9 @@ async function carregarProximaAtividade() {
 
         </div>
       `;
+
+
+    atualizarBotaoConfirmacaoDashboard();
 
   }
 }
@@ -1848,10 +2074,6 @@ function criarBlocoPresencaDashboard(
     "tabela-relatorio-presenca tabela-resumo-presenca-associado";
 
 
-  /* ======================================
-     CABEÇALHO
-  ====================================== */
-
   const thead =
     document.createElement(
       "thead"
@@ -1946,10 +2168,6 @@ function criarBlocoPresencaDashboard(
     thead
   );
 
-
-  /* ======================================
-     CORPO
-  ====================================== */
 
   const tbody =
     document.createElement(
@@ -2241,10 +2459,6 @@ async function carregarDadosPresencaDashboard() {
           Boolean
         );
 
-
-    /* --------------------------------------
-       HISTÓRICO OGAM / CAMBONE / CANTINA
-    -------------------------------------- */
 
     const resultadoHistorico =
       await window.supabaseClient
