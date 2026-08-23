@@ -446,234 +446,137 @@ async function carregarAtividadeConfirmacao() {
   }
 
 
-  try {
-
-    const agora =
-      new Date();
+  const agora =
+    new Date();
 
 
-    const hojeISO =
-      obterHojeISOConfirmacao();
+  const hojeISO =
+    obterHojeISOConfirmacao();
 
 
-    const resultado =
-      await window.supabaseClient
-        .from(
-          "atividades"
-        )
-        .select(`
-          id,
-          titulo,
-          data,
-          hora_inicio,
-          tipo_atividade,
-          tipo_outro
-        `)
-        .gte(
-          "data",
-          hojeISO
-        )
-        .order(
-          "data",
-          {
-            ascending:
-              true
-          }
-        )
-        .order(
-          "hora_inicio",
-          {
-            ascending:
-              true
-          }
-        );
-
-
-    if (
-      resultado.error
-    ) {
-
-      throw resultado.error;
-
-    }
-
-
-    const atividades =
-      resultado.data ||
-      [];
-
-
-    const agoraMinutos =
-      agora.getHours() *
-        60 +
-      agora.getMinutes();
-
-
-    const proxima =
-      atividades.find(
-        (atividade) => {
-
-          if (
-            atividade.data !==
-            hojeISO
-          ) {
-
-            return true;
-
-          }
-
-
-          const horario =
-            removerSegundosConfirmacao(
-              atividade.hora_inicio
-            );
-
-
-          if (
-            !horario
-          ) {
-
-            return true;
-
-          }
-
-
-          const [
-            hora,
-            minuto
-          ] =
-            horario
-              .split(
-                ":"
-              )
-              .map(
-                Number
-              );
-
-
-          const atividadeMinutos =
-            hora * 60 +
-            minuto;
-
-
-          return (
-            atividadeMinutos >=
-            agoraMinutos
-          );
-
+  const resultado =
+    await window.supabaseClient
+      .from(
+        "atividades"
+      )
+      .select(`
+        id,
+        titulo,
+        data,
+        hora_inicio,
+        tipo_atividade,
+        tipo_outro
+      `)
+      .gte(
+        "data",
+        hojeISO
+      )
+      .order(
+        "data",
+        {
+          ascending:
+            true
+        }
+      )
+      .order(
+        "hora_inicio",
+        {
+          ascending:
+            true
         }
       );
 
 
-    if (
-      !proxima
-    ) {
+  if (
+    resultado.error
+  ) {
 
-      dadosAtividadeConfirmacao.innerHTML =
-        `
-          <div class="dados-atividade">
+    throw resultado.error;
 
-            <span>
-              Nenhuma próxima atividade disponível.
-            </span>
-
-          </div>
-        `;
+  }
 
 
-      botaoSalvarConfirmacaoPresenca.disabled =
-        true;
+  const atividades =
+    resultado.data ||
+    [];
 
 
-      return;
-
-    }
-
-
-    atividadeConfirmacaoAtual =
-      proxima;
+  const agoraMinutos =
+    agora.getHours() *
+      60 +
+    agora.getMinutes();
 
 
-    const data =
-      criarDataLocalConfirmacao(
-        proxima.data
-      );
+  const proxima =
+    atividades.find(
+      (atividade) => {
+
+        if (
+          atividade.data !==
+          hojeISO
+        ) {
+
+          return true;
+
+        }
 
 
-    const horario =
-      removerSegundosConfirmacao(
-        proxima.hora_inicio
-      );
+        const horario =
+          removerSegundosConfirmacao(
+            atividade.hora_inicio
+          );
 
 
-    const tipo =
-      formatarTipoAtividadeConfirmacao(
-        proxima
-      );
+        if (
+          !horario
+        ) {
+
+          return true;
+
+        }
 
 
-    dadosAtividadeConfirmacao.innerHTML =
-      `
-        <div class="data-atividade">
-
-          ${String(
-            data.getDate()
-          ).padStart(
-            2,
-            "0"
-          )}
-
-          <br>
-
-          ${formatarMesCurtoConfirmacao(
-            data
-          )}
-
-        </div>
+        const [
+          hora,
+          minuto
+        ] =
+          horario
+            .split(
+              ":"
+            )
+            .map(
+              Number
+            );
 
 
-        <div class="dados-atividade">
-
-          <strong>
-            ${tipo}
-          </strong>
-
-          <strong>
-            ${proxima.titulo}
-          </strong>
-
-          <span>
-
-            ${formatarDiaSemanaConfirmacao(
-              data
-            )}
-
-            ${
-              horario
-                ? ` • ${horario}`
-                : ""
-            }
-
-          </span>
-
-        </div>
-      `;
+        const atividadeMinutos =
+          hora * 60 +
+          minuto;
 
 
-  } catch (erro) {
+        return (
+          atividadeMinutos >=
+          agoraMinutos
+        );
 
-    console.error(
-      "Erro ao carregar atividade para confirmação:",
-      erro
+      }
     );
 
 
+  if (
+    !proxima
+  ) {
+
+    atividadeConfirmacaoAtual =
+      null;
+
+
     dadosAtividadeConfirmacao.innerHTML =
       `
         <div class="dados-atividade">
 
           <span>
-            Não foi possível carregar a atividade.
+            Nenhuma próxima atividade disponível.
           </span>
 
         </div>
@@ -683,7 +586,80 @@ async function carregarAtividadeConfirmacao() {
     botaoSalvarConfirmacaoPresenca.disabled =
       true;
 
+
+    return;
+
   }
+
+
+  atividadeConfirmacaoAtual =
+    proxima;
+
+
+  const data =
+    criarDataLocalConfirmacao(
+      proxima.data
+    );
+
+
+  const horario =
+    removerSegundosConfirmacao(
+      proxima.hora_inicio
+    );
+
+
+  const tipo =
+    formatarTipoAtividadeConfirmacao(
+      proxima
+    );
+
+
+  dadosAtividadeConfirmacao.innerHTML =
+    `
+      <div class="data-atividade">
+
+        ${String(
+          data.getDate()
+        ).padStart(
+          2,
+          "0"
+        )}
+
+        <br>
+
+        ${formatarMesCurtoConfirmacao(
+          data
+        )}
+
+      </div>
+
+
+      <div class="dados-atividade">
+
+        <strong>
+          ${tipo}
+        </strong>
+
+        <strong>
+          ${proxima.titulo}
+        </strong>
+
+        <span>
+
+          ${formatarDiaSemanaConfirmacao(
+            data
+          )}
+
+          ${
+            horario
+              ? ` • ${horario}`
+              : ""
+          }
+
+        </span>
+
+      </div>
+    `;
 }
 
 
@@ -720,7 +696,9 @@ async function carregarConfirmacaoExistente() {
         "usuario_id",
         usuarioConfirmacaoAtual.id
       )
-      .maybeSingle();
+      .limit(
+        1
+      );
 
 
   if (
@@ -732,17 +710,29 @@ async function carregarConfirmacaoExistente() {
   }
 
 
-  const confirmacao =
-    resultado.data;
+  const registros =
+    resultado.data ||
+    [];
 
+
+  /*
+    Nenhuma confirmação ainda.
+
+    Isso é normal e não deve
+    exibir mensagem de erro.
+  */
 
   if (
-    !confirmacao
+    registros.length === 0
   ) {
 
     return;
 
   }
+
+
+  const confirmacao =
+    registros[0];
 
 
   if (
@@ -1022,6 +1012,9 @@ async function iniciarConfirmacaoPresenca() {
 
   try {
 
+    esconderMensagemConfirmacao();
+
+
     botaoSalvarConfirmacaoPresenca.disabled =
       true;
 
@@ -1030,11 +1023,17 @@ async function iniciarConfirmacaoPresenca() {
 
     await carregarAtividadeConfirmacao();
 
-    await carregarConfirmacaoExistente();
 
+    if (
+      atividadeConfirmacaoAtual
+    ) {
 
-    botaoSalvarConfirmacaoPresenca.disabled =
-      false;
+      await carregarConfirmacaoExistente();
+
+      botaoSalvarConfirmacaoPresenca.disabled =
+        false;
+
+    }
 
 
   } catch (erro) {
