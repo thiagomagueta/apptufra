@@ -30,6 +30,11 @@ const botaoCadastroCompleto =
     "botaoCadastroCompleto"
   );
 
+const botaoVerJustificativasAssociado =
+  document.getElementById(
+    "botaoVerJustificativasAssociado"
+  );
+
 const mensagemAssociadoResumo =
   document.getElementById(
     "mensagemAssociadoResumo"
@@ -679,15 +684,6 @@ function estaNaCorrentePrincipal() {
 
 function estaNaAssistencia() {
 
-  /*
-    Verificamos apenas a função principal
-    Assistência.
-
-    Assim, uma subfunção "Assistência"
-    de Cambone não será confundida
-    com a Assistência da casa.
-  */
-
   return possuiFuncaoPrincipal(
     "Assistência"
   );
@@ -814,7 +810,7 @@ function ordenarHistorico(
 
 
 /* ==========================================
-   HISTÓRICO - TEXTO DO PERÍODO
+   HISTÓRICO - TEXTO
 ========================================== */
 
 function formatarPeriodoHistorico(
@@ -1029,8 +1025,6 @@ function renderizarHistoricoEdicao() {
       );
 
 
-      /* DATA INÍCIO */
-
       const grupoInicio =
         document.createElement(
           "div"
@@ -1060,22 +1054,17 @@ function renderizarHistoricoEdicao() {
       inputInicio.type =
         "text";
 
-
       inputInicio.inputMode =
         "numeric";
-
 
       inputInicio.maxLength =
         10;
 
-
       inputInicio.autocomplete =
         "off";
 
-
       inputInicio.placeholder =
         "dd/mm/aaaa";
-
 
       inputInicio.className =
         "historico-data-inicio";
@@ -1113,8 +1102,6 @@ function renderizarHistoricoEdicao() {
         grupoInicio
       );
 
-
-      /* DATA FIM */
 
       const grupoFim =
         document.createElement(
@@ -1154,22 +1141,17 @@ function renderizarHistoricoEdicao() {
         inputFim.type =
           "text";
 
-
         inputFim.inputMode =
           "numeric";
-
 
         inputFim.maxLength =
           10;
 
-
         inputFim.autocomplete =
           "off";
 
-
         inputFim.placeholder =
           "dd/mm/aaaa";
-
 
         inputFim.className =
           "historico-data-fim";
@@ -1394,7 +1376,7 @@ function obterDatasDigitadas() {
 
 
 /* ==========================================
-   VALIDAR DATAS PRINCIPAIS
+   VALIDAR DATAS
 ========================================== */
 
 function validarDatasAdministrativas() {
@@ -1478,7 +1460,7 @@ function validarDatasAdministrativas() {
 
 
 /* ==========================================
-   LER HISTÓRICO EDITADO
+   LER HISTÓRICO
 ========================================== */
 
 function obterHistoricoDigitado() {
@@ -1650,14 +1632,6 @@ async function salvarHistoricoFuncoes() {
     };
 
 
-    /*
-      Para períodos que já estão fechados,
-      permitimos corrigir também a saída.
-
-      Período atualmente aberto continua
-      aberto enquanto a função estiver ativa.
-    */
-
     if (
       registro.possuiDataFimOriginal
     ) {
@@ -1692,11 +1666,6 @@ async function salvarHistoricoFuncoes() {
 
   }
 
-
-  /*
-    Atualizamos também os dados locais,
-    para a tela refletir imediatamente.
-  */
 
   historicoFuncoes =
     historicoFuncoes.map(
@@ -1824,16 +1793,6 @@ async function salvarDatasAdministrativas() {
 
     };
 
-
-    /*
-      Só alteramos Desenvolvimento e
-      Principal se a pessoa estiver
-      nesse caminho atualmente.
-
-      Se já tiver datas históricas mas
-      hoje exercer outra função, elas
-      permanecem guardadas no banco.
-    */
 
     if (
       mostrarTrajetoriaMediunica()
@@ -1968,7 +1927,8 @@ async function carregarHistoricoFuncoes(
       .order(
         "data_inicio",
         {
-          ascending: true
+          ascending:
+            true
         }
       );
 
@@ -2091,7 +2051,9 @@ async function carregarAssociado() {
           (item) =>
             item.funcoes
         )
-        .filter(Boolean);
+        .filter(
+          Boolean
+        );
 
 
     await carregarHistoricoFuncoes(
@@ -2197,6 +2159,10 @@ async function carregarAssociado() {
 
     botaoCadastroCompleto.href =
       `associado-ficha.html?id=${associadoId}&origem=${origem}`;
+
+
+    botaoVerJustificativasAssociado.href =
+      `relatorio-justificativas.html?id=${associadoId}&modo=justificativas`;
 
 
     if (
@@ -2510,7 +2476,8 @@ areaZoomFotoAssociado.addEventListener(
 
   },
   {
-    passive: false
+    passive:
+      false
   }
 );
 
@@ -2532,7 +2499,8 @@ areaZoomFotoAssociado.addEventListener(
 
   },
   {
-    passive: false
+    passive:
+      false
   }
 );
 
@@ -2614,7 +2582,8 @@ areaZoomFotoAssociado.addEventListener(
 
   },
   {
-    passive: false
+    passive:
+      false
   }
 );
 
@@ -2638,6 +2607,7 @@ configurarVoltar();
 
 carregarAssociado();
 
+
 /* ==========================================
    PRESENÇA NO RESUMO DO ASSOCIADO
 ========================================== */
@@ -2657,10 +2627,6 @@ const mensagemSemPresencaAssociado =
     "mensagemSemPresencaAssociado"
   );
 
-
-/* ==========================================
-   DATA ATUAL
-========================================== */
 
 function obterDataAtualISOResumoPresenca() {
 
@@ -2694,10 +2660,6 @@ function obterDataAtualISOResumoPresenca() {
 }
 
 
-/* ==========================================
-   DATA CURTA
-========================================== */
-
 function formatarDataCurtaResumoPresenca(
   dataISO
 ) {
@@ -2729,10 +2691,6 @@ function formatarDataCurtaResumoPresenca(
   return `${partes[2]}/${partes[1]}`;
 }
 
-
-/* ==========================================
-   LISTAS DAS FUNÇÕES ATUAIS
-========================================== */
 
 function obterNomesListasAtuaisAssociado() {
 
@@ -2804,10 +2762,6 @@ function obterNomesListasAtuaisAssociado() {
   return listas;
 }
 
-
-/* ==========================================
-   DATA DE ENTRADA NA LISTA
-========================================== */
 
 function obterDataEntradaListaResumo(
   nomeLista
@@ -2918,10 +2872,6 @@ function obterDataEntradaListaResumo(
 }
 
 
-/* ==========================================
-   BUSCAR TIPO DA LISTA
-========================================== */
-
 async function buscarTipoListaResumo(
   nomeLista
 ) {
@@ -2963,10 +2913,6 @@ async function buscarTipoListaResumo(
 }
 
 
-/* ==========================================
-   BUSCAR ÚLTIMAS 10 ATIVIDADES
-========================================== */
-
 async function buscarUltimasAtividadesResumo(
   tipoAtividade
 ) {
@@ -2998,13 +2944,15 @@ async function buscarUltimasAtividadesResumo(
       .order(
         "data",
         {
-          ascending: false
+          ascending:
+            false
         }
       )
       .order(
         "hora_inicio",
         {
-          ascending: false
+          ascending:
+            false
         }
       )
       .limit(
@@ -3021,25 +2969,12 @@ async function buscarUltimasAtividadesResumo(
   }
 
 
-  /*
-    O banco entrega da mais recente
-    para a mais antiga.
-
-    Invertemos para a tabela ficar
-    em ordem cronológica da esquerda
-    para a direita.
-  */
-
   return (
     resultado.data ||
     []
   ).reverse();
 }
 
-
-/* ==========================================
-   BUSCAR PRESENÇAS DA LISTA
-========================================== */
 
 async function buscarPresencasResumo(
   tipoListaId,
@@ -3100,10 +3035,6 @@ async function buscarPresencasResumo(
     [];
 }
 
-
-/* ==========================================
-   SITUAÇÃO DA ATIVIDADE
-========================================== */
 
 function obterSituacaoResumoPresenca(
   atividade,
@@ -3209,10 +3140,6 @@ function obterSituacaoResumoPresenca(
 }
 
 
-/* ==========================================
-   CALCULAR RESUMO
-========================================== */
-
 function calcularResumoPresencaLista(
   atividades,
   presencas,
@@ -3304,10 +3231,6 @@ function calcularResumoPresencaLista(
   };
 }
 
-
-/* ==========================================
-   CRIAR BLOCO DE UMA LISTA
-========================================== */
 
 function criarBlocoResumoPresenca(
   tipoLista,
@@ -3406,10 +3329,6 @@ function criarBlocoResumoPresenca(
     "tabela-relatorio-presenca tabela-resumo-presenca-associado";
 
 
-  /* ======================================
-     CABEÇALHO
-  ====================================== */
-
   const thead =
     document.createElement(
       "thead"
@@ -3453,16 +3372,12 @@ function criarBlocoResumoPresenca(
   );
 
 
-  const resumoCabecalhos =
-    [
-      "P",
-      "F",
-      "J",
-      "Freq."
-    ];
-
-
-  resumoCabecalhos.forEach(
+  [
+    "P",
+    "F",
+    "J",
+    "Freq."
+  ].forEach(
     (texto) => {
 
       const th =
@@ -3496,10 +3411,6 @@ function criarBlocoResumoPresenca(
     thead
   );
 
-
-  /* ======================================
-     CORPO
-  ====================================== */
 
   const tbody =
     document.createElement(
@@ -3557,8 +3468,6 @@ function criarBlocoResumoPresenca(
   );
 
 
-  /* P */
-
   const tdPresencas =
     document.createElement(
       "td"
@@ -3579,8 +3488,6 @@ function criarBlocoResumoPresenca(
     tdPresencas
   );
 
-
-  /* F */
 
   const tdFaltas =
     document.createElement(
@@ -3603,8 +3510,6 @@ function criarBlocoResumoPresenca(
   );
 
 
-  /* J */
-
   const tdJustificadas =
     document.createElement(
       "td"
@@ -3625,8 +3530,6 @@ function criarBlocoResumoPresenca(
     tdJustificadas
   );
 
-
-  /* FREQUÊNCIA */
 
   const tdFrequencia =
     document.createElement(
@@ -3650,8 +3553,13 @@ function criarBlocoResumoPresenca(
 
     tdFrequencia.textContent =
       `${resumo.frequencia
-        .toFixed(1)
-        .replace(".", ",")}%`;
+        .toFixed(
+          1
+        )
+        .replace(
+          ".",
+          ","
+        )}%`;
 
   }
 
@@ -3684,10 +3592,6 @@ function criarBlocoResumoPresenca(
   return bloco;
 }
 
-
-/* ==========================================
-   CARREGAR PRESENÇA DO ASSOCIADO
-========================================== */
 
 async function carregarResumoPresencaAssociado() {
 
@@ -3796,19 +3700,7 @@ async function carregarResumoPresencaAssociado() {
 }
 
 
-/* ==========================================
-   AGUARDAR ASSOCIADO E CARREGAR PRESENÇA
-========================================== */
-
 async function iniciarResumoPresencaAssociado() {
-
-  /*
-    carregarAssociado() já está sendo executado
-    pelo código original.
-
-    Aguardamos o objeto ficar disponível para
-    não alterar a lógica administrativa atual.
-  */
 
   let tentativas =
     0;
@@ -3864,9 +3756,5 @@ async function iniciarResumoPresencaAssociado() {
   }
 }
 
-
-/* ==========================================
-   INICIAR PRESENÇA
-========================================== */
 
 iniciarResumoPresencaAssociado();
