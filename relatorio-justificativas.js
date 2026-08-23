@@ -1,0 +1,1560 @@
+"use strict";
+
+
+/* ==========================================
+   ELEMENTOS
+========================================== */
+
+const associadoRelatorioJustificativas =
+  document.getElementById(
+    "associadoRelatorioJustificativas"
+  );
+
+const anoRelatorioJustificativas =
+  document.getElementById(
+    "anoRelatorioJustificativas"
+  );
+
+const areaRelatorioJustificativas =
+  document.getElementById(
+    "areaRelatorioJustificativas"
+  );
+
+const tituloAssociadoRelatorioJustificativas =
+  document.getElementById(
+    "tituloAssociadoRelatorioJustificativas"
+  );
+
+const listaRelatorioJustificativas =
+  document.getElementById(
+    "listaRelatorioJustificativas"
+  );
+
+const mensagemSemDadosJustificativas =
+  document.getElementById(
+    "mensagemSemDadosJustificativas"
+  );
+
+
+/* ==========================================
+   DADOS
+========================================== */
+
+let associadosJustificativas =
+  [];
+
+let atividadesJustificativas =
+  [];
+
+let presencasJustificativas =
+  [];
+
+let confirmacoesJustificativas =
+  [];
+
+let associadoAtualJustificativas =
+  null;
+
+
+/* ==========================================
+   DIRETORIA
+========================================== */
+
+const funcoesDiretoriaJustificativas = [
+  "Sacerdote",
+  "Pai/Mãe Pequeno (a)",
+  "Tesoureiro",
+  "Secretária",
+  "Presidente"
+];
+
+
+/* ==========================================
+   DATA ATUAL
+========================================== */
+
+function obterHojeISOJustificativas() {
+
+  const hoje =
+    new Date();
+
+
+  const ano =
+    hoje.getFullYear();
+
+
+  const mes =
+    String(
+      hoje.getMonth() + 1
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  const dia =
+    String(
+      hoje.getDate()
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  return `${ano}-${mes}-${dia}`;
+}
+
+
+/* ==========================================
+   FORMATAÇÃO
+========================================== */
+
+function formatarNomeJustificativas(
+  nomeCompleto
+) {
+
+  return String(
+    nomeCompleto || ""
+  )
+    .trim()
+    .toLowerCase()
+    .replace(
+      /\b\p{L}/gu,
+      (letra) =>
+        letra.toUpperCase()
+    );
+}
+
+
+function formatarDataJustificativas(
+  dataISO
+) {
+
+  if (
+    !dataISO
+  ) {
+
+    return "—";
+
+  }
+
+
+  const [
+    ano,
+    mes,
+    dia
+  ] =
+    String(
+      dataISO
+    ).split(
+      "-"
+    );
+
+
+  return `${dia}/${mes}/${ano}`;
+}
+
+
+function formatarHorarioJustificativas(
+  horario
+) {
+
+  if (
+    !horario
+  ) {
+
+    return "";
+
+  }
+
+
+  return String(
+    horario
+  ).slice(
+    0,
+    5
+  );
+}
+
+
+/* ==========================================
+   VALIDAR DIRETORIA
+========================================== */
+
+async function validarDiretoriaJustificativas() {
+
+  const resultadoSessao =
+    await window.supabaseClient.auth
+      .getSession();
+
+
+  if (
+    resultadoSessao.error
+  ) {
+
+    throw resultadoSessao.error;
+
+  }
+
+
+  const sessao =
+    resultadoSessao.data.session;
+
+
+  if (
+    !sessao
+  ) {
+
+    window.location.href =
+      "index.html";
+
+
+    throw new Error(
+      "Sessão não encontrada."
+    );
+
+  }
+
+
+  const resultadoUsuario =
+    await window.supabaseClient
+      .from(
+        "usuarios"
+      )
+      .select(
+        "id"
+      )
+      .eq(
+        "auth_id",
+        sessao.user.id
+      )
+      .maybeSingle();
+
+
+  if (
+    resultadoUsuario.error
+  ) {
+
+    throw resultadoUsuario.error;
+
+  }
+
+
+  if (
+    !resultadoUsuario.data
+  ) {
+
+    window.location.href =
+      "administrativo.html";
+
+
+    throw new Error(
+      "Usuário não encontrado."
+    );
+
+  }
+
+
+  const resultadoFuncoes =
+    await window.supabaseClient
+      .from(
+        "usuario_funcoes"
+      )
+      .select(`
+        funcoes (
+          nome
+        )
+      `)
+      .eq(
+        "usuario_id",
+        resultadoUsuario.data.id
+      );
+
+
+  if (
+    resultadoFuncoes.error
+  ) {
+
+    throw resultadoFuncoes.error;
+
+  }
+
+
+  const nomesFuncoes =
+    (
+      resultadoFuncoes.data ||
+      []
+    )
+      .map(
+        (item) =>
+          item.funcoes?.nome
+      )
+      .filter(
+        Boolean
+      );
+
+
+  const pertenceDiretoria =
+    nomesFuncoes.some(
+      (funcao) =>
+        funcoesDiretoriaJustificativas.includes(
+          funcao
+        )
+    );
+
+
+  if (
+    !pertenceDiretoria
+  ) {
+
+    window.location.href =
+      "administrativo.html";
+
+
+    throw new Error(
+      "Usuário não autorizado."
+    );
+
+  }
+}
+
+
+/* ==========================================
+   CARREGAR ASSOCIADOS
+========================================== */
+
+async function carregarAssociadosJustificativas() {
+
+  const resultado =
+    await window.supabaseClient
+      .from(
+        "usuarios"
+      )
+      .select(`
+        id,
+        nome_completo,
+        status
+      `)
+      .eq(
+        "status",
+        "ativo"
+      )
+      .order(
+        "nome_completo",
+        {
+          ascending:
+            true
+        }
+      );
+
+
+  if (
+    resultado.error
+  ) {
+
+    throw resultado.error;
+
+  }
+
+
+  associadosJustificativas =
+    resultado.data ||
+    [];
+
+
+  associadoRelatorioJustificativas.innerHTML =
+    "";
+
+
+  if (
+    associadosJustificativas.length ===
+    0
+  ) {
+
+    const opcao =
+      document.createElement(
+        "option"
+      );
+
+
+    opcao.value =
+      "";
+
+    opcao.textContent =
+      "Nenhum associado";
+
+
+    associadoRelatorioJustificativas.appendChild(
+      opcao
+    );
+
+
+    associadoRelatorioJustificativas.disabled =
+      true;
+
+
+    return;
+
+  }
+
+
+  associadosJustificativas.forEach(
+    (associado) => {
+
+      const opcao =
+        document.createElement(
+          "option"
+        );
+
+
+      opcao.value =
+        associado.id;
+
+
+      opcao.textContent =
+        formatarNomeJustificativas(
+          associado.nome_completo
+        );
+
+
+      associadoRelatorioJustificativas.appendChild(
+        opcao
+      );
+
+    }
+  );
+
+
+  associadoRelatorioJustificativas.disabled =
+    false;
+
+
+  associadoAtualJustificativas =
+    associadosJustificativas[0];
+
+
+  associadoRelatorioJustificativas.value =
+    associadoAtualJustificativas.id;
+}
+
+
+/* ==========================================
+   CARREGAR ATIVIDADES
+========================================== */
+
+async function carregarAtividadesJustificativas() {
+
+  const resultado =
+    await window.supabaseClient
+      .from(
+        "atividades"
+      )
+      .select(`
+        id,
+        titulo,
+        data,
+        hora_inicio,
+        tipo_atividade
+      `)
+      .order(
+        "data",
+        {
+          ascending:
+            false
+        }
+      )
+      .order(
+        "hora_inicio",
+        {
+          ascending:
+            false
+        }
+      );
+
+
+  if (
+    resultado.error
+  ) {
+
+    throw resultado.error;
+
+  }
+
+
+  atividadesJustificativas =
+    resultado.data ||
+    [];
+}
+
+
+/* ==========================================
+   CARREGAR ANOS
+========================================== */
+
+function carregarAnosJustificativas() {
+
+  const anos =
+    [
+      ...new Set(
+        atividadesJustificativas
+          .map(
+            (atividade) =>
+              Number(
+                String(
+                  atividade.data
+                ).slice(
+                  0,
+                  4
+                )
+              )
+          )
+          .filter(
+            Boolean
+          )
+      )
+    ]
+      .sort(
+        (a, b) =>
+          b - a
+      );
+
+
+  anoRelatorioJustificativas.innerHTML =
+    "";
+
+
+  if (
+    anos.length ===
+    0
+  ) {
+
+    const opcao =
+      document.createElement(
+        "option"
+      );
+
+
+    opcao.value =
+      "";
+
+    opcao.textContent =
+      "Sem anos";
+
+
+    anoRelatorioJustificativas.appendChild(
+      opcao
+    );
+
+
+    anoRelatorioJustificativas.disabled =
+      true;
+
+
+    return;
+
+  }
+
+
+  anos.forEach(
+    (ano) => {
+
+      const opcao =
+        document.createElement(
+          "option"
+        );
+
+
+      opcao.value =
+        String(
+          ano
+        );
+
+
+      opcao.textContent =
+        String(
+          ano
+        );
+
+
+      anoRelatorioJustificativas.appendChild(
+        opcao
+      );
+
+    }
+  );
+
+
+  const anoAtual =
+    new Date()
+      .getFullYear();
+
+
+  if (
+    anos.includes(
+      anoAtual
+    )
+  ) {
+
+    anoRelatorioJustificativas.value =
+      String(
+        anoAtual
+      );
+
+  } else {
+
+    anoRelatorioJustificativas.value =
+      String(
+        anos[0]
+      );
+
+  }
+
+
+  anoRelatorioJustificativas.disabled =
+    false;
+}
+
+
+/* ==========================================
+   CARREGAR PRESENÇAS DO ASSOCIADO
+========================================== */
+
+async function carregarPresencasDoAssociadoJustificativas() {
+
+  presencasJustificativas =
+    [];
+
+
+  if (
+    !associadoAtualJustificativas
+  ) {
+
+    return;
+
+  }
+
+
+  const resultado =
+    await window.supabaseClient
+      .from(
+        "presencas"
+      )
+      .select(`
+        atividade_id,
+        usuario_id,
+        status,
+        origem
+      `)
+      .eq(
+        "usuario_id",
+        associadoAtualJustificativas.id
+      );
+
+
+  if (
+    resultado.error
+  ) {
+
+    throw resultado.error;
+
+  }
+
+
+  presencasJustificativas =
+    resultado.data ||
+    [];
+}
+
+
+/* ==========================================
+   CARREGAR CONFIRMAÇÕES DO ASSOCIADO
+========================================== */
+
+async function carregarConfirmacoesDoAssociadoJustificativas() {
+
+  confirmacoesJustificativas =
+    [];
+
+
+  if (
+    !associadoAtualJustificativas
+  ) {
+
+    return;
+
+  }
+
+
+  const resultado =
+    await window.supabaseClient
+      .from(
+        "confirmacoes_presenca"
+      )
+      .select(`
+        atividade_id,
+        usuario_id,
+        resposta,
+        justificativa,
+        lido_diretoria
+      `)
+      .eq(
+        "usuario_id",
+        associadoAtualJustificativas.id
+      );
+
+
+  if (
+    resultado.error
+  ) {
+
+    throw resultado.error;
+
+  }
+
+
+  confirmacoesJustificativas =
+    resultado.data ||
+    [];
+}
+
+
+/* ==========================================
+   LOCALIZAR REGISTROS
+========================================== */
+
+function obterPresencaJustificativas(
+  atividadeId
+) {
+
+  return presencasJustificativas.find(
+    (registro) =>
+      registro.atividade_id ===
+      atividadeId
+  ) ||
+  null;
+}
+
+
+function obterConfirmacaoJustificativas(
+  atividadeId
+) {
+
+  return confirmacoesJustificativas.find(
+    (registro) =>
+      registro.atividade_id ===
+      atividadeId
+  ) ||
+  null;
+}
+
+
+/* ==========================================
+   DEFINIR SITUAÇÃO
+========================================== */
+
+function obterSituacaoJustificativas(
+  atividade
+) {
+
+  const hojeISO =
+    obterHojeISOJustificativas();
+
+
+  if (
+    atividade.data >
+    hojeISO
+  ) {
+
+    return {
+
+      tipo:
+        "pendente",
+
+      titulo:
+        "Pendente",
+
+      texto:
+        "Atividade ainda não realizada."
+
+    };
+
+  }
+
+
+  const presenca =
+    obterPresencaJustificativas(
+      atividade.id
+    );
+
+
+  const confirmacao =
+    obterConfirmacaoJustificativas(
+      atividade.id
+    );
+
+
+  /* ======================================
+     PRESENTE
+  ====================================== */
+
+  if (
+    presenca?.status ===
+    "presente"
+  ) {
+
+    return {
+
+      tipo:
+        "presente",
+
+      titulo:
+        "Presente",
+
+      texto:
+        "Presente"
+
+    };
+
+  }
+
+
+  /* ======================================
+     AUSÊNCIA INFORMADA PELO MÉDIUM
+  ====================================== */
+
+  if (
+    confirmacao?.resposta ===
+    "ausente"
+  ) {
+
+    const justificativa =
+      String(
+        confirmacao.justificativa ||
+        ""
+      ).trim();
+
+
+    if (
+      justificativa
+    ) {
+
+      return {
+
+        tipo:
+          "justificada",
+
+        titulo:
+          "Justificativa do médium",
+
+        texto:
+          justificativa
+
+      };
+
+    }
+
+
+    return {
+
+      tipo:
+        "falta",
+
+      titulo:
+        "Falta sem justificativa",
+
+      texto:
+        "Falta sem justificativa registrada pelo médium"
+
+    };
+
+  }
+
+
+  /* ======================================
+     FALTA ADICIONADA PELA ADM
+  ====================================== */
+
+  if (
+    presenca?.status ===
+    "falta"
+  ) {
+
+    return {
+
+      tipo:
+        "falta",
+
+      titulo:
+        "Falta",
+
+      texto:
+        "Falta adicionada pela ADM"
+
+    };
+
+  }
+
+
+  /* ======================================
+     JUSTIFICADO SEM TEXTO DO NOVO FLUXO
+  ====================================== */
+
+  if (
+    presenca?.status ===
+    "justificada"
+  ) {
+
+    return {
+
+      tipo:
+        "justificada",
+
+      titulo:
+        "Justificada",
+
+      texto:
+        "Justificativa registrada sem texto disponível"
+
+    };
+
+  }
+
+
+  /* ======================================
+     SEM REGISTRO
+  ====================================== */
+
+  return {
+
+    tipo:
+      "pendente",
+
+    titulo:
+      "Pendente",
+
+    texto:
+      "Nenhum registro de presença encontrado."
+
+  };
+}
+
+
+/* ==========================================
+   CRIAR ITEM
+========================================== */
+
+function criarItemRelatorioJustificativas(
+  atividade
+) {
+
+  const situacao =
+    obterSituacaoJustificativas(
+      atividade
+    );
+
+
+  const item =
+    document.createElement(
+      "div"
+    );
+
+
+  item.style.padding =
+    "14px";
+
+  item.style.marginBottom =
+    "12px";
+
+  item.style.border =
+    "1px solid var(--cor-borda)";
+
+  item.style.borderRadius =
+    "14px";
+
+  item.style.background =
+    "#ffffff";
+
+
+  /* ======================================
+     CABEÇALHO
+  ====================================== */
+
+  const cabecalho =
+    document.createElement(
+      "div"
+    );
+
+
+  cabecalho.style.display =
+    "flex";
+
+  cabecalho.style.alignItems =
+    "flex-start";
+
+  cabecalho.style.justifyContent =
+    "space-between";
+
+  cabecalho.style.gap =
+    "12px";
+
+
+  const dados =
+    document.createElement(
+      "div"
+    );
+
+
+  const titulo =
+    document.createElement(
+      "strong"
+    );
+
+
+  titulo.textContent =
+    atividade.titulo ||
+    "Atividade";
+
+
+  titulo.style.display =
+    "block";
+
+  titulo.style.color =
+    "var(--cor-texto)";
+
+  titulo.style.fontSize =
+    "14px";
+
+
+  const data =
+    document.createElement(
+      "span"
+    );
+
+
+  const horario =
+    formatarHorarioJustificativas(
+      atividade.hora_inicio
+    );
+
+
+  data.textContent =
+    `${formatarDataJustificativas(
+      atividade.data
+    )}${
+      horario
+        ? ` • ${horario}`
+        : ""
+    }`;
+
+
+  data.style.display =
+    "block";
+
+  data.style.marginTop =
+    "4px";
+
+  data.style.color =
+    "var(--cor-texto-suave)";
+
+  data.style.fontSize =
+    "12px";
+
+
+  dados.appendChild(
+    titulo
+  );
+
+
+  dados.appendChild(
+    data
+  );
+
+
+  cabecalho.appendChild(
+    dados
+  );
+
+
+  /* ======================================
+     STATUS
+  ====================================== */
+
+  const status =
+    document.createElement(
+      "span"
+    );
+
+
+  status.textContent =
+    situacao.titulo;
+
+
+  status.style.flexShrink =
+    "0";
+
+  status.style.padding =
+    "6px 9px";
+
+  status.style.borderRadius =
+    "9px";
+
+  status.style.fontSize =
+    "11px";
+
+  status.style.fontWeight =
+    "700";
+
+
+  if (
+    situacao.tipo ===
+    "presente"
+  ) {
+
+    status.style.background =
+      "#e4f3e8";
+
+    status.style.color =
+      "#267341";
+
+  }
+
+
+  if (
+    situacao.tipo ===
+    "falta"
+  ) {
+
+    status.style.background =
+      "#f9e4e4";
+
+    status.style.color =
+      "#a12626";
+
+  }
+
+
+  if (
+    situacao.tipo ===
+    "justificada"
+  ) {
+
+    status.style.background =
+      "#fff1c8";
+
+    status.style.color =
+      "#8a6500";
+
+  }
+
+
+  if (
+    situacao.tipo ===
+    "pendente"
+  ) {
+
+    status.style.background =
+      "#efefef";
+
+    status.style.color =
+      "#666666";
+
+  }
+
+
+  cabecalho.appendChild(
+    status
+  );
+
+
+  item.appendChild(
+    cabecalho
+  );
+
+
+  /* ======================================
+     TEXTO
+  ====================================== */
+
+  const texto =
+    document.createElement(
+      "div"
+    );
+
+
+  texto.textContent =
+    situacao.texto;
+
+
+  texto.style.marginTop =
+    "12px";
+
+  texto.style.padding =
+    "11px 12px";
+
+  texto.style.borderRadius =
+    "10px";
+
+  texto.style.fontSize =
+    "13px";
+
+  texto.style.lineHeight =
+    "1.45";
+
+  texto.style.whiteSpace =
+    "pre-wrap";
+
+
+  if (
+    situacao.tipo ===
+    "presente"
+  ) {
+
+    texto.style.background =
+      "#f2faf4";
+
+    texto.style.color =
+      "#267341";
+
+  }
+
+
+  if (
+    situacao.tipo ===
+    "falta"
+  ) {
+
+    texto.style.background =
+      "#fff1f1";
+
+    texto.style.color =
+      "#8f2424";
+
+  }
+
+
+  if (
+    situacao.tipo ===
+    "justificada"
+  ) {
+
+    texto.style.background =
+      "#fff9e8";
+
+    texto.style.color =
+      "#5c4a14";
+
+  }
+
+
+  if (
+    situacao.tipo ===
+    "pendente"
+  ) {
+
+    texto.style.background =
+      "#f5f5f5";
+
+    texto.style.color =
+      "#666666";
+
+  }
+
+
+  item.appendChild(
+    texto
+  );
+
+
+  return item;
+}
+
+
+/* ==========================================
+   RENDERIZAR RELATÓRIO
+========================================== */
+
+function renderizarRelatorioJustificativas() {
+
+  if (
+    !associadoAtualJustificativas
+  ) {
+
+    areaRelatorioJustificativas.hidden =
+      true;
+
+
+    return;
+
+  }
+
+
+  const ano =
+    anoRelatorioJustificativas.value;
+
+
+  if (
+    !ano
+  ) {
+
+    areaRelatorioJustificativas.hidden =
+      true;
+
+
+    return;
+
+  }
+
+
+  const atividadesDoAno =
+    atividadesJustificativas
+      .filter(
+        (atividade) =>
+          String(
+            atividade.data
+          ).startsWith(
+            `${ano}-`
+          )
+      )
+      .sort(
+        (a, b) => {
+
+          const comparacaoData =
+            String(
+              b.data
+            ).localeCompare(
+              String(
+                a.data
+              )
+            );
+
+
+          if (
+            comparacaoData !==
+            0
+          ) {
+
+            return comparacaoData;
+
+          }
+
+
+          return String(
+            b.hora_inicio ||
+            ""
+          ).localeCompare(
+            String(
+              a.hora_inicio ||
+              ""
+            )
+          );
+
+        }
+      );
+
+
+  areaRelatorioJustificativas.hidden =
+    false;
+
+
+  tituloAssociadoRelatorioJustificativas.textContent =
+    formatarNomeJustificativas(
+      associadoAtualJustificativas
+        .nome_completo
+    );
+
+
+  listaRelatorioJustificativas.innerHTML =
+    "";
+
+
+  if (
+    atividadesDoAno.length ===
+    0
+  ) {
+
+    mensagemSemDadosJustificativas.hidden =
+      false;
+
+
+    listaRelatorioJustificativas.hidden =
+      true;
+
+
+    return;
+
+  }
+
+
+  mensagemSemDadosJustificativas.hidden =
+    true;
+
+
+  listaRelatorioJustificativas.hidden =
+    false;
+
+
+  atividadesDoAno.forEach(
+    (atividade) => {
+
+      const item =
+        criarItemRelatorioJustificativas(
+          atividade
+        );
+
+
+      listaRelatorioJustificativas.appendChild(
+        item
+      );
+
+    }
+  );
+}
+
+
+/* ==========================================
+   TROCAR ASSOCIADO
+========================================== */
+
+async function trocarAssociadoJustificativas() {
+
+  const associadoId =
+    associadoRelatorioJustificativas.value;
+
+
+  associadoAtualJustificativas =
+    associadosJustificativas.find(
+      (associado) =>
+        associado.id ===
+        associadoId
+    ) ||
+    null;
+
+
+  if (
+    !associadoAtualJustificativas
+  ) {
+
+    areaRelatorioJustificativas.hidden =
+      true;
+
+
+    return;
+
+  }
+
+
+  try {
+
+    await carregarPresencasDoAssociadoJustificativas();
+
+    await carregarConfirmacoesDoAssociadoJustificativas();
+
+    renderizarRelatorioJustificativas();
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao carregar relatório do associado:",
+      erro
+    );
+
+
+    areaRelatorioJustificativas.hidden =
+      false;
+
+
+    listaRelatorioJustificativas.innerHTML =
+      `
+        <p>
+          Não foi possível carregar o relatório.
+        </p>
+      `;
+
+  }
+}
+
+
+/* ==========================================
+   INICIALIZAÇÃO
+========================================== */
+
+async function iniciarRelatorioJustificativas() {
+
+  if (
+    !window.supabaseClient
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    await validarDiretoriaJustificativas();
+
+    await carregarAssociadosJustificativas();
+
+    await carregarAtividadesJustificativas();
+
+    carregarAnosJustificativas();
+
+
+    if (
+      associadoAtualJustificativas
+    ) {
+
+      await carregarPresencasDoAssociadoJustificativas();
+
+      await carregarConfirmacoesDoAssociadoJustificativas();
+
+      renderizarRelatorioJustificativas();
+
+    }
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao iniciar relatório de justificativas:",
+      erro
+    );
+
+
+    areaRelatorioJustificativas.hidden =
+      false;
+
+
+    listaRelatorioJustificativas.innerHTML =
+      `
+        <p>
+          Não foi possível carregar o relatório de justificativas.
+        </p>
+      `;
+
+  }
+}
+
+
+/* ==========================================
+   EVENTOS
+========================================== */
+
+associadoRelatorioJustificativas.addEventListener(
+  "change",
+  trocarAssociadoJustificativas
+);
+
+
+anoRelatorioJustificativas.addEventListener(
+  "change",
+  renderizarRelatorioJustificativas
+);
+
+
+/* ==========================================
+   INICIAR
+========================================== */
+
+iniciarRelatorioJustificativas();
