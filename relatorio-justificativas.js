@@ -349,7 +349,15 @@ async function carregarAssociadosJustificativas() {
       .select(`
         id,
         nome_completo,
-        status
+        status,
+
+        usuario_funcoes!usuario_funcoes_usuario_id_fkey (
+          funcoes (
+            id,
+            nome,
+            funcao_pai_id
+          )
+        )
       `)
       .eq(
         "status",
@@ -470,6 +478,120 @@ async function carregarAssociadosJustificativas() {
 
 
 /* ==========================================
+   FUNÇÕES ATUAIS DO ASSOCIADO
+========================================== */
+
+function obterNomesFuncoesAssociadoJustificativas() {
+
+  if (
+    !associadoAtualJustificativas
+  ) {
+
+    return [];
+
+  }
+
+
+  return (
+    associadoAtualJustificativas
+      .usuario_funcoes ||
+    []
+  )
+    .map(
+      (item) =>
+        item.funcoes
+    )
+    .filter(
+      (funcao) =>
+        Boolean(
+          funcao &&
+          !funcao.funcao_pai_id
+        )
+    )
+    .map(
+      (funcao) =>
+        funcao.nome
+    )
+    .filter(
+      Boolean
+    );
+}
+
+
+/* ==========================================
+   TIPOS DE ATIVIDADE DO MÉDIUM
+========================================== */
+
+function obterTiposAtividadeDoMedium() {
+
+  const nomesFuncoes =
+    obterNomesFuncoesAssociadoJustificativas();
+
+
+  const tipos =
+    [];
+
+
+  const ehDesenvolvimento =
+    nomesFuncoes.includes(
+      "Médium em Desenvolvimento"
+    );
+
+
+  const ehCorrentePrincipal =
+    nomesFuncoes.includes(
+      "Médium Corrente Principal"
+    ) ||
+    nomesFuncoes.includes(
+      "Médium Principal"
+    );
+
+
+  if (
+    ehDesenvolvimento
+  ) {
+
+    tipos.push(
+      "gira_desenvolvimento"
+    );
+
+  }
+
+
+  if (
+    ehCorrentePrincipal
+  ) {
+
+    tipos.push(
+      "gira_principal"
+    );
+
+  }
+
+
+  return tipos;
+}
+
+
+/* ==========================================
+   ATIVIDADE PERTENCE AO MÉDIUM
+========================================== */
+
+function atividadePertenceAoMedium(
+  atividade
+) {
+
+  const tiposPermitidos =
+    obterTiposAtividadeDoMedium();
+
+
+  return tiposPermitidos.includes(
+    atividade.tipo_atividade
+  );
+}
+
+
+/* ==========================================
    CARREGAR ATIVIDADES
 ========================================== */
 
@@ -491,14 +613,14 @@ async function carregarAtividadesJustificativas() {
         "data",
         {
           ascending:
-            false
+            true
         }
       )
       .order(
         "hora_inicio",
         {
           ascending:
-            false
+            true
         }
       );
 
@@ -524,13 +646,26 @@ async function carregarAtividadesJustificativas() {
 
 function carregarAnosJustificativas() {
 
-  let atividadesBase =
-    atividadesJustificativas;
+  /*
+    Primeiro retiramos atividades que não
+    dizem respeito à função atual do médium.
+  */
 
+  let atividadesBase =
+    atividadesJustificativas.filter(
+      atividadePertenceAoMedium
+    );
+
+
+  /*
+    Quando a tela foi aberta pelo botão
+    "Ver justificativas" da ficha do associado,
+    mostramos apenas atividades que possuem
+    uma justificativa escrita pelo médium.
+  */
 
   if (
-    modoSomenteJustificativas() &&
-    confirmacoesJustificativas.length > 0
+    modoSomenteJustificativas()
   ) {
 
     const idsComJustificativa =
@@ -553,7 +688,7 @@ function carregarAnosJustificativas() {
 
 
     atividadesBase =
-      atividadesJustificativas.filter(
+      atividadesBase.filter(
         (atividade) =>
           idsComJustificativa.has(
             atividade.id
@@ -585,7 +720,7 @@ function carregarAnosJustificativas() {
     ]
       .sort(
         (a, b) =>
-          b - a
+          a - b
       );
 
 
@@ -608,7 +743,9 @@ function carregarAnosJustificativas() {
       "";
 
     opcao.textContent =
-      "Sem justificativas";
+      modoSomenteJustificativas()
+        ? "Sem justificativas"
+        : "Sem atividades";
 
 
     anoRelatorioJustificativas.appendChild(
@@ -674,7 +811,9 @@ function carregarAnosJustificativas() {
 
     anoRelatorioJustificativas.value =
       String(
-        anos[0]
+        anos[
+          anos.length - 1
+        ]
       );
 
   }
@@ -1412,7 +1551,7 @@ function renderizarRelatorioJustificativas() {
     mensagemSemDadosJustificativas.textContent =
       modoSomenteJustificativas()
         ? "Nenhuma justificativa cadastrada para este associado."
-        : "Nenhuma atividade encontrada para esta seleção.";
+        : "Nenhuma atividade de presença encontrada para este associado.";
 
 
     return;
@@ -1420,8 +1559,20 @@ function renderizarRelatorioJustificativas() {
   }
 
 
+  /*
+    PRIMEIRO:
+    somente atividades referentes à
+    função atual do médium.
+
+    DEPOIS:
+    somente o ano selecionado.
+  */
+
   let atividadesDoAno =
     atividadesJustificativas
+      .filter(
+        atividadePertenceAoMedium
+      )
       .filter(
         (atividade) =>
           String(
@@ -1431,6 +1582,12 @@ function renderizarRelatorioJustificativas() {
           )
       );
 
+
+  /*
+    Ao acessar pela ficha do associado,
+    mostramos somente justificativas
+    realmente escritas pelo médium.
+  */
 
   if (
     modoSomenteJustificativas()
@@ -1444,15 +1601,20 @@ function renderizarRelatorioJustificativas() {
   }
 
 
+  /*
+    ORDEM CRONOLÓGICA:
+    MAIS ANTIGA -> MAIS NOVA
+  */
+
   atividadesDoAno.sort(
     (a, b) => {
 
       const comparacaoData =
         String(
-          b.data
+          a.data
         ).localeCompare(
           String(
-            a.data
+            b.data
           )
         );
 
@@ -1468,11 +1630,11 @@ function renderizarRelatorioJustificativas() {
 
 
       return String(
-        b.hora_inicio ||
+        a.hora_inicio ||
         ""
       ).localeCompare(
         String(
-          a.hora_inicio ||
+          b.hora_inicio ||
           ""
         )
       );
@@ -1513,7 +1675,7 @@ function renderizarRelatorioJustificativas() {
     mensagemSemDadosJustificativas.textContent =
       modoSomenteJustificativas()
         ? "Nenhuma justificativa cadastrada neste ano."
-        : "Nenhuma atividade encontrada para esta seleção.";
+        : "Nenhuma atividade de presença encontrada para este associado neste ano.";
 
 
     listaRelatorioJustificativas.hidden =
@@ -1590,7 +1752,14 @@ async function trocarAssociadoJustificativas() {
     await carregarConfirmacoesDoAssociadoJustificativas();
 
 
+    /*
+      Recriamos os anos porque cada médium
+      pode possuir tipos diferentes de
+      atividades de presença.
+    */
+
     carregarAnosJustificativas();
+
 
     renderizarRelatorioJustificativas();
 
@@ -1654,6 +1823,7 @@ async function iniciarRelatorioJustificativas() {
 
 
     carregarAnosJustificativas();
+
 
     renderizarRelatorioJustificativas();
 
