@@ -2754,10 +2754,19 @@ th.coluna-resumo-presenca-frequencia {
   font-weight: 700;
 }
 
-.opcao-confirmacao-presenca input:checked + span {
-  border-color: var(--cor-principal);
-  background: rgba(101, 27, 29, 0.10);
-  color: var(--cor-principal);
+/* PRESENTE SELECIONADO */
+#opcaoEstareiPresente:checked + span {
+  border-color: #70ad7d;
+  background: #dff3e4;
+  color: #246b35;
+}
+
+
+/* FALTA SELECIONADA */
+#opcaoNaoEstareiPresente:checked + span {
+  border-color: #c97575;
+  background: #f7dddd;
+  color: #9a2929;
 }
 
 
