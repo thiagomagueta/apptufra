@@ -70,6 +70,44 @@ const funcoesDiretoriaJustificativas = [
 
 
 /* ==========================================
+   PARÂMETROS
+========================================== */
+
+function obterParametrosJustificativas() {
+
+  const parametros =
+    new URLSearchParams(
+      window.location.search
+    );
+
+
+  return {
+
+    associadoId:
+      parametros.get(
+        "id"
+      ),
+
+    modo:
+      parametros.get(
+        "modo"
+      ) || "completo"
+
+  };
+}
+
+
+function modoSomenteJustificativas() {
+
+  return (
+    obterParametrosJustificativas()
+      .modo ===
+    "justificativas"
+  );
+}
+
+
+/* ==========================================
    DATA ATUAL
 ========================================== */
 
@@ -425,16 +463,31 @@ async function carregarAssociadosJustificativas() {
   );
 
 
-  associadoRelatorioJustificativas.disabled =
-    false;
+  const {
+    associadoId
+  } =
+    obterParametrosJustificativas();
+
+
+  const associadoParametro =
+    associadosJustificativas.find(
+      (associado) =>
+        associado.id ===
+        associadoId
+    );
 
 
   associadoAtualJustificativas =
+    associadoParametro ||
     associadosJustificativas[0];
 
 
   associadoRelatorioJustificativas.value =
     associadoAtualJustificativas.id;
+
+
+  associadoRelatorioJustificativas.disabled =
+    false;
 }
 
 
@@ -493,10 +546,49 @@ async function carregarAtividadesJustificativas() {
 
 function carregarAnosJustificativas() {
 
+  let atividadesBase =
+    atividadesJustificativas;
+
+
+  if (
+    modoSomenteJustificativas() &&
+    confirmacoesJustificativas.length > 0
+  ) {
+
+    const idsComJustificativa =
+      new Set(
+        confirmacoesJustificativas
+          .filter(
+            (registro) =>
+              registro.resposta ===
+                "ausente" &&
+              String(
+                registro.justificativa ||
+                ""
+              ).trim()
+          )
+          .map(
+            (registro) =>
+              registro.atividade_id
+          )
+      );
+
+
+    atividadesBase =
+      atividadesJustificativas.filter(
+        (atividade) =>
+          idsComJustificativa.has(
+            atividade.id
+          )
+      );
+
+  }
+
+
   const anos =
     [
       ...new Set(
-        atividadesJustificativas
+        atividadesBase
           .map(
             (atividade) =>
               Number(
@@ -538,7 +630,7 @@ function carregarAnosJustificativas() {
       "";
 
     opcao.textContent =
-      "Sem anos";
+      "Sem justificativas";
 
 
     anoRelatorioJustificativas.appendChild(
@@ -616,7 +708,7 @@ function carregarAnosJustificativas() {
 
 
 /* ==========================================
-   CARREGAR PRESENÇAS DO ASSOCIADO
+   CARREGAR PRESENÇAS
 ========================================== */
 
 async function carregarPresencasDoAssociadoJustificativas() {
@@ -667,7 +759,7 @@ async function carregarPresencasDoAssociadoJustificativas() {
 
 
 /* ==========================================
-   CARREGAR CONFIRMAÇÕES DO ASSOCIADO
+   CARREGAR CONFIRMAÇÕES
 ========================================== */
 
 async function carregarConfirmacoesDoAssociadoJustificativas() {
@@ -749,6 +841,32 @@ function obterConfirmacaoJustificativas(
 
 
 /* ==========================================
+   VERIFICAR JUSTIFICATIVA REAL
+========================================== */
+
+function atividadeTemJustificativaDoMedium(
+  atividade
+) {
+
+  const confirmacao =
+    obterConfirmacaoJustificativas(
+      atividade.id
+    );
+
+
+  return Boolean(
+    confirmacao &&
+    confirmacao.resposta ===
+      "ausente" &&
+    String(
+      confirmacao.justificativa ||
+      ""
+    ).trim()
+  );
+}
+
+
+/* ==========================================
    DEFINIR SITUAÇÃO
 ========================================== */
 
@@ -793,10 +911,6 @@ function obterSituacaoJustificativas(
     );
 
 
-  /* ======================================
-     PRESENTE
-  ====================================== */
-
   if (
     presenca?.status ===
     "presente"
@@ -817,10 +931,6 @@ function obterSituacaoJustificativas(
 
   }
 
-
-  /* ======================================
-     AUSÊNCIA INFORMADA PELO MÉDIUM
-  ====================================== */
 
   if (
     confirmacao?.resposta ===
@@ -870,10 +980,6 @@ function obterSituacaoJustificativas(
   }
 
 
-  /* ======================================
-     FALTA ADICIONADA PELA ADM
-  ====================================== */
-
   if (
     presenca?.status ===
     "falta"
@@ -895,10 +1001,6 @@ function obterSituacaoJustificativas(
   }
 
 
-  /* ======================================
-     JUSTIFICADO SEM TEXTO DO NOVO FLUXO
-  ====================================== */
-
   if (
     presenca?.status ===
     "justificada"
@@ -919,10 +1021,6 @@ function obterSituacaoJustificativas(
 
   }
 
-
-  /* ======================================
-     SEM REGISTRO
-  ====================================== */
 
   return {
 
@@ -974,10 +1072,6 @@ function criarItemRelatorioJustificativas(
   item.style.background =
     "#ffffff";
 
-
-  /* ======================================
-     CABEÇALHO
-  ====================================== */
 
   const cabecalho =
     document.createElement(
@@ -1075,10 +1169,6 @@ function criarItemRelatorioJustificativas(
   );
 
 
-  /* ======================================
-     STATUS
-  ====================================== */
-
   const status =
     document.createElement(
       "span"
@@ -1170,10 +1260,6 @@ function criarItemRelatorioJustificativas(
     cabecalho
   );
 
-
-  /* ======================================
-     TEXTO
-  ====================================== */
 
   const texto =
     document.createElement(
@@ -1270,7 +1356,7 @@ function criarItemRelatorioJustificativas(
 
 
 /* ==========================================
-   RENDERIZAR RELATÓRIO
+   RENDERIZAR
 ========================================== */
 
 function renderizarRelatorioJustificativas() {
@@ -1297,7 +1383,28 @@ function renderizarRelatorioJustificativas() {
   ) {
 
     areaRelatorioJustificativas.hidden =
-      true;
+      false;
+
+
+    tituloAssociadoRelatorioJustificativas.textContent =
+      formatarNomeJustificativas(
+        associadoAtualJustificativas
+          .nome_completo
+      );
+
+
+    listaRelatorioJustificativas.innerHTML =
+      "";
+
+
+    mensagemSemDadosJustificativas.hidden =
+      false;
+
+
+    mensagemSemDadosJustificativas.textContent =
+      modoSomenteJustificativas()
+        ? "Nenhuma justificativa cadastrada para este associado."
+        : "Nenhuma atividade encontrada para esta seleção.";
 
 
     return;
@@ -1305,7 +1412,7 @@ function renderizarRelatorioJustificativas() {
   }
 
 
-  const atividadesDoAno =
+  let atividadesDoAno =
     atividadesJustificativas
       .filter(
         (atividade) =>
@@ -1314,42 +1421,56 @@ function renderizarRelatorioJustificativas() {
           ).startsWith(
             `${ano}-`
           )
-      )
-      .sort(
-        (a, b) => {
-
-          const comparacaoData =
-            String(
-              b.data
-            ).localeCompare(
-              String(
-                a.data
-              )
-            );
-
-
-          if (
-            comparacaoData !==
-            0
-          ) {
-
-            return comparacaoData;
-
-          }
-
-
-          return String(
-            b.hora_inicio ||
-            ""
-          ).localeCompare(
-            String(
-              a.hora_inicio ||
-              ""
-            )
-          );
-
-        }
       );
+
+
+  if (
+    modoSomenteJustificativas()
+  ) {
+
+    atividadesDoAno =
+      atividadesDoAno.filter(
+        atividadeTemJustificativaDoMedium
+      );
+
+  }
+
+
+  atividadesDoAno.sort(
+    (a, b) => {
+
+      const comparacaoData =
+        String(
+          b.data
+        ).localeCompare(
+          String(
+            a.data
+          )
+        );
+
+
+      if (
+        comparacaoData !==
+        0
+      ) {
+
+        return comparacaoData;
+
+      }
+
+
+      return String(
+        b.hora_inicio ||
+        ""
+      ).localeCompare(
+        String(
+          a.hora_inicio ||
+          ""
+        )
+      );
+
+    }
+  );
 
 
   areaRelatorioJustificativas.hidden =
@@ -1357,10 +1478,15 @@ function renderizarRelatorioJustificativas() {
 
 
   tituloAssociadoRelatorioJustificativas.textContent =
-    formatarNomeJustificativas(
-      associadoAtualJustificativas
-        .nome_completo
-    );
+    modoSomenteJustificativas()
+      ? `Justificativas - ${formatarNomeJustificativas(
+          associadoAtualJustificativas
+            .nome_completo
+        )}`
+      : formatarNomeJustificativas(
+          associadoAtualJustificativas
+            .nome_completo
+        );
 
 
   listaRelatorioJustificativas.innerHTML =
@@ -1374,6 +1500,12 @@ function renderizarRelatorioJustificativas() {
 
     mensagemSemDadosJustificativas.hidden =
       false;
+
+
+    mensagemSemDadosJustificativas.textContent =
+      modoSomenteJustificativas()
+        ? "Nenhuma justificativa cadastrada neste ano."
+        : "Nenhuma atividade encontrada para esta seleção.";
 
 
     listaRelatorioJustificativas.hidden =
@@ -1449,6 +1581,9 @@ async function trocarAssociadoJustificativas() {
 
     await carregarConfirmacoesDoAssociadoJustificativas();
 
+
+    carregarAnosJustificativas();
+
     renderizarRelatorioJustificativas();
 
 
@@ -1498,8 +1633,6 @@ async function iniciarRelatorioJustificativas() {
 
     await carregarAtividadesJustificativas();
 
-    carregarAnosJustificativas();
-
 
     if (
       associadoAtualJustificativas
@@ -1509,9 +1642,12 @@ async function iniciarRelatorioJustificativas() {
 
       await carregarConfirmacoesDoAssociadoJustificativas();
 
-      renderizarRelatorioJustificativas();
-
     }
+
+
+    carregarAnosJustificativas();
+
+    renderizarRelatorioJustificativas();
 
 
   } catch (erro) {
