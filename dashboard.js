@@ -380,7 +380,7 @@ async function carregarFuncoesUsuario() {
       funcoesUsuarioCarregadasDashboard =
         true;
 
-      atualizarBotaoConfirmacaoDashboard();
+      atualizarBotoesProximaAtividadeDashboard();
 
 
       return;
@@ -426,7 +426,7 @@ async function carregarFuncoesUsuario() {
       funcoesUsuarioCarregadasDashboard =
         true;
 
-      atualizarBotaoConfirmacaoDashboard();
+      atualizarBotoesProximaAtividadeDashboard();
 
 
       return;
@@ -493,7 +493,7 @@ async function carregarFuncoesUsuario() {
       funcoesUsuarioCarregadasDashboard =
         true;
 
-      atualizarBotaoConfirmacaoDashboard();
+      atualizarBotoesProximaAtividadeDashboard();
 
 
       await verificarAcessoAdm(
@@ -556,7 +556,7 @@ async function carregarFuncoesUsuario() {
     funcoesUsuarioCarregadasDashboard =
       true;
 
-    atualizarBotaoConfirmacaoDashboard();
+    atualizarBotoesProximaAtividadeDashboard();
 
 
     await verificarAcessoAdm(
@@ -583,7 +583,7 @@ async function carregarFuncoesUsuario() {
     funcoesUsuarioCarregadasDashboard =
       true;
 
-    atualizarBotaoConfirmacaoDashboard();
+    atualizarBotoesProximaAtividadeDashboard();
 
   }
 }
@@ -833,7 +833,7 @@ function formatarTipoAtividade(
 
 
 /* ==========================================
-   CONFIRMAÇÃO PRÉVIA - REGRAS DE EXIBIÇÃO
+   CONFIRMAÇÃO PRÉVIA - REGRAS
 ========================================== */
 
 function usuarioPodeConfirmarAtividadeDashboard(
@@ -881,7 +881,57 @@ function usuarioPodeConfirmarAtividadeDashboard(
 }
 
 
-function atualizarBotaoConfirmacaoDashboard() {
+/* ==========================================
+   DIRETORIA - REGRAS
+========================================== */
+
+function usuarioEhDiretoriaDashboard() {
+
+  const funcoesDiretoria = [
+    "Presidente",
+    "Secretária",
+    "Tesoureiro",
+    "Pai/Mãe Pequeno (a)",
+    "Sacerdote"
+  ];
+
+
+  return nomesFuncoesUsuarioDashboard.some(
+    (nome) =>
+      funcoesDiretoria.includes(
+        nome
+      )
+  );
+}
+
+
+function atividadePermiteAusenciasDashboard(
+  atividade
+) {
+
+  if (
+    !atividade
+  ) {
+
+    return false;
+
+  }
+
+
+  return (
+    atividade.tipo_atividade ===
+      "gira_principal" ||
+    atividade.tipo_atividade ===
+      "gira_desenvolvimento"
+  );
+}
+
+
+/* ==========================================
+   BOTÕES DA PRÓXIMA ATIVIDADE
+========================================== */
+
+function atualizarBotoesProximaAtividadeDashboard() {
 
   if (
     !proximaAtividadeCarregadaDashboard ||
@@ -914,45 +964,62 @@ function atualizarBotaoConfirmacaoDashboard() {
     );
 
 
-  area.hidden =
-    !podeConfirmar;
+  const podeVerAusencias =
+    usuarioEhDiretoriaDashboard() &&
+    atividadePermiteAusenciasDashboard(
+      proximaAtividadeAtualDashboard
+    );
+
+
+  area.innerHTML =
+    "";
 
 
   if (
-    !podeConfirmar
+    !podeConfirmar &&
+    !podeVerAusencias
   ) {
 
-    area.innerHTML =
-      "";
+    area.hidden =
+      true;
 
     return;
 
   }
 
 
-  area.innerHTML =
-    `
-      <button
-        type="button"
-        id="botaoConfirmarPresencaDashboard"
-        class="botao-confirmar-presenca-dashboard"
-      >
-        Confirmar presença
-      </button>
-    `;
+  area.hidden =
+    false;
 
 
-  const botao =
-    document.getElementById(
-      "botaoConfirmarPresencaDashboard"
-    );
-
+  /* ======================================
+     BOTÃO DO MÉDIUM
+  ====================================== */
 
   if (
-    botao
+    podeConfirmar
   ) {
 
-    botao.addEventListener(
+    const botaoConfirmar =
+      document.createElement(
+        "button"
+      );
+
+
+    botaoConfirmar.type =
+      "button";
+
+    botaoConfirmar.id =
+      "botaoConfirmarPresencaDashboard";
+
+    botaoConfirmar.className =
+      "botao-confirmar-presenca-dashboard";
+
+    botaoConfirmar.textContent =
+      "Confirmar presença";
+
+
+    botaoConfirmar.addEventListener(
       "click",
       () => {
 
@@ -962,7 +1029,58 @@ function atualizarBotaoConfirmacaoDashboard() {
       }
     );
 
+
+    area.appendChild(
+      botaoConfirmar
+    );
+
   }
+
+
+  /* ======================================
+     BOTÃO DA DIRETORIA
+  ====================================== */
+
+  if (
+    podeVerAusencias
+  ) {
+
+    const botaoAusencias =
+      document.createElement(
+        "button"
+      );
+
+
+    botaoAusencias.type =
+      "button";
+
+    botaoAusencias.id =
+      "botaoVerAusenciasDashboard";
+
+    botaoAusencias.className =
+      "botao-ver-ausencias-dashboard";
+
+    botaoAusencias.textContent =
+      "Ver ausências";
+
+
+    botaoAusencias.addEventListener(
+      "click",
+      () => {
+
+        window.location.href =
+          "ausencias-atividade.html";
+
+      }
+    );
+
+
+    area.appendChild(
+      botaoAusencias
+    );
+
+  }
+
 }
 
 
@@ -1151,7 +1269,7 @@ async function carregarProximaAtividade() {
         `;
 
 
-      atualizarBotaoConfirmacaoDashboard();
+      atualizarBotoesProximaAtividadeDashboard();
 
 
       return;
@@ -1240,7 +1358,7 @@ async function carregarProximaAtividade() {
       `;
 
 
-    atualizarBotaoConfirmacaoDashboard();
+    atualizarBotoesProximaAtividadeDashboard();
 
 
   } catch (erro) {
@@ -1270,7 +1388,7 @@ async function carregarProximaAtividade() {
       `;
 
 
-    atualizarBotaoConfirmacaoDashboard();
+    atualizarBotoesProximaAtividadeDashboard();
 
   }
 }
