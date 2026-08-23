@@ -92,6 +92,46 @@ const frequenciaGeralPresenca =
 
 
 /* ==========================================
+   MODAL DE JUSTIFICATIVA
+========================================== */
+
+const modalJustificativaPresenca =
+  document.getElementById(
+    "modalJustificativaPresenca"
+  );
+
+const botaoFecharModalJustificativa =
+  document.getElementById(
+    "botaoFecharModalJustificativa"
+  );
+
+const botaoFecharJustificativa =
+  document.getElementById(
+    "botaoFecharJustificativa"
+  );
+
+const nomeModalJustificativa =
+  document.getElementById(
+    "nomeModalJustificativa"
+  );
+
+const atividadeModalJustificativa =
+  document.getElementById(
+    "atividadeModalJustificativa"
+  );
+
+const dataModalJustificativa =
+  document.getElementById(
+    "dataModalJustificativa"
+  );
+
+const textoModalJustificativa =
+  document.getElementById(
+    "textoModalJustificativa"
+  );
+
+
+/* ==========================================
    DADOS
 ========================================== */
 
@@ -194,6 +234,35 @@ function formatarDataCurta(
 
 
   return `${dia}/${mes}`;
+}
+
+
+function formatarDataCompleta(
+  dataISO
+) {
+
+  if (
+    !dataISO
+  ) {
+
+    return "—";
+
+  }
+
+
+  const [
+    ano,
+    mes,
+    dia
+  ] =
+    String(
+      dataISO
+    ).split(
+      "-"
+    );
+
+
+  return `${dia}/${mes}/${ano}`;
 }
 
 
@@ -477,7 +546,8 @@ async function carregarListas() {
       .order(
         "ordem",
         {
-          ascending: true
+          ascending:
+            true
         }
       );
 
@@ -514,7 +584,6 @@ async function carregarListas() {
     opcao.value =
       "";
 
-
     opcao.textContent =
       "Nenhuma lista";
 
@@ -544,7 +613,6 @@ async function carregarListas() {
 
       opcao.value =
         lista.id;
-
 
       opcao.textContent =
         lista.nome;
@@ -609,13 +677,15 @@ async function carregarAtividades() {
       .order(
         "data",
         {
-          ascending: true
+          ascending:
+            true
         }
       )
       .order(
         "hora_inicio",
         {
-          ascending: true
+          ascending:
+            true
         }
       );
 
@@ -682,7 +752,6 @@ function carregarAnosDisponiveis() {
 
     opcao.value =
       "";
-
 
     opcao.textContent =
       "Sem anos";
@@ -987,9 +1056,12 @@ function obterSituacaoCelula(
   ) {
 
     return {
-      texto: "",
-      classe: "",
-      tipo: "futuro"
+      texto:
+        "",
+      classe:
+        "",
+      tipo:
+        "futuro"
     };
 
   }
@@ -1008,7 +1080,8 @@ function obterSituacaoCelula(
   ) {
 
     return {
-      texto: "x",
+      texto:
+        "x",
       classe:
         "status-relatorio-nao-participava",
       tipo:
@@ -1031,7 +1104,8 @@ function obterSituacaoCelula(
   ) {
 
     return {
-      texto: "P",
+      texto:
+        "P",
       classe:
         "status-relatorio-presente",
       tipo:
@@ -1047,7 +1121,8 @@ function obterSituacaoCelula(
   ) {
 
     return {
-      texto: "F",
+      texto:
+        "F",
       classe:
         "status-relatorio-falta",
       tipo:
@@ -1063,7 +1138,8 @@ function obterSituacaoCelula(
   ) {
 
     return {
-      texto: "J",
+      texto:
+        "J",
       classe:
         "status-relatorio-justificado",
       tipo:
@@ -1074,7 +1150,8 @@ function obterSituacaoCelula(
 
 
   return {
-    texto: "—",
+    texto:
+      "—",
     classe:
       "status-relatorio-pendente",
     tipo:
@@ -1282,8 +1359,13 @@ function renderizarResumoAno(
 
     frequenciaGeralPresenca.textContent =
       `${resumo.frequencia
-        .toFixed(1)
-        .replace(".", ",")}%`;
+        .toFixed(
+          1
+        )
+        .replace(
+          ".",
+          ","
+        )}%`;
 
   }
 }
@@ -1364,6 +1446,178 @@ function criarCabecalho(
 
 
 /* ==========================================
+   ABRIR JUSTIFICATIVA
+========================================== */
+
+async function abrirJustificativa(
+  associado,
+  atividade
+) {
+
+  nomeModalJustificativa.textContent =
+    formatarNome(
+      associado.nome_completo
+    );
+
+
+  atividadeModalJustificativa.textContent =
+    atividade.titulo ||
+    "Atividade";
+
+
+  dataModalJustificativa.textContent =
+    formatarDataCompleta(
+      atividade.data
+    );
+
+
+  textoModalJustificativa.className =
+    "texto-modal-justificativa";
+
+
+  textoModalJustificativa.textContent =
+    "Carregando justificativa...";
+
+
+  modalJustificativaPresenca.hidden =
+    false;
+
+
+  try {
+
+    const resultado =
+      await window.supabaseClient
+        .from(
+          "confirmacoes_presenca"
+        )
+        .select(`
+          justificativa,
+          resposta
+        `)
+        .eq(
+          "usuario_id",
+          associado.id
+        )
+        .eq(
+          "atividade_id",
+          atividade.id
+        )
+        .limit(
+          1
+        );
+
+
+    if (
+      resultado.error
+    ) {
+
+      throw resultado.error;
+
+    }
+
+
+    const registros =
+      resultado.data ||
+      [];
+
+
+    if (
+      registros.length ===
+      0
+    ) {
+
+      textoModalJustificativa.classList.add(
+        "sem-justificativa"
+      );
+
+
+      textoModalJustificativa.textContent =
+        "Não há justificativa textual cadastrada para esta ausência.";
+
+
+      return;
+
+    }
+
+
+    const justificativa =
+      String(
+        registros[0]
+          .justificativa ||
+        ""
+      ).trim();
+
+
+    if (
+      !justificativa
+    ) {
+
+      textoModalJustificativa.classList.add(
+        "sem-justificativa"
+      );
+
+
+      textoModalJustificativa.textContent =
+        "Não há justificativa textual cadastrada para esta ausência.";
+
+
+      return;
+
+    }
+
+
+    textoModalJustificativa.textContent =
+      justificativa;
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao carregar justificativa:",
+      erro
+    );
+
+
+    textoModalJustificativa.classList.add(
+      "sem-justificativa"
+    );
+
+
+    textoModalJustificativa.textContent =
+      "Não foi possível carregar a justificativa.";
+
+  }
+}
+
+
+/* ==========================================
+   FECHAR JUSTIFICATIVA
+========================================== */
+
+function fecharJustificativa() {
+
+  modalJustificativaPresenca.hidden =
+    true;
+
+
+  nomeModalJustificativa.textContent =
+    "—";
+
+  atividadeModalJustificativa.textContent =
+    "—";
+
+  dataModalJustificativa.textContent =
+    "—";
+
+  textoModalJustificativa.textContent =
+    "";
+
+  textoModalJustificativa.className =
+    "texto-modal-justificativa";
+}
+
+
+/* ==========================================
    CORPO
 ========================================== */
 
@@ -1435,6 +1689,76 @@ function criarCorpo(
 
             coluna.classList.add(
               situacao.classe
+            );
+
+          }
+
+
+          /* ==================================
+             JUSTIFICATIVA CLICÁVEL
+          ================================== */
+
+          if (
+            situacao.tipo ===
+            "justificada"
+          ) {
+
+            coluna.classList.add(
+              "celula-justificativa-clicavel"
+            );
+
+
+            coluna.title =
+              "Clique para ver a justificativa";
+
+
+            coluna.setAttribute(
+              "role",
+              "button"
+            );
+
+
+            coluna.setAttribute(
+              "tabindex",
+              "0"
+            );
+
+
+            coluna.addEventListener(
+              "click",
+              () => {
+
+                abrirJustificativa(
+                  associado,
+                  atividade
+                );
+
+              }
+            );
+
+
+            coluna.addEventListener(
+              "keydown",
+              (evento) => {
+
+                if (
+                  evento.key ===
+                    "Enter" ||
+                  evento.key ===
+                    " "
+                ) {
+
+                  evento.preventDefault();
+
+
+                  abrirJustificativa(
+                    associado,
+                    atividade
+                  );
+
+                }
+
+              }
             );
 
           }
@@ -1560,7 +1884,8 @@ async function trocarLista() {
       (lista) =>
         lista.id ===
         listaId
-    ) || null;
+    ) ||
+    null;
 
 
   areaRelatorioGeral.hidden =
@@ -1701,6 +2026,53 @@ listaRelatorioPresenca.addEventListener(
 anoRelatorioPresenca.addEventListener(
   "change",
   renderizarAnoSelecionado
+);
+
+
+botaoFecharModalJustificativa.addEventListener(
+  "click",
+  fecharJustificativa
+);
+
+
+botaoFecharJustificativa.addEventListener(
+  "click",
+  fecharJustificativa
+);
+
+
+modalJustificativaPresenca.addEventListener(
+  "click",
+  (evento) => {
+
+    if (
+      evento.target ===
+      modalJustificativaPresenca
+    ) {
+
+      fecharJustificativa();
+
+    }
+
+  }
+);
+
+
+document.addEventListener(
+  "keydown",
+  (evento) => {
+
+    if (
+      evento.key ===
+        "Escape" &&
+      !modalJustificativaPresenca.hidden
+    ) {
+
+      fecharJustificativa();
+
+    }
+
+  }
 );
 
 
