@@ -51,6 +51,9 @@ let atividadeConfirmacaoAtual =
 let usuarioConfirmacaoAtual =
   null;
 
+let tipoListaConfirmacaoAtual =
+  null;
+
 
 /* ==========================================
    DATA LOCAL
@@ -320,7 +323,7 @@ function esconderMensagemConfirmacao() {
 
 
 /* ==========================================
-   MOSTRAR / ESCONDER JUSTIFICATIVA
+   JUSTIFICATIVA
 ========================================== */
 
 function atualizarAreaJustificativa() {
@@ -356,7 +359,7 @@ function atualizarAreaJustificativa() {
 
 
 /* ==========================================
-   CARREGAR USUÁRIO ATUAL
+   CARREGAR USUÁRIO
 ========================================== */
 
 async function carregarUsuarioConfirmacao() {
@@ -431,20 +434,10 @@ async function carregarUsuarioConfirmacao() {
 
 
 /* ==========================================
-   BUSCAR PRÓXIMA ATIVIDADE
+   CARREGAR PRÓXIMA ATIVIDADE
 ========================================== */
 
 async function carregarAtividadeConfirmacao() {
-
-  if (
-    !window.supabaseClient ||
-    !dadosAtividadeConfirmacao
-  ) {
-
-    return;
-
-  }
-
 
   const agora =
     new Date();
@@ -583,10 +576,6 @@ async function carregarAtividadeConfirmacao() {
       `;
 
 
-    botaoSalvarConfirmacaoPresenca.disabled =
-      true;
-
-
     return;
 
   }
@@ -664,7 +653,120 @@ async function carregarAtividadeConfirmacao() {
 
 
 /* ==========================================
-   BUSCAR CONFIRMAÇÃO EXISTENTE
+   IDENTIFICAR LISTA DE PRESENÇA
+========================================== */
+
+async function carregarTipoListaConfirmacao() {
+
+  if (
+    !atividadeConfirmacaoAtual
+  ) {
+
+    tipoListaConfirmacaoAtual =
+      null;
+
+    return;
+
+  }
+
+
+  let nomeLista =
+    null;
+
+
+  if (
+    atividadeConfirmacaoAtual
+      .tipo_atividade ===
+    "gira_principal"
+  ) {
+
+    nomeLista =
+      "Corrente Principal";
+
+  }
+
+
+  if (
+    atividadeConfirmacaoAtual
+      .tipo_atividade ===
+    "gira_desenvolvimento"
+  ) {
+
+    nomeLista =
+      "Desenvolvimento";
+
+  }
+
+
+  if (
+    !nomeLista
+  ) {
+
+    tipoListaConfirmacaoAtual =
+      null;
+
+    return;
+
+  }
+
+
+  const resultado =
+    await window.supabaseClient
+      .from(
+        "tipos_lista_presenca"
+      )
+      .select(`
+        id,
+        nome,
+        tipo_atividade
+      `)
+      .eq(
+        "nome",
+        nomeLista
+      )
+      .eq(
+        "ativo",
+        true
+      )
+      .limit(
+        1
+      );
+
+
+  if (
+    resultado.error
+  ) {
+
+    throw resultado.error;
+
+  }
+
+
+  const registros =
+    resultado.data ||
+    [];
+
+
+  tipoListaConfirmacaoAtual =
+    registros.length > 0
+      ? registros[0]
+      : null;
+
+
+  if (
+    !tipoListaConfirmacaoAtual
+  ) {
+
+    throw new Error(
+      "Lista de presença não encontrada."
+    );
+
+  }
+}
+
+
+/* ==========================================
+   CARREGAR CONFIRMAÇÃO EXISTENTE
 ========================================== */
 
 async function carregarConfirmacaoExistente() {
@@ -715,13 +817,6 @@ async function carregarConfirmacaoExistente() {
     [];
 
 
-  /*
-    Nenhuma confirmação ainda.
-
-    Isso é normal e não deve
-    exibir mensagem de erro.
-  */
-
   if (
     registros.length === 0
   ) {
@@ -769,6 +864,226 @@ async function carregarConfirmacaoExistente() {
 
 
   atualizarAreaJustificativa();
+}
+
+
+/* ==========================================
+   BUSCAR PRESENÇA OFICIAL EXISTENTE
+========================================== */
+
+async function buscarPresencaOficialExistente() {
+
+  if (
+    !usuarioConfirmacaoAtual ||
+    !atividadeConfirmacaoAtual ||
+    !tipoListaConfirmacaoAtual
+  ) {
+
+    return null;
+
+  }
+
+
+  const resultado =
+    await window.supabaseClient
+      .from(
+        "presencas"
+      )
+      .select(`
+        tipo_lista_id,
+        atividade_id,
+        usuario_id,
+        status,
+        origem
+      `)
+      .eq(
+        "tipo_lista_id",
+        tipoListaConfirmacaoAtual.id
+      )
+      .eq(
+        "atividade_id",
+        atividadeConfirmacaoAtual.id
+      )
+      .eq(
+        "usuario_id",
+        usuarioConfirmacaoAtual.id
+      )
+      .limit(
+        1
+      );
+
+
+  if (
+    resultado.error
+  ) {
+
+    throw resultado.error;
+
+  }
+
+
+  const registros =
+    resultado.data ||
+    [];
+
+
+  return registros.length > 0
+    ? registros[0]
+    : null;
+}
+
+
+/* ==========================================
+   SINCRONIZAR LISTA OFICIAL
+========================================== */
+
+async function sincronizarPresencaOficial(
+  resposta,
+  justificativa
+) {
+
+  if (
+    !tipoListaConfirmacaoAtual
+  ) {
+
+    return;
+
+  }
+
+
+  const presencaExistente =
+    await buscarPresencaOficialExistente();
+
+
+  /* ======================================
+     MÉDIUM INFORMOU QUE VAI ESTAR PRESENTE
+  ====================================== */
+
+  if (
+    resposta ===
+    "presente"
+  ) {
+
+    /*
+      Só removemos a marcação se ela tiver
+      sido criada pela confirmação prévia.
+
+      Qualquer registro administrativo
+      permanece intacto.
+    */
+
+    if (
+      presencaExistente?.origem ===
+      "confirmacao_previa"
+    ) {
+
+      const resultadoExcluir =
+        await window.supabaseClient
+          .from(
+            "presencas"
+          )
+          .delete()
+          .eq(
+            "tipo_lista_id",
+            tipoListaConfirmacaoAtual.id
+          )
+          .eq(
+            "atividade_id",
+            atividadeConfirmacaoAtual.id
+          )
+          .eq(
+            "usuario_id",
+            usuarioConfirmacaoAtual.id
+          )
+          .eq(
+            "origem",
+            "confirmacao_previa"
+          );
+
+
+      if (
+        resultadoExcluir.error
+      ) {
+
+        throw resultadoExcluir.error;
+
+      }
+
+    }
+
+
+    return;
+
+  }
+
+
+  /* ======================================
+     MÉDIUM INFORMOU AUSÊNCIA
+  ====================================== */
+
+  /*
+    Se a administração já registrou alguma
+    coisa, a confirmação prévia não altera.
+  */
+
+  if (
+    presencaExistente &&
+    presencaExistente.origem !==
+      "confirmacao_previa"
+  ) {
+
+    return;
+
+  }
+
+
+  const status =
+    justificativa
+      ? "justificada"
+      : "falta";
+
+
+  const registro = {
+
+    tipo_lista_id:
+      tipoListaConfirmacaoAtual.id,
+
+    atividade_id:
+      atividadeConfirmacaoAtual.id,
+
+    usuario_id:
+      usuarioConfirmacaoAtual.id,
+
+    status:
+      status,
+
+    origem:
+      "confirmacao_previa"
+
+  };
+
+
+  const resultadoSalvar =
+    await window.supabaseClient
+      .from(
+        "presencas"
+      )
+      .upsert(
+        registro,
+        {
+          onConflict:
+            "tipo_lista_id,atividade_id,usuario_id"
+        }
+      );
+
+
+  if (
+    resultadoSalvar.error
+  ) {
+
+    throw resultadoSalvar.error;
+
+  }
 }
 
 
@@ -841,35 +1156,38 @@ async function salvarConfirmacaoPresenca() {
       "Salvando...";
 
 
-    const dados =
-      {
+    /* ======================================
+       SALVAR CONFIRMAÇÃO PRÉVIA
+    ====================================== */
 
-        atividade_id:
-          atividadeConfirmacaoAtual.id,
+    const dadosConfirmacao = {
 
-        usuario_id:
-          usuarioConfirmacaoAtual.id,
+      atividade_id:
+        atividadeConfirmacaoAtual.id,
 
-        resposta:
-          resposta,
+      usuario_id:
+        usuarioConfirmacaoAtual.id,
 
-        justificativa:
-          justificativa ||
-          null,
+      resposta:
+        resposta,
 
-        atualizado_em:
-          new Date().toISOString()
+      justificativa:
+        justificativa ||
+        null,
 
-      };
+      atualizado_em:
+        new Date().toISOString()
+
+    };
 
 
-    const resultado =
+    const resultadoConfirmacao =
       await window.supabaseClient
         .from(
           "confirmacoes_presenca"
         )
         .upsert(
-          dados,
+          dadosConfirmacao,
           {
             onConflict:
               "atividade_id,usuario_id"
@@ -878,13 +1196,27 @@ async function salvarConfirmacaoPresenca() {
 
 
     if (
-      resultado.error
+      resultadoConfirmacao.error
     ) {
 
-      throw resultado.error;
+      throw resultadoConfirmacao.error;
 
     }
 
+
+    /* ======================================
+       SINCRONIZAR COM PRESENÇA OFICIAL
+    ====================================== */
+
+    await sincronizarPresencaOficial(
+      resposta,
+      justificativa
+    );
+
+
+    /* ======================================
+       MENSAGEM FINAL
+    ====================================== */
 
     if (
       resposta ===
@@ -1025,15 +1357,21 @@ async function iniciarConfirmacaoPresenca() {
 
 
     if (
-      atividadeConfirmacaoAtual
+      !atividadeConfirmacaoAtual
     ) {
 
-      await carregarConfirmacaoExistente();
-
-      botaoSalvarConfirmacaoPresenca.disabled =
-        false;
+      return;
 
     }
+
+
+    await carregarTipoListaConfirmacao();
+
+    await carregarConfirmacaoExistente();
+
+
+    botaoSalvarConfirmacaoPresenca.disabled =
+      false;
 
 
   } catch (erro) {
