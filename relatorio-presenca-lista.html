@@ -24,6 +24,178 @@
     href="layout.css?v=39"
   >
 
+
+  <style>
+
+    /* ==========================================
+       JUSTIFICATIVA CLICÁVEL
+    ========================================== */
+
+    .celula-justificativa-clicavel {
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .celula-justificativa-clicavel:hover {
+      filter: brightness(0.96);
+    }
+
+
+    /* ==========================================
+       MODAL DE JUSTIFICATIVA
+    ========================================== */
+
+    .modal-justificativa-presenca {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 20px;
+
+      background: rgba(0, 0, 0, 0.58);
+    }
+
+    .modal-justificativa-presenca[hidden] {
+      display: none;
+    }
+
+    .conteudo-modal-justificativa {
+      width: 100%;
+      max-width: 480px;
+
+      padding: 22px;
+
+      border-radius: 20px;
+
+      background: #fffdfc;
+
+      box-shadow:
+        0 18px 45px
+        rgba(0, 0, 0, 0.22);
+    }
+
+    .cabecalho-modal-justificativa {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .cabecalho-modal-justificativa h2 {
+      margin: 0;
+
+      color: #651b1d;
+
+      font-size: 20px;
+      line-height: 1.3;
+    }
+
+    .botao-fechar-modal-justificativa {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      width: 38px;
+      height: 38px;
+
+      flex-shrink: 0;
+
+      padding: 0;
+
+      border: none;
+      border-radius: 50%;
+
+      background: rgba(101, 27, 29, 0.08);
+
+      color: #651b1d;
+
+      font-size: 24px;
+      line-height: 1;
+
+      cursor: pointer;
+    }
+
+    .dados-modal-justificativa {
+      margin-top: 18px;
+    }
+
+    .item-dado-modal-justificativa {
+      margin-bottom: 14px;
+    }
+
+    .item-dado-modal-justificativa span {
+      display: block;
+
+      margin-bottom: 4px;
+
+      color: #756966;
+
+      font-size: 12px;
+    }
+
+    .item-dado-modal-justificativa strong {
+      display: block;
+
+      color: #2f2927;
+
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .texto-modal-justificativa {
+      margin-top: 6px;
+
+      padding: 14px;
+
+      border: 1px solid #dfd3cd;
+      border-radius: 14px;
+
+      background: #ffffff;
+
+      color: #2f2927;
+
+      font-size: 14px;
+      line-height: 1.55;
+
+      white-space: pre-wrap;
+    }
+
+    .texto-modal-justificativa.sem-justificativa {
+      color: #756966;
+      font-style: italic;
+    }
+
+    .botao-fechar-justificativa {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      width: 100%;
+      min-height: 48px;
+
+      margin-top: 18px;
+      padding: 0 16px;
+
+      border: none;
+      border-radius: 14px;
+
+      background: #651b1d;
+
+      color: #ffffff;
+
+      font-size: 14px;
+      font-weight: 700;
+
+      cursor: pointer;
+    }
+
+  </style>
+
 </head>
 
 
@@ -372,6 +544,110 @@
 
 
   <!-- =====================================
+       MODAL DA JUSTIFICATIVA
+  ====================================== -->
+
+  <div
+    id="modalJustificativaPresenca"
+    class="modal-justificativa-presenca"
+    hidden
+  >
+
+    <div class="conteudo-modal-justificativa">
+
+      <div class="cabecalho-modal-justificativa">
+
+        <h2>
+          Justificativa da ausência
+        </h2>
+
+        <button
+          type="button"
+          id="botaoFecharModalJustificativa"
+          class="botao-fechar-modal-justificativa"
+          aria-label="Fechar"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div class="dados-modal-justificativa">
+
+
+        <div class="item-dado-modal-justificativa">
+
+          <span>
+            Associado
+          </span>
+
+          <strong id="nomeModalJustificativa">
+            —
+          </strong>
+
+        </div>
+
+
+        <div class="item-dado-modal-justificativa">
+
+          <span>
+            Atividade
+          </span>
+
+          <strong id="atividadeModalJustificativa">
+            —
+          </strong>
+
+        </div>
+
+
+        <div class="item-dado-modal-justificativa">
+
+          <span>
+            Data
+          </span>
+
+          <strong id="dataModalJustificativa">
+            —
+          </strong>
+
+        </div>
+
+
+        <div class="item-dado-modal-justificativa">
+
+          <span>
+            Justificativa
+          </span>
+
+          <div
+            id="textoModalJustificativa"
+            class="texto-modal-justificativa"
+          >
+            Carregando...
+          </div>
+
+        </div>
+
+
+      </div>
+
+
+      <button
+        type="button"
+        id="botaoFecharJustificativa"
+        class="botao-fechar-justificativa"
+      >
+        Fechar
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================
        MENU INFERIOR
   ====================================== -->
 
@@ -440,7 +716,7 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="relatorio-presenca-lista.js?v=7"></script>
+  <script src="relatorio-presenca-lista.js?v=8"></script>
 
   <script src="menu-adm.js?v=1"></script>
 
