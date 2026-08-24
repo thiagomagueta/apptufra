@@ -178,6 +178,164 @@ function esconderMensagem() {
 
 
 /* ==========================================
+   LEITURA EM VOZ ALTA
+========================================== */
+
+function podeUsarLeituraVoz() {
+
+  return (
+    "speechSynthesis" in window &&
+    "SpeechSynthesisUtterance" in window
+  );
+
+}
+
+
+function pararLeitura() {
+
+  if (
+    podeUsarLeituraVoz()
+  ) {
+
+    window.speechSynthesis.cancel();
+
+  }
+
+}
+
+
+function falarTexto(
+  texto
+) {
+
+  if (
+    !podeUsarLeituraVoz()
+  ) {
+
+    mostrarMensagem(
+      "A leitura em voz alta não está disponível neste aparelho ou navegador."
+    );
+
+    return;
+
+  }
+
+
+  const textoLimpo =
+    String(
+      texto || ""
+    ).trim();
+
+
+  if (
+    !textoLimpo
+  ) {
+
+    mostrarMensagem(
+      "Não há texto disponível para leitura."
+    );
+
+    return;
+
+  }
+
+
+  esconderMensagem();
+
+
+  pararLeitura();
+
+
+  const fala =
+    new SpeechSynthesisUtterance(
+      textoLimpo
+    );
+
+
+  fala.lang =
+    "pt-BR";
+
+
+  fala.rate =
+    1;
+
+
+  fala.pitch =
+    1;
+
+
+  window.speechSynthesis.speak(
+    fala
+  );
+
+}
+
+
+/* ==========================================
+   BOTÃO DE LEITURA
+========================================== */
+
+function criarBotaoLeitura(
+  textoBotao,
+  textoLeitura
+) {
+
+  const botao =
+    document.createElement(
+      "button"
+    );
+
+
+  botao.type =
+    "button";
+
+
+  botao.textContent =
+    textoBotao;
+
+
+  botao.style.padding =
+    "10px 12px";
+
+
+  botao.style.border =
+    "1px solid #bbb";
+
+
+  botao.style.borderRadius =
+    "8px";
+
+
+  botao.style.background =
+    "#fff";
+
+
+  botao.style.cursor =
+    "pointer";
+
+
+  botao.style.fontSize =
+    "14px";
+
+
+  botao.addEventListener(
+    "click",
+    () => {
+
+      falarTexto(
+        textoLeitura
+      );
+
+    }
+  );
+
+
+  return botao;
+
+}
+
+
+/* ==========================================
    RESULTADO DA BUSCA
 ========================================== */
 
@@ -282,6 +440,9 @@ function criarBotaoPessoa(
     "click",
     () => {
 
+      pararLeitura();
+
+
       abrirHistoricoPessoa(
         pessoa
       );
@@ -302,6 +463,9 @@ function criarBotaoPessoa(
 async function buscarPessoas() {
 
   esconderMensagem();
+
+
+  pararLeitura();
 
 
   const busca =
@@ -833,6 +997,151 @@ function criarItemAtendimento(
 
 
   /* ======================================
+     LEITURA
+  ====================================== */
+
+  const areaLeitura =
+    document.createElement(
+      "div"
+    );
+
+
+  areaLeitura.style.display =
+    "flex";
+
+
+  areaLeitura.style.flexWrap =
+    "wrap";
+
+
+  areaLeitura.style.gap =
+    "8px";
+
+
+  areaLeitura.style.marginTop =
+    "18px";
+
+
+  const nomeResponsavel =
+    atendimento.responsavel
+      ? formatarNome(
+          atendimento.responsavel.nome_completo
+        )
+      : "responsável não informado";
+
+
+  const acompanhamentoFalado =
+    atendimento.precisa_acompanhamento
+      ? (
+          atendimento.data_retorno
+            ? `Sim. Retorno sugerido para ${formatarData(
+                atendimento.data_retorno
+              )}.`
+            : "Sim. Sem data definida."
+        )
+      : "Não.";
+
+
+  const textoCompleto =
+    [
+      `Atendimento do dia ${formatarData(
+        atendimento.data_atendimento
+      )}.`,
+      `Realizado por ${nomeResponsavel}.`,
+      atendimento.motivo
+        ? `Motivo: ${atendimento.motivo}.`
+        : "",
+      `Relato: ${atendimento.relato || "Não informado."}`,
+      `Orientação e conduta: ${atendimento.orientacao_conduta || "Não informado."}`,
+      `Acompanhamento: ${acompanhamentoFalado}`
+    ]
+      .filter(
+        Boolean
+      )
+      .join(
+        " "
+      );
+
+
+  areaLeitura.appendChild(
+    criarBotaoLeitura(
+      "🔊 Ouvir relato",
+      atendimento.relato
+    )
+  );
+
+
+  areaLeitura.appendChild(
+    criarBotaoLeitura(
+      "🔊 Ouvir orientação",
+      atendimento.orientacao_conduta
+    )
+  );
+
+
+  areaLeitura.appendChild(
+    criarBotaoLeitura(
+      "🔊 Ouvir atendimento completo",
+      textoCompleto
+    )
+  );
+
+
+  const botaoParar =
+    document.createElement(
+      "button"
+    );
+
+
+  botaoParar.type =
+    "button";
+
+
+  botaoParar.textContent =
+    "■ Parar leitura";
+
+
+  botaoParar.style.padding =
+    "10px 12px";
+
+
+  botaoParar.style.border =
+    "1px solid #bbb";
+
+
+  botaoParar.style.borderRadius =
+    "8px";
+
+
+  botaoParar.style.background =
+    "#fff";
+
+
+  botaoParar.style.cursor =
+    "pointer";
+
+
+  botaoParar.style.fontSize =
+    "14px";
+
+
+  botaoParar.addEventListener(
+    "click",
+    pararLeitura
+  );
+
+
+  areaLeitura.appendChild(
+    botaoParar
+  );
+
+
+  item.appendChild(
+    areaLeitura
+  );
+
+
+  /* ======================================
      EDITAR
   ====================================== */
 
@@ -939,6 +1248,9 @@ async function abrirHistoricoPessoa(
 ) {
 
   esconderMensagem();
+
+
+  pararLeitura();
 
 
   nomePessoaHistorico.textContent =
@@ -1224,6 +1536,16 @@ campoBuscaPessoa.addEventListener(
       );
 
   }
+);
+
+
+/* ==========================================
+   SAÍDA DA PÁGINA
+========================================== */
+
+window.addEventListener(
+  "beforeunload",
+  pararLeitura
 );
 
 
