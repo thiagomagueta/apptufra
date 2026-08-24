@@ -188,10 +188,8 @@ function criarBotaoPessoa(
   botao.type =
     "button";
 
-
   botao.className =
     "item-permissao-lista";
-
 
   botao.style.width =
     "100%";
@@ -247,7 +245,6 @@ function criarBotaoPessoa(
     nome
   );
 
-
   dados.appendChild(
     tipo
   );
@@ -262,7 +259,6 @@ function criarBotaoPessoa(
   seta.className =
     "seta-permissao-lista";
 
-
   seta.textContent =
     "›";
 
@@ -270,7 +266,6 @@ function criarBotaoPessoa(
   botao.appendChild(
     dados
   );
-
 
   botao.appendChild(
     seta
@@ -373,7 +368,7 @@ function mostrarLista() {
 
 
 /* ==========================================
-   CARREGAR PESSOAS COM ATENDIMENTO
+   CARREGAR PESSOAS
 ========================================== */
 
 async function carregarPessoasComAtendimento() {
@@ -610,7 +605,6 @@ function criarBlocoTexto(
   textoElemento.style.whiteSpace =
     "pre-wrap";
 
-
   textoElemento.textContent =
     texto ||
     "Não informado.";
@@ -619,7 +613,6 @@ function criarBlocoTexto(
   bloco.appendChild(
     tituloElemento
   );
-
 
   bloco.appendChild(
     textoElemento
@@ -647,7 +640,6 @@ function criarItemAtendimento(
 
   item.style.padding =
     "18px 0";
-
 
   item.style.borderBottom =
     "1px solid #ddd";
@@ -688,7 +680,6 @@ function criarItemAtendimento(
 
     responsavel.style.marginTop =
       "4px";
-
 
     responsavel.style.fontSize =
       "14px";
@@ -795,7 +786,6 @@ function criarItemAtendimento(
     tituloAcompanhamento
   );
 
-
   acompanhamento.appendChild(
     textoAcompanhamento
   );
@@ -806,6 +796,44 @@ function criarItemAtendimento(
   );
 
 
+  /* ======================================
+     EDITAR
+  ====================================== */
+
+  const linkEditar =
+    document.createElement(
+      "a"
+    );
+
+
+  linkEditar.href =
+    `editar-atendimento.html?id=${atendimento.id}&origem=lista`;
+
+
+  linkEditar.className =
+    "link-administrativo";
+
+
+  linkEditar.style.display =
+    "inline-block";
+
+  linkEditar.style.marginTop =
+    "18px";
+
+
+  linkEditar.textContent =
+    "Editar atendimento";
+
+
+  item.appendChild(
+    linkEditar
+  );
+
+
+  /* ======================================
+     AUDITORIA
+  ====================================== */
+
   const auditoria =
     document.createElement(
       "div"
@@ -813,12 +841,10 @@ function criarItemAtendimento(
 
 
   auditoria.style.marginTop =
-    "18px";
-
+    "14px";
 
   auditoria.style.fontSize =
     "13px";
-
 
   auditoria.style.opacity =
     "0.75";
@@ -1159,7 +1185,6 @@ document
 
           secaoHistoricoAtendimentos.hidden =
             true;
-
 
           mostrarLista();
 
