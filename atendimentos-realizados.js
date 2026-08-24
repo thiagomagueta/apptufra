@@ -160,7 +160,6 @@ function mostrarMensagem(
   mensagemAtendimentosRealizados.textContent =
     texto;
 
-
   mensagemAtendimentosRealizados.hidden =
     false;
 
@@ -171,7 +170,6 @@ function esconderMensagem() {
 
   mensagemAtendimentosRealizados.textContent =
     "";
-
 
   mensagemAtendimentosRealizados.hidden =
     true;
@@ -196,26 +194,20 @@ function criarBotaoPessoa(
   botao.type =
     "button";
 
-
   botao.className =
     "item-permissao-lista";
-
 
   botao.style.width =
     "100%";
 
-
   botao.style.border =
     "0";
-
 
   botao.style.background =
     "transparent";
 
-
   botao.style.cursor =
     "pointer";
-
 
   botao.style.textAlign =
     "left";
@@ -259,7 +251,6 @@ function criarBotaoPessoa(
     nome
   );
 
-
   dados.appendChild(
     tipo
   );
@@ -274,7 +265,6 @@ function criarBotaoPessoa(
   seta.className =
     "seta-permissao-lista";
 
-
   seta.textContent =
     "›";
 
@@ -282,7 +272,6 @@ function criarBotaoPessoa(
   botao.appendChild(
     dados
   );
-
 
   botao.appendChild(
     seta
@@ -345,11 +334,6 @@ async function buscarPessoas() {
 
   try {
 
-    /* ======================================
-       PRIMEIRO:
-       BUSCAR QUEM POSSUI ATENDIMENTO
-    ====================================== */
-
     const resultadoAtendimentos =
       await window.supabaseClient
         .from(
@@ -375,10 +359,6 @@ async function buscarPessoas() {
       [];
 
 
-    /* ======================================
-       IDs ÚNICOS DE ASSOCIADOS
-    ====================================== */
-
     const idsAssociados =
       [
         ...new Set(
@@ -393,10 +373,6 @@ async function buscarPessoas() {
         )
       ];
 
-
-    /* ======================================
-       IDs ÚNICOS DE NÃO ASSOCIADOS
-    ====================================== */
 
     const idsNaoAssociados =
       [
@@ -413,10 +389,6 @@ async function buscarPessoas() {
       ];
 
 
-    /* ======================================
-       SE NÃO EXISTIR NENHUM ATENDIMENTO
-    ====================================== */
-
     if (
       idsAssociados.length === 0 &&
       idsNaoAssociados.length === 0
@@ -430,20 +402,12 @@ async function buscarPessoas() {
     }
 
 
-    /* ======================================
-       CONSULTAS DOS NOMES
-    ====================================== */
-
     let associados =
       [];
 
     let naoAssociados =
       [];
 
-
-    /* --------------------------------------
-       ASSOCIADOS
-    -------------------------------------- */
 
     if (
       idsAssociados.length > 0
@@ -505,10 +469,6 @@ async function buscarPessoas() {
     }
 
 
-    /* --------------------------------------
-       NÃO ASSOCIADOS
-    -------------------------------------- */
-
     if (
       idsNaoAssociados.length > 0
     ) {
@@ -569,10 +529,6 @@ async function buscarPessoas() {
     }
 
 
-    /* ======================================
-       JUNTAR E ORDENAR
-    ====================================== */
-
     const pessoas =
       [
         ...associados,
@@ -603,10 +559,6 @@ async function buscarPessoas() {
       "";
 
 
-    /* ======================================
-       SEM RESULTADOS
-    ====================================== */
-
     if (
       !pessoas.length
     ) {
@@ -618,10 +570,6 @@ async function buscarPessoas() {
 
     }
 
-
-    /* ======================================
-       MOSTRAR RESULTADOS
-    ====================================== */
 
     pessoas.forEach(
       (pessoa) => {
@@ -653,7 +601,7 @@ async function buscarPessoas() {
 
 
 /* ==========================================
-   CRIAR CAMPO DO HISTÓRICO
+   BLOCO DE TEXTO
 ========================================== */
 
 function criarBlocoTexto(
@@ -690,10 +638,8 @@ function criarBlocoTexto(
   textoElemento.style.marginTop =
     "6px";
 
-
   textoElemento.style.whiteSpace =
     "pre-wrap";
-
 
   textoElemento.textContent =
     texto ||
@@ -703,7 +649,6 @@ function criarBlocoTexto(
   bloco.appendChild(
     tituloElemento
   );
-
 
   bloco.appendChild(
     textoElemento
@@ -716,7 +661,7 @@ function criarBlocoTexto(
 
 
 /* ==========================================
-   CRIAR ATENDIMENTO
+   ITEM DO ATENDIMENTO
 ========================================== */
 
 function criarItemAtendimento(
@@ -732,14 +677,9 @@ function criarItemAtendimento(
   item.style.padding =
     "18px 0";
 
-
   item.style.borderBottom =
     "1px solid #ddd";
 
-
-  /* ======================================
-     DATA
-  ====================================== */
 
   const cabecalho =
     document.createElement(
@@ -764,10 +704,6 @@ function criarItemAtendimento(
   );
 
 
-  /* ======================================
-     RESPONSÁVEL
-  ====================================== */
-
   if (
     atendimento.responsavel
   ) {
@@ -780,7 +716,6 @@ function criarItemAtendimento(
 
     responsavel.style.marginTop =
       "4px";
-
 
     responsavel.style.fontSize =
       "14px";
@@ -804,10 +739,6 @@ function criarItemAtendimento(
   );
 
 
-  /* ======================================
-     MOTIVO
-  ====================================== */
-
   if (
     atendimento.motivo
   ) {
@@ -822,10 +753,6 @@ function criarItemAtendimento(
   }
 
 
-  /* ======================================
-     RELATO
-  ====================================== */
-
   item.appendChild(
     criarBlocoTexto(
       "Relato",
@@ -834,10 +761,6 @@ function criarItemAtendimento(
   );
 
 
-  /* ======================================
-     ORIENTAÇÃO
-  ====================================== */
-
   item.appendChild(
     criarBlocoTexto(
       "Orientação / Conduta",
@@ -845,10 +768,6 @@ function criarItemAtendimento(
     )
   );
 
-
-  /* ======================================
-     ACOMPANHAMENTO
-  ====================================== */
 
   const acompanhamento =
     document.createElement(
@@ -860,23 +779,23 @@ function criarItemAtendimento(
     "16px";
 
 
-  const acompanhamentoTitulo =
+  const tituloAcompanhamento =
     document.createElement(
       "strong"
     );
 
 
-  acompanhamentoTitulo.textContent =
+  tituloAcompanhamento.textContent =
     "Acompanhamento";
 
 
-  const acompanhamentoTexto =
+  const textoAcompanhamento =
     document.createElement(
       "p"
     );
 
 
-  acompanhamentoTexto.style.marginTop =
+  textoAcompanhamento.style.marginTop =
     "6px";
 
 
@@ -884,7 +803,7 @@ function criarItemAtendimento(
     atendimento.precisa_acompanhamento
   ) {
 
-    acompanhamentoTexto.textContent =
+    textoAcompanhamento.textContent =
       atendimento.data_retorno
         ? `Sim — retorno sugerido para ${formatarData(
             atendimento.data_retorno
@@ -893,24 +812,57 @@ function criarItemAtendimento(
 
   } else {
 
-    acompanhamentoTexto.textContent =
+    textoAcompanhamento.textContent =
       "Não.";
 
   }
 
 
   acompanhamento.appendChild(
-    acompanhamentoTitulo
+    tituloAcompanhamento
   );
 
-
   acompanhamento.appendChild(
-    acompanhamentoTexto
+    textoAcompanhamento
   );
 
 
   item.appendChild(
     acompanhamento
+  );
+
+
+  /* ======================================
+     EDITAR
+  ====================================== */
+
+  const linkEditar =
+    document.createElement(
+      "a"
+    );
+
+
+  linkEditar.href =
+    `editar-atendimento.html?id=${atendimento.id}&origem=busca`;
+
+
+  linkEditar.className =
+    "link-administrativo";
+
+
+  linkEditar.style.display =
+    "inline-block";
+
+  linkEditar.style.marginTop =
+    "18px";
+
+
+  linkEditar.textContent =
+    "Editar atendimento";
+
+
+  item.appendChild(
+    linkEditar
   );
 
 
@@ -925,12 +877,10 @@ function criarItemAtendimento(
 
 
   auditoria.style.marginTop =
-    "18px";
-
+    "14px";
 
   auditoria.style.fontSize =
     "13px";
-
 
   auditoria.style.opacity =
     "0.75";
@@ -1255,7 +1205,7 @@ async function carregarUsuarioLogado() {
 
 
 /* ==========================================
-   EVENTO DE BUSCA
+   EVENTO
 ========================================== */
 
 campoBuscaPessoa.addEventListener(
