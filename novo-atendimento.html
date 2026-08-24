@@ -401,24 +401,26 @@
 
         <div style="margin-bottom: 24px;">
 
+          <label
+            for="relatoAtendimento"
+            style="
+              display: block;
+              margin-bottom: 8px;
+              font-weight: 600;
+            "
+          >
+            Relato
+          </label>
+
+
           <div
             style="
               display: flex;
-              align-items: center;
-              justify-content: space-between;
-              gap: 10px;
               flex-wrap: wrap;
-              margin-bottom: 8px;
+              gap: 8px;
+              margin-bottom: 10px;
             "
           >
-
-            <label
-              for="relatoAtendimento"
-              style="font-weight: 600;"
-            >
-              Relato
-            </label>
-
 
             <button
               id="botaoGravarRelato"
@@ -432,7 +434,23 @@
                 cursor: pointer;
               "
             >
-              🎙️ Gravar áudio + transcrever
+              🎙️ Gravar áudio
+            </button>
+
+
+            <button
+              id="botaoFalarTextoRelato"
+              type="button"
+              style="
+                padding: 8px 12px;
+                border: 1px solid #bbb;
+                border-radius: 8px;
+                background: #fff;
+                font-size: 14px;
+                cursor: pointer;
+              "
+            >
+              🎤 Falar para texto
             </button>
 
           </div>
@@ -441,7 +459,7 @@
           <textarea
             id="relatoAtendimento"
             rows="8"
-            placeholder="Digite o relato ou grave um áudio para gerar o texto."
+            placeholder="Digite o relato, grave um áudio ou use Falar para texto."
             style="
               width: 100%;
               box-sizing: border-box;
@@ -453,6 +471,17 @@
               resize: vertical;
             "
           ></textarea>
+
+
+          <p
+            id="statusFalaTextoRelato"
+            style="
+              margin-top: 8px;
+              margin-bottom: 0;
+              font-size: 13px;
+            "
+            hidden
+          ></p>
 
 
           <div
@@ -559,29 +588,31 @@
 
 
         <!-- =================================
-             ORIENTAÇÃO
+             ORIENTAÇÃO / CONDUTA
         ================================== -->
 
         <div style="margin-bottom: 24px;">
 
+          <label
+            for="orientacaoAtendimento"
+            style="
+              display: block;
+              margin-bottom: 8px;
+              font-weight: 600;
+            "
+          >
+            Orientação / Conduta
+          </label>
+
+
           <div
             style="
               display: flex;
-              align-items: center;
-              justify-content: space-between;
-              gap: 10px;
               flex-wrap: wrap;
-              margin-bottom: 8px;
+              gap: 8px;
+              margin-bottom: 10px;
             "
           >
-
-            <label
-              for="orientacaoAtendimento"
-              style="font-weight: 600;"
-            >
-              Orientação / Conduta
-            </label>
-
 
             <button
               id="botaoGravarOrientacao"
@@ -595,7 +626,23 @@
                 cursor: pointer;
               "
             >
-              🎙️ Gravar áudio + transcrever
+              🎙️ Gravar áudio
+            </button>
+
+
+            <button
+              id="botaoFalarTextoOrientacao"
+              type="button"
+              style="
+                padding: 8px 12px;
+                border: 1px solid #bbb;
+                border-radius: 8px;
+                background: #fff;
+                font-size: 14px;
+                cursor: pointer;
+              "
+            >
+              🎤 Falar para texto
             </button>
 
           </div>
@@ -604,7 +651,7 @@
           <textarea
             id="orientacaoAtendimento"
             rows="7"
-            placeholder="Digite a orientação ou grave um áudio para gerar o texto."
+            placeholder="Digite a orientação, grave um áudio ou use Falar para texto."
             style="
               width: 100%;
               box-sizing: border-box;
@@ -616,6 +663,17 @@
               resize: vertical;
             "
           ></textarea>
+
+
+          <p
+            id="statusFalaTextoOrientacao"
+            style="
+              margin-top: 8px;
+              margin-bottom: 0;
+              font-size: 13px;
+            "
+            hidden
+          ></p>
 
 
           <div
@@ -816,6 +874,10 @@
   </main>
 
 
+  <!-- =====================================
+       MENU INFERIOR
+  ====================================== -->
+
   <nav
     class="menu-inferior"
     aria-label="Navegação principal"
@@ -877,9 +939,10 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="novo-atendimento.js?v=6"></script>
+  <script src="novo-atendimento.js?v=7"></script>
 
   <script src="menu-adm.js?v=1"></script>
+
 
 </body>
 
