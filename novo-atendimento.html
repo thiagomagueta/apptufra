@@ -432,7 +432,7 @@
                 cursor: pointer;
               "
             >
-              🎙️ Gravar áudio
+              🎙️ Gravar áudio + transcrever
             </button>
 
           </div>
@@ -441,7 +441,7 @@
           <textarea
             id="relatoAtendimento"
             rows="8"
-            placeholder="Digite o relato ou grave um áudio para transcrever."
+            placeholder="Digite o relato ou grave um áudio para gerar o texto."
             style="
               width: 100%;
               box-sizing: border-box;
@@ -551,23 +551,6 @@
                 🗑️ Apagar gravação
               </button>
 
-
-              <button
-                id="botaoTranscreverRelato"
-                type="button"
-                style="
-                  padding: 8px 12px;
-                  border: 1px solid #bbb;
-                  border-radius: 8px;
-                  background: #fff;
-                  font-size: 14px;
-                "
-                disabled
-                hidden
-              >
-                📝 Transcrever áudio
-              </button>
-
             </div>
 
           </div>
@@ -576,7 +559,7 @@
 
 
         <!-- =================================
-             ORIENTAÇÃO / CONDUTA
+             ORIENTAÇÃO
         ================================== -->
 
         <div style="margin-bottom: 24px;">
@@ -612,7 +595,7 @@
                 cursor: pointer;
               "
             >
-              🎙️ Gravar áudio
+              🎙️ Gravar áudio + transcrever
             </button>
 
           </div>
@@ -621,7 +604,7 @@
           <textarea
             id="orientacaoAtendimento"
             rows="7"
-            placeholder="Digite a orientação ou grave um áudio para transcrever."
+            placeholder="Digite a orientação ou grave um áudio para gerar o texto."
             style="
               width: 100%;
               box-sizing: border-box;
@@ -731,23 +714,6 @@
                 🗑️ Apagar gravação
               </button>
 
-
-              <button
-                id="botaoTranscreverOrientacao"
-                type="button"
-                style="
-                  padding: 8px 12px;
-                  border: 1px solid #bbb;
-                  border-radius: 8px;
-                  background: #fff;
-                  font-size: 14px;
-                "
-                disabled
-                hidden
-              >
-                📝 Transcrever áudio
-              </button>
-
             </div>
 
           </div>
@@ -783,10 +749,6 @@
 
         </div>
 
-
-        <!-- =================================
-             DATA DE RETORNO
-        ================================== -->
 
         <div
           id="areaDataRetorno"
@@ -854,10 +816,6 @@
   </main>
 
 
-  <!-- =====================================
-       MENU INFERIOR
-  ====================================== -->
-
   <nav
     class="menu-inferior"
     aria-label="Navegação principal"
@@ -919,10 +877,9 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="novo-atendimento.js?v=5"></script>
+  <script src="novo-atendimento.js?v=6"></script>
 
   <script src="menu-adm.js?v=1"></script>
-
 
 </body>
 
