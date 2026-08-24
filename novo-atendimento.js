@@ -90,6 +90,26 @@ const orientacaoAtendimento =
     "orientacaoAtendimento"
   );
 
+const botaoDitarRelato =
+  document.getElementById(
+    "botaoDitarRelato"
+  );
+
+const botaoDitarOrientacao =
+  document.getElementById(
+    "botaoDitarOrientacao"
+  );
+
+const statusDitadoRelato =
+  document.getElementById(
+    "statusDitadoRelato"
+  );
+
+const statusDitadoOrientacao =
+  document.getElementById(
+    "statusDitadoOrientacao"
+  );
+
 const precisaAcompanhamento =
   document.getElementById(
     "precisaAcompanhamento"
@@ -134,6 +154,21 @@ let temporizadorBuscaAssociado =
 
 let temporizadorBuscaNaoAssociado =
   null;
+
+let reconhecimentoAtivo =
+  null;
+
+let campoDitadoAtual =
+  null;
+
+let botaoDitadoAtual =
+  null;
+
+let statusDitadoAtual =
+  null;
+
+let textoAntesDoDitado =
+  "";
 
 
 /* ==========================================
@@ -242,6 +277,436 @@ function esconderMensagem() {
 
   mensagemNovoAtendimento.hidden =
     true;
+
+}
+
+
+/* ==========================================
+   DITADO
+========================================== */
+
+function obterClasseReconhecimentoVoz() {
+
+  return (
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition ||
+    null
+  );
+
+}
+
+
+function ditadoDisponivel() {
+
+  return Boolean(
+    obterClasseReconhecimentoVoz()
+  );
+
+}
+
+
+function atualizarStatusDitado(
+  elemento,
+  texto,
+  visivel = true
+) {
+
+  elemento.textContent =
+    texto;
+
+
+  elemento.hidden =
+    !visivel;
+
+}
+
+
+function restaurarBotaoDitado() {
+
+  if (
+    botaoDitadoAtual
+  ) {
+
+    botaoDitadoAtual.textContent =
+      "🎙️ Ditar";
+
+  }
+
+
+  reconhecimentoAtivo =
+    null;
+
+  campoDitadoAtual =
+    null;
+
+  botaoDitadoAtual =
+    null;
+
+  statusDitadoAtual =
+    null;
+
+  textoAntesDoDitado =
+    "";
+
+}
+
+
+function pararDitado() {
+
+  if (
+    reconhecimentoAtivo
+  ) {
+
+    try {
+
+      reconhecimentoAtivo.stop();
+
+    } catch (erro) {
+
+      console.warn(
+        "Não foi possível interromper o ditado:",
+        erro
+      );
+
+    }
+
+  }
+
+}
+
+
+function iniciarDitado(
+  campo,
+  botao,
+  elementoStatus
+) {
+
+  esconderMensagem();
+
+
+  if (
+    !ditadoDisponivel()
+  ) {
+
+    atualizarStatusDitado(
+      elementoStatus,
+      "O ditado por voz não está disponível neste navegador."
+    );
+
+    return;
+
+  }
+
+
+  /*
+    Se o mesmo botão estiver gravando,
+    o toque funciona como PARAR.
+  */
+
+  if (
+    reconhecimentoAtivo &&
+    campoDitadoAtual === campo
+  ) {
+
+    pararDitado();
+
+    return;
+
+  }
+
+
+  /*
+    Se outro campo estiver gravando,
+    interrompe antes de iniciar o novo.
+  */
+
+  if (
+    reconhecimentoAtivo
+  ) {
+
+    pararDitado();
+
+  }
+
+
+  const ClasseReconhecimento =
+    obterClasseReconhecimentoVoz();
+
+
+  const reconhecimento =
+    new ClasseReconhecimento();
+
+
+  reconhecimento.lang =
+    "pt-BR";
+
+
+  reconhecimento.continuous =
+    true;
+
+
+  reconhecimento.interimResults =
+    true;
+
+
+  reconhecimento.maxAlternatives =
+    1;
+
+
+  reconhecimentoAtivo =
+    reconhecimento;
+
+
+  campoDitadoAtual =
+    campo;
+
+
+  botaoDitadoAtual =
+    botao;
+
+
+  statusDitadoAtual =
+    elementoStatus;
+
+
+  textoAntesDoDitado =
+    String(
+      campo.value || ""
+    ).trim();
+
+
+  botao.textContent =
+    "■ Parar ditado";
+
+
+  atualizarStatusDitado(
+    elementoStatus,
+    "Ouvindo... fale normalmente."
+  );
+
+
+  reconhecimento.onresult =
+    (evento) => {
+
+      let textoFinal =
+        "";
+
+
+      let textoProvisorio =
+        "";
+
+
+      for (
+        let indice = 0;
+        indice < evento.results.length;
+        indice += 1
+      ) {
+
+        const resultado =
+          evento.results[indice];
+
+
+        const trecho =
+          resultado[0]?.transcript ||
+          "";
+
+
+        if (
+          resultado.isFinal
+        ) {
+
+          textoFinal +=
+            `${trecho} `;
+
+        } else {
+
+          textoProvisorio +=
+            trecho;
+
+        }
+
+      }
+
+
+      const partes =
+        [];
+
+
+      if (
+        textoAntesDoDitado
+      ) {
+
+        partes.push(
+          textoAntesDoDitado
+        );
+
+      }
+
+
+      if (
+        textoFinal.trim()
+      ) {
+
+        partes.push(
+          textoFinal.trim()
+        );
+
+      }
+
+
+      if (
+        textoProvisorio.trim()
+      ) {
+
+        partes.push(
+          textoProvisorio.trim()
+        );
+
+      }
+
+
+      campo.value =
+        partes.join(
+          " "
+        );
+
+    };
+
+
+  reconhecimento.onerror =
+    (evento) => {
+
+      let mensagem =
+        "Não foi possível usar o ditado por voz.";
+
+
+      if (
+        evento.error === "not-allowed" ||
+        evento.error === "service-not-allowed"
+      ) {
+
+        mensagem =
+          "O acesso ao microfone não foi autorizado.";
+
+      }
+
+
+      if (
+        evento.error === "no-speech"
+      ) {
+
+        mensagem =
+          "Nenhuma fala foi detectada. Tente novamente.";
+
+      }
+
+
+      if (
+        evento.error === "audio-capture"
+      ) {
+
+        mensagem =
+          "Não foi possível acessar o microfone do aparelho.";
+
+      }
+
+
+      if (
+        evento.error === "network"
+      ) {
+
+        mensagem =
+          "Não foi possível realizar o reconhecimento de voz. Verifique sua conexão.";
+
+      }
+
+
+      atualizarStatusDitado(
+        elementoStatus,
+        mensagem
+      );
+
+    };
+
+
+  reconhecimento.onend =
+    () => {
+
+      if (
+        statusDitadoAtual
+      ) {
+
+        atualizarStatusDitado(
+          statusDitadoAtual,
+          "Ditado finalizado."
+        );
+
+      }
+
+
+      restaurarBotaoDitado();
+
+    };
+
+
+  try {
+
+    reconhecimento.start();
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao iniciar reconhecimento de voz:",
+      erro
+    );
+
+
+    atualizarStatusDitado(
+      elementoStatus,
+      "Não foi possível iniciar o ditado."
+    );
+
+
+    restaurarBotaoDitado();
+
+  }
+
+}
+
+
+/* ==========================================
+   CONFIGURAR DISPONIBILIDADE DO DITADO
+========================================== */
+
+function configurarDitado() {
+
+  if (
+    ditadoDisponivel()
+  ) {
+
+    return;
+
+  }
+
+
+  botaoDitarRelato.disabled =
+    true;
+
+
+  botaoDitarOrientacao.disabled =
+    true;
+
+
+  atualizarStatusDitado(
+    statusDitadoRelato,
+    "Ditado por voz indisponível neste navegador."
+  );
+
+
+  atualizarStatusDitado(
+    statusDitadoOrientacao,
+    "Ditado por voz indisponível neste navegador."
+  );
 
 }
 
@@ -951,6 +1416,9 @@ async function salvarAtendimento() {
   esconderMensagem();
 
 
+  pararDitado();
+
+
   if (
     !validarFormulario()
   ) {
@@ -978,10 +1446,6 @@ async function salvarAtendimento() {
       null;
 
 
-    /* ======================================
-       ASSOCIADO
-    ====================================== */
-
     if (
       tipoAssociado.checked
     ) {
@@ -991,10 +1455,6 @@ async function salvarAtendimento() {
 
     }
 
-
-    /* ======================================
-       NÃO ASSOCIADO
-    ====================================== */
 
     if (
       tipoNaoAssociado.checked
@@ -1020,10 +1480,6 @@ async function salvarAtendimento() {
 
     }
 
-
-    /* ======================================
-       REGISTRAR ATENDIMENTO
-    ====================================== */
 
     const resultado =
       await window.supabaseClient
@@ -1319,6 +1775,34 @@ campoBuscaNaoAssociado.addEventListener(
 );
 
 
+botaoDitarRelato.addEventListener(
+  "click",
+  () => {
+
+    iniciarDitado(
+      relatoAtendimento,
+      botaoDitarRelato,
+      statusDitadoRelato
+    );
+
+  }
+);
+
+
+botaoDitarOrientacao.addEventListener(
+  "click",
+  () => {
+
+    iniciarDitado(
+      orientacaoAtendimento,
+      botaoDitarOrientacao,
+      statusDitadoOrientacao
+    );
+
+  }
+);
+
+
 precisaAcompanhamento.addEventListener(
   "change",
   atualizarAcompanhamento
@@ -1328,6 +1812,12 @@ precisaAcompanhamento.addEventListener(
 botaoSalvarAtendimento.addEventListener(
   "click",
   salvarAtendimento
+);
+
+
+window.addEventListener(
+  "beforeunload",
+  pararDitado
 );
 
 
@@ -1357,6 +1847,9 @@ async function iniciarPagina() {
 
 
   atualizarAcompanhamento();
+
+
+  configurarDitado();
 
 
   try {
