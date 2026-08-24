@@ -89,11 +89,7 @@
              TIPO DE PESSOA
         ================================== -->
 
-        <div
-          style="
-            margin-bottom: 24px;
-          "
-        >
+        <div style="margin-bottom: 24px;">
 
           <strong
             style="
@@ -161,9 +157,7 @@
 
         <div
           id="areaAssociado"
-          style="
-            margin-bottom: 24px;
-          "
+          style="margin-bottom: 24px;"
         >
 
           <label
@@ -197,9 +191,7 @@
           <div
             id="resultadoBuscaAssociado"
             class="lista-permissoes"
-            style="
-              margin-top: 10px;
-            "
+            style="margin-top: 10px;"
           >
 
             <p>
@@ -226,9 +218,7 @@
 
             <div
               id="nomeAssociadoSelecionado"
-              style="
-                margin-top: 4px;
-              "
+              style="margin-top: 4px;"
             ></div>
 
           </div>
@@ -242,9 +232,7 @@
 
         <div
           id="areaNaoAssociado"
-          style="
-            margin-bottom: 24px;
-          "
+          style="margin-bottom: 24px;"
           hidden
         >
 
@@ -316,9 +304,7 @@
 
             <div
               id="nomeNaoAssociadoSelecionado"
-              style="
-                margin-top: 4px;
-              "
+              style="margin-top: 4px;"
             ></div>
 
           </div>
@@ -346,11 +332,7 @@
              DATA
         ================================== -->
 
-        <div
-          style="
-            margin-bottom: 20px;
-          "
-        >
+        <div style="margin-bottom: 20px;">
 
           <label
             for="dataAtendimento"
@@ -383,11 +365,7 @@
              MOTIVO
         ================================== -->
 
-        <div
-          style="
-            margin-bottom: 20px;
-          "
-        >
+        <div style="margin-bottom: 20px;">
 
           <label
             for="motivoAtendimento"
@@ -421,11 +399,7 @@
              RELATO
         ================================== -->
 
-        <div
-          style="
-            margin-bottom: 20px;
-          "
-        >
+        <div style="margin-bottom: 24px;">
 
           <div
             style="
@@ -434,22 +408,20 @@
               justify-content: space-between;
               gap: 10px;
               flex-wrap: wrap;
-              margin-bottom: 6px;
+              margin-bottom: 8px;
             "
           >
 
             <label
               for="relatoAtendimento"
-              style="
-                font-weight: 600;
-              "
+              style="font-weight: 600;"
             >
               Relato
             </label>
 
 
             <button
-              id="botaoDitarRelato"
+              id="botaoGravarRelato"
               type="button"
               style="
                 padding: 8px 12px;
@@ -460,7 +432,7 @@
                 cursor: pointer;
               "
             >
-              🎙️ Ditar
+              🎙️ Gravar áudio
             </button>
 
           </div>
@@ -469,7 +441,7 @@
           <textarea
             id="relatoAtendimento"
             rows="8"
-            placeholder="Registre aqui o relato da pessoa e os principais pontos da conversa."
+            placeholder="Digite o relato ou grave um áudio para transcrever."
             style="
               width: 100%;
               box-sizing: border-box;
@@ -483,15 +455,84 @@
           ></textarea>
 
 
-          <p
-            id="statusDitadoRelato"
+          <!-- ÁREA DE GRAVAÇÃO DO RELATO -->
+
+          <div
+            id="areaAudioRelato"
             style="
-              margin-top: 6px;
-              margin-bottom: 0;
-              font-size: 13px;
+              margin-top: 12px;
+              padding: 12px;
+              border: 1px solid #ddd;
+              border-radius: 8px;
             "
             hidden
-          ></p>
+          >
+
+            <div
+              id="statusAudioRelato"
+              style="
+                margin-bottom: 10px;
+                font-size: 14px;
+                font-weight: 600;
+              "
+            ></div>
+
+
+            <audio
+              id="playerAudioRelato"
+              controls
+              style="
+                width: 100%;
+                margin-bottom: 10px;
+              "
+              hidden
+            ></audio>
+
+
+            <div
+              style="
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+              "
+            >
+
+              <button
+                id="botaoApagarAudioRelato"
+                type="button"
+                style="
+                  padding: 8px 12px;
+                  border: 1px solid #bbb;
+                  border-radius: 8px;
+                  background: #fff;
+                  font-size: 14px;
+                  cursor: pointer;
+                "
+                hidden
+              >
+                🗑️ Apagar gravação
+              </button>
+
+
+              <button
+                id="botaoTranscreverRelato"
+                type="button"
+                style="
+                  padding: 8px 12px;
+                  border: 1px solid #bbb;
+                  border-radius: 8px;
+                  background: #fff;
+                  font-size: 14px;
+                "
+                disabled
+                hidden
+              >
+                📝 Transcrever áudio
+              </button>
+
+            </div>
+
+          </div>
 
         </div>
 
@@ -500,11 +541,7 @@
              ORIENTAÇÃO / CONDUTA
         ================================== -->
 
-        <div
-          style="
-            margin-bottom: 22px;
-          "
-        >
+        <div style="margin-bottom: 24px;">
 
           <div
             style="
@@ -513,22 +550,20 @@
               justify-content: space-between;
               gap: 10px;
               flex-wrap: wrap;
-              margin-bottom: 6px;
+              margin-bottom: 8px;
             "
           >
 
             <label
               for="orientacaoAtendimento"
-              style="
-                font-weight: 600;
-              "
+              style="font-weight: 600;"
             >
               Orientação / Conduta
             </label>
 
 
             <button
-              id="botaoDitarOrientacao"
+              id="botaoGravarOrientacao"
               type="button"
               style="
                 padding: 8px 12px;
@@ -539,7 +574,7 @@
                 cursor: pointer;
               "
             >
-              🎙️ Ditar
+              🎙️ Gravar áudio
             </button>
 
           </div>
@@ -548,7 +583,7 @@
           <textarea
             id="orientacaoAtendimento"
             rows="7"
-            placeholder="Registre aqui as orientações e condutas definidas no atendimento."
+            placeholder="Digite a orientação ou grave um áudio para transcrever."
             style="
               width: 100%;
               box-sizing: border-box;
@@ -562,15 +597,84 @@
           ></textarea>
 
 
-          <p
-            id="statusDitadoOrientacao"
+          <!-- ÁREA DE GRAVAÇÃO DA ORIENTAÇÃO -->
+
+          <div
+            id="areaAudioOrientacao"
             style="
-              margin-top: 6px;
-              margin-bottom: 0;
-              font-size: 13px;
+              margin-top: 12px;
+              padding: 12px;
+              border: 1px solid #ddd;
+              border-radius: 8px;
             "
             hidden
-          ></p>
+          >
+
+            <div
+              id="statusAudioOrientacao"
+              style="
+                margin-bottom: 10px;
+                font-size: 14px;
+                font-weight: 600;
+              "
+            ></div>
+
+
+            <audio
+              id="playerAudioOrientacao"
+              controls
+              style="
+                width: 100%;
+                margin-bottom: 10px;
+              "
+              hidden
+            ></audio>
+
+
+            <div
+              style="
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+              "
+            >
+
+              <button
+                id="botaoApagarAudioOrientacao"
+                type="button"
+                style="
+                  padding: 8px 12px;
+                  border: 1px solid #bbb;
+                  border-radius: 8px;
+                  background: #fff;
+                  font-size: 14px;
+                  cursor: pointer;
+                "
+                hidden
+              >
+                🗑️ Apagar gravação
+              </button>
+
+
+              <button
+                id="botaoTranscreverOrientacao"
+                type="button"
+                style="
+                  padding: 8px 12px;
+                  border: 1px solid #bbb;
+                  border-radius: 8px;
+                  background: #fff;
+                  font-size: 14px;
+                "
+                disabled
+                hidden
+              >
+                📝 Transcrever áudio
+              </button>
+
+            </div>
+
+          </div>
 
         </div>
 
@@ -579,11 +683,7 @@
              ACOMPANHAMENTO
         ================================== -->
 
-        <div
-          style="
-            margin-bottom: 20px;
-          "
-        >
+        <div style="margin-bottom: 20px;">
 
           <label
             style="
@@ -614,9 +714,7 @@
 
         <div
           id="areaDataRetorno"
-          style="
-            margin-bottom: 22px;
-          "
+          style="margin-bottom: 22px;"
           hidden
         >
 
@@ -674,10 +772,6 @@
         Salvar atendimento
       </button>
 
-
-      <!-- =====================================
-           VOLTAR
-      ====================================== -->
 
       <a
         class="link-administrativo"
@@ -761,7 +855,7 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="novo-atendimento.js?v=2"></script>
+  <script src="novo-atendimento.js?v=3"></script>
 
   <script src="menu-adm.js?v=1"></script>
 
