@@ -90,26 +90,6 @@ const orientacaoAtendimento =
     "orientacaoAtendimento"
   );
 
-const botaoDitarRelato =
-  document.getElementById(
-    "botaoDitarRelato"
-  );
-
-const botaoDitarOrientacao =
-  document.getElementById(
-    "botaoDitarOrientacao"
-  );
-
-const statusDitadoRelato =
-  document.getElementById(
-    "statusDitadoRelato"
-  );
-
-const statusDitadoOrientacao =
-  document.getElementById(
-    "statusDitadoOrientacao"
-  );
-
 const precisaAcompanhamento =
   document.getElementById(
     "precisaAcompanhamento"
@@ -137,6 +117,76 @@ const botaoSalvarAtendimento =
 
 
 /* ==========================================
+   ÁUDIO - RELATO
+========================================== */
+
+const botaoGravarRelato =
+  document.getElementById(
+    "botaoGravarRelato"
+  );
+
+const areaAudioRelato =
+  document.getElementById(
+    "areaAudioRelato"
+  );
+
+const statusAudioRelato =
+  document.getElementById(
+    "statusAudioRelato"
+  );
+
+const playerAudioRelato =
+  document.getElementById(
+    "playerAudioRelato"
+  );
+
+const botaoApagarAudioRelato =
+  document.getElementById(
+    "botaoApagarAudioRelato"
+  );
+
+const botaoTranscreverRelato =
+  document.getElementById(
+    "botaoTranscreverRelato"
+  );
+
+
+/* ==========================================
+   ÁUDIO - ORIENTAÇÃO
+========================================== */
+
+const botaoGravarOrientacao =
+  document.getElementById(
+    "botaoGravarOrientacao"
+  );
+
+const areaAudioOrientacao =
+  document.getElementById(
+    "areaAudioOrientacao"
+  );
+
+const statusAudioOrientacao =
+  document.getElementById(
+    "statusAudioOrientacao"
+  );
+
+const playerAudioOrientacao =
+  document.getElementById(
+    "playerAudioOrientacao"
+  );
+
+const botaoApagarAudioOrientacao =
+  document.getElementById(
+    "botaoApagarAudioOrientacao"
+  );
+
+const botaoTranscreverOrientacao =
+  document.getElementById(
+    "botaoTranscreverOrientacao"
+  );
+
+
+/* ==========================================
    ESTADO
 ========================================== */
 
@@ -155,20 +205,31 @@ let temporizadorBuscaAssociado =
 let temporizadorBuscaNaoAssociado =
   null;
 
-let reconhecimentoAtivo =
+
+/* ==========================================
+   ESTADO DOS ÁUDIOS
+========================================== */
+
+let audioRelatoBlob =
   null;
 
-let campoDitadoAtual =
+let audioRelatoUrl =
   null;
 
-let botaoDitadoAtual =
+let audioOrientacaoBlob =
   null;
 
-let statusDitadoAtual =
+let audioOrientacaoUrl =
   null;
 
-let textoAntesDoDitado =
-  "";
+let gravacaoAtual =
+  null;
+
+let intervaloCronometro =
+  null;
+
+let segundosGravacao =
+  0;
 
 
 /* ==========================================
@@ -262,7 +323,6 @@ function mostrarMensagem(
   mensagemNovoAtendimento.textContent =
     texto;
 
-
   mensagemNovoAtendimento.hidden =
     false;
 
@@ -274,7 +334,6 @@ function esconderMensagem() {
   mensagemNovoAtendimento.textContent =
     "";
 
-
   mensagemNovoAtendimento.hidden =
     true;
 
@@ -282,392 +341,50 @@ function esconderMensagem() {
 
 
 /* ==========================================
-   DITADO
+   CRONÔMETRO
 ========================================== */
 
-function obterClasseReconhecimentoVoz() {
-
-  return (
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition ||
-    null
-  );
-
-}
-
-
-function ditadoDisponivel() {
-
-  return Boolean(
-    obterClasseReconhecimentoVoz()
-  );
-
-}
-
-
-function atualizarStatusDitado(
-  elemento,
-  texto,
-  visivel = true
+function formatarTempo(
+  segundos
 ) {
 
-  elemento.textContent =
-    texto;
+  const minutos =
+    Math.floor(
+      segundos / 60
+    );
 
 
-  elemento.hidden =
-    !visivel;
+  const restante =
+    segundos % 60;
+
+
+  return `${String(
+    minutos
+  ).padStart(
+    2,
+    "0"
+  )}:${String(
+    restante
+  ).padStart(
+    2,
+    "0"
+  )}`;
 
 }
 
 
-function restaurarBotaoDitado() {
+function pararCronometro() {
 
   if (
-    botaoDitadoAtual
+    intervaloCronometro
   ) {
 
-    botaoDitadoAtual.textContent =
-      "🎙️ Ditar";
-
-  }
-
-
-  reconhecimentoAtivo =
-    null;
-
-  campoDitadoAtual =
-    null;
-
-  botaoDitadoAtual =
-    null;
-
-  statusDitadoAtual =
-    null;
-
-  textoAntesDoDitado =
-    "";
-
-}
-
-
-function pararDitado() {
-
-  if (
-    reconhecimentoAtivo
-  ) {
-
-    try {
-
-      reconhecimentoAtivo.stop();
-
-    } catch (erro) {
-
-      console.warn(
-        "Não foi possível interromper o ditado:",
-        erro
-      );
-
-    }
-
-  }
-
-}
-
-
-function iniciarDitado(
-  campo,
-  botao,
-  elementoStatus
-) {
-
-  esconderMensagem();
-
-
-  if (
-    !ditadoDisponivel()
-  ) {
-
-    atualizarStatusDitado(
-      elementoStatus,
-      "O ditado por voz não está disponível neste navegador."
+    clearInterval(
+      intervaloCronometro
     );
 
-    return;
-
-  }
-
-
-  /*
-    Se o mesmo botão estiver gravando,
-    o toque funciona como PARAR.
-  */
-
-  if (
-    reconhecimentoAtivo &&
-    campoDitadoAtual === campo
-  ) {
-
-    pararDitado();
-
-    return;
-
-  }
-
-
-  /*
-    Se outro campo estiver gravando,
-    interrompe antes de iniciar o novo.
-  */
-
-  if (
-    reconhecimentoAtivo
-  ) {
-
-    pararDitado();
-
-  }
-
-
-  const ClasseReconhecimento =
-    obterClasseReconhecimentoVoz();
-
-
-  const reconhecimento =
-    new ClasseReconhecimento();
-
-
-  reconhecimento.lang =
-    "pt-BR";
-
-
-  reconhecimento.continuous =
-    true;
-
-
-  reconhecimento.interimResults =
-    true;
-
-
-  reconhecimento.maxAlternatives =
-    1;
-
-
-  reconhecimentoAtivo =
-    reconhecimento;
-
-
-  campoDitadoAtual =
-    campo;
-
-
-  botaoDitadoAtual =
-    botao;
-
-
-  statusDitadoAtual =
-    elementoStatus;
-
-
-  textoAntesDoDitado =
-    String(
-      campo.value || ""
-    ).trim();
-
-
-  botao.textContent =
-    "■ Parar ditado";
-
-
-  atualizarStatusDitado(
-    elementoStatus,
-    "Ouvindo... fale normalmente."
-  );
-
-
-  reconhecimento.onresult =
-    (evento) => {
-
-      let textoFinal =
-        "";
-
-
-      let textoProvisorio =
-        "";
-
-
-      for (
-        let indice = 0;
-        indice < evento.results.length;
-        indice += 1
-      ) {
-
-        const resultado =
-          evento.results[indice];
-
-
-        const trecho =
-          resultado[0]?.transcript ||
-          "";
-
-
-        if (
-          resultado.isFinal
-        ) {
-
-          textoFinal +=
-            `${trecho} `;
-
-        } else {
-
-          textoProvisorio +=
-            trecho;
-
-        }
-
-      }
-
-
-      const partes =
-        [];
-
-
-      if (
-        textoAntesDoDitado
-      ) {
-
-        partes.push(
-          textoAntesDoDitado
-        );
-
-      }
-
-
-      if (
-        textoFinal.trim()
-      ) {
-
-        partes.push(
-          textoFinal.trim()
-        );
-
-      }
-
-
-      if (
-        textoProvisorio.trim()
-      ) {
-
-        partes.push(
-          textoProvisorio.trim()
-        );
-
-      }
-
-
-      campo.value =
-        partes.join(
-          " "
-        );
-
-    };
-
-
-  reconhecimento.onerror =
-    (evento) => {
-
-      let mensagem =
-        "Não foi possível usar o ditado por voz.";
-
-
-      if (
-        evento.error === "not-allowed" ||
-        evento.error === "service-not-allowed"
-      ) {
-
-        mensagem =
-          "O acesso ao microfone não foi autorizado.";
-
-      }
-
-
-      if (
-        evento.error === "no-speech"
-      ) {
-
-        mensagem =
-          "Nenhuma fala foi detectada. Tente novamente.";
-
-      }
-
-
-      if (
-        evento.error === "audio-capture"
-      ) {
-
-        mensagem =
-          "Não foi possível acessar o microfone do aparelho.";
-
-      }
-
-
-      if (
-        evento.error === "network"
-      ) {
-
-        mensagem =
-          "Não foi possível realizar o reconhecimento de voz. Verifique sua conexão.";
-
-      }
-
-
-      atualizarStatusDitado(
-        elementoStatus,
-        mensagem
-      );
-
-    };
-
-
-  reconhecimento.onend =
-    () => {
-
-      if (
-        statusDitadoAtual
-      ) {
-
-        atualizarStatusDitado(
-          statusDitadoAtual,
-          "Ditado finalizado."
-        );
-
-      }
-
-
-      restaurarBotaoDitado();
-
-    };
-
-
-  try {
-
-    reconhecimento.start();
-
-  } catch (erro) {
-
-    console.error(
-      "Erro ao iniciar reconhecimento de voz:",
-      erro
-    );
-
-
-    atualizarStatusDitado(
-      elementoStatus,
-      "Não foi possível iniciar o ditado."
-    );
-
-
-    restaurarBotaoDitado();
+    intervaloCronometro =
+      null;
 
   }
 
@@ -675,13 +392,543 @@ function iniciarDitado(
 
 
 /* ==========================================
-   CONFIGURAR DISPONIBILIDADE DO DITADO
+   TIPO DE ÁUDIO SUPORTADO
 ========================================== */
 
-function configurarDitado() {
+function obterTipoAudioSuportado() {
+
+  const tipos =
+    [
+      "audio/webm;codecs=opus",
+      "audio/webm",
+      "audio/mp4",
+      "audio/ogg;codecs=opus"
+    ];
+
+
+  for (
+    const tipo
+    of tipos
+  ) {
+
+    if (
+      window.MediaRecorder &&
+      MediaRecorder.isTypeSupported(
+        tipo
+      )
+    ) {
+
+      return tipo;
+
+    }
+
+  }
+
+
+  return "";
+
+}
+
+
+/* ==========================================
+   VERIFICAR GRAVAÇÃO
+========================================== */
+
+function gravacaoDisponivel() {
+
+  return Boolean(
+    navigator.mediaDevices &&
+    navigator.mediaDevices.getUserMedia &&
+    window.MediaRecorder
+  );
+
+}
+
+
+/* ==========================================
+   LIMPAR URL
+========================================== */
+
+function liberarUrlAudio(
+  url
+) {
 
   if (
-    ditadoDisponivel()
+    url
+  ) {
+
+    URL.revokeObjectURL(
+      url
+    );
+
+  }
+
+}
+
+
+/* ==========================================
+   FINALIZAR GRAVAÇÃO ATUAL
+========================================== */
+
+function finalizarGravacaoAtual() {
+
+  if (
+    gravacaoAtual &&
+    gravacaoAtual.mediaRecorder &&
+    gravacaoAtual.mediaRecorder.state !==
+      "inactive"
+  ) {
+
+    gravacaoAtual.mediaRecorder.stop();
+
+  }
+
+}
+
+
+/* ==========================================
+   INICIAR GRAVAÇÃO
+========================================== */
+
+async function iniciarGravacao(
+  tipo
+) {
+
+  esconderMensagem();
+
+
+  if (
+    !gravacaoDisponivel()
+  ) {
+
+    mostrarMensagem(
+      "A gravação de áudio não está disponível neste navegador."
+    );
+
+    return;
+
+  }
+
+
+  /*
+    Só permitimos uma gravação por vez.
+  */
+
+  if (
+    gravacaoAtual
+  ) {
+
+    finalizarGravacaoAtual();
+
+    return;
+
+  }
+
+
+  let stream =
+    null;
+
+
+  try {
+
+    stream =
+      await navigator.mediaDevices
+        .getUserMedia({
+          audio: true
+        });
+
+
+    const mimeType =
+      obterTipoAudioSuportado();
+
+
+    const opcoes =
+      mimeType
+        ? {
+            mimeType:
+              mimeType
+          }
+        : undefined;
+
+
+    const mediaRecorder =
+      new MediaRecorder(
+        stream,
+        opcoes
+      );
+
+
+    const partesAudio =
+      [];
+
+
+    const ehRelato =
+      tipo === "relato";
+
+
+    const botao =
+      ehRelato
+        ? botaoGravarRelato
+        : botaoGravarOrientacao;
+
+
+    const area =
+      ehRelato
+        ? areaAudioRelato
+        : areaAudioOrientacao;
+
+
+    const status =
+      ehRelato
+        ? statusAudioRelato
+        : statusAudioOrientacao;
+
+
+    area.hidden =
+      false;
+
+
+    botao.textContent =
+      "■ Finalizar gravação";
+
+
+    segundosGravacao =
+      0;
+
+
+    status.textContent =
+      `● Gravando... ${formatarTempo(
+        segundosGravacao
+      )}`;
+
+
+    intervaloCronometro =
+      setInterval(
+        () => {
+
+          segundosGravacao +=
+            1;
+
+
+          status.textContent =
+            `● Gravando... ${formatarTempo(
+              segundosGravacao
+            )}`;
+
+        },
+        1000
+      );
+
+
+    mediaRecorder.addEventListener(
+      "dataavailable",
+      (evento) => {
+
+        if (
+          evento.data &&
+          evento.data.size > 0
+        ) {
+
+          partesAudio.push(
+            evento.data
+          );
+
+        }
+
+      }
+    );
+
+
+    mediaRecorder.addEventListener(
+      "stop",
+      () => {
+
+        pararCronometro();
+
+
+        const tipoFinal =
+          mediaRecorder.mimeType ||
+          mimeType ||
+          "audio/webm";
+
+
+        const blob =
+          new Blob(
+            partesAudio,
+            {
+              type:
+                tipoFinal
+            }
+          );
+
+
+        /*
+          Fecha o microfone.
+        */
+
+        stream
+          .getTracks()
+          .forEach(
+            (track) => {
+
+              track.stop();
+
+            }
+          );
+
+
+        if (
+          ehRelato
+        ) {
+
+          salvarGravacaoRelato(
+            blob
+          );
+
+        } else {
+
+          salvarGravacaoOrientacao(
+            blob
+          );
+
+        }
+
+
+        gravacaoAtual =
+          null;
+
+      }
+    );
+
+
+    mediaRecorder.addEventListener(
+      "error",
+      (evento) => {
+
+        console.error(
+          "Erro no MediaRecorder:",
+          evento
+        );
+
+
+        pararCronometro();
+
+
+        stream
+          .getTracks()
+          .forEach(
+            (track) => {
+
+              track.stop();
+
+            }
+          );
+
+
+        gravacaoAtual =
+          null;
+
+
+        botao.textContent =
+          "🎙️ Gravar áudio";
+
+
+        mostrarMensagem(
+          "Não foi possível concluir a gravação do áudio."
+        );
+
+      }
+    );
+
+
+    gravacaoAtual = {
+      tipo:
+        tipo,
+
+      mediaRecorder:
+        mediaRecorder,
+
+      stream:
+        stream
+    };
+
+
+    mediaRecorder.start();
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao acessar microfone:",
+      erro
+    );
+
+
+    pararCronometro();
+
+
+    if (
+      stream
+    ) {
+
+      stream
+        .getTracks()
+        .forEach(
+          (track) => {
+
+            track.stop();
+
+          }
+        );
+
+    }
+
+
+    gravacaoAtual =
+      null;
+
+
+    if (
+      erro.name ===
+      "NotAllowedError"
+    ) {
+
+      mostrarMensagem(
+        "O acesso ao microfone não foi autorizado."
+      );
+
+      return;
+
+    }
+
+
+    mostrarMensagem(
+      "Não foi possível acessar o microfone deste aparelho."
+    );
+
+  }
+
+}
+
+
+/* ==========================================
+   SALVAR GRAVAÇÃO DO RELATO
+========================================== */
+
+function salvarGravacaoRelato(
+  blob
+) {
+
+  liberarUrlAudio(
+    audioRelatoUrl
+  );
+
+
+  audioRelatoBlob =
+    blob;
+
+
+  audioRelatoUrl =
+    URL.createObjectURL(
+      blob
+    );
+
+
+  playerAudioRelato.src =
+    audioRelatoUrl;
+
+
+  playerAudioRelato.hidden =
+    false;
+
+
+  botaoApagarAudioRelato.hidden =
+    false;
+
+
+  botaoTranscreverRelato.hidden =
+    false;
+
+
+  botaoTranscreverRelato.disabled =
+    true;
+
+
+  statusAudioRelato.textContent =
+    `Gravação finalizada — ${formatarTempo(
+      segundosGravacao
+    )}`;
+
+
+  botaoGravarRelato.textContent =
+    "🎙️ Gravar novamente";
+
+}
+
+
+/* ==========================================
+   SALVAR GRAVAÇÃO DA ORIENTAÇÃO
+========================================== */
+
+function salvarGravacaoOrientacao(
+  blob
+) {
+
+  liberarUrlAudio(
+    audioOrientacaoUrl
+  );
+
+
+  audioOrientacaoBlob =
+    blob;
+
+
+  audioOrientacaoUrl =
+    URL.createObjectURL(
+      blob
+    );
+
+
+  playerAudioOrientacao.src =
+    audioOrientacaoUrl;
+
+
+  playerAudioOrientacao.hidden =
+    false;
+
+
+  botaoApagarAudioOrientacao.hidden =
+    false;
+
+
+  botaoTranscreverOrientacao.hidden =
+    false;
+
+
+  botaoTranscreverOrientacao.disabled =
+    true;
+
+
+  statusAudioOrientacao.textContent =
+    `Gravação finalizada — ${formatarTempo(
+      segundosGravacao
+    )}`;
+
+
+  botaoGravarOrientacao.textContent =
+    "🎙️ Gravar novamente";
+
+}
+
+
+/* ==========================================
+   APAGAR RELATO
+========================================== */
+
+function apagarAudioRelato() {
+
+  if (
+    gravacaoAtual
   ) {
 
     return;
@@ -689,24 +936,109 @@ function configurarDitado() {
   }
 
 
-  botaoDitarRelato.disabled =
-    true;
+  playerAudioRelato.pause();
 
 
-  botaoDitarOrientacao.disabled =
-    true;
-
-
-  atualizarStatusDitado(
-    statusDitadoRelato,
-    "Ditado por voz indisponível neste navegador."
+  playerAudioRelato.removeAttribute(
+    "src"
   );
 
 
-  atualizarStatusDitado(
-    statusDitadoOrientacao,
-    "Ditado por voz indisponível neste navegador."
+  liberarUrlAudio(
+    audioRelatoUrl
   );
+
+
+  audioRelatoBlob =
+    null;
+
+  audioRelatoUrl =
+    null;
+
+
+  playerAudioRelato.hidden =
+    true;
+
+
+  botaoApagarAudioRelato.hidden =
+    true;
+
+
+  botaoTranscreverRelato.hidden =
+    true;
+
+
+  statusAudioRelato.textContent =
+    "";
+
+
+  areaAudioRelato.hidden =
+    true;
+
+
+  botaoGravarRelato.textContent =
+    "🎙️ Gravar áudio";
+
+}
+
+
+/* ==========================================
+   APAGAR ORIENTAÇÃO
+========================================== */
+
+function apagarAudioOrientacao() {
+
+  if (
+    gravacaoAtual
+  ) {
+
+    return;
+
+  }
+
+
+  playerAudioOrientacao.pause();
+
+
+  playerAudioOrientacao.removeAttribute(
+    "src"
+  );
+
+
+  liberarUrlAudio(
+    audioOrientacaoUrl
+  );
+
+
+  audioOrientacaoBlob =
+    null;
+
+  audioOrientacaoUrl =
+    null;
+
+
+  playerAudioOrientacao.hidden =
+    true;
+
+
+  botaoApagarAudioOrientacao.hidden =
+    true;
+
+
+  botaoTranscreverOrientacao.hidden =
+    true;
+
+
+  statusAudioOrientacao.textContent =
+    "";
+
+
+  areaAudioOrientacao.hidden =
+    true;
+
+
+  botaoGravarOrientacao.textContent =
+    "🎙️ Gravar áudio";
 
 }
 
@@ -1033,7 +1365,7 @@ async function buscarAssociados() {
     associados.forEach(
       (associado) => {
 
-        const botao =
+        resultadoBuscaAssociado.appendChild(
           criarBotaoResultado(
             associado.nome_completo,
             "Associado",
@@ -1063,11 +1395,7 @@ async function buscarAssociados() {
                 "";
 
             }
-          );
-
-
-        resultadoBuscaAssociado.appendChild(
-          botao
+          )
         );
 
       }
@@ -1174,7 +1502,7 @@ async function buscarNaoAssociados() {
     pessoas.forEach(
       (pessoa) => {
 
-        const botao =
+        resultadoBuscaNaoAssociado.appendChild(
           criarBotaoResultado(
             pessoa.nome_completo,
             "Não associado",
@@ -1208,11 +1536,7 @@ async function buscarNaoAssociados() {
                 "";
 
             }
-          );
-
-
-        resultadoBuscaNaoAssociado.appendChild(
-          botao
+          )
         );
 
       }
@@ -1335,6 +1659,19 @@ async function criarPessoaNaoAssociada() {
 function validarFormulario() {
 
   if (
+    gravacaoAtual
+  ) {
+
+    mostrarMensagem(
+      "Finalize a gravação de áudio antes de salvar o atendimento."
+    );
+
+    return false;
+
+  }
+
+
+  if (
     !dataAtendimento.value
   ) {
 
@@ -1414,9 +1751,6 @@ function validarFormulario() {
 async function salvarAtendimento() {
 
   esconderMensagem();
-
-
-  pararDitado();
 
 
   if (
@@ -1600,7 +1934,7 @@ function atualizarAcompanhamento() {
 
 
 /* ==========================================
-   USUÁRIO LOGADO E PERMISSÃO
+   USUÁRIO LOGADO
 ========================================== */
 
 async function carregarUsuarioLogado() {
@@ -1640,9 +1974,9 @@ async function carregarUsuarioLogado() {
       .from(
         "usuarios"
       )
-      .select(`
-        id
-      `)
+      .select(
+        "id"
+      )
       .eq(
         "auth_id",
         sessao.user.id
@@ -1775,31 +2109,63 @@ campoBuscaNaoAssociado.addEventListener(
 );
 
 
-botaoDitarRelato.addEventListener(
+botaoGravarRelato.addEventListener(
   "click",
   () => {
 
-    iniciarDitado(
-      relatoAtendimento,
-      botaoDitarRelato,
-      statusDitadoRelato
+    if (
+      gravacaoAtual &&
+      gravacaoAtual.tipo === "relato"
+    ) {
+
+      finalizarGravacaoAtual();
+
+      return;
+
+    }
+
+
+    iniciarGravacao(
+      "relato"
     );
 
   }
 );
 
 
-botaoDitarOrientacao.addEventListener(
+botaoGravarOrientacao.addEventListener(
   "click",
   () => {
 
-    iniciarDitado(
-      orientacaoAtendimento,
-      botaoDitarOrientacao,
-      statusDitadoOrientacao
+    if (
+      gravacaoAtual &&
+      gravacaoAtual.tipo === "orientacao"
+    ) {
+
+      finalizarGravacaoAtual();
+
+      return;
+
+    }
+
+
+    iniciarGravacao(
+      "orientacao"
     );
 
   }
+);
+
+
+botaoApagarAudioRelato.addEventListener(
+  "click",
+  apagarAudioRelato
+);
+
+
+botaoApagarAudioOrientacao.addEventListener(
+  "click",
+  apagarAudioOrientacao
 );
 
 
@@ -1815,9 +2181,44 @@ botaoSalvarAtendimento.addEventListener(
 );
 
 
+/* ==========================================
+   SAÍDA DA PÁGINA
+========================================== */
+
 window.addEventListener(
   "beforeunload",
-  pararDitado
+  () => {
+
+    pararCronometro();
+
+
+    if (
+      gravacaoAtual
+    ) {
+
+      gravacaoAtual.stream
+        .getTracks()
+        .forEach(
+          (track) => {
+
+            track.stop();
+
+          }
+        );
+
+    }
+
+
+    liberarUrlAudio(
+      audioRelatoUrl
+    );
+
+
+    liberarUrlAudio(
+      audioOrientacaoUrl
+    );
+
+  }
 );
 
 
@@ -1849,7 +2250,23 @@ async function iniciarPagina() {
   atualizarAcompanhamento();
 
 
-  configurarDitado();
+  if (
+    !gravacaoDisponivel()
+  ) {
+
+    botaoGravarRelato.disabled =
+      true;
+
+
+    botaoGravarOrientacao.disabled =
+      true;
+
+
+    mostrarMensagem(
+      "A gravação de áudio não está disponível neste navegador."
+    );
+
+  }
 
 
   try {
