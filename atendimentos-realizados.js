@@ -289,13 +289,199 @@ function criarBotaoLeitura(
   botao.type =
     "button";
 
-
   botao.textContent =
     textoBotao;
 
-
   botao.style.padding =
     "7px 10px";
+
+  botao.style.border =
+    "1px solid #bbb";
+
+  botao.style.borderRadius =
+    "8px";
+
+  botao.style.background =
+    "#fff";
+
+  botao.style.cursor =
+    "pointer";
+
+  botao.style.fontSize =
+    "13px";
+
+
+  botao.addEventListener(
+    "click",
+    () => {
+
+      falarTexto(
+        textoLeitura
+      );
+
+    }
+  );
+
+
+  return botao;
+
+}
+
+
+/* ==========================================
+   ÁUDIO ORIGINAL
+========================================== */
+
+async function carregarAudioOriginal(
+  caminho,
+  areaPlayer,
+  player,
+  botao
+) {
+
+  if (
+    !caminho
+  ) {
+
+    return;
+
+  }
+
+
+  esconderMensagem();
+
+
+  botao.disabled =
+    true;
+
+
+  botao.textContent =
+    "Carregando áudio...";
+
+
+  try {
+
+    const resultado =
+      await window.supabaseClient
+        .storage
+        .from(
+          "audios-atendimentos"
+        )
+        .createSignedUrl(
+          caminho,
+          3600
+        );
+
+
+    if (
+      resultado.error
+    ) {
+
+      throw resultado.error;
+
+    }
+
+
+    if (
+      !resultado.data?.signedUrl
+    ) {
+
+      throw new Error(
+        "URL do áudio não encontrada."
+      );
+
+    }
+
+
+    player.src =
+      resultado.data.signedUrl;
+
+
+    areaPlayer.hidden =
+      false;
+
+
+    player.hidden =
+      false;
+
+
+    try {
+
+      await player.play();
+
+    } catch (erroPlay) {
+
+      console.warn(
+        "Reprodução automática não iniciada:",
+        erroPlay
+      );
+
+    }
+
+
+    botao.textContent =
+      "▶ Ouvir áudio original";
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao carregar áudio original:",
+      erro
+    );
+
+
+    mostrarMensagem(
+      "Não foi possível carregar o áudio original."
+    );
+
+
+    botao.textContent =
+      "▶ Ouvir áudio original";
+
+  }
+
+
+  botao.disabled =
+    false;
+
+}
+
+
+/* ==========================================
+   CRIAR ÁREA DO ÁUDIO ORIGINAL
+========================================== */
+
+function criarAreaAudioOriginal(
+  caminho
+) {
+
+  const container =
+    document.createElement(
+      "div"
+    );
+
+
+  container.style.marginTop =
+    "10px";
+
+
+  const botao =
+    document.createElement(
+      "button"
+    );
+
+
+  botao.type =
+    "button";
+
+
+  botao.textContent =
+    "▶ Ouvir áudio original";
+
+
+  botao.style.padding =
+    "8px 10px";
 
 
   botao.style.border =
@@ -318,19 +504,69 @@ function criarBotaoLeitura(
     "13px";
 
 
+  const areaPlayer =
+    document.createElement(
+      "div"
+    );
+
+
+  areaPlayer.style.marginTop =
+    "10px";
+
+
+  areaPlayer.hidden =
+    true;
+
+
+  const player =
+    document.createElement(
+      "audio"
+    );
+
+
+  player.controls =
+    true;
+
+
+  player.style.width =
+    "100%";
+
+
+  player.hidden =
+    true;
+
+
+  areaPlayer.appendChild(
+    player
+  );
+
+
   botao.addEventListener(
     "click",
     () => {
 
-      falarTexto(
-        textoLeitura
+      carregarAudioOriginal(
+        caminho,
+        areaPlayer,
+        player,
+        botao
       );
 
     }
   );
 
 
-  return botao;
+  container.appendChild(
+    botao
+  );
+
+
+  container.appendChild(
+    areaPlayer
+  );
+
+
+  return container;
 
 }
 
@@ -409,6 +645,7 @@ function criarBotaoPessoa(
     nome
   );
 
+
   dados.appendChild(
     tipo
   );
@@ -430,6 +667,7 @@ function criarBotaoPessoa(
   botao.appendChild(
     dados
   );
+
 
   botao.appendChild(
     seta
@@ -553,19 +791,6 @@ async function buscarPessoas() {
       ];
 
 
-    if (
-      idsAssociados.length === 0 &&
-      idsNaoAssociados.length === 0
-    ) {
-
-      resultadoBuscaPessoa.innerHTML =
-        "<p>Nenhum atendimento registrado.</p>";
-
-      return;
-
-    }
-
-
     let associados =
       [];
 
@@ -593,13 +818,6 @@ async function buscarPessoas() {
           .ilike(
             "nome_completo",
             `%${busca}%`
-          )
-          .order(
-            "nome_completo",
-            {
-              ascending:
-                true
-            }
           );
 
 
@@ -653,13 +871,6 @@ async function buscarPessoas() {
           .ilike(
             "nome_completo",
             `%${busca}%`
-          )
-          .order(
-            "nome_completo",
-            {
-              ascending:
-                true
-            }
           );
 
 
@@ -751,7 +962,7 @@ async function buscarPessoas() {
   } catch (erro) {
 
     console.error(
-      "Erro ao pesquisar pessoas com atendimento:",
+      "Erro ao pesquisar pessoas:",
       erro
     );
 
@@ -771,7 +982,8 @@ async function buscarPessoas() {
 function criarBlocoTexto(
   titulo,
   texto,
-  textoBotaoLeitura = null
+  textoBotaoLeitura = null,
+  audioPath = null
 ) {
 
   const bloco =
@@ -826,7 +1038,10 @@ function criarBlocoTexto(
 
 
   if (
-    textoBotaoLeitura
+    textoBotaoLeitura &&
+    String(
+      texto || ""
+    ).trim()
   ) {
 
     cabecalho.appendChild(
@@ -839,6 +1054,11 @@ function criarBlocoTexto(
   }
 
 
+  bloco.appendChild(
+    cabecalho
+  );
+
+
   const textoElemento =
     document.createElement(
       "p"
@@ -848,21 +1068,37 @@ function criarBlocoTexto(
   textoElemento.style.marginTop =
     "6px";
 
+
   textoElemento.style.whiteSpace =
     "pre-wrap";
 
+
   textoElemento.textContent =
-    texto ||
-    "Não informado.";
+    String(
+      texto || ""
+    ).trim()
+      ? texto
+      : audioPath
+        ? "Registro realizado em áudio."
+        : "Não informado.";
 
-
-  bloco.appendChild(
-    cabecalho
-  );
 
   bloco.appendChild(
     textoElemento
   );
+
+
+  if (
+    audioPath
+  ) {
+
+    bloco.appendChild(
+      criarAreaAudioOriginal(
+        audioPath
+      )
+    );
+
+  }
 
 
   return bloco;
@@ -886,6 +1122,7 @@ function criarItemAtendimento(
 
   item.style.padding =
     "18px 0";
+
 
   item.style.borderBottom =
     "1px solid #ddd";
@@ -927,6 +1164,7 @@ function criarItemAtendimento(
     responsavel.style.marginTop =
       "4px";
 
+
     responsavel.style.fontSize =
       "14px";
 
@@ -967,7 +1205,8 @@ function criarItemAtendimento(
     criarBlocoTexto(
       "Relato",
       atendimento.relato,
-      "🔊 Ouvir relato"
+      "🔊 Ouvir relato",
+      atendimento.relato_audio_path
     )
   );
 
@@ -976,7 +1215,8 @@ function criarItemAtendimento(
     criarBlocoTexto(
       "Orientação / Conduta",
       atendimento.orientacao_conduta,
-      "🔊 Ouvir orientação"
+      "🔊 Ouvir orientação",
+      atendimento.orientacao_audio_path
     )
   );
 
@@ -1034,6 +1274,7 @@ function criarItemAtendimento(
     tituloAcompanhamento
   );
 
+
   acompanhamento.appendChild(
     textoAcompanhamento
   );
@@ -1046,121 +1287,153 @@ function criarItemAtendimento(
 
   /* ======================================
      LEITURA COMPLETA
+     APENAS SE EXISTIR ALGUM TEXTO
   ====================================== */
 
-  const areaLeituraCompleta =
-    document.createElement(
-      "div"
+  const possuiTexto =
+    Boolean(
+      String(
+        atendimento.relato || ""
+      ).trim() ||
+      String(
+        atendimento.orientacao_conduta || ""
+      ).trim()
     );
 
 
-  areaLeituraCompleta.style.display =
-    "flex";
+  if (
+    possuiTexto
+  ) {
 
-  areaLeituraCompleta.style.flexWrap =
-    "wrap";
-
-  areaLeituraCompleta.style.gap =
-    "8px";
-
-  areaLeituraCompleta.style.marginTop =
-    "18px";
-
-
-  const nomeResponsavel =
-    atendimento.responsavel
-      ? formatarNome(
-          atendimento.responsavel.nome_completo
-        )
-      : "responsável não informado";
-
-
-  const acompanhamentoFalado =
-    atendimento.precisa_acompanhamento
-      ? (
-          atendimento.data_retorno
-            ? `Sim. Retorno sugerido para ${formatarData(
-                atendimento.data_retorno
-              )}.`
-            : "Sim. Sem data definida."
-        )
-      : "Não.";
-
-
-  const textoCompleto =
-    [
-      `Atendimento do dia ${formatarData(
-        atendimento.data_atendimento
-      )}.`,
-      `Realizado por ${nomeResponsavel}.`,
-      atendimento.motivo
-        ? `Motivo: ${atendimento.motivo}.`
-        : "",
-      `Relato: ${atendimento.relato || "Não informado."}`,
-      `Orientação e conduta: ${atendimento.orientacao_conduta || "Não informado."}`,
-      `Acompanhamento: ${acompanhamentoFalado}`
-    ]
-      .filter(
-        Boolean
-      )
-      .join(
-        " "
+    const areaLeituraCompleta =
+      document.createElement(
+        "div"
       );
 
 
-  areaLeituraCompleta.appendChild(
-    criarBotaoLeitura(
-      "🔊 Ouvir atendimento completo",
-      textoCompleto
-    )
-  );
+    areaLeituraCompleta.style.display =
+      "flex";
 
 
-  const botaoParar =
-    document.createElement(
-      "button"
+    areaLeituraCompleta.style.flexWrap =
+      "wrap";
+
+
+    areaLeituraCompleta.style.gap =
+      "8px";
+
+
+    areaLeituraCompleta.style.marginTop =
+      "18px";
+
+
+    const nomeResponsavel =
+      atendimento.responsavel
+        ? formatarNome(
+            atendimento.responsavel.nome_completo
+          )
+        : "responsável não informado";
+
+
+    const acompanhamentoFalado =
+      atendimento.precisa_acompanhamento
+        ? (
+            atendimento.data_retorno
+              ? `Sim. Retorno sugerido para ${formatarData(
+                  atendimento.data_retorno
+                )}.`
+              : "Sim. Sem data definida."
+          )
+        : "Não.";
+
+
+    const textoCompleto =
+      [
+        `Atendimento do dia ${formatarData(
+          atendimento.data_atendimento
+        )}.`,
+        `Realizado por ${nomeResponsavel}.`,
+        atendimento.motivo
+          ? `Motivo: ${atendimento.motivo}.`
+          : "",
+        atendimento.relato
+          ? `Relato: ${atendimento.relato}`
+          : "Relato registrado somente em áudio.",
+        atendimento.orientacao_conduta
+          ? `Orientação e conduta: ${atendimento.orientacao_conduta}`
+          : "Orientação registrada somente em áudio.",
+        `Acompanhamento: ${acompanhamentoFalado}`
+      ]
+        .filter(
+          Boolean
+        )
+        .join(
+          " "
+        );
+
+
+    areaLeituraCompleta.appendChild(
+      criarBotaoLeitura(
+        "🔊 Ouvir atendimento completo",
+        textoCompleto
+      )
     );
 
 
-  botaoParar.type =
-    "button";
-
-  botaoParar.textContent =
-    "■ Parar leitura";
-
-  botaoParar.style.padding =
-    "10px 12px";
-
-  botaoParar.style.border =
-    "1px solid #bbb";
-
-  botaoParar.style.borderRadius =
-    "8px";
-
-  botaoParar.style.background =
-    "#fff";
-
-  botaoParar.style.cursor =
-    "pointer";
-
-  botaoParar.style.fontSize =
-    "14px";
+    const botaoParar =
+      document.createElement(
+        "button"
+      );
 
 
-  botaoParar.addEventListener(
-    "click",
-    pararLeitura
-  );
+    botaoParar.type =
+      "button";
 
 
-  areaLeituraCompleta.appendChild(
-    botaoParar
-  );
+    botaoParar.textContent =
+      "■ Parar leitura";
 
 
-  item.appendChild(
-    areaLeituraCompleta
-  );
+    botaoParar.style.padding =
+      "10px 12px";
+
+
+    botaoParar.style.border =
+      "1px solid #bbb";
+
+
+    botaoParar.style.borderRadius =
+      "8px";
+
+
+    botaoParar.style.background =
+      "#fff";
+
+
+    botaoParar.style.cursor =
+      "pointer";
+
+
+    botaoParar.style.fontSize =
+      "14px";
+
+
+    botaoParar.addEventListener(
+      "click",
+      pararLeitura
+    );
+
+
+    areaLeituraCompleta.appendChild(
+      botaoParar
+    );
+
+
+    item.appendChild(
+      areaLeituraCompleta
+    );
+
+  }
 
 
   /* ======================================
@@ -1176,14 +1449,18 @@ function criarItemAtendimento(
   linkEditar.href =
     `editar-atendimento.html?id=${atendimento.id}&origem=busca`;
 
+
   linkEditar.className =
     "link-administrativo";
+
 
   linkEditar.style.display =
     "inline-block";
 
+
   linkEditar.style.marginTop =
     "18px";
+
 
   linkEditar.textContent =
     "Editar atendimento";
@@ -1207,8 +1484,10 @@ function criarItemAtendimento(
   auditoria.style.marginTop =
     "14px";
 
+
   auditoria.style.fontSize =
     "13px";
+
 
   auditoria.style.opacity =
     "0.75";
@@ -1305,6 +1584,8 @@ async function abrirHistoricoPessoa(
           motivo,
           relato,
           orientacao_conduta,
+          relato_audio_path,
+          orientacao_audio_path,
           precisa_acompanhamento,
           data_retorno,
           criado_em,
@@ -1559,7 +1840,7 @@ campoBuscaPessoa.addEventListener(
 
 
 /* ==========================================
-   SAÍDA DA PÁGINA
+   SAÍDA
 ========================================== */
 
 window.addEventListener(
