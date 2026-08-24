@@ -427,16 +427,44 @@
           "
         >
 
-          <label
-            for="relatoAtendimento"
+          <div
             style="
-              display: block;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 10px;
+              flex-wrap: wrap;
               margin-bottom: 6px;
-              font-weight: 600;
             "
           >
-            Relato
-          </label>
+
+            <label
+              for="relatoAtendimento"
+              style="
+                font-weight: 600;
+              "
+            >
+              Relato
+            </label>
+
+
+            <button
+              id="botaoDitarRelato"
+              type="button"
+              style="
+                padding: 8px 12px;
+                border: 1px solid #bbb;
+                border-radius: 8px;
+                background: #fff;
+                font-size: 14px;
+                cursor: pointer;
+              "
+            >
+              🎙️ Ditar
+            </button>
+
+          </div>
+
 
           <textarea
             id="relatoAtendimento"
@@ -454,6 +482,17 @@
             "
           ></textarea>
 
+
+          <p
+            id="statusDitadoRelato"
+            style="
+              margin-top: 6px;
+              margin-bottom: 0;
+              font-size: 13px;
+            "
+            hidden
+          ></p>
+
         </div>
 
 
@@ -467,16 +506,44 @@
           "
         >
 
-          <label
-            for="orientacaoAtendimento"
+          <div
             style="
-              display: block;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 10px;
+              flex-wrap: wrap;
               margin-bottom: 6px;
-              font-weight: 600;
             "
           >
-            Orientação / Conduta
-          </label>
+
+            <label
+              for="orientacaoAtendimento"
+              style="
+                font-weight: 600;
+              "
+            >
+              Orientação / Conduta
+            </label>
+
+
+            <button
+              id="botaoDitarOrientacao"
+              type="button"
+              style="
+                padding: 8px 12px;
+                border: 1px solid #bbb;
+                border-radius: 8px;
+                background: #fff;
+                font-size: 14px;
+                cursor: pointer;
+              "
+            >
+              🎙️ Ditar
+            </button>
+
+          </div>
+
 
           <textarea
             id="orientacaoAtendimento"
@@ -493,6 +560,17 @@
               resize: vertical;
             "
           ></textarea>
+
+
+          <p
+            id="statusDitadoOrientacao"
+            style="
+              margin-top: 6px;
+              margin-bottom: 0;
+              font-size: 13px;
+            "
+            hidden
+          ></p>
 
         </div>
 
@@ -625,54 +703,29 @@
 
     <div class="menu-inferior-conteudo">
 
-
       <a
         class="item-menu"
         href="dashboard.html"
       >
-
-        <span class="icone-menu">
-          ⌂
-        </span>
-
-        <span class="texto-menu">
-          Início
-        </span>
-
+        <span class="icone-menu">⌂</span>
+        <span class="texto-menu">Início</span>
       </a>
-
 
       <a
         class="item-menu"
         href="calendario.html"
       >
-
-        <span class="icone-menu">
-          📅
-        </span>
-
-        <span class="texto-menu">
-          Calendário
-        </span>
-
+        <span class="icone-menu">📅</span>
+        <span class="texto-menu">Calendário</span>
       </a>
-
 
       <a
         class="item-menu"
         href="minha-ficha.html"
       >
-
-        <span class="icone-menu">
-          👤
-        </span>
-
-        <span class="texto-menu">
-          Minha ficha
-        </span>
-
+        <span class="icone-menu">👤</span>
+        <span class="texto-menu">Minha ficha</span>
       </a>
-
 
       <a
         id="itemMenuAdm"
@@ -680,34 +733,18 @@
         href="administrativo.html"
         hidden
       >
-
-        <span class="icone-menu">
-          ☰
-        </span>
-
-        <span class="texto-menu">
-          ADM
-        </span>
-
+        <span class="icone-menu">☰</span>
+        <span class="texto-menu">ADM</span>
       </a>
-
 
       <a
         class="item-menu"
         href="#"
         id="botaoSair"
       >
-
-        <span class="icone-menu">
-          🚪
-        </span>
-
-        <span class="texto-menu">
-          Sair
-        </span>
-
+        <span class="icone-menu">🚪</span>
+        <span class="texto-menu">Sair</span>
       </a>
-
 
     </div>
 
@@ -724,7 +761,7 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="novo-atendimento.js?v=1"></script>
+  <script src="novo-atendimento.js?v=2"></script>
 
   <script src="menu-adm.js?v=1"></script>
 
