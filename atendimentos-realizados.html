@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta
+    name="theme-color"
+    content="#651b1d"
+  >
+
+  <title>
+    Atendimentos Realizados | TUFRA
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="layout.css?v=40"
+  >
+
+</head>
+
+
+<body>
+
+  <main class="app">
+
+    <div class="conteudo-app">
+
+
+      <!-- =====================================
+           CABEÇALHO
+      ====================================== -->
+
+      <header class="cabecalho-app">
+
+        <img
+          class="logo-app"
+          src="logo-tufra.png"
+          alt="Logo da TUFRA"
+        >
+
+        <div class="identidade-app">
+
+          <strong>
+            TUFRA
+          </strong>
+
+          <span>
+            Tenda de Umbanda Francisco de Assis
+          </span>
+
+        </div>
+
+      </header>
+
+
+      <!-- =====================================
+           TÍTULO
+      ====================================== -->
+
+      <section>
+
+        <h1 class="titulo-pagina">
+          Atendimentos Realizados
+        </h1>
+
+        <p class="subtitulo-pagina">
+          Pesquise uma pessoa para consultar seu histórico de atendimentos.
+        </p>
+
+      </section>
+
+
+      <!-- =====================================
+           BUSCA
+      ====================================== -->
+
+      <section class="cartao-app">
+
+        <label
+          for="campoBuscaPessoa"
+          style="
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+          "
+        >
+          Buscar pessoa
+        </label>
+
+
+        <input
+          id="campoBuscaPessoa"
+          type="search"
+          placeholder="Digite pelo menos 2 letras do nome"
+          autocomplete="off"
+          style="
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+          "
+        >
+
+
+        <div
+          id="resultadoBuscaPessoa"
+          class="lista-permissoes"
+          style="
+            margin-top: 12px;
+          "
+        >
+
+          <p>
+            Digite um nome para pesquisar.
+          </p>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================
+           HISTÓRICO
+      ====================================== -->
+
+      <section
+        id="secaoHistoricoAtendimentos"
+        class="cartao-app"
+        hidden
+      >
+
+        <h2 id="nomePessoaHistorico">
+          Histórico
+        </h2>
+
+
+        <p
+          id="tipoPessoaHistorico"
+          style="
+            margin-bottom: 18px;
+          "
+        ></p>
+
+
+        <div
+          id="listaHistoricoAtendimentos"
+        >
+
+          <p>
+            Carregando atendimentos...
+          </p>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================
+           MENSAGEM
+      ====================================== -->
+
+      <p
+        id="mensagemAtendimentosRealizados"
+        class="mensagem-formulario"
+        hidden
+      ></p>
+
+
+      <!-- =====================================
+           VOLTAR
+      ====================================== -->
+
+      <a
+        class="link-administrativo"
+        href="adm-atendimentos.html"
+      >
+        Voltar para Atendimentos
+      </a>
+
+
+    </div>
+
+  </main>
+
+
+  <!-- =====================================
+       MENU INFERIOR
+  ====================================== -->
+
+  <nav
+    class="menu-inferior"
+    aria-label="Navegação principal"
+  >
+
+    <div class="menu-inferior-conteudo">
+
+
+      <a
+        class="item-menu"
+        href="dashboard.html"
+      >
+
+        <span class="icone-menu">
+          ⌂
+        </span>
+
+        <span class="texto-menu">
+          Início
+        </span>
+
+      </a>
+
+
+      <a
+        class="item-menu"
+        href="calendario.html"
+      >
+
+        <span class="icone-menu">
+          📅
+        </span>
+
+        <span class="texto-menu">
+          Calendário
+        </span>
+
+      </a>
+
+
+      <a
+        class="item-menu"
+        href="minha-ficha.html"
+      >
+
+        <span class="icone-menu">
+          👤
+        </span>
+
+        <span class="texto-menu">
+          Minha ficha
+        </span>
+
+      </a>
+
+
+      <a
+        id="itemMenuAdm"
+        class="item-menu ativo"
+        href="administrativo.html"
+        hidden
+      >
+
+        <span class="icone-menu">
+          ☰
+        </span>
+
+        <span class="texto-menu">
+          ADM
+        </span>
+
+      </a>
+
+
+      <a
+        class="item-menu"
+        href="#"
+        id="botaoSair"
+      >
+
+        <span class="icone-menu">
+          🚪
+        </span>
+
+        <span class="texto-menu">
+          Sair
+        </span>
+
+      </a>
+
+
+    </div>
+
+  </nav>
+
+
+  <!-- =====================================
+       SCRIPTS
+  ====================================== -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="supabase.js?v=2"></script>
+
+  <script src="app.js?v=2"></script>
+
+  <script src="atendimentos-realizados.js?v=1"></script>
+
+  <script src="menu-adm.js?v=1"></script>
+
+
+</body>
+
+</html>
