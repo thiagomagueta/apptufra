@@ -56,6 +56,35 @@ let audioEmReproducao =
 
 
 /* ==========================================
+   PARÂMETROS DA URL
+========================================== */
+
+function obterParametrosPagina() {
+
+  const parametros =
+    new URLSearchParams(
+      window.location.search
+    );
+
+
+  return {
+
+    usuarioId:
+      parametros.get(
+        "usuario_id"
+      ),
+
+    origem:
+      parametros.get(
+        "origem"
+      )
+
+  };
+
+}
+
+
+/* ==========================================
    FORMATAÇÃO
 ========================================== */
 
@@ -320,7 +349,7 @@ function falarTexto(
 
 
 /* ==========================================
-   BOTÃO DE LEITURA DE TEXTO
+   BOTÃO DE LEITURA
 ========================================== */
 
 function criarBotaoLeitura(
@@ -423,7 +452,7 @@ function pararAudioAtual() {
 
 
 /* ==========================================
-   CARREGAR E REPRODUZIR ÁUDIO PRIVADO
+   REPRODUZIR ÁUDIO PRIVADO
 ========================================== */
 
 async function reproduzirAudioOriginal(
@@ -459,12 +488,6 @@ async function reproduzirAudioOriginal(
 
 
   try {
-
-    /*
-      Se ainda não existe URL temporária
-      carregada neste elemento, pedimos
-      ao Supabase.
-    */
 
     if (
       !audio.src
@@ -550,7 +573,7 @@ async function reproduzirAudioOriginal(
 
 
 /* ==========================================
-   CRIAR CONTROLE DO ÁUDIO ORIGINAL
+   ÁREA DO ÁUDIO ORIGINAL
 ========================================== */
 
 function criarAreaAudioOriginal(
@@ -584,10 +607,6 @@ function criarAreaAudioOriginal(
     "10px";
 
 
-  /* --------------------------------------
-     ELEMENTO DE ÁUDIO INVISÍVEL
-  -------------------------------------- */
-
   const audio =
     document.createElement(
       "audio"
@@ -597,10 +616,6 @@ function criarAreaAudioOriginal(
   audio.preload =
     "metadata";
 
-
-  /* --------------------------------------
-     REPRODUZIR
-  -------------------------------------- */
 
   const botaoReproduzir =
     document.createElement(
@@ -640,10 +655,6 @@ function criarAreaAudioOriginal(
     "13px";
 
 
-  /* --------------------------------------
-     PARAR
-  -------------------------------------- */
-
   const botaoParar =
     document.createElement(
       "button"
@@ -682,10 +693,6 @@ function criarAreaAudioOriginal(
     "13px";
 
 
-  /* --------------------------------------
-     DURAÇÃO
-  -------------------------------------- */
-
   const duracaoElemento =
     document.createElement(
       "span"
@@ -712,11 +719,6 @@ function criarAreaAudioOriginal(
       )}`;
 
   } else {
-
-    /*
-      Registros criados antes de começarmos
-      a salvar a duração não possuem esse dado.
-    */
 
     duracaoElemento.textContent =
       "⏱ duração não registrada";
@@ -1048,19 +1050,6 @@ async function buscarPessoas() {
       ];
 
 
-    if (
-      idsAssociados.length === 0 &&
-      idsNaoAssociados.length === 0
-    ) {
-
-      resultadoBuscaPessoa.innerHTML =
-        "<p>Nenhum atendimento registrado.</p>";
-
-      return;
-
-    }
-
-
     let associados =
       [];
 
@@ -1089,13 +1078,6 @@ async function buscarPessoas() {
           .ilike(
             "nome_completo",
             `%${busca}%`
-          )
-          .order(
-            "nome_completo",
-            {
-              ascending:
-                true
-            }
           );
 
 
@@ -1115,6 +1097,7 @@ async function buscarPessoas() {
         )
           .map(
             (pessoa) => ({
+
               id:
                 pessoa.id,
 
@@ -1123,6 +1106,7 @@ async function buscarPessoas() {
 
               tipo:
                 "associado"
+
             })
           );
 
@@ -1149,13 +1133,6 @@ async function buscarPessoas() {
           .ilike(
             "nome_completo",
             `%${busca}%`
-          )
-          .order(
-            "nome_completo",
-            {
-              ascending:
-                true
-            }
           );
 
 
@@ -1175,6 +1152,7 @@ async function buscarPessoas() {
         )
           .map(
             (pessoa) => ({
+
               id:
                 pessoa.id,
 
@@ -1183,6 +1161,7 @@ async function buscarPessoas() {
 
               tipo:
                 "nao_associado"
+
             })
           );
 
@@ -1247,7 +1226,7 @@ async function buscarPessoas() {
   } catch (erro) {
 
     console.error(
-      "Erro ao pesquisar pessoas com atendimento:",
+      "Erro ao pesquisar pessoas:",
       erro
     );
 
@@ -1429,10 +1408,6 @@ function criarItemAtendimento(
     "1px solid #ddd";
 
 
-  /* ======================================
-     CABEÇALHO
-  ====================================== */
-
   const cabecalho =
     document.createElement(
       "div"
@@ -1492,10 +1467,6 @@ function criarItemAtendimento(
   );
 
 
-  /* ======================================
-     MOTIVO
-  ====================================== */
-
   if (
     atendimento.motivo
   ) {
@@ -1510,10 +1481,6 @@ function criarItemAtendimento(
   }
 
 
-  /* ======================================
-     RELATO
-  ====================================== */
-
   item.appendChild(
     criarBlocoTexto(
       "Relato",
@@ -1525,10 +1492,6 @@ function criarItemAtendimento(
   );
 
 
-  /* ======================================
-     ORIENTAÇÃO
-  ====================================== */
-
   item.appendChild(
     criarBlocoTexto(
       "Orientação / Conduta",
@@ -1539,10 +1502,6 @@ function criarItemAtendimento(
     )
   );
 
-
-  /* ======================================
-     ACOMPANHAMENTO
-  ====================================== */
 
   const acompanhamento =
     document.createElement(
@@ -1607,10 +1566,6 @@ function criarItemAtendimento(
     acompanhamento
   );
 
-
-  /* ======================================
-     LEITURA COMPLETA
-  ====================================== */
 
   const possuiTexto =
     Boolean(
@@ -1768,10 +1723,6 @@ function criarItemAtendimento(
   }
 
 
-  /* ======================================
-     EDITAR
-  ====================================== */
-
   const linkEditar =
     document.createElement(
       "a"
@@ -1802,10 +1753,6 @@ function criarItemAtendimento(
     linkEditar
   );
 
-
-  /* ======================================
-     AUDITORIA
-  ====================================== */
 
   const auditoria =
     document.createElement(
@@ -1870,7 +1817,7 @@ function criarItemAtendimento(
 
 
 /* ==========================================
-   ABRIR HISTÓRICO
+   ABRIR HISTÓRICO DA PESSOA
 ========================================== */
 
 async function abrirHistoricoPessoa(
@@ -2031,6 +1978,122 @@ async function abrirHistoricoPessoa(
 
     listaHistoricoAtendimentos.innerHTML =
       "<p>Não foi possível carregar o histórico de atendimentos.</p>";
+
+  }
+
+}
+
+
+/* ==========================================
+   ABRIR ASSOCIADO RECEBIDO PELA URL
+========================================== */
+
+async function abrirAssociadoDireto(
+  usuarioId
+) {
+
+  if (
+    !usuarioId
+  ) {
+
+    return false;
+
+  }
+
+
+  try {
+
+    const resultado =
+      await window.supabaseClient
+        .from(
+          "usuarios"
+        )
+        .select(`
+          id,
+          nome_completo
+        `)
+        .eq(
+          "id",
+          usuarioId
+        )
+        .maybeSingle();
+
+
+    if (
+      resultado.error
+    ) {
+
+      throw resultado.error;
+
+    }
+
+
+    if (
+      !resultado.data
+    ) {
+
+      mostrarMensagem(
+        "Associado não encontrado."
+      );
+
+
+      return false;
+
+    }
+
+
+    const pessoa = {
+
+      id:
+        resultado.data.id,
+
+      nome_completo:
+        resultado.data.nome_completo,
+
+      tipo:
+        "associado"
+
+    };
+
+
+    /*
+      Como veio diretamente da ficha,
+      escondemos os resultados da busca
+      e já abrimos o histórico.
+    */
+
+    resultadoBuscaPessoa.innerHTML =
+      "";
+
+
+    campoBuscaPessoa.value =
+      formatarNome(
+        pessoa.nome_completo
+      );
+
+
+    await abrirHistoricoPessoa(
+      pessoa
+    );
+
+
+    return true;
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao abrir associado diretamente:",
+      erro
+    );
+
+
+    mostrarMensagem(
+      "Não foi possível carregar o histórico deste associado."
+    );
+
+
+    return false;
 
   }
 
@@ -2229,6 +2292,27 @@ async function iniciarPagina() {
 
     campoBuscaPessoa.disabled =
       false;
+
+
+    /* ======================================
+       VERIFICAR SE VEIO DA FICHA
+    ====================================== */
+
+    const {
+      usuarioId
+    } =
+      obterParametrosPagina();
+
+
+    if (
+      usuarioId
+    ) {
+
+      await abrirAssociadoDireto(
+        usuarioId
+      );
+
+    }
 
 
   } catch (erro) {
