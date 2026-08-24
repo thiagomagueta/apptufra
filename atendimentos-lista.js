@@ -46,6 +46,9 @@ let usuarioLogadoId =
 let pessoasComAtendimento =
   [];
 
+let audioEmReproducao =
+  null;
+
 
 /* ==========================================
    FORMATAÇÃO
@@ -128,17 +131,58 @@ function formatarDataHora(
         timeStyle:
           "short"
       }
-    ).format(
-      new Date(
-        data
-      )
-    );
+    )
+      .format(
+        new Date(
+          data
+        )
+      );
 
   } catch (erro) {
 
     return data;
 
   }
+
+}
+
+
+function formatarDuracaoAudio(
+  segundos
+) {
+
+  const total =
+    Math.max(
+      0,
+      Number(
+        segundos || 0
+      )
+    );
+
+
+  const minutos =
+    Math.floor(
+      total / 60
+    );
+
+
+  const restante =
+    Math.floor(
+      total % 60
+    );
+
+
+  return `${String(
+    minutos
+  ).padStart(
+    2,
+    "0"
+  )}:${String(
+    restante
+  ).padStart(
+    2,
+    "0"
+  )}`;
 
 }
 
@@ -154,6 +198,7 @@ function mostrarMensagem(
   mensagemAtendimentosLista.textContent =
     texto;
 
+
   mensagemAtendimentosLista.hidden =
     false;
 
@@ -164,6 +209,7 @@ function esconderMensagem() {
 
   mensagemAtendimentosLista.textContent =
     "";
+
 
   mensagemAtendimentosLista.hidden =
     true;
@@ -240,6 +286,9 @@ function falarTexto(
   pararLeitura();
 
 
+  pararAudioAtual();
+
+
   const fala =
     new SpeechSynthesisUtterance(
       textoLimpo
@@ -249,8 +298,10 @@ function falarTexto(
   fala.lang =
     "pt-BR";
 
+
   fala.rate =
     1;
+
 
   fala.pitch =
     1;
@@ -281,23 +332,30 @@ function criarBotaoLeitura(
   botao.type =
     "button";
 
+
   botao.textContent =
     textoBotao;
+
 
   botao.style.padding =
     "7px 10px";
 
+
   botao.style.border =
     "1px solid #bbb";
+
 
   botao.style.borderRadius =
     "8px";
 
+
   botao.style.background =
     "#fff";
 
+
   botao.style.cursor =
     "pointer";
+
 
   botao.style.fontSize =
     "13px";
@@ -324,11 +382,49 @@ function criarBotaoLeitura(
    ÁUDIO ORIGINAL
 ========================================== */
 
-async function carregarAudioOriginal(
+function pararAudioAtual() {
+
+  if (
+    !audioEmReproducao
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    audioEmReproducao.pause();
+
+
+    audioEmReproducao.currentTime =
+      0;
+
+  } catch (erro) {
+
+    console.warn(
+      "Não foi possível parar o áudio:",
+      erro
+    );
+
+  }
+
+
+  audioEmReproducao =
+    null;
+
+}
+
+
+/* ==========================================
+   REPRODUZIR ÁUDIO
+========================================== */
+
+async function reproduzirAudioOriginal(
   caminho,
-  areaPlayer,
-  player,
-  botao
+  audio,
+  botaoReproduzir
 ) {
 
   if (
@@ -343,222 +439,346 @@ async function carregarAudioOriginal(
   esconderMensagem();
 
 
-  botao.disabled =
+  pararLeitura();
+
+
+  pararAudioAtual();
+
+
+  botaoReproduzir.disabled =
     true;
 
 
-  botao.textContent =
-    "Carregando áudio...";
+  botaoReproduzir.textContent =
+    "Carregando...";
 
 
   try {
 
-    const resultado =
-      await window.supabaseClient
-        .storage
-        .from(
-          "audios-atendimentos"
-        )
-        .createSignedUrl(
-          caminho,
-          3600
+    if (
+      !audio.src
+    ) {
+
+      const resultado =
+        await window.supabaseClient
+          .storage
+          .from(
+            "audios-atendimentos"
+          )
+          .createSignedUrl(
+            caminho,
+            3600
+          );
+
+
+      if (
+        resultado.error
+      ) {
+
+        throw resultado.error;
+
+      }
+
+
+      if (
+        !resultado.data?.signedUrl
+      ) {
+
+        throw new Error(
+          "URL temporária do áudio não encontrada."
         );
 
-
-    if (
-      resultado.error
-    ) {
-
-      throw resultado.error;
-
-    }
+      }
 
 
-    if (
-      !resultado.data?.signedUrl
-    ) {
-
-      throw new Error(
-        "URL do áudio não encontrada."
-      );
+      audio.src =
+        resultado.data.signedUrl;
 
     }
 
 
-    player.src =
-      resultado.data.signedUrl;
+    audio.currentTime =
+      0;
 
 
-    areaPlayer.hidden =
-      false;
+    audioEmReproducao =
+      audio;
 
 
-    player.hidden =
-      false;
-
-
-    try {
-
-      await player.play();
-
-    } catch (erroPlay) {
-
-      console.warn(
-        "Reprodução automática não iniciada:",
-        erroPlay
-      );
-
-    }
-
-
-    botao.textContent =
-      "▶ Ouvir áudio original";
+    await audio.play();
 
 
   } catch (erro) {
 
     console.error(
-      "Erro ao carregar áudio original:",
+      "Erro ao reproduzir áudio original:",
       erro
     );
 
 
+    audioEmReproducao =
+      null;
+
+
     mostrarMensagem(
-      "Não foi possível carregar o áudio original."
+      "Não foi possível reproduzir o áudio original."
     );
 
+  } finally {
 
-    botao.textContent =
-      "▶ Ouvir áudio original";
+    botaoReproduzir.disabled =
+      false;
+
+
+    botaoReproduzir.textContent =
+      "▶ Reproduzir";
 
   }
-
-
-  botao.disabled =
-    false;
 
 }
 
 
 /* ==========================================
-   ÁREA DO ÁUDIO
+   CONTROLE DO ÁUDIO
 ========================================== */
 
 function criarAreaAudioOriginal(
-  caminho
+  caminho,
+  duracao
 ) {
 
-  const container =
+  const area =
     document.createElement(
       "div"
     );
 
 
-  container.style.marginTop =
-    "10px";
+  area.style.display =
+    "flex";
 
 
-  const botao =
-    document.createElement(
-      "button"
-    );
+  area.style.flexWrap =
+    "wrap";
 
 
-  botao.type =
-    "button";
+  area.style.alignItems =
+    "center";
 
 
-  botao.textContent =
-    "▶ Ouvir áudio original";
-
-
-  botao.style.padding =
-    "8px 10px";
-
-
-  botao.style.border =
-    "1px solid #bbb";
-
-
-  botao.style.borderRadius =
+  area.style.gap =
     "8px";
 
 
-  botao.style.background =
-    "#fff";
-
-
-  botao.style.cursor =
-    "pointer";
-
-
-  botao.style.fontSize =
-    "13px";
-
-
-  const areaPlayer =
-    document.createElement(
-      "div"
-    );
-
-
-  areaPlayer.style.marginTop =
+  area.style.marginTop =
     "10px";
 
 
-  areaPlayer.hidden =
-    true;
-
-
-  const player =
+  const audio =
     document.createElement(
       "audio"
     );
 
 
-  player.controls =
-    true;
+  audio.preload =
+    "metadata";
 
 
-  player.style.width =
-    "100%";
+  const botaoReproduzir =
+    document.createElement(
+      "button"
+    );
 
 
-  player.hidden =
-    true;
+  botaoReproduzir.type =
+    "button";
 
 
-  areaPlayer.appendChild(
-    player
-  );
+  botaoReproduzir.textContent =
+    "▶ Reproduzir";
 
 
-  botao.addEventListener(
+  botaoReproduzir.style.padding =
+    "8px 10px";
+
+
+  botaoReproduzir.style.border =
+    "1px solid #bbb";
+
+
+  botaoReproduzir.style.borderRadius =
+    "8px";
+
+
+  botaoReproduzir.style.background =
+    "#fff";
+
+
+  botaoReproduzir.style.cursor =
+    "pointer";
+
+
+  botaoReproduzir.style.fontSize =
+    "13px";
+
+
+  const botaoParar =
+    document.createElement(
+      "button"
+    );
+
+
+  botaoParar.type =
+    "button";
+
+
+  botaoParar.textContent =
+    "■ Parar";
+
+
+  botaoParar.style.padding =
+    "8px 10px";
+
+
+  botaoParar.style.border =
+    "1px solid #bbb";
+
+
+  botaoParar.style.borderRadius =
+    "8px";
+
+
+  botaoParar.style.background =
+    "#fff";
+
+
+  botaoParar.style.cursor =
+    "pointer";
+
+
+  botaoParar.style.fontSize =
+    "13px";
+
+
+  const duracaoElemento =
+    document.createElement(
+      "span"
+    );
+
+
+  duracaoElemento.style.fontSize =
+    "13px";
+
+
+  duracaoElemento.style.fontWeight =
+    "600";
+
+
+  if (
+    Number(
+      duracao
+    ) > 0
+  ) {
+
+    duracaoElemento.textContent =
+      `⏱ ${formatarDuracaoAudio(
+        duracao
+      )}`;
+
+  } else {
+
+    duracaoElemento.textContent =
+      "⏱ duração não registrada";
+
+  }
+
+
+  botaoReproduzir.addEventListener(
     "click",
     () => {
 
-      carregarAudioOriginal(
+      reproduzirAudioOriginal(
         caminho,
-        areaPlayer,
-        player,
-        botao
+        audio,
+        botaoReproduzir
       );
 
     }
   );
 
 
-  container.appendChild(
-    botao
+  botaoParar.addEventListener(
+    "click",
+    () => {
+
+      if (
+        audioEmReproducao === audio
+      ) {
+
+        pararAudioAtual();
+
+      } else {
+
+        try {
+
+          audio.pause();
+
+
+          audio.currentTime =
+            0;
+
+        } catch (erro) {
+
+          console.warn(
+            "Não foi possível parar o áudio:",
+            erro
+          );
+
+        }
+
+      }
+
+    }
   );
 
 
-  container.appendChild(
-    areaPlayer
+  audio.addEventListener(
+    "ended",
+    () => {
+
+      if (
+        audioEmReproducao === audio
+      ) {
+
+        audioEmReproducao =
+          null;
+
+      }
+
+    }
   );
 
 
-  return container;
+  area.appendChild(
+    botaoReproduzir
+  );
+
+
+  area.appendChild(
+    botaoParar
+  );
+
+
+  area.appendChild(
+    duracaoElemento
+  );
+
+
+  area.appendChild(
+    audio
+  );
+
+
+  return area;
 
 }
 
@@ -580,20 +800,26 @@ function criarBotaoPessoa(
   botao.type =
     "button";
 
+
   botao.className =
     "item-permissao-lista";
+
 
   botao.style.width =
     "100%";
 
+
   botao.style.border =
     "0";
+
 
   botao.style.background =
     "transparent";
 
+
   botao.style.cursor =
     "pointer";
+
 
   botao.style.textAlign =
     "left";
@@ -652,6 +878,7 @@ function criarBotaoPessoa(
   seta.className =
     "seta-permissao-lista";
 
+
   seta.textContent =
     "›";
 
@@ -671,6 +898,9 @@ function criarBotaoPessoa(
     () => {
 
       pararLeitura();
+
+
+      pararAudioAtual();
 
 
       abrirHistoricoPessoa(
@@ -700,7 +930,9 @@ function mostrarLista() {
 
 
   let pessoasFiltradas =
-    [...pessoasComAtendimento];
+    [
+      ...pessoasComAtendimento
+    ];
 
 
   if (
@@ -831,6 +1063,7 @@ async function carregarPessoasComAtendimento() {
 
   let associados =
     [];
+
 
   let naoAssociados =
     [];
@@ -969,7 +1202,8 @@ function criarBlocoTexto(
   titulo,
   texto,
   textoBotaoLeitura = null,
-  audioPath = null
+  audioPath = null,
+  audioDuracao = null
 ) {
 
   const bloco =
@@ -1059,14 +1293,28 @@ function criarBlocoTexto(
     "pre-wrap";
 
 
-  textoElemento.textContent =
+  if (
     String(
       texto || ""
     ).trim()
-      ? texto
-      : audioPath
-        ? "Registro realizado em áudio."
-        : "Não informado.";
+  ) {
+
+    textoElemento.textContent =
+      texto;
+
+  } else if (
+    audioPath
+  ) {
+
+    textoElemento.textContent =
+      "Registro realizado em áudio.";
+
+  } else {
+
+    textoElemento.textContent =
+      "Não informado.";
+
+  }
 
 
   bloco.appendChild(
@@ -1080,7 +1328,8 @@ function criarBlocoTexto(
 
     bloco.appendChild(
       criarAreaAudioOriginal(
-        audioPath
+        audioPath,
+        audioDuracao
       )
     );
 
@@ -1192,7 +1441,8 @@ function criarItemAtendimento(
       "Relato",
       atendimento.relato,
       "🔊 Ouvir relato",
-      atendimento.relato_audio_path
+      atendimento.relato_audio_path,
+      atendimento.relato_audio_duracao
     )
   );
 
@@ -1202,7 +1452,8 @@ function criarItemAtendimento(
       "Orientação / Conduta",
       atendimento.orientacao_conduta,
       "🔊 Ouvir orientação",
-      atendimento.orientacao_audio_path
+      atendimento.orientacao_audio_path,
+      atendimento.orientacao_audio_duracao
     )
   );
 
@@ -1337,17 +1588,27 @@ function criarItemAtendimento(
         `Atendimento do dia ${formatarData(
           atendimento.data_atendimento
         )}.`,
+
         `Realizado por ${nomeResponsavel}.`,
+
         atendimento.motivo
           ? `Motivo: ${atendimento.motivo}.`
           : "",
+
         atendimento.relato
           ? `Relato: ${atendimento.relato}`
-          : "Relato registrado somente em áudio.",
+          : atendimento.relato_audio_path
+            ? "Relato registrado somente em áudio."
+            : "Relato não informado.",
+
         atendimento.orientacao_conduta
           ? `Orientação e conduta: ${atendimento.orientacao_conduta}`
-          : "Orientação registrada somente em áudio.",
+          : atendimento.orientacao_audio_path
+            ? "Orientação registrada somente em áudio."
+            : "Orientação não informada.",
+
         `Acompanhamento: ${acompanhamentoFalado}`
+
       ]
         .filter(
           Boolean
@@ -1536,6 +1797,9 @@ async function abrirHistoricoPessoa(
   pararLeitura();
 
 
+  pararAudioAtual();
+
+
   nomePessoaHistorico.textContent =
     formatarNome(
       pessoa.nome_completo
@@ -1570,7 +1834,9 @@ async function abrirHistoricoPessoa(
           relato,
           orientacao_conduta,
           relato_audio_path,
+          relato_audio_duracao,
           orientacao_audio_path,
+          orientacao_audio_duracao,
           precisa_acompanhamento,
           data_retorno,
           criado_em,
@@ -1819,6 +2085,9 @@ document
           pararLeitura();
 
 
+          pararAudioAtual();
+
+
           secaoHistoricoAtendimentos.hidden =
             true;
 
@@ -1838,7 +2107,14 @@ document
 
 window.addEventListener(
   "beforeunload",
-  pararLeitura
+  () => {
+
+    pararLeitura();
+
+
+    pararAudioAtual();
+
+  }
 );
 
 
