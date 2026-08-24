@@ -295,7 +295,7 @@ function criarBotaoLeitura(
 
 
   botao.style.padding =
-    "10px 12px";
+    "7px 10px";
 
 
   botao.style.border =
@@ -315,7 +315,7 @@ function criarBotaoLeitura(
 
 
   botao.style.fontSize =
-    "14px";
+    "13px";
 
 
   botao.addEventListener(
@@ -770,7 +770,8 @@ async function buscarPessoas() {
 
 function criarBlocoTexto(
   titulo,
-  texto
+  texto,
+  textoBotaoLeitura = null
 ) {
 
   const bloco =
@@ -783,6 +784,32 @@ function criarBlocoTexto(
     "16px";
 
 
+  const cabecalho =
+    document.createElement(
+      "div"
+    );
+
+
+  cabecalho.style.display =
+    "flex";
+
+
+  cabecalho.style.alignItems =
+    "center";
+
+
+  cabecalho.style.justifyContent =
+    "space-between";
+
+
+  cabecalho.style.gap =
+    "10px";
+
+
+  cabecalho.style.flexWrap =
+    "wrap";
+
+
   const tituloElemento =
     document.createElement(
       "strong"
@@ -791,6 +818,25 @@ function criarBlocoTexto(
 
   tituloElemento.textContent =
     titulo;
+
+
+  cabecalho.appendChild(
+    tituloElemento
+  );
+
+
+  if (
+    textoBotaoLeitura
+  ) {
+
+    cabecalho.appendChild(
+      criarBotaoLeitura(
+        textoBotaoLeitura,
+        texto
+      )
+    );
+
+  }
 
 
   const textoElemento =
@@ -811,7 +857,7 @@ function criarBlocoTexto(
 
 
   bloco.appendChild(
-    tituloElemento
+    cabecalho
   );
 
   bloco.appendChild(
@@ -920,7 +966,8 @@ function criarItemAtendimento(
   item.appendChild(
     criarBlocoTexto(
       "Relato",
-      atendimento.relato
+      atendimento.relato,
+      "🔊 Ouvir relato"
     )
   );
 
@@ -928,7 +975,8 @@ function criarItemAtendimento(
   item.appendChild(
     criarBlocoTexto(
       "Orientação / Conduta",
-      atendimento.orientacao_conduta
+      atendimento.orientacao_conduta,
+      "🔊 Ouvir orientação"
     )
   );
 
@@ -997,28 +1045,25 @@ function criarItemAtendimento(
 
 
   /* ======================================
-     LEITURA
+     LEITURA COMPLETA
   ====================================== */
 
-  const areaLeitura =
+  const areaLeituraCompleta =
     document.createElement(
       "div"
     );
 
 
-  areaLeitura.style.display =
+  areaLeituraCompleta.style.display =
     "flex";
 
-
-  areaLeitura.style.flexWrap =
+  areaLeituraCompleta.style.flexWrap =
     "wrap";
 
-
-  areaLeitura.style.gap =
+  areaLeituraCompleta.style.gap =
     "8px";
 
-
-  areaLeitura.style.marginTop =
+  areaLeituraCompleta.style.marginTop =
     "18px";
 
 
@@ -1063,23 +1108,7 @@ function criarItemAtendimento(
       );
 
 
-  areaLeitura.appendChild(
-    criarBotaoLeitura(
-      "🔊 Ouvir relato",
-      atendimento.relato
-    )
-  );
-
-
-  areaLeitura.appendChild(
-    criarBotaoLeitura(
-      "🔊 Ouvir orientação",
-      atendimento.orientacao_conduta
-    )
-  );
-
-
-  areaLeitura.appendChild(
+  areaLeituraCompleta.appendChild(
     criarBotaoLeitura(
       "🔊 Ouvir atendimento completo",
       textoCompleto
@@ -1096,30 +1125,23 @@ function criarItemAtendimento(
   botaoParar.type =
     "button";
 
-
   botaoParar.textContent =
     "■ Parar leitura";
-
 
   botaoParar.style.padding =
     "10px 12px";
 
-
   botaoParar.style.border =
     "1px solid #bbb";
-
 
   botaoParar.style.borderRadius =
     "8px";
 
-
   botaoParar.style.background =
     "#fff";
 
-
   botaoParar.style.cursor =
     "pointer";
-
 
   botaoParar.style.fontSize =
     "14px";
@@ -1131,13 +1153,13 @@ function criarItemAtendimento(
   );
 
 
-  areaLeitura.appendChild(
+  areaLeituraCompleta.appendChild(
     botaoParar
   );
 
 
   item.appendChild(
-    areaLeitura
+    areaLeituraCompleta
   );
 
 
@@ -1154,17 +1176,14 @@ function criarItemAtendimento(
   linkEditar.href =
     `editar-atendimento.html?id=${atendimento.id}&origem=busca`;
 
-
   linkEditar.className =
     "link-administrativo";
-
 
   linkEditar.style.display =
     "inline-block";
 
   linkEditar.style.marginTop =
     "18px";
-
 
   linkEditar.textContent =
     "Editar atendimento";
