@@ -35,6 +35,11 @@ const botaoVerJustificativasAssociado =
     "botaoVerJustificativasAssociado"
   );
 
+const botaoHistoricoAtendimentosAssociado =
+  document.getElementById(
+    "botaoHistoricoAtendimentosAssociado"
+  );
+
 const mensagemAssociadoResumo =
   document.getElementById(
     "mensagemAssociadoResumo"
@@ -642,6 +647,151 @@ function mostrarMensagem(
 
   mensagemAssociadoResumo.hidden =
     false;
+}
+
+
+/* ==========================================
+   PERMISSÃO DE ATENDIMENTOS
+========================================== */
+
+async function verificarPermissaoAtendimentos() {
+
+  botaoHistoricoAtendimentosAssociado.hidden =
+    true;
+
+
+  try {
+
+    const resultadoSessao =
+      await window.supabaseClient.auth
+        .getSession();
+
+
+    if (
+      resultadoSessao.error
+    ) {
+
+      throw resultadoSessao.error;
+
+    }
+
+
+    const sessao =
+      resultadoSessao.data.session;
+
+
+    if (
+      !sessao
+    ) {
+
+      return;
+
+    }
+
+
+    const resultadoUsuario =
+      await window.supabaseClient
+        .from(
+          "usuarios"
+        )
+        .select(
+          "id"
+        )
+        .eq(
+          "auth_id",
+          sessao.user.id
+        )
+        .maybeSingle();
+
+
+    if (
+      resultadoUsuario.error
+    ) {
+
+      throw resultadoUsuario.error;
+
+    }
+
+
+    if (
+      !resultadoUsuario.data
+    ) {
+
+      return;
+
+    }
+
+
+    const resultadoPermissao =
+      await window.supabaseClient
+        .from(
+          "responsaveis_atendimentos"
+        )
+        .select(
+          "id"
+        )
+        .eq(
+          "usuario_id",
+          resultadoUsuario.data.id
+        )
+        .maybeSingle();
+
+
+    if (
+      resultadoPermissao.error
+    ) {
+
+      throw resultadoPermissao.error;
+
+    }
+
+
+    if (
+      !resultadoPermissao.data
+    ) {
+
+      return;
+
+    }
+
+
+    const {
+      associadoId
+    } =
+      obterParametros();
+
+
+    if (
+      !associadoId
+    ) {
+
+      return;
+
+    }
+
+
+    botaoHistoricoAtendimentosAssociado.href =
+      `atendimentos-realizados.html?usuario_id=${encodeURIComponent(
+        associadoId
+      )}&origem=associado`;
+
+
+    botaoHistoricoAtendimentosAssociado.hidden =
+      false;
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao verificar permissão de atendimentos:",
+      erro
+    );
+
+
+    botaoHistoricoAtendimentosAssociado.hidden =
+      true;
+
+  }
 }
 
 
@@ -2606,6 +2756,8 @@ areaZoomFotoAssociado.addEventListener(
 configurarVoltar();
 
 carregarAssociado();
+
+verificarPermissaoAtendimentos();
 
 
 /* ==========================================
