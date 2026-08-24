@@ -34,10 +34,6 @@
     <div class="conteudo-app">
 
 
-      <!-- =====================================
-           CABEÇALHO
-      ====================================== -->
-
       <header class="cabecalho-app">
 
         <img
@@ -61,10 +57,6 @@
       </header>
 
 
-      <!-- =====================================
-           TÍTULO
-      ====================================== -->
-
       <section>
 
         <h1 class="titulo-pagina">
@@ -78,18 +70,10 @@
       </section>
 
 
-      <!-- =====================================
-           OPÇÕES
-      ====================================== -->
-
       <section class="cartao-app">
 
         <div class="lista-acoes-administrativas">
 
-
-          <!-- =================================
-               NOVO ATENDIMENTO
-          ================================== -->
 
           <a
             class="item-acao-administrativa"
@@ -115,10 +99,6 @@
           </a>
 
 
-          <!-- =================================
-               ATENDIMENTOS REALIZADOS
-          ================================== -->
-
           <a
             class="item-acao-administrativa"
             href="atendimentos-realizados.html"
@@ -127,11 +107,35 @@
             <div class="conteudo-item-adm">
 
               <strong class="titulo-item-adm">
-                Atendimentos Realizados
+                Atendimentos Realizados - Busca por nome
               </strong>
 
               <span class="descricao-item-adm">
-                Pesquisar pessoas e consultar históricos.
+                Pesquisar uma pessoa pelo nome e consultar seu histórico.
+              </span>
+
+            </div>
+
+            <span class="seta-permissao-lista">
+              ›
+            </span>
+
+          </a>
+
+
+          <a
+            class="item-acao-administrativa"
+            href="atendimentos-lista.html"
+          >
+
+            <div class="conteudo-item-adm">
+
+              <strong class="titulo-item-adm">
+                Atendimentos Realizados - Lista de nomes
+              </strong>
+
+              <span class="descricao-item-adm">
+                Visualizar todos que já possuem atendimento registrado.
               </span>
 
             </div>
@@ -148,10 +152,6 @@
       </section>
 
 
-      <!-- =====================================
-           VOLTAR
-      ====================================== -->
-
       <a
         class="link-administrativo"
         href="administrativo.html"
@@ -165,10 +165,6 @@
   </main>
 
 
-  <!-- =====================================
-       MENU INFERIOR
-  ====================================== -->
-
   <nav
     class="menu-inferior"
     aria-label="Navegação principal"
@@ -176,54 +172,29 @@
 
     <div class="menu-inferior-conteudo">
 
-
       <a
         class="item-menu"
         href="dashboard.html"
       >
-
-        <span class="icone-menu">
-          ⌂
-        </span>
-
-        <span class="texto-menu">
-          Início
-        </span>
-
+        <span class="icone-menu">⌂</span>
+        <span class="texto-menu">Início</span>
       </a>
-
 
       <a
         class="item-menu"
         href="calendario.html"
       >
-
-        <span class="icone-menu">
-          📅
-        </span>
-
-        <span class="texto-menu">
-          Calendário
-        </span>
-
+        <span class="icone-menu">📅</span>
+        <span class="texto-menu">Calendário</span>
       </a>
-
 
       <a
         class="item-menu"
         href="minha-ficha.html"
       >
-
-        <span class="icone-menu">
-          👤
-        </span>
-
-        <span class="texto-menu">
-          Minha ficha
-        </span>
-
+        <span class="icone-menu">👤</span>
+        <span class="texto-menu">Minha ficha</span>
       </a>
-
 
       <a
         id="itemMenuAdm"
@@ -231,43 +202,23 @@
         href="administrativo.html"
         hidden
       >
-
-        <span class="icone-menu">
-          ☰
-        </span>
-
-        <span class="texto-menu">
-          ADM
-        </span>
-
+        <span class="icone-menu">☰</span>
+        <span class="texto-menu">ADM</span>
       </a>
-
 
       <a
         class="item-menu"
         href="#"
         id="botaoSair"
       >
-
-        <span class="icone-menu">
-          🚪
-        </span>
-
-        <span class="texto-menu">
-          Sair
-        </span>
-
+        <span class="icone-menu">🚪</span>
+        <span class="texto-menu">Sair</span>
       </a>
-
 
     </div>
 
   </nav>
 
-
-  <!-- =====================================
-       SCRIPTS
-  ====================================== -->
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -276,7 +227,6 @@
   <script src="app.js?v=2"></script>
 
   <script src="menu-adm.js?v=1"></script>
-
 
 </body>
 
