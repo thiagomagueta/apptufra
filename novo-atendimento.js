@@ -6,200 +6,329 @@
 ========================================== */
 
 const tipoAssociado =
-  document.getElementById("tipoAssociado");
+  document.getElementById(
+    "tipoAssociado"
+  );
 
 const tipoNaoAssociado =
-  document.getElementById("tipoNaoAssociado");
+  document.getElementById(
+    "tipoNaoAssociado"
+  );
 
 const areaAssociado =
-  document.getElementById("areaAssociado");
+  document.getElementById(
+    "areaAssociado"
+  );
 
 const areaNaoAssociado =
-  document.getElementById("areaNaoAssociado");
+  document.getElementById(
+    "areaNaoAssociado"
+  );
 
 const campoBuscaAssociado =
-  document.getElementById("campoBuscaAssociado");
+  document.getElementById(
+    "campoBuscaAssociado"
+  );
 
 const resultadoBuscaAssociado =
-  document.getElementById("resultadoBuscaAssociado");
+  document.getElementById(
+    "resultadoBuscaAssociado"
+  );
 
 const associadoSelecionado =
-  document.getElementById("associadoSelecionado");
+  document.getElementById(
+    "associadoSelecionado"
+  );
 
 const nomeAssociadoSelecionado =
-  document.getElementById("nomeAssociadoSelecionado");
+  document.getElementById(
+    "nomeAssociadoSelecionado"
+  );
 
 const campoBuscaNaoAssociado =
-  document.getElementById("campoBuscaNaoAssociado");
+  document.getElementById(
+    "campoBuscaNaoAssociado"
+  );
 
 const resultadoBuscaNaoAssociado =
-  document.getElementById("resultadoBuscaNaoAssociado");
+  document.getElementById(
+    "resultadoBuscaNaoAssociado"
+  );
 
 const naoAssociadoSelecionado =
-  document.getElementById("naoAssociadoSelecionado");
+  document.getElementById(
+    "naoAssociadoSelecionado"
+  );
 
 const nomeNaoAssociadoSelecionado =
-  document.getElementById("nomeNaoAssociadoSelecionado");
+  document.getElementById(
+    "nomeNaoAssociadoSelecionado"
+  );
 
 const avisoNovoNaoAssociado =
-  document.getElementById("avisoNovoNaoAssociado");
+  document.getElementById(
+    "avisoNovoNaoAssociado"
+  );
 
 const dataAtendimento =
-  document.getElementById("dataAtendimento");
+  document.getElementById(
+    "dataAtendimento"
+  );
 
 const motivoAtendimento =
-  document.getElementById("motivoAtendimento");
+  document.getElementById(
+    "motivoAtendimento"
+  );
 
 const relatoAtendimento =
-  document.getElementById("relatoAtendimento");
+  document.getElementById(
+    "relatoAtendimento"
+  );
 
 const orientacaoAtendimento =
-  document.getElementById("orientacaoAtendimento");
+  document.getElementById(
+    "orientacaoAtendimento"
+  );
 
 const precisaAcompanhamento =
-  document.getElementById("precisaAcompanhamento");
+  document.getElementById(
+    "precisaAcompanhamento"
+  );
 
 const areaDataRetorno =
-  document.getElementById("areaDataRetorno");
+  document.getElementById(
+    "areaDataRetorno"
+  );
 
 const dataRetorno =
-  document.getElementById("dataRetorno");
+  document.getElementById(
+    "dataRetorno"
+  );
 
 const mensagemNovoAtendimento =
-  document.getElementById("mensagemNovoAtendimento");
+  document.getElementById(
+    "mensagemNovoAtendimento"
+  );
 
 const botaoSalvarAtendimento =
-  document.getElementById("botaoSalvarAtendimento");
+  document.getElementById(
+    "botaoSalvarAtendimento"
+  );
 
 
 /* ==========================================
-   ÁUDIO - RELATO
+   RELATO
 ========================================== */
 
 const botaoGravarRelato =
-  document.getElementById("botaoGravarRelato");
+  document.getElementById(
+    "botaoGravarRelato"
+  );
+
+const botaoFalarTextoRelato =
+  document.getElementById(
+    "botaoFalarTextoRelato"
+  );
+
+const statusFalaTextoRelato =
+  document.getElementById(
+    "statusFalaTextoRelato"
+  );
 
 const areaAudioRelato =
-  document.getElementById("areaAudioRelato");
+  document.getElementById(
+    "areaAudioRelato"
+  );
 
 const statusAudioRelato =
-  document.getElementById("statusAudioRelato");
+  document.getElementById(
+    "statusAudioRelato"
+  );
 
 const playerAudioRelato =
-  document.getElementById("playerAudioRelato");
+  document.getElementById(
+    "playerAudioRelato"
+  );
 
 const botaoReproduzirAudioRelato =
-  document.getElementById("botaoReproduzirAudioRelato");
+  document.getElementById(
+    "botaoReproduzirAudioRelato"
+  );
 
 const botaoPararAudioRelato =
-  document.getElementById("botaoPararAudioRelato");
+  document.getElementById(
+    "botaoPararAudioRelato"
+  );
 
 const duracaoAudioRelato =
-  document.getElementById("duracaoAudioRelato");
+  document.getElementById(
+    "duracaoAudioRelato"
+  );
 
 const botaoApagarAudioRelato =
-  document.getElementById("botaoApagarAudioRelato");
+  document.getElementById(
+    "botaoApagarAudioRelato"
+  );
 
 
 /* ==========================================
-   ÁUDIO - ORIENTAÇÃO
+   ORIENTAÇÃO
 ========================================== */
 
 const botaoGravarOrientacao =
-  document.getElementById("botaoGravarOrientacao");
+  document.getElementById(
+    "botaoGravarOrientacao"
+  );
+
+const botaoFalarTextoOrientacao =
+  document.getElementById(
+    "botaoFalarTextoOrientacao"
+  );
+
+const statusFalaTextoOrientacao =
+  document.getElementById(
+    "statusFalaTextoOrientacao"
+  );
 
 const areaAudioOrientacao =
-  document.getElementById("areaAudioOrientacao");
+  document.getElementById(
+    "areaAudioOrientacao"
+  );
 
 const statusAudioOrientacao =
-  document.getElementById("statusAudioOrientacao");
+  document.getElementById(
+    "statusAudioOrientacao"
+  );
 
 const playerAudioOrientacao =
-  document.getElementById("playerAudioOrientacao");
+  document.getElementById(
+    "playerAudioOrientacao"
+  );
 
 const botaoReproduzirAudioOrientacao =
-  document.getElementById("botaoReproduzirAudioOrientacao");
+  document.getElementById(
+    "botaoReproduzirAudioOrientacao"
+  );
 
 const botaoPararAudioOrientacao =
-  document.getElementById("botaoPararAudioOrientacao");
+  document.getElementById(
+    "botaoPararAudioOrientacao"
+  );
 
 const duracaoAudioOrientacao =
-  document.getElementById("duracaoAudioOrientacao");
+  document.getElementById(
+    "duracaoAudioOrientacao"
+  );
 
 const botaoApagarAudioOrientacao =
-  document.getElementById("botaoApagarAudioOrientacao");
+  document.getElementById(
+    "botaoApagarAudioOrientacao"
+  );
 
 
 /* ==========================================
    ESTADO GERAL
 ========================================== */
 
-let usuarioLogadoId = null;
+let usuarioLogadoId =
+  null;
 
-let associadoEscolhido = null;
+let associadoEscolhido =
+  null;
 
-let naoAssociadoEscolhido = null;
+let naoAssociadoEscolhido =
+  null;
 
-let temporizadorBuscaAssociado = null;
+let temporizadorBuscaAssociado =
+  null;
 
-let temporizadorBuscaNaoAssociado = null;
+let temporizadorBuscaNaoAssociado =
+  null;
 
 
 /* ==========================================
    ESTADO DOS ÁUDIOS
 ========================================== */
 
-let audioRelatoBlob = null;
-let audioRelatoUrl = null;
-let audioRelatoDuracao = null;
+let audioRelatoBlob =
+  null;
 
-let audioOrientacaoBlob = null;
-let audioOrientacaoUrl = null;
-let audioOrientacaoDuracao = null;
+let audioRelatoUrl =
+  null;
 
-let gravacaoAtual = null;
+let audioRelatoDuracao =
+  null;
 
-let intervaloCronometro = null;
 
-let segundosGravacao = 0;
+let audioOrientacaoBlob =
+  null;
+
+let audioOrientacaoUrl =
+  null;
+
+let audioOrientacaoDuracao =
+  null;
+
+
+let gravacaoAtual =
+  null;
+
+let intervaloCronometro =
+  null;
+
+let segundosGravacao =
+  0;
 
 
 /* ==========================================
-   ESTADO DA TRANSCRIÇÃO
+   ESTADO FALAR PARA TEXTO
 ========================================== */
 
-let reconhecimentoAtual = null;
+let reconhecimentoTextoAtual =
+  null;
 
-let transcricaoAtualTipo = null;
+let tipoReconhecimentoTextoAtual =
+  null;
 
-let transcricaoAtualTexto = "";
+let textoReconhecidoAtual =
+  "";
 
-let transcricaoAtualAtiva = false;
-
-let transcricaoFinalizando = false;
+let reconhecimentoTextoFinalizando =
+  false;
 
 
 /* ==========================================
    FORMATAÇÃO
 ========================================== */
 
-function formatarNome(nomeCompleto) {
+function formatarNome(
+  nomeCompleto
+) {
 
-  return String(nomeCompleto || "")
+  return String(
+    nomeCompleto || ""
+  )
     .trim()
     .toLowerCase()
     .replace(
       /\b\p{L}/gu,
-      (letra) => letra.toUpperCase()
+      (letra) =>
+        letra.toUpperCase()
     );
 
 }
 
 
-function normalizarTexto(texto) {
+function normalizarTexto(
+  texto
+) {
 
-  return String(texto || "")
-    .normalize("NFD")
+  return String(
+    texto || ""
+  )
+    .normalize(
+      "NFD"
+    )
     .replace(
       /[\u0300-\u036f]/g,
       ""
@@ -210,16 +339,27 @@ function normalizarTexto(texto) {
 }
 
 
-function juntarTextos(...partes) {
+function juntarTextos(
+  ...partes
+) {
 
   return partes
     .map(
       (parte) =>
-        String(parte || "").trim()
+        String(
+          parte || ""
+        ).trim()
     )
-    .filter(Boolean)
-    .join(" ")
-    .replace(/\s+/g, " ")
+    .filter(
+      Boolean
+    )
+    .join(
+      " "
+    )
+    .replace(
+      /\s+/g,
+      " "
+    )
     .trim();
 
 }
@@ -231,10 +371,13 @@ function juntarTextos(...partes) {
 
 function definirDataAtual() {
 
-  const agora = new Date();
+  const agora =
+    new Date();
+
 
   const ano =
     agora.getFullYear();
+
 
   const mes =
     String(
@@ -244,6 +387,7 @@ function definirDataAtual() {
       "0"
     );
 
+
   const dia =
     String(
       agora.getDate()
@@ -251,6 +395,7 @@ function definirDataAtual() {
       2,
       "0"
     );
+
 
   dataAtendimento.value =
     `${ano}-${mes}-${dia}`;
@@ -262,10 +407,13 @@ function definirDataAtual() {
    MENSAGENS
 ========================================== */
 
-function mostrarMensagem(texto) {
+function mostrarMensagem(
+  texto
+) {
 
   mensagemNovoAtendimento.textContent =
     texto;
+
 
   mensagemNovoAtendimento.hidden =
     false;
@@ -278,6 +426,7 @@ function esconderMensagem() {
   mensagemNovoAtendimento.textContent =
     "";
 
+
   mensagemNovoAtendimento.hidden =
     true;
 
@@ -288,16 +437,25 @@ function esconderMensagem() {
    TEMPO
 ========================================== */
 
-function formatarTempo(segundos) {
+function formatarTempo(
+  segundos
+) {
 
   const total =
-    Number(segundos || 0);
+    Number(
+      segundos || 0
+    );
+
 
   const minutos =
-    Math.floor(total / 60);
+    Math.floor(
+      total / 60
+    );
+
 
   const restante =
     total % 60;
+
 
   return `${String(
     minutos
@@ -324,6 +482,7 @@ function pararCronometro() {
       intervaloCronometro
     );
 
+
     intervaloCronometro =
       null;
 
@@ -333,26 +492,30 @@ function pararCronometro() {
 
 
 /* ==========================================
-   TIPOS DE ÁUDIO
+   ÁUDIO
 ========================================== */
 
 function obterTipoAudioSuportado() {
 
-  const tipos = [
-    "audio/mp4",
-    "audio/webm;codecs=opus",
-    "audio/webm",
-    "audio/ogg;codecs=opus"
-  ];
+  const tipos =
+    [
+      "audio/mp4",
+      "audio/webm;codecs=opus",
+      "audio/webm",
+      "audio/ogg;codecs=opus"
+    ];
 
 
   for (
-    const tipo of tipos
+    const tipo
+    of tipos
   ) {
 
     if (
       window.MediaRecorder &&
-      MediaRecorder.isTypeSupported(tipo)
+      MediaRecorder.isTypeSupported(
+        tipo
+      )
     ) {
 
       return tipo;
@@ -367,7 +530,9 @@ function obterTipoAudioSuportado() {
 }
 
 
-function obterExtensaoAudio(blob) {
+function obterExtensaoAudio(
+  blob
+) {
 
   const tipo =
     String(
@@ -376,7 +541,9 @@ function obterExtensaoAudio(blob) {
 
 
   if (
-    tipo.includes("mp4")
+    tipo.includes(
+      "mp4"
+    )
   ) {
 
     return "mp4";
@@ -385,7 +552,9 @@ function obterExtensaoAudio(blob) {
 
 
   if (
-    tipo.includes("ogg")
+    tipo.includes(
+      "ogg"
+    )
   ) {
 
     return "ogg";
@@ -394,8 +563,12 @@ function obterExtensaoAudio(blob) {
 
 
   if (
-    tipo.includes("mpeg") ||
-    tipo.includes("mp3")
+    tipo.includes(
+      "mpeg"
+    ) ||
+    tipo.includes(
+      "mp3"
+    )
   ) {
 
     return "mp3";
@@ -408,10 +581,6 @@ function obterExtensaoAudio(blob) {
 }
 
 
-/* ==========================================
-   SUPORTE À GRAVAÇÃO
-========================================== */
-
 function gravacaoDisponivel() {
 
   return Boolean(
@@ -423,41 +592,17 @@ function gravacaoDisponivel() {
 }
 
 
-/* ==========================================
-   SUPORTE À TRANSCRIÇÃO GRATUITA
-========================================== */
-
-function obterClasseReconhecimento() {
-
-  return (
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition ||
-    null
-  );
-
-}
-
-
-function transcricaoDisponivel() {
-
-  return Boolean(
-    obterClasseReconhecimento()
-  );
-
-}
-
-
-/* ==========================================
-   URL LOCAL
-========================================== */
-
-function liberarUrlAudio(url) {
+function liberarUrlAudio(
+  url
+) {
 
   if (
     url
   ) {
 
-    URL.revokeObjectURL(url);
+    URL.revokeObjectURL(
+      url
+    );
 
   }
 
@@ -484,7 +629,9 @@ function pararTodosAudios() {
 }
 
 
-async function reproduzirAudio(player) {
+async function reproduzirAudio(
+  player
+) {
 
   pararTodosAudios();
 
@@ -493,6 +640,7 @@ async function reproduzirAudio(player) {
 
     player.currentTime =
       0;
+
 
     await player.play();
 
@@ -513,9 +661,12 @@ async function reproduzirAudio(player) {
 }
 
 
-function pararAudio(player) {
+function pararAudio(
+  player
+) {
 
   player.pause();
+
 
   player.currentTime =
     0;
@@ -524,27 +675,181 @@ function pararAudio(player) {
 
 
 /* ==========================================
-   TRANSCRIÇÃO
+   RECONHECIMENTO DE VOZ
 ========================================== */
 
-function iniciarReconhecimentoOculto(tipo) {
+function obterClasseReconhecimento() {
 
-  transcricaoAtualTipo =
-    tipo;
+  return (
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition ||
+    null
+  );
 
-  transcricaoAtualTexto =
-    "";
+}
 
-  transcricaoAtualAtiva =
-    false;
 
-  transcricaoFinalizando =
-    false;
+function reconhecimentoDisponivel() {
+
+  return Boolean(
+    obterClasseReconhecimento()
+  );
+
+}
+
+
+/* ==========================================
+   STATUS FALAR PARA TEXTO
+========================================== */
+
+function atualizarStatusFalaTexto(
+  tipo,
+  texto,
+  visivel = true
+) {
+
+  const elemento =
+    tipo === "relato"
+      ? statusFalaTextoRelato
+      : statusFalaTextoOrientacao;
+
+
+  elemento.textContent =
+    texto;
+
+
+  elemento.hidden =
+    !visivel;
+
+}
+
+
+/* ==========================================
+   BOTÃO FALAR PARA TEXTO
+========================================== */
+
+function obterBotaoFalaTexto(
+  tipo
+) {
+
+  return tipo === "relato"
+    ? botaoFalarTextoRelato
+    : botaoFalarTextoOrientacao;
+
+}
+
+
+function obterCampoTexto(
+  tipo
+) {
+
+  return tipo === "relato"
+    ? relatoAtendimento
+    : orientacaoAtendimento;
+
+}
+
+
+/* ==========================================
+   FINALIZAR FALAR PARA TEXTO
+========================================== */
+
+function finalizarFalarParaTexto() {
+
+  if (
+    !reconhecimentoTextoAtual
+  ) {
+
+    return;
+
+  }
+
+
+  reconhecimentoTextoFinalizando =
+    true;
+
+
+  try {
+
+    reconhecimentoTextoAtual.stop();
+
+  } catch (erro) {
+
+    console.warn(
+      "Não foi possível finalizar o reconhecimento:",
+      erro
+    );
+
+  }
+
+}
+
+
+/* ==========================================
+   INICIAR FALAR PARA TEXTO
+========================================== */
+
+function iniciarFalarParaTexto(
+  tipo
+) {
+
+  esconderMensagem();
+
+
+  pararTodosAudios();
 
 
   if (
-    !transcricaoDisponivel()
+    gravacaoAtual
   ) {
+
+    mostrarMensagem(
+      "Finalize a gravação de áudio antes de usar Falar para texto."
+    );
+
+    return;
+
+  }
+
+
+  /*
+    Se já está reconhecendo este campo,
+    o toque serve para finalizar.
+  */
+
+  if (
+    reconhecimentoTextoAtual &&
+    tipoReconhecimentoTextoAtual === tipo
+  ) {
+
+    finalizarFalarParaTexto();
+
+    return;
+
+  }
+
+
+  if (
+    reconhecimentoTextoAtual
+  ) {
+
+    mostrarMensagem(
+      "Finalize o reconhecimento de voz atual antes de iniciar outro."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !reconhecimentoDisponivel()
+  ) {
+
+    atualizarStatusFalaTexto(
+      tipo,
+      "Falar para texto não está disponível neste navegador."
+    );
 
     return;
 
@@ -564,10 +869,11 @@ function iniciarReconhecimentoOculto(tipo) {
 
 
   /*
-    Não queremos texto provisório.
+    Muito importante:
 
-    Somente resultados que o navegador
-    já considerou definitivos.
+    Não usamos resultados provisórios.
+    Isso evita aquela duplicação que
+    aconteceu no primeiro teste.
   */
 
   reconhecimento.interimResults =
@@ -582,21 +888,46 @@ function iniciarReconhecimentoOculto(tipo) {
     1;
 
 
-  reconhecimentoAtual =
+  reconhecimentoTextoAtual =
     reconhecimento;
 
 
-  reconhecimento.onstart =
-    () => {
+  tipoReconhecimentoTextoAtual =
+    tipo;
 
-      transcricaoAtualAtiva =
-        true;
 
-    };
+  textoReconhecidoAtual =
+    "";
+
+
+  reconhecimentoTextoFinalizando =
+    false;
+
+
+  const botao =
+    obterBotaoFalaTexto(
+      tipo
+    );
+
+
+  botao.textContent =
+    "■ Finalizar fala";
+
+
+  atualizarStatusFalaTexto(
+    tipo,
+    "Ouvindo... fale normalmente. O texto aparecerá somente quando finalizar."
+  );
 
 
   reconhecimento.onresult =
     (evento) => {
+
+      /*
+        Começamos em resultIndex para
+        não processar resultados antigos
+        novamente.
+      */
 
       for (
         let indice =
@@ -607,7 +938,9 @@ function iniciarReconhecimentoOculto(tipo) {
       ) {
 
         const resultado =
-          evento.results[indice];
+          evento.results[
+            indice
+          ];
 
 
         if (
@@ -635,9 +968,9 @@ function iniciarReconhecimentoOculto(tipo) {
         }
 
 
-        transcricaoAtualTexto =
+        textoReconhecidoAtual =
           juntarTextos(
-            transcricaoAtualTexto,
+            textoReconhecidoAtual,
             trecho
           );
 
@@ -649,13 +982,8 @@ function iniciarReconhecimentoOculto(tipo) {
   reconhecimento.onerror =
     (evento) => {
 
-      /*
-        Alguns erros não devem impedir
-        a gravação de áudio.
-      */
-
       console.warn(
-        "Reconhecimento de voz:",
+        "Erro no reconhecimento de voz:",
         evento.error
       );
 
@@ -665,8 +993,38 @@ function iniciarReconhecimentoOculto(tipo) {
         evento.error === "service-not-allowed"
       ) {
 
-        transcricaoFinalizando =
+        atualizarStatusFalaTexto(
+          tipo,
+          "O acesso ao microfone não foi autorizado."
+        );
+
+
+        reconhecimentoTextoFinalizando =
           true;
+
+      }
+
+
+      if (
+        evento.error === "no-speech"
+      ) {
+
+        atualizarStatusFalaTexto(
+          tipo,
+          "Nenhuma fala foi detectada."
+        );
+
+      }
+
+
+      if (
+        evento.error === "audio-capture"
+      ) {
+
+        atualizarStatusFalaTexto(
+          tipo,
+          "Não foi possível acessar o microfone."
+        );
 
       }
 
@@ -676,40 +1034,91 @@ function iniciarReconhecimentoOculto(tipo) {
   reconhecimento.onend =
     () => {
 
-      transcricaoAtualAtiva =
-        false;
-
-
       /*
-        Alguns navegadores encerram o
-        reconhecimento sozinhos depois
-        de uma pausa.
-
-        Se a gravação ainda estiver ativa,
-        iniciamos uma nova sessão
-        silenciosamente.
+        Se o navegador encerrou sozinho
+        durante uma pausa e o usuário ainda
+        não pediu para finalizar, tentamos
+        continuar ouvindo.
       */
 
       if (
-        gravacaoAtual &&
-        gravacaoAtual.tipo === transcricaoAtualTipo &&
-        !transcricaoFinalizando
+        !reconhecimentoTextoFinalizando
       ) {
 
         try {
 
           reconhecimento.start();
 
+          return;
+
         } catch (erro) {
 
           console.warn(
-            "Não foi possível reiniciar o reconhecimento:",
+            "Não foi possível continuar o reconhecimento:",
             erro
           );
 
         }
 
       }
+
+
+      const campo =
+        obterCampoTexto(
+          tipo
+        );
+
+
+      const textoFinal =
+        String(
+          textoReconhecidoAtual || ""
+        ).trim();
+
+
+      if (
+        textoFinal
+      ) {
+
+        campo.value =
+          juntarTextos(
+            campo.value,
+            textoFinal
+          );
+
+
+        atualizarStatusFalaTexto(
+          tipo,
+          "Texto inserido com sucesso."
+        );
+
+      } else {
+
+        atualizarStatusFalaTexto(
+          tipo,
+          "Nenhum texto foi reconhecido."
+        );
+
+      }
+
+
+      botao.textContent =
+        "🎤 Falar para texto";
+
+
+      reconhecimentoTextoAtual =
+        null;
+
+
+      tipoReconhecimentoTextoAtual =
+        null;
+
+
+      textoReconhecidoAtual =
+        "";
+
+
+      reconhecimentoTextoFinalizando =
+        false;
 
     };
 
@@ -720,91 +1129,30 @@ function iniciarReconhecimentoOculto(tipo) {
 
   } catch (erro) {
 
-    console.warn(
-      "Não foi possível iniciar a transcrição:",
+    console.error(
+      "Erro ao iniciar reconhecimento:",
       erro
     );
 
-  }
 
-}
-
-
-/* ==========================================
-   FINALIZAR RECONHECIMENTO
-========================================== */
-
-function finalizarReconhecimentoOculto() {
-
-  transcricaoFinalizando =
-    true;
+    botao.textContent =
+      "🎤 Falar para texto";
 
 
-  if (
-    reconhecimentoAtual
-  ) {
-
-    try {
-
-      reconhecimentoAtual.stop();
-
-    } catch (erro) {
-
-      console.warn(
-        "Não foi possível finalizar o reconhecimento:",
-        erro
-      );
-
-    }
-
-  }
-
-}
+    reconhecimentoTextoAtual =
+      null;
 
 
-/* ==========================================
-   APLICAR TEXTO TRANSCRITO
-========================================== */
-
-function aplicarTranscricao(
-  tipo,
-  texto
-) {
-
-  const textoLimpo =
-    String(texto || "").trim();
+    tipoReconhecimentoTextoAtual =
+      null;
 
 
-  if (
-    !textoLimpo
-  ) {
-
-    return false;
-
-  }
-
-
-  const campo =
-    tipo === "relato"
-      ? relatoAtendimento
-      : orientacaoAtendimento;
-
-
-  /*
-    Se já havia algo escrito manualmente,
-    não apagamos.
-
-    Acrescentamos a transcrição abaixo.
-  */
-
-  campo.value =
-    juntarTextos(
-      campo.value,
-      textoLimpo
+    atualizarStatusFalaTexto(
+      tipo,
+      "Não foi possível iniciar o reconhecimento de voz."
     );
 
-
-  return true;
+  }
 
 }
 
@@ -816,18 +1164,7 @@ function aplicarTranscricao(
 function finalizarGravacaoAtual() {
 
   if (
-    !gravacaoAtual
-  ) {
-
-    return;
-
-  }
-
-
-  finalizarReconhecimentoOculto();
-
-
-  if (
+    gravacaoAtual &&
     gravacaoAtual.mediaRecorder &&
     gravacaoAtual.mediaRecorder.state !==
       "inactive"
@@ -844,12 +1181,27 @@ function finalizarGravacaoAtual() {
    INICIAR GRAVAÇÃO
 ========================================== */
 
-async function iniciarGravacao(tipo) {
+async function iniciarGravacao(
+  tipo
+) {
 
   esconderMensagem();
 
 
   pararTodosAudios();
+
+
+  if (
+    reconhecimentoTextoAtual
+  ) {
+
+    mostrarMensagem(
+      "Finalize Falar para texto antes de iniciar uma gravação de áudio."
+    );
+
+    return;
+
+  }
 
 
   if (
@@ -948,13 +1300,9 @@ async function iniciarGravacao(tipo) {
 
 
     status.textContent =
-      transcricaoDisponivel()
-        ? `● Gravando... ${formatarTempo(
-            segundosGravacao
-          )}`
-        : `● Gravando áudio... ${formatarTempo(
-            segundosGravacao
-          )}`;
+      `● Gravando... ${formatarTempo(
+        segundosGravacao
+      )}`;
 
 
     intervaloCronometro =
@@ -966,13 +1314,9 @@ async function iniciarGravacao(tipo) {
 
 
           status.textContent =
-            transcricaoDisponivel()
-              ? `● Gravando... ${formatarTempo(
-                  segundosGravacao
-                )}`
-              : `● Gravando áudio... ${formatarTempo(
-                  segundosGravacao
-                )}`;
+            `● Gravando... ${formatarTempo(
+              segundosGravacao
+            )}`;
 
         },
         1000
@@ -1039,40 +1383,20 @@ async function iniciarGravacao(tipo) {
           );
 
 
-        /*
-          Guardamos antes de limpar
-          o estado da transcrição.
-        */
-
-        const textoReconhecido =
-          transcricaoAtualTipo === tipo
-            ? transcricaoAtualTexto
-            : "";
-
-
-        const transcricaoInserida =
-          aplicarTranscricao(
-            tipo,
-            textoReconhecido
-          );
-
-
         if (
           ehRelato
         ) {
 
           salvarGravacaoRelato(
             blob,
-            duracaoFinal,
-            transcricaoInserida
+            duracaoFinal
           );
 
         } else {
 
           salvarGravacaoOrientacao(
             blob,
-            duracaoFinal,
-            transcricaoInserida
+            duracaoFinal
           );
 
         }
@@ -1080,22 +1404,6 @@ async function iniciarGravacao(tipo) {
 
         gravacaoAtual =
           null;
-
-
-        reconhecimentoAtual =
-          null;
-
-        transcricaoAtualTipo =
-          null;
-
-        transcricaoAtualTexto =
-          "";
-
-        transcricaoAtualAtiva =
-          false;
-
-        transcricaoFinalizando =
-          false;
 
       }
     );
@@ -1106,9 +1414,6 @@ async function iniciarGravacao(tipo) {
       () => {
 
         pararCronometro();
-
-
-        finalizarReconhecimentoOculto();
 
 
         stream
@@ -1126,12 +1431,8 @@ async function iniciarGravacao(tipo) {
           null;
 
 
-        reconhecimentoAtual =
-          null;
-
-
         botao.textContent =
-          "🎙️ Gravar áudio + transcrever";
+          "🎙️ Gravar áudio";
 
 
         mostrarMensagem(
@@ -1154,23 +1455,7 @@ async function iniciarGravacao(tipo) {
     };
 
 
-    /*
-      Primeiro começamos a gravação.
-    */
-
     mediaRecorder.start();
-
-
-    /*
-      Em paralelo iniciamos o reconhecimento.
-
-      O texto NÃO aparece na tela enquanto
-      a pessoa está falando.
-    */
-
-    iniciarReconhecimentoOculto(
-      tipo
-    );
 
 
   } catch (erro) {
@@ -1182,9 +1467,6 @@ async function iniciarGravacao(tipo) {
 
 
     pararCronometro();
-
-
-    finalizarReconhecimentoOculto();
 
 
     if (
@@ -1209,7 +1491,8 @@ async function iniciarGravacao(tipo) {
 
 
     if (
-      erro.name === "NotAllowedError"
+      erro.name ===
+      "NotAllowedError"
     ) {
 
       mostrarMensagem(
@@ -1231,13 +1514,12 @@ async function iniciarGravacao(tipo) {
 
 
 /* ==========================================
-   SALVAR GRAVAÇÃO LOCAL - RELATO
+   SALVAR RELATO
 ========================================== */
 
 function salvarGravacaoRelato(
   blob,
-  duracao,
-  transcricaoInserida
+  duracao
 ) {
 
   liberarUrlAudio(
@@ -1263,26 +1545,8 @@ function salvarGravacaoRelato(
     audioRelatoUrl;
 
 
-  if (
-    transcricaoInserida
-  ) {
-
-    statusAudioRelato.textContent =
-      "Gravação finalizada — texto transcrito no Relato";
-
-  } else if (
-    transcricaoDisponivel()
-  ) {
-
-    statusAudioRelato.textContent =
-      "Gravação finalizada — não foi possível gerar texto desta gravação";
-
-  } else {
-
-    statusAudioRelato.textContent =
-      "Gravação finalizada — transcrição indisponível neste navegador";
-
-  }
+  statusAudioRelato.textContent =
+    "Gravação finalizada";
 
 
   duracaoAudioRelato.textContent =
@@ -1314,13 +1578,12 @@ function salvarGravacaoRelato(
 
 
 /* ==========================================
-   SALVAR GRAVAÇÃO LOCAL - ORIENTAÇÃO
+   SALVAR ORIENTAÇÃO
 ========================================== */
 
 function salvarGravacaoOrientacao(
   blob,
-  duracao,
-  transcricaoInserida
+  duracao
 ) {
 
   liberarUrlAudio(
@@ -1346,26 +1609,8 @@ function salvarGravacaoOrientacao(
     audioOrientacaoUrl;
 
 
-  if (
-    transcricaoInserida
-  ) {
-
-    statusAudioOrientacao.textContent =
-      "Gravação finalizada — texto transcrito em Orientação / Conduta";
-
-  } else if (
-    transcricaoDisponivel()
-  ) {
-
-    statusAudioOrientacao.textContent =
-      "Gravação finalizada — não foi possível gerar texto desta gravação";
-
-  } else {
-
-    statusAudioOrientacao.textContent =
-      "Gravação finalizada — transcrição indisponível neste navegador";
-
-  }
+  statusAudioOrientacao.textContent =
+    "Gravação finalizada";
 
 
   duracaoAudioOrientacao.textContent =
@@ -1429,8 +1674,10 @@ function apagarAudioRelato() {
   audioRelatoBlob =
     null;
 
+
   audioRelatoUrl =
     null;
+
 
   audioRelatoDuracao =
     null;
@@ -1438,6 +1685,7 @@ function apagarAudioRelato() {
 
   duracaoAudioRelato.textContent =
     "";
+
 
   duracaoAudioRelato.hidden =
     true;
@@ -1464,7 +1712,7 @@ function apagarAudioRelato() {
 
 
   botaoGravarRelato.textContent =
-    "🎙️ Gravar áudio + transcrever";
+    "🎙️ Gravar áudio";
 
 }
 
@@ -1502,8 +1750,10 @@ function apagarAudioOrientacao() {
   audioOrientacaoBlob =
     null;
 
+
   audioOrientacaoUrl =
     null;
+
 
   audioOrientacaoDuracao =
     null;
@@ -1511,6 +1761,7 @@ function apagarAudioOrientacao() {
 
   duracaoAudioOrientacao.textContent =
     "";
+
 
   duracaoAudioOrientacao.hidden =
     true;
@@ -1537,13 +1788,13 @@ function apagarAudioOrientacao() {
 
 
   botaoGravarOrientacao.textContent =
-    "🎙️ Gravar áudio + transcrever";
+    "🎙️ Gravar áudio";
 
 }
 
 
 /* ==========================================
-   UPLOAD DO ÁUDIO
+   UPLOAD
 ========================================== */
 
 async function enviarAudio(
@@ -1606,7 +1857,7 @@ async function enviarAudio(
 
 
 /* ==========================================
-   REMOVER ARQUIVOS EM CASO DE ERRO
+   REMOVER EM CASO DE ERRO
 ========================================== */
 
 async function removerAudiosEnviados(
@@ -2276,6 +2527,21 @@ function validarFormulario() {
       "Finalize a gravação de áudio antes de salvar o atendimento."
     );
 
+
+    return false;
+
+  }
+
+
+  if (
+    reconhecimentoTextoAtual
+  ) {
+
+    mostrarMensagem(
+      "Finalize Falar para texto antes de salvar o atendimento."
+    );
+
+
     return false;
 
   }
@@ -2288,6 +2554,7 @@ function validarFormulario() {
     mostrarMensagem(
       "Informe a data do atendimento."
     );
+
 
     return false;
 
@@ -2302,6 +2569,7 @@ function validarFormulario() {
     mostrarMensagem(
       "Selecione o associado atendido."
     );
+
 
     return false;
 
@@ -2318,6 +2586,7 @@ function validarFormulario() {
       "Informe o nome da pessoa atendida."
     );
 
+
     return false;
 
   }
@@ -2332,6 +2601,7 @@ function validarFormulario() {
       "Preencha o relato ou grave um áudio do relato."
     );
 
+
     return false;
 
   }
@@ -2345,6 +2615,7 @@ function validarFormulario() {
     mostrarMensagem(
       "Preencha a orientação / conduta ou grave um áudio."
     );
+
 
     return false;
 
@@ -2646,6 +2917,7 @@ async function carregarUsuarioLogado() {
     window.location.href =
       "index.html";
 
+
     return false;
 
   }
@@ -2656,7 +2928,9 @@ async function carregarUsuarioLogado() {
       .from(
         "usuarios"
       )
-      .select("id")
+      .select(
+        "id"
+      )
       .eq(
         "auth_id",
         sessao.user.id
@@ -2693,7 +2967,9 @@ async function carregarUsuarioLogado() {
       .from(
         "responsaveis_atendimentos"
       )
-      .select("id")
+      .select(
+        "id"
+      )
       .eq(
         "usuario_id",
         usuarioLogadoId
@@ -2716,6 +2992,7 @@ async function carregarUsuarioLogado() {
 
     window.location.href =
       "administrativo.html";
+
 
     return false;
 
@@ -2787,16 +3064,22 @@ campoBuscaNaoAssociado.addEventListener(
 );
 
 
+/* ==========================================
+   GRAVAÇÃO
+========================================== */
+
 botaoGravarRelato.addEventListener(
   "click",
   () => {
 
     if (
       gravacaoAtual &&
-      gravacaoAtual.tipo === "relato"
+      gravacaoAtual.tipo ===
+        "relato"
     ) {
 
       finalizarGravacaoAtual();
+
 
       return;
 
@@ -2817,10 +3100,12 @@ botaoGravarOrientacao.addEventListener(
 
     if (
       gravacaoAtual &&
-      gravacaoAtual.tipo === "orientacao"
+      gravacaoAtual.tipo ===
+        "orientacao"
     ) {
 
       finalizarGravacaoAtual();
+
 
       return;
 
@@ -2834,6 +3119,38 @@ botaoGravarOrientacao.addEventListener(
   }
 );
 
+
+/* ==========================================
+   FALAR PARA TEXTO
+========================================== */
+
+botaoFalarTextoRelato.addEventListener(
+  "click",
+  () => {
+
+    iniciarFalarParaTexto(
+      "relato"
+    );
+
+  }
+);
+
+
+botaoFalarTextoOrientacao.addEventListener(
+  "click",
+  () => {
+
+    iniciarFalarParaTexto(
+      "orientacao"
+    );
+
+  }
+);
+
+
+/* ==========================================
+   REPRODUÇÃO
+========================================== */
 
 botaoReproduzirAudioRelato.addEventListener(
   "click",
@@ -2883,6 +3200,10 @@ botaoPararAudioOrientacao.addEventListener(
 );
 
 
+/* ==========================================
+   APAGAR
+========================================== */
+
 botaoApagarAudioRelato.addEventListener(
   "click",
   apagarAudioRelato
@@ -2894,6 +3215,10 @@ botaoApagarAudioOrientacao.addEventListener(
   apagarAudioOrientacao
 );
 
+
+/* ==========================================
+   OUTROS
+========================================== */
 
 precisaAcompanhamento.addEventListener(
   "change",
@@ -2917,9 +3242,32 @@ window.addEventListener(
 
     pararCronometro();
 
+
     pararTodosAudios();
 
-    finalizarReconhecimentoOculto();
+
+    if (
+      reconhecimentoTextoAtual
+    ) {
+
+      reconhecimentoTextoFinalizando =
+        true;
+
+
+      try {
+
+        reconhecimentoTextoAtual.stop();
+
+      } catch (erro) {
+
+        console.warn(
+          "Erro ao encerrar reconhecimento:",
+          erro
+        );
+
+      }
+
+    }
 
 
     if (
@@ -2966,6 +3314,7 @@ async function iniciarPagina() {
       "Não foi possível conectar ao banco de dados."
     );
 
+
     return;
 
   }
@@ -2991,9 +3340,30 @@ async function iniciarPagina() {
     botaoGravarOrientacao.disabled =
       true;
 
+  }
 
-    mostrarMensagem(
-      "A gravação de áudio não está disponível neste navegador."
+
+  if (
+    !reconhecimentoDisponivel()
+  ) {
+
+    botaoFalarTextoRelato.disabled =
+      true;
+
+
+    botaoFalarTextoOrientacao.disabled =
+      true;
+
+
+    atualizarStatusFalaTexto(
+      "relato",
+      "Falar para texto não está disponível neste navegador."
+    );
+
+
+    atualizarStatusFalaTexto(
+      "orientacao",
+      "Falar para texto não está disponível neste navegador."
     );
 
   }
