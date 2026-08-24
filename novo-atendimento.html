@@ -455,8 +455,6 @@
           ></textarea>
 
 
-          <!-- ÁREA DE GRAVAÇÃO DO RELATO -->
-
           <div
             id="areaAudioRelato"
             style="
@@ -480,11 +478,6 @@
 
             <audio
               id="playerAudioRelato"
-              controls
-              style="
-                width: 100%;
-                margin-bottom: 10px;
-              "
               hidden
             ></audio>
 
@@ -494,8 +487,53 @@
                 display: flex;
                 flex-wrap: wrap;
                 gap: 8px;
+                align-items: center;
               "
             >
+
+              <button
+                id="botaoReproduzirAudioRelato"
+                type="button"
+                style="
+                  padding: 8px 12px;
+                  border: 1px solid #bbb;
+                  border-radius: 8px;
+                  background: #fff;
+                  font-size: 14px;
+                  cursor: pointer;
+                "
+                hidden
+              >
+                ▶ Reproduzir
+              </button>
+
+
+              <button
+                id="botaoPararAudioRelato"
+                type="button"
+                style="
+                  padding: 8px 12px;
+                  border: 1px solid #bbb;
+                  border-radius: 8px;
+                  background: #fff;
+                  font-size: 14px;
+                  cursor: pointer;
+                "
+                hidden
+              >
+                ■ Parar
+              </button>
+
+
+              <span
+                id="duracaoAudioRelato"
+                style="
+                  font-size: 14px;
+                  font-weight: 600;
+                "
+                hidden
+              ></span>
+
 
               <button
                 id="botaoApagarAudioRelato"
@@ -597,8 +635,6 @@
           ></textarea>
 
 
-          <!-- ÁREA DE GRAVAÇÃO DA ORIENTAÇÃO -->
-
           <div
             id="areaAudioOrientacao"
             style="
@@ -622,11 +658,6 @@
 
             <audio
               id="playerAudioOrientacao"
-              controls
-              style="
-                width: 100%;
-                margin-bottom: 10px;
-              "
               hidden
             ></audio>
 
@@ -636,8 +667,53 @@
                 display: flex;
                 flex-wrap: wrap;
                 gap: 8px;
+                align-items: center;
               "
             >
+
+              <button
+                id="botaoReproduzirAudioOrientacao"
+                type="button"
+                style="
+                  padding: 8px 12px;
+                  border: 1px solid #bbb;
+                  border-radius: 8px;
+                  background: #fff;
+                  font-size: 14px;
+                  cursor: pointer;
+                "
+                hidden
+              >
+                ▶ Reproduzir
+              </button>
+
+
+              <button
+                id="botaoPararAudioOrientacao"
+                type="button"
+                style="
+                  padding: 8px 12px;
+                  border: 1px solid #bbb;
+                  border-radius: 8px;
+                  background: #fff;
+                  font-size: 14px;
+                  cursor: pointer;
+                "
+                hidden
+              >
+                ■ Parar
+              </button>
+
+
+              <span
+                id="duracaoAudioOrientacao"
+                style="
+                  font-size: 14px;
+                  font-weight: 600;
+                "
+                hidden
+              ></span>
+
 
               <button
                 id="botaoApagarAudioOrientacao"
@@ -748,20 +824,12 @@
       </section>
 
 
-      <!-- =====================================
-           MENSAGEM
-      ====================================== -->
-
       <p
         id="mensagemNovoAtendimento"
         class="mensagem-formulario"
         hidden
       ></p>
 
-
-      <!-- =====================================
-           SALVAR
-      ====================================== -->
 
       <button
         id="botaoSalvarAtendimento"
@@ -845,17 +913,13 @@
   </nav>
 
 
-  <!-- =====================================
-       SCRIPTS
-  ====================================== -->
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script src="supabase.js?v=2"></script>
 
   <script src="app.js?v=2"></script>
 
-  <script src="novo-atendimento.js?v=3"></script>
+  <script src="novo-atendimento.js?v=5"></script>
 
   <script src="menu-adm.js?v=1"></script>
 
