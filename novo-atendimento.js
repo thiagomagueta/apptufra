@@ -431,6 +431,61 @@ function obterTipoAudioSuportado() {
 
 
 /* ==========================================
+   EXTENSÃO DO ÁUDIO
+========================================== */
+
+function obterExtensaoAudio(
+  blob
+) {
+
+  const tipo =
+    String(
+      blob?.type || ""
+    ).toLowerCase();
+
+
+  if (
+    tipo.includes(
+      "mp4"
+    )
+  ) {
+
+    return "mp4";
+
+  }
+
+
+  if (
+    tipo.includes(
+      "ogg"
+    )
+  ) {
+
+    return "ogg";
+
+  }
+
+
+  if (
+    tipo.includes(
+      "mpeg"
+    ) ||
+    tipo.includes(
+      "mp3"
+    )
+  ) {
+
+    return "mp3";
+
+  }
+
+
+  return "webm";
+
+}
+
+
+/* ==========================================
    VERIFICAR GRAVAÇÃO
 ========================================== */
 
@@ -446,7 +501,7 @@ function gravacaoDisponivel() {
 
 
 /* ==========================================
-   LIMPAR URL
+   LIMPAR URL LOCAL
 ========================================== */
 
 function liberarUrlAudio(
@@ -509,10 +564,6 @@ async function iniciarGravacao(
 
   }
 
-
-  /*
-    Só permitimos uma gravação por vez.
-  */
 
   if (
     gravacaoAtual
@@ -662,10 +713,6 @@ async function iniciarGravacao(
           );
 
 
-        /*
-          Fecha o microfone.
-        */
-
         stream
           .getTracks()
           .forEach(
@@ -812,7 +859,7 @@ async function iniciarGravacao(
 
 
 /* ==========================================
-   SALVAR GRAVAÇÃO DO RELATO
+   SALVAR GRAVAÇÃO LOCAL - RELATO
 ========================================== */
 
 function salvarGravacaoRelato(
@@ -867,7 +914,7 @@ function salvarGravacaoRelato(
 
 
 /* ==========================================
-   SALVAR GRAVAÇÃO DA ORIENTAÇÃO
+   SALVAR GRAVAÇÃO LOCAL - ORIENTAÇÃO
 ========================================== */
 
 function salvarGravacaoOrientacao(
@@ -1039,6 +1086,115 @@ function apagarAudioOrientacao() {
 
   botaoGravarOrientacao.textContent =
     "🎙️ Gravar áudio";
+
+}
+
+
+/* ==========================================
+   UPLOAD DO ÁUDIO
+========================================== */
+
+async function enviarAudio(
+  atendimentoId,
+  tipo,
+  blob
+) {
+
+  if (
+    !blob
+  ) {
+
+    return null;
+
+  }
+
+
+  const extensao =
+    obterExtensaoAudio(
+      blob
+    );
+
+
+  const caminho =
+    `${atendimentoId}/${tipo}.${extensao}`;
+
+
+  const resultado =
+    await window.supabaseClient
+      .storage
+      .from(
+        "audios-atendimentos"
+      )
+      .upload(
+        caminho,
+        blob,
+        {
+          contentType:
+            blob.type ||
+            "audio/webm",
+
+          upsert:
+            false
+        }
+      );
+
+
+  if (
+    resultado.error
+  ) {
+
+    throw resultado.error;
+
+  }
+
+
+  return caminho;
+
+}
+
+
+/* ==========================================
+   REMOVER ARQUIVOS EM CASO DE ERRO
+========================================== */
+
+async function removerAudiosEnviados(
+  caminhos
+) {
+
+  const caminhosValidos =
+    caminhos.filter(
+      Boolean
+    );
+
+
+  if (
+    !caminhosValidos.length
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    await window.supabaseClient
+      .storage
+      .from(
+        "audios-atendimentos"
+      )
+      .remove(
+        caminhosValidos
+      );
+
+  } catch (erro) {
+
+    console.warn(
+      "Não foi possível remover arquivos temporários:",
+      erro
+    );
+
+  }
 
 }
 
@@ -1713,12 +1869,18 @@ function validarFormulario() {
   }
 
 
+  /* ======================================
+     RELATO:
+     TEXTO OU ÁUDIO
+  ====================================== */
+
   if (
-    !relatoAtendimento.value.trim()
+    !relatoAtendimento.value.trim() &&
+    !audioRelatoBlob
   ) {
 
     mostrarMensagem(
-      "Preencha o relato do atendimento."
+      "Preencha o relato ou grave um áudio do relato."
     );
 
     return false;
@@ -1726,12 +1888,18 @@ function validarFormulario() {
   }
 
 
+  /* ======================================
+     ORIENTAÇÃO:
+     TEXTO OU ÁUDIO
+  ====================================== */
+
   if (
-    !orientacaoAtendimento.value.trim()
+    !orientacaoAtendimento.value.trim() &&
+    !audioOrientacaoBlob
   ) {
 
     mostrarMensagem(
-      "Preencha a orientação / conduta."
+      "Preencha a orientação / conduta ou grave um áudio."
     );
 
     return false;
@@ -1768,6 +1936,14 @@ async function salvarAtendimento() {
 
   botaoSalvarAtendimento.textContent =
     "SALVANDO...";
+
+
+  let relatoAudioPath =
+    null;
+
+
+  let orientacaoAudioPath =
+    null;
 
 
   try {
@@ -1815,12 +1991,76 @@ async function salvarAtendimento() {
     }
 
 
+    /* ======================================
+       ID DO ATENDIMENTO
+       É CRIADO ANTES PARA ORGANIZAR OS ÁUDIOS
+    ====================================== */
+
+    const atendimentoId =
+      crypto.randomUUID();
+
+
+    /* ======================================
+       ENVIAR ÁUDIO DO RELATO
+    ====================================== */
+
+    if (
+      audioRelatoBlob
+    ) {
+
+      botaoSalvarAtendimento.textContent =
+        "ENVIANDO ÁUDIO DO RELATO...";
+
+
+      relatoAudioPath =
+        await enviarAudio(
+          atendimentoId,
+          "relato",
+          audioRelatoBlob
+        );
+
+    }
+
+
+    /* ======================================
+       ENVIAR ÁUDIO DA ORIENTAÇÃO
+    ====================================== */
+
+    if (
+      audioOrientacaoBlob
+    ) {
+
+      botaoSalvarAtendimento.textContent =
+        "ENVIANDO ÁUDIO DA ORIENTAÇÃO...";
+
+
+      orientacaoAudioPath =
+        await enviarAudio(
+          atendimentoId,
+          "orientacao",
+          audioOrientacaoBlob
+        );
+
+    }
+
+
+    /* ======================================
+       SALVAR ATENDIMENTO NO BANCO
+    ====================================== */
+
+    botaoSalvarAtendimento.textContent =
+      "SALVANDO ATENDIMENTO...";
+
+
     const resultado =
       await window.supabaseClient
         .from(
           "atendimentos"
         )
         .insert({
+
+          id:
+            atendimentoId,
 
           usuario_id:
             usuarioAtendidoId,
@@ -1836,10 +2076,18 @@ async function salvarAtendimento() {
             null,
 
           relato:
-            relatoAtendimento.value.trim(),
+            relatoAtendimento.value.trim() ||
+            null,
 
           orientacao_conduta:
-            orientacaoAtendimento.value.trim(),
+            orientacaoAtendimento.value.trim() ||
+            null,
+
+          relato_audio_path:
+            relatoAudioPath,
+
+          orientacao_audio_path:
+            orientacaoAudioPath,
 
           precisa_acompanhamento:
             precisaAcompanhamento.checked,
@@ -1891,6 +2139,18 @@ async function salvarAtendimento() {
       "Erro ao salvar atendimento:",
       erro
     );
+
+
+    /*
+      Se algum áudio já tiver sido enviado,
+      mas o atendimento não tiver sido salvo,
+      tentamos removê-lo.
+    */
+
+    await removerAudiosEnviados([
+      relatoAudioPath,
+      orientacaoAudioPath
+    ]);
 
 
     mostrarMensagem(
