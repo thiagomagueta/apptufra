@@ -140,6 +140,21 @@ const playerAudioRelato =
     "playerAudioRelato"
   );
 
+const botaoReproduzirAudioRelato =
+  document.getElementById(
+    "botaoReproduzirAudioRelato"
+  );
+
+const botaoPararAudioRelato =
+  document.getElementById(
+    "botaoPararAudioRelato"
+  );
+
+const duracaoAudioRelato =
+  document.getElementById(
+    "duracaoAudioRelato"
+  );
+
 const botaoApagarAudioRelato =
   document.getElementById(
     "botaoApagarAudioRelato"
@@ -173,6 +188,21 @@ const statusAudioOrientacao =
 const playerAudioOrientacao =
   document.getElementById(
     "playerAudioOrientacao"
+  );
+
+const botaoReproduzirAudioOrientacao =
+  document.getElementById(
+    "botaoReproduzirAudioOrientacao"
+  );
+
+const botaoPararAudioOrientacao =
+  document.getElementById(
+    "botaoPararAudioOrientacao"
+  );
+
+const duracaoAudioOrientacao =
+  document.getElementById(
+    "duracaoAudioOrientacao"
   );
 
 const botaoApagarAudioOrientacao =
@@ -216,11 +246,19 @@ let audioRelatoBlob =
 let audioRelatoUrl =
   null;
 
+let audioRelatoDuracao =
+  null;
+
+
 let audioOrientacaoBlob =
   null;
 
 let audioOrientacaoUrl =
   null;
+
+let audioOrientacaoDuracao =
+  null;
+
 
 let gravacaoAtual =
   null;
@@ -341,21 +379,27 @@ function esconderMensagem() {
 
 
 /* ==========================================
-   CRONÔMETRO
+   TEMPO
 ========================================== */
 
 function formatarTempo(
   segundos
 ) {
 
+  const total =
+    Number(
+      segundos || 0
+    );
+
+
   const minutos =
     Math.floor(
-      segundos / 60
+      total / 60
     );
 
 
   const restante =
-    segundos % 60;
+    total % 60;
 
 
   return `${String(
@@ -392,16 +436,16 @@ function pararCronometro() {
 
 
 /* ==========================================
-   TIPO DE ÁUDIO SUPORTADO
+   TIPO DE ÁUDIO
 ========================================== */
 
 function obterTipoAudioSuportado() {
 
   const tipos =
     [
+      "audio/mp4",
       "audio/webm;codecs=opus",
       "audio/webm",
-      "audio/mp4",
       "audio/ogg;codecs=opus"
     ];
 
@@ -431,7 +475,7 @@ function obterTipoAudioSuportado() {
 
 
 /* ==========================================
-   EXTENSÃO DO ÁUDIO
+   EXTENSÃO
 ========================================== */
 
 function obterExtensaoAudio(
@@ -486,7 +530,7 @@ function obterExtensaoAudio(
 
 
 /* ==========================================
-   VERIFICAR GRAVAÇÃO
+   SUPORTE
 ========================================== */
 
 function gravacaoDisponivel() {
@@ -501,7 +545,7 @@ function gravacaoDisponivel() {
 
 
 /* ==========================================
-   LIMPAR URL LOCAL
+   URL LOCAL
 ========================================== */
 
 function liberarUrlAudio(
@@ -522,7 +566,7 @@ function liberarUrlAudio(
 
 
 /* ==========================================
-   FINALIZAR GRAVAÇÃO ATUAL
+   FINALIZAR GRAVAÇÃO
 ========================================== */
 
 function finalizarGravacaoAtual() {
@@ -542,6 +586,70 @@ function finalizarGravacaoAtual() {
 
 
 /* ==========================================
+   REPRODUÇÃO
+========================================== */
+
+function pararTodosAudios() {
+
+  playerAudioRelato.pause();
+
+  playerAudioRelato.currentTime =
+    0;
+
+
+  playerAudioOrientacao.pause();
+
+  playerAudioOrientacao.currentTime =
+    0;
+
+}
+
+
+async function reproduzirAudio(
+  player
+) {
+
+  pararTodosAudios();
+
+
+  try {
+
+    player.currentTime =
+      0;
+
+
+    await player.play();
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao reproduzir áudio:",
+      erro
+    );
+
+
+    mostrarMensagem(
+      "Não foi possível reproduzir o áudio."
+    );
+
+  }
+
+}
+
+
+function pararAudio(
+  player
+) {
+
+  player.pause();
+
+  player.currentTime =
+    0;
+
+}
+
+
+/* ==========================================
    INICIAR GRAVAÇÃO
 ========================================== */
 
@@ -550,6 +658,9 @@ async function iniciarGravacao(
 ) {
 
   esconderMensagem();
+
+
+  pararTodosAudios();
 
 
   if (
@@ -697,6 +808,13 @@ async function iniciarGravacao(
         pararCronometro();
 
 
+        const duracaoFinal =
+          Math.max(
+            1,
+            segundosGravacao
+          );
+
+
         const tipoFinal =
           mediaRecorder.mimeType ||
           mimeType ||
@@ -729,13 +847,15 @@ async function iniciarGravacao(
         ) {
 
           salvarGravacaoRelato(
-            blob
+            blob,
+            duracaoFinal
           );
 
         } else {
 
           salvarGravacaoOrientacao(
-            blob
+            blob,
+            duracaoFinal
           );
 
         }
@@ -750,13 +870,7 @@ async function iniciarGravacao(
 
     mediaRecorder.addEventListener(
       "error",
-      (evento) => {
-
-        console.error(
-          "Erro no MediaRecorder:",
-          evento
-        );
-
+      () => {
 
         pararCronometro();
 
@@ -859,11 +973,12 @@ async function iniciarGravacao(
 
 
 /* ==========================================
-   SALVAR GRAVAÇÃO LOCAL - RELATO
+   SALVAR RELATO
 ========================================== */
 
 function salvarGravacaoRelato(
-  blob
+  blob,
+  duracao
 ) {
 
   liberarUrlAudio(
@@ -873,6 +988,10 @@ function salvarGravacaoRelato(
 
   audioRelatoBlob =
     blob;
+
+
+  audioRelatoDuracao =
+    duracao;
 
 
   audioRelatoUrl =
@@ -885,7 +1004,25 @@ function salvarGravacaoRelato(
     audioRelatoUrl;
 
 
-  playerAudioRelato.hidden =
+  statusAudioRelato.textContent =
+    "Gravação finalizada";
+
+
+  duracaoAudioRelato.textContent =
+    `⏱ ${formatarTempo(
+      audioRelatoDuracao
+    )}`;
+
+
+  duracaoAudioRelato.hidden =
+    false;
+
+
+  botaoReproduzirAudioRelato.hidden =
+    false;
+
+
+  botaoPararAudioRelato.hidden =
     false;
 
 
@@ -901,12 +1038,6 @@ function salvarGravacaoRelato(
     true;
 
 
-  statusAudioRelato.textContent =
-    `Gravação finalizada — ${formatarTempo(
-      segundosGravacao
-    )}`;
-
-
   botaoGravarRelato.textContent =
     "🎙️ Gravar novamente";
 
@@ -914,11 +1045,12 @@ function salvarGravacaoRelato(
 
 
 /* ==========================================
-   SALVAR GRAVAÇÃO LOCAL - ORIENTAÇÃO
+   SALVAR ORIENTAÇÃO
 ========================================== */
 
 function salvarGravacaoOrientacao(
-  blob
+  blob,
+  duracao
 ) {
 
   liberarUrlAudio(
@@ -928,6 +1060,10 @@ function salvarGravacaoOrientacao(
 
   audioOrientacaoBlob =
     blob;
+
+
+  audioOrientacaoDuracao =
+    duracao;
 
 
   audioOrientacaoUrl =
@@ -940,7 +1076,25 @@ function salvarGravacaoOrientacao(
     audioOrientacaoUrl;
 
 
-  playerAudioOrientacao.hidden =
+  statusAudioOrientacao.textContent =
+    "Gravação finalizada";
+
+
+  duracaoAudioOrientacao.textContent =
+    `⏱ ${formatarTempo(
+      audioOrientacaoDuracao
+    )}`;
+
+
+  duracaoAudioOrientacao.hidden =
+    false;
+
+
+  botaoReproduzirAudioOrientacao.hidden =
+    false;
+
+
+  botaoPararAudioOrientacao.hidden =
     false;
 
 
@@ -954,12 +1108,6 @@ function salvarGravacaoOrientacao(
 
   botaoTranscreverOrientacao.disabled =
     true;
-
-
-  statusAudioOrientacao.textContent =
-    `Gravação finalizada — ${formatarTempo(
-      segundosGravacao
-    )}`;
 
 
   botaoGravarOrientacao.textContent =
@@ -983,7 +1131,9 @@ function apagarAudioRelato() {
   }
 
 
-  playerAudioRelato.pause();
+  pararAudio(
+    playerAudioRelato
+  );
 
 
   playerAudioRelato.removeAttribute(
@@ -1002,8 +1152,22 @@ function apagarAudioRelato() {
   audioRelatoUrl =
     null;
 
+  audioRelatoDuracao =
+    null;
 
-  playerAudioRelato.hidden =
+
+  duracaoAudioRelato.textContent =
+    "";
+
+  duracaoAudioRelato.hidden =
+    true;
+
+
+  botaoReproduzirAudioRelato.hidden =
+    true;
+
+
+  botaoPararAudioRelato.hidden =
     true;
 
 
@@ -1044,7 +1208,9 @@ function apagarAudioOrientacao() {
   }
 
 
-  playerAudioOrientacao.pause();
+  pararAudio(
+    playerAudioOrientacao
+  );
 
 
   playerAudioOrientacao.removeAttribute(
@@ -1063,8 +1229,22 @@ function apagarAudioOrientacao() {
   audioOrientacaoUrl =
     null;
 
+  audioOrientacaoDuracao =
+    null;
 
-  playerAudioOrientacao.hidden =
+
+  duracaoAudioOrientacao.textContent =
+    "";
+
+  duracaoAudioOrientacao.hidden =
+    true;
+
+
+  botaoReproduzirAudioOrientacao.hidden =
+    true;
+
+
+  botaoPararAudioOrientacao.hidden =
     true;
 
 
@@ -1091,7 +1271,7 @@ function apagarAudioOrientacao() {
 
 
 /* ==========================================
-   UPLOAD DO ÁUDIO
+   UPLOAD
 ========================================== */
 
 async function enviarAudio(
@@ -1154,7 +1334,7 @@ async function enviarAudio(
 
 
 /* ==========================================
-   REMOVER ARQUIVOS EM CASO DE ERRO
+   LIMPEZA EM CASO DE ERRO
 ========================================== */
 
 async function removerAudiosEnviados(
@@ -1298,7 +1478,7 @@ function atualizarTipoPessoa() {
 
 
 /* ==========================================
-   CRIAR ITEM DE RESULTADO
+   ITEM DE RESULTADO
 ========================================== */
 
 function criarBotaoResultado(
@@ -1753,7 +1933,7 @@ async function buscarNaoAssociados() {
 
 
 /* ==========================================
-   CRIAR PESSOA NÃO ASSOCIADA
+   CRIAR NÃO ASSOCIADO
 ========================================== */
 
 async function criarPessoaNaoAssociada() {
@@ -1869,11 +2049,6 @@ function validarFormulario() {
   }
 
 
-  /* ======================================
-     RELATO:
-     TEXTO OU ÁUDIO
-  ====================================== */
-
   if (
     !relatoAtendimento.value.trim() &&
     !audioRelatoBlob
@@ -1887,11 +2062,6 @@ function validarFormulario() {
 
   }
 
-
-  /* ======================================
-     ORIENTAÇÃO:
-     TEXTO OU ÁUDIO
-  ====================================== */
 
   if (
     !orientacaoAtendimento.value.trim() &&
@@ -1919,6 +2089,9 @@ function validarFormulario() {
 async function salvarAtendimento() {
 
   esconderMensagem();
+
+
+  pararTodosAudios();
 
 
   if (
@@ -1991,26 +2164,13 @@ async function salvarAtendimento() {
     }
 
 
-    /* ======================================
-       ID DO ATENDIMENTO
-       É CRIADO ANTES PARA ORGANIZAR OS ÁUDIOS
-    ====================================== */
-
     const atendimentoId =
       crypto.randomUUID();
 
 
-    /* ======================================
-       ENVIAR ÁUDIO DO RELATO
-    ====================================== */
-
     if (
       audioRelatoBlob
     ) {
-
-      botaoSalvarAtendimento.textContent =
-        "ENVIANDO ÁUDIO DO RELATO...";
-
 
       relatoAudioPath =
         await enviarAudio(
@@ -2022,17 +2182,9 @@ async function salvarAtendimento() {
     }
 
 
-    /* ======================================
-       ENVIAR ÁUDIO DA ORIENTAÇÃO
-    ====================================== */
-
     if (
       audioOrientacaoBlob
     ) {
-
-      botaoSalvarAtendimento.textContent =
-        "ENVIANDO ÁUDIO DA ORIENTAÇÃO...";
-
 
       orientacaoAudioPath =
         await enviarAudio(
@@ -2042,14 +2194,6 @@ async function salvarAtendimento() {
         );
 
     }
-
-
-    /* ======================================
-       SALVAR ATENDIMENTO NO BANCO
-    ====================================== */
-
-    botaoSalvarAtendimento.textContent =
-      "SALVANDO ATENDIMENTO...";
 
 
     const resultado =
@@ -2086,8 +2230,18 @@ async function salvarAtendimento() {
           relato_audio_path:
             relatoAudioPath,
 
+          relato_audio_duracao:
+            relatoAudioPath
+              ? audioRelatoDuracao
+              : null,
+
           orientacao_audio_path:
             orientacaoAudioPath,
+
+          orientacao_audio_duracao:
+            orientacaoAudioPath
+              ? audioOrientacaoDuracao
+              : null,
 
           precisa_acompanhamento:
             precisaAcompanhamento.checked,
@@ -2141,12 +2295,6 @@ async function salvarAtendimento() {
     );
 
 
-    /*
-      Se algum áudio já tiver sido enviado,
-      mas o atendimento não tiver sido salvo,
-      tentamos removê-lo.
-    */
-
     await removerAudiosEnviados([
       relatoAudioPath,
       orientacaoAudioPath
@@ -2194,7 +2342,7 @@ function atualizarAcompanhamento() {
 
 
 /* ==========================================
-   USUÁRIO LOGADO
+   USUÁRIO
 ========================================== */
 
 async function carregarUsuarioLogado() {
@@ -2417,6 +2565,54 @@ botaoGravarOrientacao.addEventListener(
 );
 
 
+botaoReproduzirAudioRelato.addEventListener(
+  "click",
+  () => {
+
+    reproduzirAudio(
+      playerAudioRelato
+    );
+
+  }
+);
+
+
+botaoPararAudioRelato.addEventListener(
+  "click",
+  () => {
+
+    pararAudio(
+      playerAudioRelato
+    );
+
+  }
+);
+
+
+botaoReproduzirAudioOrientacao.addEventListener(
+  "click",
+  () => {
+
+    reproduzirAudio(
+      playerAudioOrientacao
+    );
+
+  }
+);
+
+
+botaoPararAudioOrientacao.addEventListener(
+  "click",
+  () => {
+
+    pararAudio(
+      playerAudioOrientacao
+    );
+
+  }
+);
+
+
 botaoApagarAudioRelato.addEventListener(
   "click",
   apagarAudioRelato
@@ -2442,7 +2638,7 @@ botaoSalvarAtendimento.addEventListener(
 
 
 /* ==========================================
-   SAÍDA DA PÁGINA
+   SAÍDA
 ========================================== */
 
 window.addEventListener(
@@ -2450,6 +2646,9 @@ window.addEventListener(
   () => {
 
     pararCronometro();
+
+
+    pararTodosAudios();
 
 
     if (
