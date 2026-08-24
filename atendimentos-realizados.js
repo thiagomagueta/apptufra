@@ -307,7 +307,7 @@ function criarBotaoPessoa(
 
 
 /* ==========================================
-   BUSCAR PESSOAS
+   BUSCAR PESSOAS COM ATENDIMENTO
 ========================================== */
 
 async function buscarPessoas() {
@@ -345,24 +345,122 @@ async function buscarPessoas() {
 
   try {
 
-    const [
-      resultadoAssociados,
-      resultadoNaoAssociados
-    ] =
-      await Promise.all([
+    /* ======================================
+       PRIMEIRO:
+       BUSCAR QUEM POSSUI ATENDIMENTO
+    ====================================== */
 
-        window.supabaseClient
+    const resultadoAtendimentos =
+      await window.supabaseClient
+        .from(
+          "atendimentos"
+        )
+        .select(`
+          usuario_id,
+          pessoa_nao_associada_id
+        `);
+
+
+    if (
+      resultadoAtendimentos.error
+    ) {
+
+      throw resultadoAtendimentos.error;
+
+    }
+
+
+    const registros =
+      resultadoAtendimentos.data ||
+      [];
+
+
+    /* ======================================
+       IDs ÚNICOS DE ASSOCIADOS
+    ====================================== */
+
+    const idsAssociados =
+      [
+        ...new Set(
+          registros
+            .map(
+              (item) =>
+                item.usuario_id
+            )
+            .filter(
+              Boolean
+            )
+        )
+      ];
+
+
+    /* ======================================
+       IDs ÚNICOS DE NÃO ASSOCIADOS
+    ====================================== */
+
+    const idsNaoAssociados =
+      [
+        ...new Set(
+          registros
+            .map(
+              (item) =>
+                item.pessoa_nao_associada_id
+            )
+            .filter(
+              Boolean
+            )
+        )
+      ];
+
+
+    /* ======================================
+       SE NÃO EXISTIR NENHUM ATENDIMENTO
+    ====================================== */
+
+    if (
+      idsAssociados.length === 0 &&
+      idsNaoAssociados.length === 0
+    ) {
+
+      resultadoBuscaPessoa.innerHTML =
+        "<p>Nenhum atendimento registrado.</p>";
+
+      return;
+
+    }
+
+
+    /* ======================================
+       CONSULTAS DOS NOMES
+    ====================================== */
+
+    let associados =
+      [];
+
+    let naoAssociados =
+      [];
+
+
+    /* --------------------------------------
+       ASSOCIADOS
+    -------------------------------------- */
+
+    if (
+      idsAssociados.length > 0
+    ) {
+
+      const resultadoAssociados =
+        await window.supabaseClient
           .from(
             "usuarios"
           )
           .select(`
             id,
-            nome_completo,
-            status
+            nome_completo
           `)
-          .eq(
-            "status",
-            "ativo"
+          .in(
+            "id",
+            idsAssociados
           )
           .ilike(
             "nome_completo",
@@ -374,12 +472,49 @@ async function buscarPessoas() {
               ascending:
                 true
             }
-          )
-          .limit(
-            30
-          ),
+          );
 
-        window.supabaseClient
+
+      if (
+        resultadoAssociados.error
+      ) {
+
+        throw resultadoAssociados.error;
+
+      }
+
+
+      associados =
+        (
+          resultadoAssociados.data ||
+          []
+        )
+          .map(
+            (pessoa) => ({
+              id:
+                pessoa.id,
+
+              nome_completo:
+                pessoa.nome_completo,
+
+              tipo:
+                "associado"
+            })
+          );
+
+    }
+
+
+    /* --------------------------------------
+       NÃO ASSOCIADOS
+    -------------------------------------- */
+
+    if (
+      idsNaoAssociados.length > 0
+    ) {
+
+      const resultadoNaoAssociados =
+        await window.supabaseClient
           .from(
             "pessoas_atendimentos"
           )
@@ -387,6 +522,10 @@ async function buscarPessoas() {
             id,
             nome_completo
           `)
+          .in(
+            "id",
+            idsNaoAssociados
+          )
           .ilike(
             "nome_completo",
             `%${busca}%`
@@ -397,69 +536,42 @@ async function buscarPessoas() {
               ascending:
                 true
             }
-          )
-          .limit(
-            30
-          )
-
-      ]);
+          );
 
 
-    if (
-      resultadoAssociados.error
-    ) {
+      if (
+        resultadoNaoAssociados.error
+      ) {
 
-      throw resultadoAssociados.error;
+        throw resultadoNaoAssociados.error;
+
+      }
+
+
+      naoAssociados =
+        (
+          resultadoNaoAssociados.data ||
+          []
+        )
+          .map(
+            (pessoa) => ({
+              id:
+                pessoa.id,
+
+              nome_completo:
+                pessoa.nome_completo,
+
+              tipo:
+                "nao_associado"
+            })
+          );
 
     }
 
 
-    if (
-      resultadoNaoAssociados.error
-    ) {
-
-      throw resultadoNaoAssociados.error;
-
-    }
-
-
-    const associados =
-      (
-        resultadoAssociados.data ||
-        []
-      )
-        .map(
-          (pessoa) => ({
-            id:
-              pessoa.id,
-
-            nome_completo:
-              pessoa.nome_completo,
-
-            tipo:
-              "associado"
-          })
-        );
-
-
-    const naoAssociados =
-      (
-        resultadoNaoAssociados.data ||
-        []
-      )
-        .map(
-          (pessoa) => ({
-            id:
-              pessoa.id,
-
-            nome_completo:
-              pessoa.nome_completo,
-
-            tipo:
-              "nao_associado"
-          })
-        );
-
+    /* ======================================
+       JUNTAR E ORDENAR
+    ====================================== */
 
     const pessoas =
       [
@@ -491,17 +603,25 @@ async function buscarPessoas() {
       "";
 
 
+    /* ======================================
+       SEM RESULTADOS
+    ====================================== */
+
     if (
       !pessoas.length
     ) {
 
       resultadoBuscaPessoa.innerHTML =
-        "<p>Nenhuma pessoa encontrada.</p>";
+        "<p>Nenhuma pessoa com atendimento encontrada.</p>";
 
       return;
 
     }
 
+
+    /* ======================================
+       MOSTRAR RESULTADOS
+    ====================================== */
 
     pessoas.forEach(
       (pessoa) => {
@@ -519,7 +639,7 @@ async function buscarPessoas() {
   } catch (erro) {
 
     console.error(
-      "Erro ao pesquisar pessoas:",
+      "Erro ao pesquisar pessoas com atendimento:",
       erro
     );
 
