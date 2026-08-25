@@ -1,0 +1,23 @@
+{
+  "name": "TUFRA - Tenda de Umbanda Francisco de Assis",
+  "short_name": "TUFRA",
+  "description": "Aplicativo da Tenda de Umbanda Francisco de Assis",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#651b1d",
+  "theme_color": "#651b1d",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
