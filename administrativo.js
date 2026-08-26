@@ -25,9 +25,9 @@ const moduloPresenca =
     "moduloPresenca"
   );
 
-const moduloAtendimentos =
+const moduloComunicados =
   document.getElementById(
-    "moduloAtendimentos"
+    "moduloComunicados"
   );
 
 const moduloRelatorios =
@@ -219,7 +219,7 @@ async function carregarModulosAdministrativos() {
        RESPONSÁVEL POR PRESENÇA
     ====================================== */
 
-    const resultadoResponsavel =
+    const resultadoResponsavelPresenca =
       await window.supabaseClient
         .from(
           "responsaveis_lista_presenca"
@@ -237,29 +237,29 @@ async function carregarModulosAdministrativos() {
 
 
     if (
-      resultadoResponsavel.error
+      resultadoResponsavelPresenca.error
     ) {
 
-      throw resultadoResponsavel.error;
+      throw resultadoResponsavelPresenca.error;
 
     }
 
 
     const ehResponsavelPresenca =
       (
-        resultadoResponsavel.data ||
+        resultadoResponsavelPresenca.data ||
         []
       ).length > 0;
 
 
     /* ======================================
-       RESPONSÁVEL POR ATENDIMENTOS
+       RESPONSÁVEL POR RECADOS E ENQUETES
     ====================================== */
 
-    const resultadoResponsavelAtendimento =
+    const resultadoResponsavelComunicados =
       await window.supabaseClient
         .from(
-          "responsaveis_atendimentos"
+          "responsaveis_comunicados"
         )
         .select(
           "id"
@@ -274,17 +274,17 @@ async function carregarModulosAdministrativos() {
 
 
     if (
-      resultadoResponsavelAtendimento.error
+      resultadoResponsavelComunicados.error
     ) {
 
-      throw resultadoResponsavelAtendimento.error;
+      throw resultadoResponsavelComunicados.error;
 
     }
 
 
-    const ehResponsavelAtendimento =
+    const ehResponsavelComunicados =
       (
-        resultadoResponsavelAtendimento.data ||
+        resultadoResponsavelComunicados.data ||
         []
       ).length > 0;
 
@@ -355,16 +355,16 @@ async function carregarModulosAdministrativos() {
 
 
     /* ======================================
-       ATENDIMENTOS
-       SOMENTE RESPONSÁVEL AUTORIZADO
+       RECADOS E ENQUETES
+       SOMENTE RESPONSÁVEIS AUTORIZADOS
     ====================================== */
 
     if (
-      moduloAtendimentos
+      moduloComunicados
     ) {
 
-      moduloAtendimentos.hidden =
-        !ehResponsavelAtendimento;
+      moduloComunicados.hidden =
+        !ehResponsavelComunicados;
 
     }
 
@@ -392,7 +392,7 @@ async function carregarModulosAdministrativos() {
       ehTesoureiro ||
       pertenceDiretoria ||
       ehResponsavelPresenca ||
-      ehResponsavelAtendimento;
+      ehResponsavelComunicados;
 
 
     if (
