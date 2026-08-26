@@ -70,8 +70,18 @@
 }
 
 
-.periodo-comunicado-dashboard {
+.publicado-por-comunicado-dashboard {
   margin-top: 4px;
+
+  font-size: 12px;
+  line-height: 1.4;
+
+  opacity: 0.72;
+}
+
+
+.periodo-comunicado-dashboard {
+  margin-top: 2px;
 
   font-size: 12px;
 
@@ -192,11 +202,24 @@
 
 
 .mensagem-popup-comunicado-dashboard {
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 
   white-space: pre-wrap;
 
   line-height: 1.6;
+}
+
+
+.publicado-por-popup-comunicado-dashboard {
+  margin:
+    0
+    0
+    20px;
+
+  font-size: 12px;
+  line-height: 1.4;
+
+  opacity: 0.72;
 }
 
 
