@@ -24,6 +24,11 @@
     href="layout.css?v=40"
   >
 
+  <link
+    rel="stylesheet"
+    href="dashboard-comunicados.css?v=1"
+  >
+
 </head>
 
 
@@ -98,6 +103,35 @@
         <p class="subtitulo-pagina">
           Seja bem-vindo à Tenda de Umbanda Francisco de Assis.
         </p>
+
+      </section>
+
+
+      <!-- =====================================
+           RECADOS E ENQUETES
+           SÓ APARECE QUANDO EXISTIR ATIVO
+      ====================================== -->
+
+      <section
+        id="areaComunicadosDashboard"
+        class="cartao-app cartao-comunicado-dashboard"
+        hidden
+      >
+
+        <div class="cabecalho-comunicado-dashboard">
+
+          <h2>
+            Recados
+          </h2>
+
+        </div>
+
+
+        <div
+          id="listaComunicadosDashboard"
+          class="lista-comunicados-dashboard"
+        >
+        </div>
 
       </section>
 
@@ -223,6 +257,85 @@
 
 
   <!-- =====================================
+       POP-UP DE COMUNICADO
+  ====================================== -->
+
+  <div
+    id="popupComunicadoDashboard"
+    class="popup-comunicado-dashboard"
+    hidden
+  >
+
+    <div
+      class="fundo-popup-comunicado-dashboard"
+    ></div>
+
+
+    <section
+      class="janela-popup-comunicado-dashboard"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="tituloPopupComunicadoDashboard"
+    >
+
+      <div class="cabecalho-popup-comunicado-dashboard">
+
+        <span
+          id="tipoPopupComunicadoDashboard"
+          class="tipo-popup-comunicado-dashboard"
+        >
+          Recado
+        </span>
+
+
+        <button
+          id="botaoFecharPopupComunicadoDashboard"
+          class="botao-fechar-popup-comunicado-dashboard"
+          type="button"
+          aria-label="Fechar recado"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <h2
+        id="tituloPopupComunicadoDashboard"
+        class="titulo-popup-comunicado-dashboard"
+      >
+      </h2>
+
+
+      <div
+        id="mensagemPopupComunicadoDashboard"
+        class="mensagem-popup-comunicado-dashboard"
+      >
+      </div>
+
+
+      <div
+        id="areaEnquetePopupDashboard"
+        class="area-enquete-popup-dashboard"
+        hidden
+      >
+      </div>
+
+
+      <button
+        id="botaoFecharPopupComunicadoDashboardInferior"
+        class="botao-principal-app"
+        type="button"
+      >
+        Fechar
+      </button>
+
+    </section>
+
+  </div>
+
+
+  <!-- =====================================
        MENU INFERIOR
   ====================================== -->
 
@@ -327,6 +440,10 @@
   </nav>
 
 
+  <!-- =====================================
+       SCRIPTS
+  ====================================== -->
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script src="supabase.js?v=2"></script>
@@ -334,6 +451,9 @@
   <script src="app.js?v=2"></script>
 
   <script src="dashboard.js?v=9"></script>
+
+  <script src="dashboard-comunicados.js?v=1"></script>
+
 
 </body>
 
