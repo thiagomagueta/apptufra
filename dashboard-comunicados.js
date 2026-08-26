@@ -124,6 +124,34 @@ function formatarTipoComunicado(
 
 
 /* ==========================================
+   FORMATAR NOME
+========================================== */
+
+function formatarNomePublicadoPor(
+  nomeCompleto
+) {
+
+  const nome =
+    String(
+      nomeCompleto || ""
+    ).trim();
+
+
+  if (
+    !nome
+  ) {
+
+    return "TUFRA";
+
+  }
+
+
+  return nome;
+
+}
+
+
+/* ==========================================
    OBTER USUÁRIO ATUAL
 ========================================== */
 
@@ -378,6 +406,22 @@ function criarCardComunicado(
     "";
 
 
+  const publicadoPor =
+    document.createElement(
+      "span"
+    );
+
+
+  publicadoPor.className =
+    "publicado-por-comunicado-dashboard";
+
+
+  publicadoPor.textContent =
+    `Publicado por ${formatarNomePublicadoPor(
+      comunicado.criador?.nome_completo
+    )}`;
+
+
   const periodo =
     document.createElement(
       "span"
@@ -406,6 +450,11 @@ function criarCardComunicado(
 
   item.appendChild(
     mensagem
+  );
+
+
+  item.appendChild(
+    publicadoPor
   );
 
 
@@ -536,6 +585,57 @@ async function carregarVisualizacoes() {
 
 
 /* ==========================================
+   PUBLICADO POR NO POP-UP
+========================================== */
+
+function criarPublicadoPorPopup(
+  comunicado
+) {
+
+  const anterior =
+    document.getElementById(
+      "publicadoPorPopupComunicadoDashboard"
+    );
+
+
+  if (
+    anterior
+  ) {
+
+    anterior.remove();
+
+  }
+
+
+  const publicadoPor =
+    document.createElement(
+      "p"
+    );
+
+
+  publicadoPor.id =
+    "publicadoPorPopupComunicadoDashboard";
+
+
+  publicadoPor.className =
+    "publicado-por-popup-comunicado-dashboard";
+
+
+  publicadoPor.textContent =
+    `Publicado por ${formatarNomePublicadoPor(
+      comunicado.criador?.nome_completo
+    )}`;
+
+
+  mensagemPopupComunicadoDashboard.insertAdjacentElement(
+    "afterend",
+    publicadoPor
+  );
+
+}
+
+
+/* ==========================================
    ABRIR PRÓXIMO POP-UP
 ========================================== */
 
@@ -548,8 +648,10 @@ function abrirProximoPopup() {
     comunicadoPopupAtual =
       null;
 
+
     popupComunicadoDashboard.hidden =
       true;
+
 
     return;
 
@@ -574,6 +676,11 @@ function abrirProximoPopup() {
   mensagemPopupComunicadoDashboard.textContent =
     comunicadoPopupAtual.mensagem ||
     "";
+
+
+  criarPublicadoPorPopup(
+    comunicadoPopupAtual
+  );
 
 
   areaEnquetePopupDashboard.innerHTML =
@@ -725,7 +832,11 @@ async function carregarComunicadosDashboard() {
           status,
           publico_tipo,
           publico_filtros,
-          criado_em
+          criado_em,
+          criado_por,
+          criador:usuarios!comunicados_criado_por_fkey (
+            nome_completo
+          )
         `)
         .eq(
           "status",
