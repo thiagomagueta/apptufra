@@ -1,7 +1,6 @@
 // ========================================
 // APP TUFRA - PWA
 // Instalação Android + iPhone
-// Teste inicial de notificações
 // ========================================
 
 
@@ -591,195 +590,6 @@ window.addEventListener(
 
 
 // ========================================
-// NOTIFICAÇÕES
-// ========================================
-
-function navegadorSuportaNotificacao() {
-
-  return (
-    "Notification" in window &&
-    "serviceWorker" in navigator
-  );
-
-}
-
-
-// ========================================
-// CRIA BOTÃO DE TESTE
-// ========================================
-
-function criarBotaoTestarNotificacao() {
-
-  if (!appEstaInstalado()) {
-    return;
-  }
-
-
-  if (!navegadorSuportaNotificacao()) {
-    return;
-  }
-
-
-  if (
-    document.getElementById(
-      "botaoTestarNotificacao"
-    )
-  ) {
-    return;
-  }
-
-
-  const formulario =
-    document.getElementById(
-      "formularioLogin"
-    );
-
-
-  if (!formulario) {
-    return;
-  }
-
-
-  const botao =
-    document.createElement(
-      "button"
-    );
-
-
-  botao.id =
-    "botaoTestarNotificacao";
-
-  botao.type =
-    "button";
-
-  botao.className =
-    "botao-entrar";
-
-  botao.textContent =
-    "🔔 TESTAR NOTIFICAÇÃO";
-
-  botao.style.marginTop =
-    "16px";
-
-
-  botao.addEventListener(
-    "click",
-    testarNotificacaoTufra
-  );
-
-
-  formulario.appendChild(
-    botao
-  );
-
-}
-
-
-// ========================================
-// PEDE PERMISSÃO E MOSTRA NOTIFICAÇÃO
-// ========================================
-
-async function testarNotificacaoTufra() {
-
-  if (!navegadorSuportaNotificacao()) {
-
-    alert(
-      "Este dispositivo não suporta notificações do APP TUFRA."
-    );
-
-    return;
-
-  }
-
-
-  try {
-
-    let permissao =
-      Notification.permission;
-
-
-    if (
-      permissao ===
-      "default"
-    ) {
-
-      permissao =
-        await Notification.requestPermission();
-
-    }
-
-
-    if (
-      permissao ===
-      "denied"
-    ) {
-
-      alert(
-        "As notificações do TUFRA estão bloqueadas neste aparelho."
-      );
-
-      return;
-
-    }
-
-
-    if (
-      permissao !==
-      "granted"
-    ) {
-
-      alert(
-        "Não foi possível ativar as notificações."
-      );
-
-      return;
-
-    }
-
-
-    const registro =
-      await navigator.serviceWorker.ready;
-
-
-    await registro.showNotification(
-      "TUFRA",
-      {
-        body:
-          "Notificação de teste recebida com sucesso.",
-
-        icon:
-          "./icon-192.png",
-
-        badge:
-          "./icon-192.png",
-
-        tag:
-          "teste-notificacao-tufra",
-
-        renotify:
-          true
-      }
-    );
-
-
-  } catch (erro) {
-
-    console.error(
-      "TUFRA PWA - Erro na notificação:",
-      erro
-    );
-
-
-    alert(
-      "Não foi possível realizar o teste de notificação."
-    );
-
-  }
-
-}
-
-
-// ========================================
 // INICIALIZAÇÃO
 // ========================================
 
@@ -787,9 +597,9 @@ window.addEventListener(
   "DOMContentLoaded",
   () => {
 
-    // ======================================
-    // INSTALAÇÃO NO IOS
-    // ======================================
+    // No iPhone não existe
+    // beforeinstallprompt.
+    // Por isso criamos o botão diretamente.
 
     if (
       dispositivoIOS() &&
@@ -797,20 +607,6 @@ window.addEventListener(
     ) {
 
       criarBotaoInstalarTufra();
-
-    }
-
-
-    // ======================================
-    // TESTE DE NOTIFICAÇÃO
-    // Somente dentro do APP instalado
-    // ======================================
-
-    if (
-      appEstaInstalado()
-    ) {
-
-      criarBotaoTestarNotificacao();
 
     }
 
