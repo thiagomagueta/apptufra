@@ -1,0 +1,230 @@
+/* ==========================================
+   APP TUFRA - FASE 7
+   RECADOS E ENQUETES NO DASHBOARD
+========================================== */
+
+
+/* ==========================================
+   CARD DE COMUNICADOS
+========================================== */
+
+.cartao-comunicado-dashboard {
+  border-left: 4px solid #651b1d;
+}
+
+
+.cabecalho-comunicado-dashboard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+
+.lista-comunicados-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+
+.item-comunicado-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  padding: 14px;
+
+  border: 1px solid rgba(101, 27, 29, 0.18);
+  border-radius: 10px;
+
+  background: rgba(101, 27, 29, 0.03);
+}
+
+
+.tipo-comunicado-dashboard {
+  font-size: 12px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+
+  color: #651b1d;
+}
+
+
+.titulo-comunicado-dashboard {
+  margin: 0;
+
+  font-size: 17px;
+  line-height: 1.3;
+}
+
+
+.mensagem-comunicado-dashboard {
+  margin: 0;
+
+  white-space: pre-wrap;
+
+  line-height: 1.5;
+}
+
+
+.periodo-comunicado-dashboard {
+  margin-top: 4px;
+
+  font-size: 12px;
+
+  opacity: 0.7;
+}
+
+
+/* ==========================================
+   POP-UP
+========================================== */
+
+.popup-comunicado-dashboard {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 9999;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+}
+
+
+.popup-comunicado-dashboard[hidden] {
+  display: none;
+}
+
+
+.fundo-popup-comunicado-dashboard {
+  position: absolute;
+
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.58);
+}
+
+
+.janela-popup-comunicado-dashboard {
+  position: relative;
+
+  z-index: 1;
+
+  width: 100%;
+  max-width: 520px;
+
+  max-height: 80vh;
+
+  overflow-y: auto;
+
+  padding: 22px;
+
+  border-radius: 16px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 18px 50px
+    rgba(0, 0, 0, 0.28);
+}
+
+
+.cabecalho-popup-comunicado-dashboard {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 12px;
+}
+
+
+.tipo-popup-comunicado-dashboard {
+  display: inline-block;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  color: #651b1d;
+}
+
+
+.botao-fechar-popup-comunicado-dashboard {
+  width: 40px;
+  height: 40px;
+
+  flex-shrink: 0;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #f1f1f1;
+
+  font-size: 28px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+
+.titulo-popup-comunicado-dashboard {
+  margin:
+    0
+    0
+    14px;
+
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+
+.mensagem-popup-comunicado-dashboard {
+  margin-bottom: 20px;
+
+  white-space: pre-wrap;
+
+  line-height: 1.6;
+}
+
+
+.area-enquete-popup-dashboard {
+  margin-bottom: 20px;
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 600px) {
+
+  .popup-comunicado-dashboard {
+    padding: 14px;
+  }
+
+
+  .janela-popup-comunicado-dashboard {
+    padding: 18px;
+
+    max-height: 84vh;
+  }
+
+
+  .titulo-popup-comunicado-dashboard {
+    font-size: 20px;
+  }
+
+}
