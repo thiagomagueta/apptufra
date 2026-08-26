@@ -25,6 +25,26 @@ const cartaoErroComunicado =
     "cartaoErroComunicado"
   );
 
+const cartaoResultadosEnquete =
+  document.getElementById(
+    "cartaoResultadosEnquete"
+  );
+
+const resumoResultadosEnquete =
+  document.getElementById(
+    "resumoResultadosEnquete"
+  );
+
+const listaResultadosEnquete =
+  document.getElementById(
+    "listaResultadosEnquete"
+  );
+
+const botaoBaixarResultadosEnquete =
+  document.getElementById(
+    "botaoBaixarResultadosEnquete"
+  );
+
 const tipoComunicado =
   document.getElementById(
     "tipoComunicado"
@@ -102,6 +122,12 @@ const comunicadoId =
 
 let comunicadoAtual =
   null;
+
+let opcoesEnqueteAtual =
+  [];
+
+let respostasEnqueteAtual =
+  [];
 
 
 /* ==========================================
@@ -323,6 +349,28 @@ function formatarPublico(
 
 
 /* ==========================================
+   FORMATAR NOME
+========================================== */
+
+function formatarNome(
+  nomeCompleto
+) {
+
+  return String(
+    nomeCompleto || ""
+  )
+    .trim()
+    .toLowerCase()
+    .replace(
+      /\b\p{L}/gu,
+      (letra) =>
+        letra.toUpperCase()
+    );
+
+}
+
+
+/* ==========================================
    CARREGAR COMUNICADO
 ========================================== */
 
@@ -398,6 +446,15 @@ async function carregarComunicado() {
 
 
     preencherTela();
+
+
+    if (
+      comunicadoAtual.tipo === "enquete"
+    ) {
+
+      await carregarResultadosEnquete();
+
+    }
 
 
   } catch (erro) {
@@ -523,6 +580,526 @@ function preencherTela() {
 
   cartaoDetalhesComunicado.hidden =
     false;
+
+}
+
+
+/* ==========================================
+   CARREGAR RESULTADOS DA ENQUETE
+========================================== */
+
+async function carregarResultadosEnquete() {
+
+  if (
+    !comunicadoAtual ||
+    comunicadoAtual.tipo !== "enquete"
+  ) {
+
+    cartaoResultadosEnquete.hidden =
+      true;
+
+    return;
+
+  }
+
+
+  cartaoResultadosEnquete.hidden =
+    false;
+
+
+  resumoResultadosEnquete.textContent =
+    "Carregando resultados...";
+
+
+  listaResultadosEnquete.innerHTML =
+    "";
+
+
+  botaoBaixarResultadosEnquete.disabled =
+    true;
+
+
+  try {
+
+    /* --------------------------------------
+       OPÇÕES
+    -------------------------------------- */
+
+    const resultadoOpcoes =
+      await window.supabaseClient
+        .from(
+          "enquete_opcoes"
+        )
+        .select(`
+          id,
+          comunicado_id,
+          texto,
+          ordem
+        `)
+        .eq(
+          "comunicado_id",
+          comunicadoAtual.id
+        )
+        .order(
+          "ordem",
+          {
+            ascending:
+              true
+          }
+        );
+
+
+    if (
+      resultadoOpcoes.error
+    ) {
+
+      throw resultadoOpcoes.error;
+
+    }
+
+
+    opcoesEnqueteAtual =
+      resultadoOpcoes.data ||
+      [];
+
+
+    /* --------------------------------------
+       RESPOSTAS + USUÁRIOS
+    -------------------------------------- */
+
+    const resultadoRespostas =
+      await window.supabaseClient
+        .from(
+          "enquete_respostas"
+        )
+        .select(`
+          id,
+          comunicado_id,
+          opcao_id,
+          usuario_id,
+          respondido_em,
+          atualizado_em,
+          usuario:usuarios!enquete_respostas_usuario_id_fkey (
+            nome_completo
+          )
+        `)
+        .eq(
+          "comunicado_id",
+          comunicadoAtual.id
+        )
+        .order(
+          "respondido_em",
+          {
+            ascending:
+              true
+          }
+        );
+
+
+    if (
+      resultadoRespostas.error
+    ) {
+
+      throw resultadoRespostas.error;
+
+    }
+
+
+    respostasEnqueteAtual =
+      resultadoRespostas.data ||
+      [];
+
+
+    renderizarResultadosEnquete();
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao carregar resultados da enquete:",
+      erro
+    );
+
+
+    resumoResultadosEnquete.textContent =
+      "Não foi possível carregar os resultados.";
+
+
+    listaResultadosEnquete.innerHTML =
+      "";
+
+  }
+
+}
+
+
+/* ==========================================
+   RENDERIZAR RESULTADOS
+========================================== */
+
+function renderizarResultadosEnquete() {
+
+  listaResultadosEnquete.innerHTML =
+    "";
+
+
+  const totalRespostas =
+    respostasEnqueteAtual.length;
+
+
+  resumoResultadosEnquete.textContent =
+    totalRespostas === 1
+      ? "1 resposta registrada."
+      : `${totalRespostas} respostas registradas.`;
+
+
+  if (
+    opcoesEnqueteAtual.length === 0
+  ) {
+
+    listaResultadosEnquete.innerHTML =
+      "<p>Nenhuma opção cadastrada para esta enquete.</p>";
+
+    return;
+
+  }
+
+
+  opcoesEnqueteAtual.forEach(
+    (opcao) => {
+
+      const respostasOpcao =
+        respostasEnqueteAtual.filter(
+          (resposta) =>
+            resposta.opcao_id ===
+            opcao.id
+        );
+
+
+      const bloco =
+        document.createElement(
+          "div"
+        );
+
+
+      bloco.style.padding =
+        "14px 0";
+
+
+      bloco.style.borderBottom =
+        "1px solid rgba(0, 0, 0, 0.10)";
+
+
+      const titulo =
+        document.createElement(
+          "strong"
+        );
+
+
+      const quantidade =
+        respostasOpcao.length;
+
+
+      titulo.textContent =
+        quantidade === 1
+          ? `${opcao.texto} — 1 voto`
+          : `${opcao.texto} — ${quantidade} votos`;
+
+
+      bloco.appendChild(
+        titulo
+      );
+
+
+      const listaNomes =
+        document.createElement(
+          "div"
+        );
+
+
+      listaNomes.style.marginTop =
+        "8px";
+
+
+      if (
+        respostasOpcao.length === 0
+      ) {
+
+        const vazio =
+          document.createElement(
+            "p"
+          );
+
+
+        vazio.textContent =
+          "Nenhuma resposta.";
+
+
+        vazio.style.margin =
+          "0";
+
+
+        vazio.style.opacity =
+          "0.7";
+
+
+        listaNomes.appendChild(
+          vazio
+        );
+
+      } else {
+
+        respostasOpcao
+          .map(
+            (resposta) =>
+              formatarNome(
+                resposta.usuario?.nome_completo
+              )
+          )
+          .sort(
+            (a, b) =>
+              a.localeCompare(
+                b,
+                "pt-BR",
+                {
+                  sensitivity:
+                    "base"
+                }
+              )
+          )
+          .forEach(
+            (nome) => {
+
+              const item =
+                document.createElement(
+                  "p"
+                );
+
+
+              item.textContent =
+                `• ${nome || "Usuário"}`;
+
+
+              item.style.margin =
+                "4px 0";
+
+
+              listaNomes.appendChild(
+                item
+              );
+
+            }
+          );
+
+      }
+
+
+      bloco.appendChild(
+        listaNomes
+      );
+
+
+      listaResultadosEnquete.appendChild(
+        bloco
+      );
+
+    }
+  );
+
+
+  botaoBaixarResultadosEnquete.disabled =
+    totalRespostas === 0;
+
+}
+
+
+/* ==========================================
+   CSV
+========================================== */
+
+function escaparCampoCsv(
+  valor
+) {
+
+  const texto =
+    String(
+      valor ?? ""
+    );
+
+
+  return `"${texto.replace(
+    /"/g,
+    '""'
+  )}"`;
+
+}
+
+
+/* ==========================================
+   BAIXAR RESULTADOS
+========================================== */
+
+function baixarResultadosEnquete() {
+
+  if (
+    respostasEnqueteAtual.length === 0
+  ) {
+
+    return;
+
+  }
+
+
+  const linhas =
+    [
+      [
+        "Nome",
+        "Resposta"
+      ]
+    ];
+
+
+  respostasEnqueteAtual
+    .map(
+      (resposta) => {
+
+        const opcao =
+          opcoesEnqueteAtual.find(
+            (item) =>
+              item.id ===
+              resposta.opcao_id
+          );
+
+
+        return {
+
+          nome:
+            formatarNome(
+              resposta.usuario?.nome_completo
+            ),
+
+          resposta:
+            opcao?.texto ||
+            ""
+
+        };
+
+      }
+    )
+    .sort(
+      (a, b) =>
+        a.nome.localeCompare(
+          b.nome,
+          "pt-BR",
+          {
+            sensitivity:
+              "base"
+          }
+        )
+    )
+    .forEach(
+      (item) => {
+
+        linhas.push(
+          [
+            item.nome,
+            item.resposta
+          ]
+        );
+
+      }
+    );
+
+
+  const conteudoCsv =
+    "\uFEFF" +
+    linhas
+      .map(
+        (linha) =>
+          linha
+            .map(
+              escaparCampoCsv
+            )
+            .join(
+              ";"
+            )
+      )
+      .join(
+        "\r\n"
+      );
+
+
+  const blob =
+    new Blob(
+      [
+        conteudoCsv
+      ],
+      {
+        type:
+          "text/csv;charset=utf-8;"
+      }
+    );
+
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+
+  const link =
+    document.createElement(
+      "a"
+    );
+
+
+  const nomeArquivo =
+    String(
+      comunicadoAtual?.titulo ||
+      "enquete"
+    )
+      .trim()
+      .toLowerCase()
+      .normalize(
+        "NFD"
+      )
+      .replace(
+        /[\u0300-\u036f]/g,
+        ""
+      )
+      .replace(
+        /[^a-z0-9]+/g,
+        "-"
+      )
+      .replace(
+        /^-+|-+$/g,
+        ""
+      ) ||
+      "enquete";
+
+
+  link.href =
+    url;
+
+
+  link.download =
+    `${nomeArquivo}-respostas.csv`;
+
+
+  document.body.appendChild(
+    link
+  );
+
+
+  link.click();
+
+
+  link.remove();
+
+
+  URL.revokeObjectURL(
+    url
+  );
 
 }
 
@@ -917,7 +1494,9 @@ async function encerrarComunicado() {
 
 
     mostrarMensagem(
-      "Comunicado encerrado com sucesso."
+      comunicadoAtual.tipo === "enquete"
+        ? "Enquete encerrada com sucesso."
+        : "Comunicado encerrado com sucesso."
     );
 
 
@@ -998,6 +1577,12 @@ botaoSalvarAlteracoes.addEventListener(
 botaoEncerrarComunicado.addEventListener(
   "click",
   encerrarComunicado
+);
+
+
+botaoBaixarResultadosEnquete.addEventListener(
+  "click",
+  baixarResultadosEnquete
 );
 
 
