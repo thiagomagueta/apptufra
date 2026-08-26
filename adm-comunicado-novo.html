@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta
+    name="theme-color"
+    content="#651b1d"
+  >
+
+  <title>
+    Novo Comunicado | TUFRA
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="layout.css?v=40"
+  >
+
+</head>
+
+
+<body>
+
+  <main class="app">
+
+    <div class="conteudo-app">
+
+
+      <!-- =====================================
+           CABEÇALHO
+      ====================================== -->
+
+      <header class="cabecalho-app">
+
+        <img
+          class="logo-app"
+          src="logo-tufra.png"
+          alt="Logo da TUFRA"
+        >
+
+        <div class="identidade-app">
+
+          <strong>
+            TUFRA
+          </strong>
+
+          <span>
+            Tenda de Umbanda Francisco de Assis
+          </span>
+
+        </div>
+
+      </header>
+
+
+      <!-- =====================================
+           TÍTULO
+      ====================================== -->
+
+      <section>
+
+        <h1
+          id="tituloPagina"
+          class="titulo-pagina"
+        >
+          Novo Recado
+        </h1>
+
+        <p
+          id="subtituloPagina"
+          class="subtitulo-pagina"
+        >
+          Cadastre uma mensagem para exibição no dashboard.
+        </p>
+
+      </section>
+
+
+      <!-- =====================================
+           FORMULÁRIO
+      ====================================== -->
+
+      <section class="cartao-app">
+
+        <form
+          id="formularioComunicado"
+          novalidate
+        >
+
+
+          <!-- TÍTULO -->
+
+          <div class="campo-formulario">
+
+            <label
+              for="tituloComunicado"
+            >
+              Título
+            </label>
+
+            <input
+              id="tituloComunicado"
+              name="tituloComunicado"
+              type="text"
+              maxlength="120"
+              placeholder="Ex.: Aviso importante"
+              required
+            >
+
+          </div>
+
+
+          <!-- MENSAGEM -->
+
+          <div class="campo-formulario">
+
+            <label
+              for="mensagemComunicado"
+            >
+              Mensagem
+            </label>
+
+            <textarea
+              id="mensagemComunicado"
+              name="mensagemComunicado"
+              rows="6"
+              placeholder="Digite o conteúdo do recado."
+              required
+            ></textarea>
+
+          </div>
+
+
+          <!-- INÍCIO -->
+
+          <div class="campo-formulario">
+
+            <label
+              for="dataInicio"
+            >
+              Início da exibição
+            </label>
+
+            <input
+              id="dataInicio"
+              name="dataInicio"
+              type="datetime-local"
+              required
+            >
+
+          </div>
+
+
+          <!-- FIM -->
+
+          <div class="campo-formulario">
+
+            <label
+              for="dataFim"
+            >
+              Fim da exibição
+            </label>
+
+            <input
+              id="dataFim"
+              name="dataFim"
+              type="datetime-local"
+              required
+            >
+
+          </div>
+
+
+          <!-- PÚBLICO -->
+
+          <div class="campo-formulario">
+
+            <label
+              for="publicoTipo"
+            >
+              Quem visualizará?
+            </label>
+
+            <select
+              id="publicoTipo"
+              name="publicoTipo"
+            >
+
+              <option value="todos">
+                Todos os usuários
+              </option>
+
+              <option value="funcoes">
+                Selecionar funções
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <!-- FUNÇÕES -->
+
+          <div
+            id="areaFuncoes"
+            class="campo-formulario"
+            hidden
+          >
+
+            <label>
+              Funções
+            </label>
+
+            <div
+              id="listaFuncoes"
+              class="lista-responsaveis-presenca"
+            >
+
+              <p>
+                Carregando funções...
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <!-- ÁREA DE ENQUETE -->
+
+          <div
+            id="areaEnquete"
+            hidden
+          >
+
+            <div class="campo-formulario">
+
+              <label>
+                Opções da enquete
+              </label>
+
+              <p class="subtitulo-pagina">
+                Adicione as respostas que ficarão disponíveis para votação.
+              </p>
+
+            </div>
+
+
+            <div
+              id="listaOpcoesEnquete"
+            ></div>
+
+
+            <button
+              id="botaoAdicionarOpcao"
+              class="botao-secundario-app"
+              type="button"
+            >
+              Adicionar opção
+            </button>
+
+          </div>
+
+
+          <!-- MENSAGEM -->
+
+          <p
+            id="mensagemFormulario"
+            class="mensagem-formulario"
+            hidden
+          ></p>
+
+
+          <!-- SALVAR -->
+
+          <button
+            id="botaoSalvarComunicado"
+            class="botao-principal-app"
+            type="submit"
+          >
+            Publicar Recado
+          </button>
+
+
+        </form>
+
+      </section>
+
+
+      <!-- =====================================
+           VOLTAR
+      ====================================== -->
+
+      <a
+        class="link-administrativo"
+        href="adm-comunicados.html"
+      >
+        Voltar para Recados e Enquetes
+      </a>
+
+
+    </div>
+
+  </main>
+
+
+  <!-- =====================================
+       MENU INFERIOR
+  ====================================== -->
+
+  <nav
+    class="menu-inferior"
+    aria-label="Navegação principal"
+  >
+
+    <div class="menu-inferior-conteudo">
+
+
+      <a
+        class="item-menu"
+        href="dashboard.html"
+      >
+
+        <span class="icone-menu">
+          ⌂
+        </span>
+
+        <span class="texto-menu">
+          Início
+        </span>
+
+      </a>
+
+
+      <a
+        class="item-menu"
+        href="calendario.html"
+      >
+
+        <span class="icone-menu">
+          📅
+        </span>
+
+        <span class="texto-menu">
+          Calendário
+        </span>
+
+      </a>
+
+
+      <a
+        class="item-menu"
+        href="minha-ficha.html"
+      >
+
+        <span class="icone-menu">
+          👤
+        </span>
+
+        <span class="texto-menu">
+          Minha ficha
+        </span>
+
+      </a>
+
+
+      <a
+        id="itemMenuAdm"
+        class="item-menu ativo"
+        href="administrativo.html"
+        hidden
+      >
+
+        <span class="icone-menu">
+          ☰
+        </span>
+
+        <span class="texto-menu">
+          ADM
+        </span>
+
+      </a>
+
+
+      <a
+        class="item-menu"
+        href="#"
+        id="botaoSair"
+      >
+
+        <span class="icone-menu">
+          🚪
+        </span>
+
+        <span class="texto-menu">
+          Sair
+        </span>
+
+      </a>
+
+
+    </div>
+
+  </nav>
+
+
+  <!-- =====================================
+       SCRIPTS
+  ====================================== -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="supabase.js?v=2"></script>
+
+  <script src="app.js?v=2"></script>
+
+  <script src="adm-comunicado-novo.js?v=1"></script>
+
+  <script src="menu-adm.js?v=1"></script>
+
+
+</body>
+
+</html>
