@@ -1223,6 +1223,7 @@ async function salvarConfirmacaoPresenca() {
 
         window.location.href =
           "dashboard.html";
+         
 
       },
       1200
