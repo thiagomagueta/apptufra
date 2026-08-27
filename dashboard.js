@@ -360,11 +360,6 @@ function obterNomeSecundariaDashboard(
   }
 
 
-  /* ======================================
-     CAMBONE
-     MANTÉM O NOME COMPLETO
-  ====================================== */
-
   if (
     nomePai ===
     "Cambone"
@@ -374,10 +369,6 @@ function obterNomeSecundariaDashboard(
 
   }
 
-
-  /* ======================================
-     MÉDIUM EM DESENVOLVIMENTO
-  ====================================== */
 
   if (
     nomePai ===
@@ -405,11 +396,6 @@ function obterNomeSecundariaDashboard(
 
   }
 
-
-  /* ======================================
-     OUTRAS FUNÇÕES
-     USA APENAS A PRIMEIRA PALAVRA
-  ====================================== */
 
   return nome.split(
     /\s+/
@@ -461,7 +447,6 @@ function criarNomesFuncoesExibicaoDashboard(
           funcaoPrincipal.nome
         );
 
-
         return;
 
       }
@@ -487,7 +472,6 @@ function criarNomesFuncoesExibicaoDashboard(
         resultado.push(
           funcaoPrincipal.nome
         );
-
 
         return;
 
@@ -551,7 +535,6 @@ async function carregarFuncoesUsuario() {
       listaFuncoesDashboard.innerHTML =
         "<p>Nenhuma função atribuída.</p>";
 
-
       nomesFuncoesUsuarioDashboard =
         [];
 
@@ -563,7 +546,6 @@ async function carregarFuncoesUsuario() {
 
 
       await atualizarBotoesProximaAtividadeDashboard();
-
 
       return;
 
@@ -601,7 +583,6 @@ async function carregarFuncoesUsuario() {
       listaFuncoesDashboard.innerHTML =
         "<p>Nenhuma função atribuída.</p>";
 
-
       nomesFuncoesUsuarioDashboard =
         [];
 
@@ -613,7 +594,6 @@ async function carregarFuncoesUsuario() {
 
 
       await atualizarBotoesProximaAtividadeDashboard();
-
 
       return;
 
@@ -688,7 +668,6 @@ async function carregarFuncoesUsuario() {
 
       listaFuncoesDashboard.innerHTML =
         "<p>Nenhuma função atribuída.</p>";
-
 
       nomesFuncoesUsuarioDashboard =
         [];
@@ -1242,7 +1221,7 @@ function criarBotaoConfirmacaoMediumDashboard(
   ) {
 
     botao.textContent =
-      "Presença confirmada";
+      "Presença confirmada - Clique para alterar";
 
 
     botao.style.background =
@@ -1263,30 +1242,8 @@ function criarBotaoConfirmacaoMediumDashboard(
     "ausente"
   ) {
 
-    const possuiJustificativa =
-      Boolean(
-        String(
-          confirmacaoAtualDashboard
-            .justificativa ||
-          ""
-        ).trim()
-      );
-
-
-    if (
-      possuiJustificativa
-    ) {
-
-      botao.textContent =
-        "Ausência confirmada - com justificativa cadastrada";
-
-
-    } else {
-
-      botao.textContent =
-        "Ausência confirmada - sem justificativa cadastrada";
-
-    }
+    botao.textContent =
+      "Ausência confirmada - Clique para alterar";
 
 
     botao.style.background =
