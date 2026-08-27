@@ -69,6 +69,7 @@ const botaoEnviarCadastro =
 let streamCamera =
   null;
 
+
 function esconder(elemento) {
   if (elemento) {
     elemento.hidden =
@@ -76,12 +77,14 @@ function esconder(elemento) {
   }
 }
 
+
 function mostrar(elemento) {
   if (elemento) {
     elemento.hidden =
       false;
   }
 }
+
 
 function mostrarMensagem(texto) {
   if (
@@ -91,6 +94,7 @@ function mostrarMensagem(texto) {
       texto;
   }
 }
+
 
 function pararCamera() {
   if (
@@ -112,6 +116,7 @@ function pararCamera() {
   video.srcObject =
     null;
 }
+
 
 function mostrarEstadoInicial() {
   pararCamera();
@@ -142,6 +147,7 @@ function mostrarEstadoInicial() {
 
   mostrarMensagem("");
 }
+
 
 async function abrirCamera() {
   mostrarMensagem(
@@ -215,6 +221,7 @@ async function abrirCamera() {
     );
   }
 }
+
 
 function capturarFoto() {
   if (
@@ -304,6 +311,7 @@ function capturarFoto() {
   mostrarMensagem("");
 }
 
+
 function tirarNovamente() {
   fotoPreview.src =
     "";
@@ -311,7 +319,8 @@ function tirarNovamente() {
   abrirCamera();
 }
 
-function erroEhCpfDuplicado(
+
+function obterTextoErro(
   erro
 ) {
   const partesErro = [
@@ -319,45 +328,213 @@ function erroEhCpfDuplicado(
     erro?.details,
     erro?.hint,
     erro?.code,
+    erro?.name,
     erro?.context?.message,
     erro?.context?.error,
     erro?.context?.body,
     erro?.context
   ];
 
-  const textoErro =
-    partesErro
-      .map(
-        (parte) => {
-          if (!parte) {
-            return "";
-          }
-
-          if (
-            typeof parte ===
-            "string"
-          ) {
-            return parte;
-          }
-
-          try {
-            return JSON.stringify(
-              parte
-            );
-          } catch {
-            return String(
-              parte
-            );
-          }
+  return partesErro
+    .map(
+      (parte) => {
+        if (!parte) {
+          return "";
         }
-      )
-      .join(" ")
-      .toLowerCase();
+
+        if (
+          typeof parte ===
+          "string"
+        ) {
+          return parte;
+        }
+
+        try {
+          return JSON.stringify(
+            parte
+          );
+
+        } catch {
+          return String(
+            parte
+          );
+        }
+      }
+    )
+    .join(" ")
+    .toLowerCase();
+}
+
+
+function erroEhCpfDuplicado(
+  erro
+) {
+  const textoErro =
+    obterTextoErro(
+      erro
+    );
 
   return textoErro.includes(
     "cpf_ja_cadastrado"
   );
 }
+
+
+function obterMensagemAmigavelErro(
+  erro
+) {
+  const textoErro =
+    obterTextoErro(
+      erro
+    );
+
+  console.error(
+    "Detalhes completos do erro:",
+    textoErro
+  );
+
+
+  if (
+    textoErro.includes(
+      "cpf_ja_cadastrado"
+    )
+  ) {
+    return "Este CPF já possui um cadastro no TUFRA. Se você acredita que isso seja um erro, procure a administração.";
+  }
+
+
+  if (
+    textoErro.includes(
+      "user already registered"
+    ) ||
+    textoErro.includes(
+      "already been registered"
+    ) ||
+    textoErro.includes(
+      "already registered"
+    ) ||
+    textoErro.includes(
+      "email already"
+    )
+  ) {
+    return "Este e-mail já possui um cadastro. Se você já realizou seu cadastro anteriormente, utilize a opção 'Esqueci minha senha' na tela de login.";
+  }
+
+
+  if (
+    textoErro.includes(
+      "invalid email"
+    ) ||
+    textoErro.includes(
+      "email address is invalid"
+    ) ||
+    textoErro.includes(
+      "unable to validate email address"
+    )
+  ) {
+    return "O e-mail informado não é válido. Volte à etapa anterior e confira o endereço de e-mail.";
+  }
+
+
+  if (
+    textoErro.includes(
+      "password should be"
+    ) ||
+    textoErro.includes(
+      "password must"
+    ) ||
+    textoErro.includes(
+      "weak password"
+    )
+  ) {
+    return "A senha informada não atende aos requisitos de segurança. Volte à etapa anterior e escolha outra senha.";
+  }
+
+
+  if (
+    textoErro.includes(
+      "rate limit"
+    ) ||
+    textoErro.includes(
+      "rate_limit"
+    ) ||
+    textoErro.includes(
+      "too many requests"
+    ) ||
+    textoErro.includes(
+      "over_email_send_rate_limit"
+    ) ||
+    textoErro.includes(
+      "email rate limit"
+    )
+  ) {
+    return "Foram realizadas muitas solicitações de cadastro em pouco tempo. Aguarde alguns minutos e tente novamente.";
+  }
+
+
+  if (
+    textoErro.includes(
+      "email not confirmed"
+    )
+  ) {
+    return "O e-mail ainda não foi confirmado. Verifique sua caixa de entrada e conclua a confirmação do cadastro.";
+  }
+
+
+  if (
+    textoErro.includes(
+      "failed to fetch"
+    ) ||
+    textoErro.includes(
+      "networkerror"
+    ) ||
+    textoErro.includes(
+      "network request failed"
+    ) ||
+    textoErro.includes(
+      "load failed"
+    )
+  ) {
+    return "Não foi possível comunicar com o sistema. Verifique sua conexão com a internet e tente novamente.";
+  }
+
+
+  if (
+    textoErro.includes(
+      "foto deste cadastro já foi enviada"
+    )
+  ) {
+    return "A foto deste cadastro já foi enviada. Aguarde a conclusão do cadastro ou procure a administração.";
+  }
+
+
+  if (
+    textoErro.includes(
+      "autorização da foto inválida"
+    )
+  ) {
+    return "A autorização para envio da foto expirou. Volte ao início do cadastro e tente novamente.";
+  }
+
+
+  if (
+    textoErro.includes(
+      "foto não recebida"
+    ) ||
+    textoErro.includes(
+      "foto capturada está vazia"
+    ) ||
+    textoErro.includes(
+      "preparar a foto"
+    )
+  ) {
+    return "Não foi possível processar a foto. Tire a foto novamente e tente enviar o cadastro.";
+  }
+
+
+  return "Não foi possível concluir o cadastro. Tente novamente. Se o problema continuar, procure a administração do TUFRA.";
+}
+
 
 function obterCadastroPendente() {
   try {
@@ -381,6 +558,7 @@ function obterCadastroPendente() {
     return null;
   }
 }
+
 
 function existePrimeiraEtapaSalva() {
   try {
@@ -410,6 +588,7 @@ function existePrimeiraEtapaSalva() {
     return false;
   }
 }
+
 
 async function solicitarCadastro() {
   mostrarMensagem("");
@@ -664,20 +843,11 @@ async function solicitarCadastro() {
       erro?.context
     );
 
-    if (
-      erroEhCpfDuplicado(
+    mostrarMensagem(
+      obterMensagemAmigavelErro(
         erro
       )
-    ) {
-      mostrarMensagem(
-        "Este CPF já possui um cadastro no TUFRA. Se você acredita que isso seja um erro, procure a administração."
-      );
-
-    } else {
-      mostrarMensagem(
-        "Não foi possível concluir o cadastro. Tente novamente."
-      );
-    }
+    );
 
     botaoEnviarCadastro.disabled =
       false;
@@ -689,6 +859,7 @@ async function solicitarCadastro() {
       "Solicitar cadastro";
   }
 }
+
 
 botaoAbrirCamera.addEventListener(
   "click",
