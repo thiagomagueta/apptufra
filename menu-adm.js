@@ -19,8 +19,7 @@ async function configurarMenuAdm() {
   */
 
   if (
-    !itemMenuAdm ||
-    !window.supabaseClient
+    !itemMenuAdm
   ) {
 
     return;
@@ -30,12 +29,31 @@ async function configurarMenuAdm() {
 
   /*
     O ADM começa SEMPRE escondido.
-    Só será exibido depois da confirmação
-    real de alguma permissão administrativa.
+
+    IMPORTANTE:
+    escondemos antes mesmo de verificar
+    se o Supabase já está disponível.
+
+    Assim, em nenhuma situação o botão
+    aparece antes da validação das permissões.
   */
 
   itemMenuAdm.hidden =
     true;
+
+
+  /*
+    Se o Supabase ainda não estiver disponível,
+    o botão continua escondido por segurança.
+  */
+
+  if (
+    !window.supabaseClient
+  ) {
+
+    return;
+
+  }
 
 
   try {
