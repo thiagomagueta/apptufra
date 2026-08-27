@@ -337,6 +337,178 @@ async function carregarFotoUsuario() {
 
 
 /* ==========================================
+   FORMATAÇÃO DAS FUNÇÕES
+========================================== */
+
+function obterNomeSecundariaDashboard(
+  nomePai,
+  nomeSecundaria
+) {
+
+  const nome =
+    String(
+      nomeSecundaria || ""
+    ).trim();
+
+
+  if (
+    !nome
+  ) {
+
+    return "";
+
+  }
+
+
+  /* ======================================
+     CAMBONE
+     MANTÉM O NOME COMPLETO
+  ====================================== */
+
+  if (
+    nomePai ===
+    "Cambone"
+  ) {
+
+    return nome;
+
+  }
+
+
+  /* ======================================
+     MÉDIUM EM DESENVOLVIMENTO
+  ====================================== */
+
+  if (
+    nomePai ===
+    "Médium em Desenvolvimento"
+  ) {
+
+    if (
+      nome ===
+      "Banco do Desenvolvimento"
+    ) {
+
+      return "Banco";
+
+    }
+
+
+    if (
+      nome ===
+      "Corrente do Desenvolvimento"
+    ) {
+
+      return "Corrente";
+
+    }
+
+  }
+
+
+  /* ======================================
+     OUTRAS FUNÇÕES
+     USA APENAS A PRIMEIRA PALAVRA
+  ====================================== */
+
+  return nome.split(
+    /\s+/
+  )[0];
+}
+
+
+function criarNomesFuncoesExibicaoDashboard(
+  funcoes
+) {
+
+  const funcoesPrincipais =
+    funcoes.filter(
+      (funcao) =>
+        !funcao.funcao_pai_id
+    );
+
+
+  const funcoesSecundarias =
+    funcoes.filter(
+      (funcao) =>
+        Boolean(
+          funcao.funcao_pai_id
+        )
+    );
+
+
+  const resultado =
+    [];
+
+
+  funcoesPrincipais.forEach(
+    (funcaoPrincipal) => {
+
+      const secundarias =
+        funcoesSecundarias.filter(
+          (secundaria) =>
+            secundaria.funcao_pai_id ===
+            funcaoPrincipal.id
+        );
+
+
+      if (
+        secundarias.length ===
+        0
+      ) {
+
+        resultado.push(
+          funcaoPrincipal.nome
+        );
+
+
+        return;
+
+      }
+
+
+      const nomesSecundarios =
+        secundarias
+          .map(
+            (secundaria) =>
+              obterNomeSecundariaDashboard(
+                funcaoPrincipal.nome,
+                secundaria.nome
+              )
+          )
+          .filter(Boolean);
+
+
+      if (
+        nomesSecundarios.length ===
+        0
+      ) {
+
+        resultado.push(
+          funcaoPrincipal.nome
+        );
+
+
+        return;
+
+      }
+
+
+      resultado.push(
+        `${funcaoPrincipal.nome} - ${nomesSecundarios.join(
+          " / "
+        )}`
+      );
+
+    }
+  );
+
+
+  return resultado;
+}
+
+
+/* ==========================================
    FUNÇÕES DO USUÁRIO
 ========================================== */
 
@@ -466,7 +638,8 @@ async function carregarFuncoesUsuario() {
 
           funcoes (
             id,
-            nome
+            nome,
+            funcao_pai_id
           )
         `)
         .eq(
@@ -485,8 +658,15 @@ async function carregarFuncoesUsuario() {
 
 
     const funcoes =
-      resultadoFuncoes.data ||
-      [];
+      (
+        resultadoFuncoes.data ||
+        []
+      )
+        .map(
+          (item) =>
+            item.funcoes
+        )
+        .filter(Boolean);
 
 
     listaFuncoesDashboard.innerHTML =
@@ -494,7 +674,12 @@ async function carregarFuncoesUsuario() {
 
 
     const nomesFuncoes =
-      [];
+      funcoes
+        .map(
+          (funcao) =>
+            funcao.nome
+        )
+        .filter(Boolean);
 
 
     if (
@@ -526,26 +711,14 @@ async function carregarFuncoesUsuario() {
     }
 
 
-    funcoes.forEach(
-      (item) => {
-
-        const nome =
-          item.funcoes?.nome;
-
-
-        if (
-          !nome
-        ) {
-
-          return;
-
-        }
+    const funcoesExibicao =
+      criarNomesFuncoesExibicaoDashboard(
+        funcoes
+      );
 
 
-        nomesFuncoes.push(
-          nome
-        );
-
+    funcoesExibicao.forEach(
+      (nome) => {
 
         const elemento =
           document.createElement(
@@ -1052,10 +1225,6 @@ function criarBotaoConfirmacaoMediumDashboard(
     "botao-confirmar-presenca-dashboard";
 
 
-  /* ======================================
-     AINDA NÃO RESPONDEU
-  ====================================== */
-
   if (
     !confirmacaoAtualDashboard
   ) {
@@ -1065,10 +1234,6 @@ function criarBotaoConfirmacaoMediumDashboard(
 
   }
 
-
-  /* ======================================
-     PRESENÇA CONFIRMADA
-  ====================================== */
 
   if (
     confirmacaoAtualDashboard
@@ -1091,10 +1256,6 @@ function criarBotaoConfirmacaoMediumDashboard(
 
   }
 
-
-  /* ======================================
-     AUSÊNCIA CONFIRMADA
-  ====================================== */
 
   if (
     confirmacaoAtualDashboard
@@ -1156,10 +1317,6 @@ function criarBotaoConfirmacaoMediumDashboard(
   );
 
 
-  /* ======================================
-     ALERTA - FALTA JUSTIFICATIVA
-  ====================================== */
-
   if (
     confirmacaoAtualDashboard
       ?.resposta ===
@@ -1218,10 +1375,6 @@ function criarBotaoConfirmacaoMediumDashboard(
 
     }
 
-
-    /* ====================================
-       LIDO PELA DIRETORIA ESPIRITUAL
-    ==================================== */
 
     if (
       confirmacaoAtualDashboard
@@ -1336,10 +1489,6 @@ async function atualizarBotoesProximaAtividadeDashboard() {
     false;
 
 
-  /* ======================================
-     MÉDIUM
-  ====================================== */
-
   if (
     podeConfirmar
   ) {
@@ -1353,10 +1502,6 @@ async function atualizarBotoesProximaAtividadeDashboard() {
 
   }
 
-
-  /* ======================================
-     DIRETORIA
-  ====================================== */
 
   if (
     podeVerAusencias
