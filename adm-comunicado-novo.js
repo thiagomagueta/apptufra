@@ -305,7 +305,7 @@ function configurarTela() {
 
 
 /* ==========================================
-   CARREGAR FUNÇÕES
+   CARREGAR FUNÇÕES PRIMÁRIAS
 ========================================== */
 
 async function carregarFuncoes() {
@@ -334,11 +334,16 @@ async function carregarFuncoes() {
           id,
           nome,
           ordem,
-          ativo
+          ativo,
+          funcao_pai_id
         `)
         .eq(
           "ativo",
           true
+        )
+        .is(
+          "funcao_pai_id",
+          null
         )
         .order(
           "ordem",
@@ -878,9 +883,7 @@ async function salvarComunicado(
 
 
   botaoSalvarComunicado.textContent =
-    tipoComunicado === "enquete"
-      ? "PUBLICANDO..."
-      : "PUBLICANDO...";
+    "PUBLICANDO...";
 
 
   try {
