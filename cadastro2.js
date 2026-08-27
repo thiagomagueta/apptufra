@@ -1,5 +1,11 @@
 "use strict";
 
+const CHAVE_DADOS_PESSOAIS =
+  "tufra_dados_pessoais";
+
+const CHAVE_CADASTRO_PENDENTE =
+  "tufra_cadastro_pendente";
+
 const formularioDadosAcesso = document.getElementById(
   "formularioDadosAcesso"
 );
@@ -65,10 +71,14 @@ function alternarSenha(campo, botao) {
     campo.type === "password";
 
   campo.type =
-    senhaOculta ? "text" : "password";
+    senhaOculta
+      ? "text"
+      : "password";
 
   botao.textContent =
-    senhaOculta ? "🙈" : "👁";
+    senhaOculta
+      ? "🙈"
+      : "👁";
 
   botao.setAttribute(
     "aria-label",
@@ -82,7 +92,9 @@ function validarNomeUsuario() {
   const nomeUsuario =
     campoNomeUsuario.value.trim();
 
-  limparMensagem(erroUsuario);
+  limparMensagem(
+    erroUsuario
+  );
 
   if (!nomeUsuario) {
     mostrarMensagem(
@@ -93,7 +105,9 @@ function validarNomeUsuario() {
     return false;
   }
 
-  if (nomeUsuario.includes(" ")) {
+  if (
+    nomeUsuario.includes(" ")
+  ) {
     mostrarMensagem(
       erroUsuario,
       "O nome de usuário não pode conter espaços."
@@ -102,7 +116,9 @@ function validarNomeUsuario() {
     return false;
   }
 
-  if (nomeUsuario.length < 3) {
+  if (
+    nomeUsuario.length < 3
+  ) {
     mostrarMensagem(
       erroUsuario,
       "O nome de usuário deve possuir pelo menos 3 caracteres."
@@ -115,9 +131,12 @@ function validarNomeUsuario() {
 }
 
 function validarSenha() {
-  const senha = campoNovaSenha.value;
+  const senha =
+    campoNovaSenha.value;
 
-  limparMensagem(erroSenha);
+  limparMensagem(
+    erroSenha
+  );
 
   if (!senha) {
     mostrarMensagem(
@@ -128,7 +147,9 @@ function validarSenha() {
     return false;
   }
 
-  if (senha.length < 6) {
+  if (
+    senha.length < 6
+  ) {
     mostrarMensagem(
       erroSenha,
       "A senha deve possuir pelo menos 6 caracteres."
@@ -141,11 +162,15 @@ function validarSenha() {
 }
 
 function validarConfirmacaoSenha() {
-  const senha = campoNovaSenha.value;
+  const senha =
+    campoNovaSenha.value;
+
   const confirmacao =
     campoConfirmarSenha.value;
 
-  limparMensagem(erroConfirmacao);
+  limparMensagem(
+    erroConfirmacao
+  );
 
   erroConfirmacao.classList.remove(
     "mensagem-sucesso"
@@ -160,7 +185,9 @@ function validarConfirmacaoSenha() {
     return false;
   }
 
-  if (senha !== confirmacao) {
+  if (
+    senha !== confirmacao
+  ) {
     mostrarMensagem(
       erroConfirmacao,
       "As senhas são diferentes."
@@ -182,9 +209,13 @@ function validarConfirmacaoSenha() {
 }
 
 function validarTermos() {
-  limparMensagem(erroTermos);
+  limparMensagem(
+    erroTermos
+  );
 
-  if (!aceiteTermos.checked) {
+  if (
+    !aceiteTermos.checked
+  ) {
     mostrarMensagem(
       erroTermos,
       "Você precisa aceitar os termos."
@@ -204,13 +235,16 @@ function atualizarEstadoBotao() {
 function obterDadosPessoais() {
   try {
     const dadosSalvos =
-      sessionStorage.getItem(
-        "tufra_dados_pessoais"
+      localStorage.getItem(
+        CHAVE_DADOS_PESSOAIS
       );
 
     return dadosSalvos
-      ? JSON.parse(dadosSalvos)
+      ? JSON.parse(
+          dadosSalvos
+        )
       : null;
+
   } catch (erro) {
     console.error(
       "Erro ao carregar os dados pessoais:",
@@ -284,8 +318,10 @@ function enviarSolicitacao(evento) {
   };
 
   sessionStorage.setItem(
-    "tufra_cadastro_pendente",
-    JSON.stringify(cadastroPendente)
+    CHAVE_CADASTRO_PENDENTE,
+    JSON.stringify(
+      cadastroPendente
+    )
   );
 
   window.location.href =
@@ -315,15 +351,22 @@ botaoMostrarConfirmacao.addEventListener(
 campoNomeUsuario.addEventListener(
   "input",
   () => {
-    limparMensagem(erroUsuario);
+    limparMensagem(
+      erroUsuario
+    );
   }
 );
 
 campoNovaSenha.addEventListener(
   "input",
   () => {
-    limparMensagem(erroSenha);
-    limparMensagem(erroConfirmacao);
+    limparMensagem(
+      erroSenha
+    );
+
+    limparMensagem(
+      erroConfirmacao
+    );
 
     erroConfirmacao.classList.remove(
       "mensagem-sucesso"
@@ -334,7 +377,9 @@ campoNovaSenha.addEventListener(
 campoConfirmarSenha.addEventListener(
   "input",
   () => {
-    limparMensagem(erroConfirmacao);
+    limparMensagem(
+      erroConfirmacao
+    );
 
     erroConfirmacao.classList.remove(
       "mensagem-sucesso"
@@ -360,7 +405,10 @@ campoConfirmarSenha.addEventListener(
 aceiteTermos.addEventListener(
   "change",
   () => {
-    limparMensagem(erroTermos);
+    limparMensagem(
+      erroTermos
+    );
+
     atualizarEstadoBotao();
   }
 );
