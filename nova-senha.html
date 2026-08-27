@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta
+    name="theme-color"
+    content="#651b1d"
+  >
+
+  <title>
+    Nova senha | TUFRA
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+</head>
+
+
+<body>
+
+  <main class="tela-login">
+
+    <section class="cartao-login">
+
+
+      <header class="cabecalho-login">
+
+        <img
+          class="logo-tufra"
+          src="logo-tufra.png"
+          alt="Logo da Tenda de Umbanda Francisco de Assis"
+        >
+
+        <h1>
+          TUFRA
+        </h1>
+
+        <p>
+          Tenda de Umbanda Francisco de Assis
+        </p>
+
+      </header>
+
+
+      <section>
+
+        <h2>
+          Criar nova senha
+        </h2>
+
+        <p>
+          Digite sua nova senha de acesso.
+        </p>
+
+      </section>
+
+
+      <form
+        id="formularioNovaSenha"
+        class="formulario-login"
+      >
+
+
+        <div class="grupo-campo">
+
+          <label for="novaSenha">
+            🔒 Nova senha
+          </label>
+
+          <div class="campo-senha">
+
+            <input
+              id="novaSenha"
+              name="novaSenha"
+              type="password"
+              placeholder="Digite a nova senha"
+              autocomplete="new-password"
+              minlength="6"
+              required
+            >
+
+            <button
+              id="botaoMostrarNovaSenha"
+              class="botao-mostrar-senha"
+              type="button"
+              aria-label="Mostrar senha"
+            >
+              👁
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <div class="grupo-campo">
+
+          <label for="confirmarNovaSenha">
+            🔒 Confirmar nova senha
+          </label>
+
+          <div class="campo-senha">
+
+            <input
+              id="confirmarNovaSenha"
+              name="confirmarNovaSenha"
+              type="password"
+              placeholder="Digite novamente"
+              autocomplete="new-password"
+              minlength="6"
+              required
+            >
+
+            <button
+              id="botaoMostrarConfirmacaoSenha"
+              class="botao-mostrar-senha"
+              type="button"
+              aria-label="Mostrar senha"
+            >
+              👁
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="mensagemNovaSenha"
+          class="mensagem-login"
+          role="alert"
+          aria-live="polite"
+        ></div>
+
+
+        <button
+          id="botaoSalvarNovaSenha"
+          class="botao-entrar"
+          type="submit"
+        >
+          Salvar nova senha
+        </button>
+
+
+        <a
+          class="link-esqueci-senha"
+          href="index.html"
+        >
+          Voltar para o login
+        </a>
+
+
+      </form>
+
+
+    </section>
+
+  </main>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="supabase.js?v=2"></script>
+
+  <script src="nova-senha.js?v=1"></script>
+
+
+</body>
+
+</html>
