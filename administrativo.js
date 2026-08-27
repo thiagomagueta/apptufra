@@ -25,6 +25,11 @@ const moduloPresenca =
     "moduloPresenca"
   );
 
+const moduloAtendimentos =
+  document.getElementById(
+    "moduloAtendimentos"
+  );
+
 const moduloComunicados =
   document.getElementById(
     "moduloComunicados"
@@ -63,6 +68,9 @@ async function carregarModulosAdministrativos() {
   if (
     !window.supabaseClient
   ) {
+
+    window.location.href =
+      "dashboard.html";
 
     return;
 
@@ -137,8 +145,8 @@ async function carregarModulosAdministrativos() {
       !resultadoUsuario.data
     ) {
 
-      semOpcoesAdministrativas.hidden =
-        false;
+      window.location.href =
+        "dashboard.html";
 
       return;
 
@@ -253,8 +261,12 @@ async function carregarModulosAdministrativos() {
 
 
     /* ======================================
-       RESPONSÁVEL POR RECADOS E ENQUETES
+       RESPONSÁVEL POR RECADOS / ENQUETES
     ====================================== */
+
+    let ehResponsavelComunicados =
+      false;
+
 
     const resultadoResponsavelComunicados =
       await window.supabaseClient
@@ -277,16 +289,95 @@ async function carregarModulosAdministrativos() {
       resultadoResponsavelComunicados.error
     ) {
 
-      throw resultadoResponsavelComunicados.error;
+      console.error(
+        "Erro ao verificar responsável por comunicados:",
+        resultadoResponsavelComunicados.error
+      );
+
+    } else {
+
+      ehResponsavelComunicados =
+        (
+          resultadoResponsavelComunicados.data ||
+          []
+        ).length > 0;
 
     }
 
 
-    const ehResponsavelComunicados =
-      (
-        resultadoResponsavelComunicados.data ||
-        []
-      ).length > 0;
+    /* ======================================
+       RESPONSÁVEL POR ATENDIMENTOS
+    ====================================== */
+
+    let ehResponsavelAtendimentos =
+      false;
+
+
+    const resultadoResponsavelAtendimentos =
+      await window.supabaseClient
+        .from(
+          "responsaveis_atendimentos"
+        )
+        .select(
+          "id"
+        )
+        .eq(
+          "usuario_id",
+          usuarioId
+        )
+        .limit(
+          1
+        );
+
+
+    if (
+      resultadoResponsavelAtendimentos.error
+    ) {
+
+      console.error(
+        "Erro ao verificar responsável por atendimentos:",
+        resultadoResponsavelAtendimentos.error
+      );
+
+    } else {
+
+      ehResponsavelAtendimentos =
+        (
+          resultadoResponsavelAtendimentos.data ||
+          []
+        ).length > 0;
+
+    }
+
+
+    /* ======================================
+       EXISTE ALGUM ACESSO ADMINISTRATIVO?
+    ====================================== */
+
+    const possuiAlgumModulo =
+      pertenceDiretoria ||
+      ehTesoureiro ||
+      ehResponsavelPresenca ||
+      ehResponsavelComunicados ||
+      ehResponsavelAtendimentos;
+
+
+    /*
+      Se não possui absolutamente nenhuma
+      permissão administrativa, não deve
+      permanecer nesta tela.
+    */
+
+    if (
+      !possuiAlgumModulo
+    ) {
+
+      window.location.href =
+        "dashboard.html";
+
+      return;
+
+    }
 
 
     /* ======================================
@@ -355,8 +446,23 @@ async function carregarModulosAdministrativos() {
 
 
     /* ======================================
+       ATENDIMENTOS
+       RESPONSÁVEL AUTORIZADO
+    ====================================== */
+
+    if (
+      moduloAtendimentos
+    ) {
+
+      moduloAtendimentos.hidden =
+        !ehResponsavelAtendimentos;
+
+    }
+
+
+    /* ======================================
        RECADOS E ENQUETES
-       SOMENTE RESPONSÁVEIS AUTORIZADOS
+       RESPONSÁVEIS AUTORIZADOS
     ====================================== */
 
     if (
@@ -386,21 +492,18 @@ async function carregarModulosAdministrativos() {
 
     /* ======================================
        SEM OPÇÕES
+
+       Não deve aparecer para usuário comum,
+       pois o usuário comum já foi retirado
+       desta página acima.
     ====================================== */
-
-    const possuiAlgumModulo =
-      ehTesoureiro ||
-      pertenceDiretoria ||
-      ehResponsavelPresenca ||
-      ehResponsavelComunicados;
-
 
     if (
       semOpcoesAdministrativas
     ) {
 
       semOpcoesAdministrativas.hidden =
-        possuiAlgumModulo;
+        true;
 
     }
 
@@ -413,14 +516,13 @@ async function carregarModulosAdministrativos() {
     );
 
 
-    if (
-      semOpcoesAdministrativas
-    ) {
+    /*
+      Em caso de erro na validação,
+      não deixamos a pessoa dentro do ADM.
+    */
 
-      semOpcoesAdministrativas.hidden =
-        false;
-
-    }
+    window.location.href =
+      "dashboard.html";
 
   }
 
