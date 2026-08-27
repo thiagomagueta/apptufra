@@ -1,129 +1,209 @@
 "use strict";
 
-const video = document.getElementById("camera");
-const canvas = document.getElementById("fotoCapturada");
-const fotoPreview = document.getElementById("fotoPreview");
+const CHAVE_DADOS_PESSOAIS =
+  "tufra_dados_pessoais";
 
-const estadoInicialCamera = document.getElementById(
-  "estadoInicialCamera"
-);
+const CHAVE_CADASTRO_PENDENTE =
+  "tufra_cadastro_pendente";
 
-const mensagemCamera = document.getElementById(
-  "mensagemCamera"
-);
+const video =
+  document.getElementById(
+    "camera"
+  );
 
-const acoesCameraInicial = document.getElementById(
-  "acoesCameraInicial"
-);
+const canvas =
+  document.getElementById(
+    "fotoCapturada"
+  );
 
-const acoesCameraAberta = document.getElementById(
-  "acoesCameraAberta"
-);
+const fotoPreview =
+  document.getElementById(
+    "fotoPreview"
+  );
 
-const acoesFotoCapturada = document.getElementById(
-  "acoesFotoCapturada"
-);
+const estadoInicialCamera =
+  document.getElementById(
+    "estadoInicialCamera"
+  );
 
-const botaoAbrirCamera = document.getElementById(
-  "botaoAbrirCamera"
-);
+const mensagemCamera =
+  document.getElementById(
+    "mensagemCamera"
+  );
 
-const botaoCapturar = document.getElementById(
-  "botaoCapturar"
-);
+const acoesCameraInicial =
+  document.getElementById(
+    "acoesCameraInicial"
+  );
 
-const botaoNovaFoto = document.getElementById(
-  "botaoNovaFoto"
-);
+const acoesCameraAberta =
+  document.getElementById(
+    "acoesCameraAberta"
+  );
 
-const botaoEnviarCadastro = document.getElementById(
-  "botaoEnviarCadastro"
-);
+const acoesFotoCapturada =
+  document.getElementById(
+    "acoesFotoCapturada"
+  );
 
-let streamCamera = null;
+const botaoAbrirCamera =
+  document.getElementById(
+    "botaoAbrirCamera"
+  );
+
+const botaoCapturar =
+  document.getElementById(
+    "botaoCapturar"
+  );
+
+const botaoNovaFoto =
+  document.getElementById(
+    "botaoNovaFoto"
+  );
+
+const botaoEnviarCadastro =
+  document.getElementById(
+    "botaoEnviarCadastro"
+  );
+
+let streamCamera =
+  null;
 
 function esconder(elemento) {
   if (elemento) {
-    elemento.hidden = true;
+    elemento.hidden =
+      true;
   }
 }
 
 function mostrar(elemento) {
   if (elemento) {
-    elemento.hidden = false;
+    elemento.hidden =
+      false;
   }
 }
 
 function mostrarMensagem(texto) {
-  if (mensagemCamera) {
-    mensagemCamera.textContent = texto;
+  if (
+    mensagemCamera
+  ) {
+    mensagemCamera.textContent =
+      texto;
   }
 }
 
 function pararCamera() {
-  if (!streamCamera) {
+  if (
+    !streamCamera
+  ) {
     return;
   }
 
   streamCamera
     .getTracks()
-    .forEach((track) => track.stop());
+    .forEach(
+      (track) =>
+        track.stop()
+    );
 
-  streamCamera = null;
-  video.srcObject = null;
+  streamCamera =
+    null;
+
+  video.srcObject =
+    null;
 }
 
 function mostrarEstadoInicial() {
   pararCamera();
 
-  mostrar(estadoInicialCamera);
+  mostrar(
+    estadoInicialCamera
+  );
 
-  esconder(video);
-  esconder(fotoPreview);
+  esconder(
+    video
+  );
 
-  mostrar(acoesCameraInicial);
-  esconder(acoesCameraAberta);
-  esconder(acoesFotoCapturada);
+  esconder(
+    fotoPreview
+  );
+
+  mostrar(
+    acoesCameraInicial
+  );
+
+  esconder(
+    acoesCameraAberta
+  );
+
+  esconder(
+    acoesFotoCapturada
+  );
 
   mostrarMensagem("");
 }
 
 async function abrirCamera() {
-  mostrarMensagem("Abrindo câmera...");
+  mostrarMensagem(
+    "Abrindo câmera..."
+  );
 
   if (
     !navigator.mediaDevices ||
-    !navigator.mediaDevices.getUserMedia
+    !navigator.mediaDevices
+      .getUserMedia
   ) {
     mostrarMensagem(
       "Este aparelho ou navegador não permite abrir a câmera."
     );
+
     return;
   }
 
   try {
     streamCamera =
-      await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: "user"
-        },
-        audio: false
-      });
+      await navigator.mediaDevices
+        .getUserMedia({
+          video: {
+            facingMode:
+              "user"
+          },
 
-    video.srcObject = streamCamera;
+          audio:
+            false
+        });
+
+    video.srcObject =
+      streamCamera;
 
     await video.play();
 
-    esconder(estadoInicialCamera);
-    esconder(fotoPreview);
+    esconder(
+      estadoInicialCamera
+    );
 
-    mostrar(video);
+    esconder(
+      fotoPreview
+    );
 
-    esconder(acoesCameraInicial);
-    mostrar(acoesCameraAberta);
-    esconder(acoesFotoCapturada);
+    mostrar(
+      video
+    );
+
+    esconder(
+      acoesCameraInicial
+    );
+
+    mostrar(
+      acoesCameraAberta
+    );
+
+    esconder(
+      acoesFotoCapturada
+    );
 
     mostrarMensagem("");
+
   } catch (erro) {
     console.error(
       "Erro ao abrir a câmera:",
@@ -137,28 +217,45 @@ async function abrirCamera() {
 }
 
 function capturarFoto() {
-  if (!video.videoWidth || !video.videoHeight) {
+  if (
+    !video.videoWidth ||
+    !video.videoHeight
+  ) {
     mostrarMensagem(
       "A câmera ainda está carregando. Aguarde um instante."
     );
+
     return;
   }
 
-  const contexto = canvas.getContext("2d");
+  const contexto =
+    canvas.getContext(
+      "2d"
+    );
 
-  const tamanho = Math.min(
-    video.videoWidth,
-    video.videoHeight
-  );
+  const tamanho =
+    Math.min(
+      video.videoWidth,
+      video.videoHeight
+    );
 
   const origemX =
-    (video.videoWidth - tamanho) / 2;
+    (
+      video.videoWidth -
+      tamanho
+    ) / 2;
 
   const origemY =
-    (video.videoHeight - tamanho) / 2;
+    (
+      video.videoHeight -
+      tamanho
+    ) / 2;
 
-  canvas.width = 800;
-  canvas.height = 800;
+  canvas.width =
+    800;
+
+  canvas.height =
+    800;
 
   contexto.drawImage(
     video,
@@ -180,24 +277,43 @@ function capturarFoto() {
 
   pararCamera();
 
-  esconder(estadoInicialCamera);
-  esconder(video);
+  esconder(
+    estadoInicialCamera
+  );
 
-  mostrar(fotoPreview);
+  esconder(
+    video
+  );
 
-  esconder(acoesCameraInicial);
-  esconder(acoesCameraAberta);
-  mostrar(acoesFotoCapturada);
+  mostrar(
+    fotoPreview
+  );
+
+  esconder(
+    acoesCameraInicial
+  );
+
+  esconder(
+    acoesCameraAberta
+  );
+
+  mostrar(
+    acoesFotoCapturada
+  );
 
   mostrarMensagem("");
 }
 
 function tirarNovamente() {
-  fotoPreview.src = "";
+  fotoPreview.src =
+    "";
+
   abrirCamera();
 }
 
-function erroEhCpfDuplicado(erro) {
+function erroEhCpfDuplicado(
+  erro
+) {
   const partesErro = [
     erro?.message,
     erro?.details,
@@ -209,128 +325,226 @@ function erroEhCpfDuplicado(erro) {
     erro?.context
   ];
 
-  const textoErro = partesErro
-    .map((parte) => {
-      if (!parte) {
-        return "";
-      }
+  const textoErro =
+    partesErro
+      .map(
+        (parte) => {
+          if (!parte) {
+            return "";
+          }
 
-      if (typeof parte === "string") {
-        return parte;
-      }
+          if (
+            typeof parte ===
+            "string"
+          ) {
+            return parte;
+          }
 
-      try {
-        return JSON.stringify(parte);
-      } catch {
-        return String(parte);
-      }
-    })
-    .join(" ")
-    .toLowerCase();
+          try {
+            return JSON.stringify(
+              parte
+            );
+          } catch {
+            return String(
+              parte
+            );
+          }
+        }
+      )
+      .join(" ")
+      .toLowerCase();
 
   return textoErro.includes(
     "cpf_ja_cadastrado"
   );
 }
+
+function obterCadastroPendente() {
+  try {
+    const dadosSalvos =
+      sessionStorage.getItem(
+        CHAVE_CADASTRO_PENDENTE
+      );
+
+    return dadosSalvos
+      ? JSON.parse(
+          dadosSalvos
+        )
+      : null;
+
+  } catch (erro) {
+    console.error(
+      "Erro ao recuperar cadastro pendente:",
+      erro
+    );
+
+    return null;
+  }
+}
+
+function existePrimeiraEtapaSalva() {
+  try {
+    const dadosSalvos =
+      localStorage.getItem(
+        CHAVE_DADOS_PESSOAIS
+      );
+
+    if (
+      !dadosSalvos
+    ) {
+      return false;
+    }
+
+    const dados =
+      JSON.parse(
+        dadosSalvos
+      );
+
+    return Boolean(
+      dados?.nomeCompleto &&
+      dados?.email &&
+      dados?.cpf
+    );
+
+  } catch {
+    return false;
+  }
+}
+
 async function solicitarCadastro() {
   mostrarMensagem("");
 
-  const dadosSalvos = sessionStorage.getItem(
-    "tufra_cadastro_pendente"
-  );
+  const dados =
+    obterCadastroPendente();
 
-  if (!dadosSalvos) {
-    mostrarMensagem(
-      "Os dados do cadastro não foram encontrados. Volte e preencha novamente."
-    );
+  if (
+    !dados
+  ) {
+    if (
+      existePrimeiraEtapaSalva()
+    ) {
+      mostrarMensagem(
+        "Os dados de acesso desta etapa foram perdidos pelo navegador. Volte à etapa anterior e informe novamente seu usuário e senha."
+      );
+
+    } else {
+      mostrarMensagem(
+        "Os dados do cadastro não foram encontrados. Volte e preencha novamente."
+      );
+    }
+
     return;
   }
 
-  if (!fotoPreview.src) {
+  if (
+    !fotoPreview.src
+  ) {
     mostrarMensagem(
       "Tire uma foto antes de solicitar o cadastro."
     );
+
     return;
   }
 
-  if (!window.supabaseClient) {
+  if (
+    !window.supabaseClient
+  ) {
     mostrarMensagem(
       "Não foi possível conectar ao sistema."
     );
+
     return;
   }
 
-  const dados = JSON.parse(dadosSalvos);
+  botaoEnviarCadastro.disabled =
+    true;
 
-  botaoEnviarCadastro.disabled = true;
-  botaoNovaFoto.disabled = true;
+  botaoNovaFoto.disabled =
+    true;
 
   botaoEnviarCadastro.textContent =
     "ENVIANDO...";
 
   try {
-    let authId = dados.authId || "";
+    let authId =
+      dados.authId || "";
 
-    if (!authId) {
+    if (
+      !authId
+    ) {
       const resultadoCadastro =
-        await window.supabaseClient.auth.signUp({
-          email: dados.email
-            .trim()
-            .toLowerCase(),
+        await window.supabaseClient.auth
+          .signUp({
+            email:
+              dados.email
+                .trim()
+                .toLowerCase(),
 
-          password: dados.senha,
+            password:
+              dados.senha,
 
-          options: {
-            data: {
-              nome_completo:
-                dados.nomeCompleto,
+            options: {
+              data: {
+                nome_completo:
+                  dados.nomeCompleto,
 
-              cpf:
-                dados.cpf,
+                cpf:
+                  dados.cpf,
 
-              telefone:
-                dados.telefone || "",
+                telefone:
+                  dados.telefone || "",
 
-              data_nascimento:
-                dados.dataNascimento || "",
+                data_nascimento:
+                  dados.dataNascimento || "",
 
-              nome_usuario:
-                dados.nomeUsuario,
+                nome_usuario:
+                  dados.nomeUsuario,
 
-              foto_token:
-                dados.fotoToken
+                foto_token:
+                  dados.fotoToken
+              }
             }
-          }
-        });
+          });
 
-      if (resultadoCadastro.error) {
+      if (
+        resultadoCadastro.error
+      ) {
         throw resultadoCadastro.error;
       }
 
       const usuarioAuth =
         resultadoCadastro.data.user;
 
-      if (!usuarioAuth) {
+      if (
+        !usuarioAuth
+      ) {
         throw new Error(
           "O usuário não foi criado."
         );
       }
 
-      authId = usuarioAuth.id;
+      authId =
+        usuarioAuth.id;
 
-      dados.authId = authId;
+      dados.authId =
+        authId;
 
       sessionStorage.setItem(
-        "tufra_cadastro_pendente",
-        JSON.stringify(dados)
+        CHAVE_CADASTRO_PENDENTE,
+        JSON.stringify(
+          dados
+        )
       );
     }
 
-    const respostaFoto = await fetch(
-      fotoPreview.src
-    );
+    const respostaFoto =
+      await fetch(
+        fotoPreview.src
+      );
 
-    if (!respostaFoto.ok) {
+    if (
+      !respostaFoto.ok
+    ) {
       throw new Error(
         "Não foi possível preparar a foto."
       );
@@ -372,14 +586,18 @@ async function solicitarCadastro() {
     );
 
     const resultadoFoto =
-      await window.supabaseClient.functions.invoke(
-        "salvar-foto-cadastro",
-        {
-          body: formularioFoto
-        }
-      );
+      await window.supabaseClient.functions
+        .invoke(
+          "salvar-foto-cadastro",
+          {
+            body:
+              formularioFoto
+          }
+        );
 
-    if (resultadoFoto.error) {
+    if (
+      resultadoFoto.error
+    ) {
       throw resultadoFoto.error;
     }
 
@@ -417,7 +635,8 @@ async function solicitarCadastro() {
         authId,
 
         fotoPath:
-          resultadoFoto.data.foto_path,
+          resultadoFoto.data
+            .foto_path,
 
         status:
           "Aguardando aprovação",
@@ -428,11 +647,11 @@ async function solicitarCadastro() {
     );
 
     sessionStorage.removeItem(
-      "tufra_cadastro_pendente"
+      CHAVE_CADASTRO_PENDENTE
     );
 
-    sessionStorage.removeItem(
-      "tufra_dados_pessoais"
+    localStorage.removeItem(
+      CHAVE_DADOS_PESSOAIS
     );
 
     window.location.href =
@@ -445,18 +664,26 @@ async function solicitarCadastro() {
       erro?.context
     );
 
-    if (erroEhCpfDuplicado(erro)) {
+    if (
+      erroEhCpfDuplicado(
+        erro
+      )
+    ) {
       mostrarMensagem(
         "Este CPF já possui um cadastro no TUFRA. Se você acredita que isso seja um erro, procure a administração."
       );
+
     } else {
       mostrarMensagem(
         "Não foi possível concluir o cadastro. Tente novamente."
       );
     }
 
-    botaoEnviarCadastro.disabled = false;
-    botaoNovaFoto.disabled = false;
+    botaoEnviarCadastro.disabled =
+      false;
+
+    botaoNovaFoto.disabled =
+      false;
 
     botaoEnviarCadastro.textContent =
       "Solicitar cadastro";
