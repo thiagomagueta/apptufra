@@ -103,26 +103,26 @@
 
       </section>
 
-<section
-  id="areaSalvarFuncoes"
-  class="cartao-app"
-  hidden
->
+      <section
+        id="areaSalvarFuncoes"
+        class="cartao-app"
+        hidden
+      >
 
-  <div
-    id="mensagemSalvarFuncoes"
-    class="mensagem-campo"
-  ></div>
+        <div
+          id="mensagemSalvarFuncoes"
+          class="mensagem-campo"
+        ></div>
 
-  <button
-    id="botaoSalvarFuncoes"
-    class="botao-solicitar"
-    type="button"
-  >
-    Salvar funções
-  </button>
+        <button
+          id="botaoSalvarFuncoes"
+          class="botao-solicitar"
+          type="button"
+        >
+          Salvar funções
+        </button>
 
-</section>
+      </section>
       
       <section
         id="areaAprovacaoCadastro"
@@ -189,11 +189,13 @@
       </a>
 
       <a
-        class="item-menu"
-        href="mais.html"
+        id="itemMenuAdm"
+        class="item-menu ativo"
+        href="administrativo.html"
+        hidden
       >
         <span class="icone-menu">☰</span>
-        <span class="texto-menu">Mais</span>
+        <span class="texto-menu">ADM</span>
       </a>
 
       <a
@@ -208,64 +210,67 @@
     </div>
 
   </nav>
-<div
-  id="modalFotoUsuario"
-  class="modal-foto-usuario"
-  hidden
->
-
-  <button
-    id="fecharModalFoto"
-    class="fechar-modal-foto"
-    type="button"
-    aria-label="Fechar foto"
-  >
-    ×
-  </button>
-
-  <div class="controles-zoom-foto">
-
-    <button
-      id="diminuirZoomFoto"
-      type="button"
-    >
-      −
-    </button>
-
-    <button
-      id="resetarZoomFoto"
-      type="button"
-    >
-      100%
-    </button>
-
-    <button
-      id="aumentarZoomFoto"
-      type="button"
-    >
-      +
-    </button>
-
-  </div>
 
   <div
-    id="areaZoomFoto"
-    class="area-zoom-foto"
+    id="modalFotoUsuario"
+    class="modal-foto-usuario"
+    hidden
   >
 
-    <img
-      id="fotoUsuarioAmpliada"
-      class="foto-usuario-ampliada"
-      alt="Foto ampliada do usuário"
+    <button
+      id="fecharModalFoto"
+      class="fechar-modal-foto"
+      type="button"
+      aria-label="Fechar foto"
     >
+      ×
+    </button>
+
+    <div class="controles-zoom-foto">
+
+      <button
+        id="diminuirZoomFoto"
+        type="button"
+      >
+        −
+      </button>
+
+      <button
+        id="resetarZoomFoto"
+        type="button"
+      >
+        100%
+      </button>
+
+      <button
+        id="aumentarZoomFoto"
+        type="button"
+      >
+        +
+      </button>
+
+    </div>
+
+    <div
+      id="areaZoomFoto"
+      class="area-zoom-foto"
+    >
+
+      <img
+        id="fotoUsuarioAmpliada"
+        class="foto-usuario-ampliada"
+        alt="Foto ampliada do usuário"
+      >
+
+    </div>
 
   </div>
 
-</div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js?v=2"></script>
   <script src="app.js?v=2"></script>
   <script src="permissao-usuario.js?v=7"></script>
+  <script src="menu-adm.js?v=1"></script>
 
 </body>
 </html>
