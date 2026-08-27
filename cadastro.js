@@ -4,6 +4,9 @@ const campoCPF = document.getElementById("cpf");
 const campoDataNascimento = document.getElementById("dataNascimento");
 const campoTelefone = document.getElementById("telefone");
 
+const CHAVE_DADOS_PESSOAIS =
+  "tufra_dados_pessoais";
+
 function somenteNumeros(valor) {
   return valor.replace(/\D/g, "");
 }
@@ -59,21 +62,40 @@ const formularioDadosPessoais = document.getElementById(
   "formularioDadosPessoais"
 );
 
-formularioDadosPessoais.addEventListener("submit", (evento) => {
-  evento.preventDefault();
+formularioDadosPessoais.addEventListener(
+  "submit",
+  (evento) => {
+    evento.preventDefault();
 
-  const dadosPessoais = {
-    nomeCompleto: document.getElementById("nomeCompleto").value.trim(),
-    cpf: campoCPF.value,
-    dataNascimento: campoDataNascimento.value,
-    telefone: campoTelefone.value,
-    email: document.getElementById("email").value.trim()
-  };
+    const dadosPessoais = {
+      nomeCompleto:
+        document
+          .getElementById("nomeCompleto")
+          .value
+          .trim(),
 
-  sessionStorage.setItem(
-    "tufra_dados_pessoais",
-    JSON.stringify(dadosPessoais)
-  );
+      cpf:
+        campoCPF.value,
 
-  window.location.href = "cadastro2.html";
-});
+      dataNascimento:
+        campoDataNascimento.value,
+
+      telefone:
+        campoTelefone.value,
+
+      email:
+        document
+          .getElementById("email")
+          .value
+          .trim()
+    };
+
+    localStorage.setItem(
+      CHAVE_DADOS_PESSOAIS,
+      JSON.stringify(dadosPessoais)
+    );
+
+    window.location.href =
+      "cadastro2.html";
+  }
+);
