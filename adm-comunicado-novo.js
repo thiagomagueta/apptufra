@@ -306,6 +306,7 @@ function configurarTela() {
 
 /* ==========================================
    CARREGAR FUNÇÕES PRIMÁRIAS
+   EXCETO FUNÇÕES ADMINISTRATIVAS
 ========================================== */
 
 async function carregarFuncoes() {
@@ -344,6 +345,11 @@ async function carregarFuncoes() {
         .is(
           "funcao_pai_id",
           null
+        )
+        .not(
+          "nome",
+          "in",
+          '("Tesoureiro","Presidente","Secretária")'
         )
         .order(
           "ordem",
