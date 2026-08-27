@@ -955,22 +955,10 @@ async function sincronizarPresencaOficial(
     await buscarPresencaOficialExistente();
 
 
-  /* ======================================
-     MÉDIUM INFORMOU QUE VAI ESTAR PRESENTE
-  ====================================== */
-
   if (
     resposta ===
     "presente"
   ) {
-
-    /*
-      Só removemos a marcação se ela tiver
-      sido criada pela confirmação prévia.
-
-      Qualquer registro administrativo
-      permanece intacto.
-    */
 
     if (
       presencaExistente?.origem ===
@@ -1016,15 +1004,6 @@ async function sincronizarPresencaOficial(
 
   }
 
-
-  /* ======================================
-     MÉDIUM INFORMOU AUSÊNCIA
-  ====================================== */
-
-  /*
-    Se a administração já registrou alguma
-    coisa, a confirmação prévia não altera.
-  */
 
   if (
     presencaExistente &&
@@ -1156,10 +1135,6 @@ async function salvarConfirmacaoPresenca() {
       "Salvando...";
 
 
-    /* ======================================
-       SALVAR CONFIRMAÇÃO PRÉVIA
-    ====================================== */
-
     const dadosConfirmacao = {
 
       atividade_id:
@@ -1204,19 +1179,11 @@ async function salvarConfirmacaoPresenca() {
     }
 
 
-    /* ======================================
-       SINCRONIZAR COM PRESENÇA OFICIAL
-    ====================================== */
-
     await sincronizarPresencaOficial(
       resposta,
       justificativa
     );
 
-
-    /* ======================================
-       MENSAGEM FINAL
-    ====================================== */
 
     if (
       resposta ===
@@ -1228,7 +1195,6 @@ async function salvarConfirmacaoPresenca() {
         "sucesso"
       );
 
-
     } else if (
       justificativa
     ) {
@@ -1238,7 +1204,6 @@ async function salvarConfirmacaoPresenca() {
         "sucesso"
       );
 
-
     } else {
 
       mostrarMensagemConfirmacao(
@@ -1247,6 +1212,21 @@ async function salvarConfirmacaoPresenca() {
       );
 
     }
+
+
+    /* ======================================
+       VOLTAR AUTOMATICAMENTE PARA O INÍCIO
+    ====================================== */
+
+    setTimeout(
+      () => {
+
+        window.location.href =
+          "inicio.html";
+
+      },
+      1200
+    );
 
 
   } catch (erro) {
@@ -1262,8 +1242,6 @@ async function salvarConfirmacaoPresenca() {
       "erro"
     );
 
-
-  } finally {
 
     botaoSalvarConfirmacaoPresenca.disabled =
       false;
