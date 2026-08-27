@@ -163,6 +163,9 @@ textarea {
   transform: scale(0.96);
 }
 
+.item-menu[hidden] {
+  display: none !important;
+}
 .item-menu.ativo {
   background: rgba(101, 27, 29, 0.10);
   color: var(--cor-principal);
