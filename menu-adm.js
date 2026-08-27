@@ -29,7 +29,9 @@ async function configurarMenuAdm() {
 
 
   /*
-    Começa sempre escondido.
+    O ADM começa SEMPRE escondido.
+    Só será exibido depois da confirmação
+    real de alguma permissão administrativa.
   */
 
   itemMenuAdm.hidden =
@@ -179,7 +181,11 @@ async function configurarMenuAdm() {
        RESPONSÁVEL POR PRESENÇA
     ====================================== */
 
-    const resultadoResponsavel =
+    let ehResponsavelPresenca =
+      false;
+
+
+    const resultadoResponsavelPresenca =
       await window.supabaseClient
         .from(
           "responsaveis_lista_presenca"
@@ -197,19 +203,109 @@ async function configurarMenuAdm() {
 
 
     if (
-      resultadoResponsavel.error
+      resultadoResponsavelPresenca.error
     ) {
 
-      throw resultadoResponsavel.error;
+      throw resultadoResponsavelPresenca.error;
 
     }
 
 
-    const ehResponsavelPresenca =
+    ehResponsavelPresenca =
       (
-        resultadoResponsavel.data ||
+        resultadoResponsavelPresenca.data ||
         []
       ).length > 0;
+
+
+    /* ======================================
+       RESPONSÁVEL POR RECADOS / ENQUETES
+    ====================================== */
+
+    let ehResponsavelComunicados =
+      false;
+
+
+    const resultadoResponsavelComunicados =
+      await window.supabaseClient
+        .from(
+          "responsaveis_comunicados"
+        )
+        .select(
+          "id"
+        )
+        .eq(
+          "usuario_id",
+          usuarioId
+        )
+        .limit(
+          1
+        );
+
+
+    if (
+      resultadoResponsavelComunicados.error
+    ) {
+
+      console.error(
+        "Erro ao verificar responsável por comunicados:",
+        resultadoResponsavelComunicados.error
+      );
+
+    } else {
+
+      ehResponsavelComunicados =
+        (
+          resultadoResponsavelComunicados.data ||
+          []
+        ).length > 0;
+
+    }
+
+
+    /* ======================================
+       RESPONSÁVEL POR ATENDIMENTOS
+    ====================================== */
+
+    let ehResponsavelAtendimentos =
+      false;
+
+
+    const resultadoResponsavelAtendimentos =
+      await window.supabaseClient
+        .from(
+          "responsaveis_atendimentos"
+        )
+        .select(
+          "id"
+        )
+        .eq(
+          "usuario_id",
+          usuarioId
+        )
+        .limit(
+          1
+        );
+
+
+    if (
+      resultadoResponsavelAtendimentos.error
+    ) {
+
+      console.error(
+        "Erro ao verificar responsável por atendimentos:",
+        resultadoResponsavelAtendimentos.error
+      );
+
+    } else {
+
+      ehResponsavelAtendimentos =
+        (
+          resultadoResponsavelAtendimentos.data ||
+          []
+        ).length > 0;
+
+    }
 
 
     /* ======================================
@@ -218,7 +314,9 @@ async function configurarMenuAdm() {
 
     const possuiAcessoAdm =
       pertenceDiretoria ||
-      ehResponsavelPresenca;
+      ehResponsavelPresenca ||
+      ehResponsavelComunicados ||
+      ehResponsavelAtendimentos;
 
 
     itemMenuAdm.hidden =
@@ -232,6 +330,11 @@ async function configurarMenuAdm() {
       erro
     );
 
+
+    /*
+      Em qualquer erro, por segurança,
+      o ADM permanece escondido.
+    */
 
     itemMenuAdm.hidden =
       true;
