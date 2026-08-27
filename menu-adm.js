@@ -219,104 +219,12 @@ async function configurarMenuAdm() {
 
 
     /* ======================================
-       RESPONSÁVEL POR RECADOS / ENQUETES
-    ====================================== */
-
-    let ehResponsavelComunicados =
-      false;
-
-
-    const resultadoResponsavelComunicados =
-      await window.supabaseClient
-        .from(
-          "responsaveis_comunicados"
-        )
-        .select(
-          "id"
-        )
-        .eq(
-          "usuario_id",
-          usuarioId
-        )
-        .limit(
-          1
-        );
-
-
-    if (
-      resultadoResponsavelComunicados.error
-    ) {
-
-      console.error(
-        "Erro ao verificar responsável por comunicados:",
-        resultadoResponsavelComunicados.error
-      );
-
-    } else {
-
-      ehResponsavelComunicados =
-        (
-          resultadoResponsavelComunicados.data ||
-          []
-        ).length > 0;
-
-    }
-
-
-    /* ======================================
-       RESPONSÁVEL POR ATENDIMENTOS
-    ====================================== */
-
-    let ehResponsavelAtendimentos =
-      false;
-
-
-    const resultadoResponsavelAtendimentos =
-      await window.supabaseClient
-        .from(
-          "responsaveis_atendimentos"
-        )
-        .select(
-          "id"
-        )
-        .eq(
-          "usuario_id",
-          usuarioId
-        )
-        .limit(
-          1
-        );
-
-
-    if (
-      resultadoResponsavelAtendimentos.error
-    ) {
-
-      console.error(
-        "Erro ao verificar responsável por atendimentos:",
-        resultadoResponsavelAtendimentos.error
-      );
-
-    } else {
-
-      ehResponsavelAtendimentos =
-        (
-          resultadoResponsavelAtendimentos.data ||
-          []
-        ).length > 0;
-
-    }
-
-
-    /* ======================================
        EXIBIR ADM
     ====================================== */
 
     const possuiAcessoAdm =
       pertenceDiretoria ||
-      ehResponsavelPresenca ||
-      ehResponsavelComunicados ||
-      ehResponsavelAtendimentos;
+      ehResponsavelPresenca;
 
 
     itemMenuAdm.hidden =
