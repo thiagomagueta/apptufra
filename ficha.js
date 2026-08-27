@@ -77,6 +77,33 @@ async function salvarSecaoFicha(nomeColuna, dados) {
       "A ficha do associado não foi encontrada."
     );
   }
+
+
+  /* ==========================================
+     SINCRONIZAR NOME COM PUBLIC.USUARIOS
+  ========================================== */
+
+  if (
+    nomeColuna === "dados_pessoais" &&
+    dados?.nome
+  ) {
+    const nomeAtualizado =
+      String(dados.nome).trim();
+
+    if (nomeAtualizado) {
+      const resultadoAtualizacaoUsuario =
+        await window.supabaseClient
+          .from("usuarios")
+          .update({
+            nome_completo: nomeAtualizado
+          })
+          .eq("id", usuario.id);
+
+      if (resultadoAtualizacaoUsuario.error) {
+        throw resultadoAtualizacaoUsuario.error;
+      }
+    }
+  }
 }
 
 window.fichaTufra = {
