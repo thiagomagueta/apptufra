@@ -52,6 +52,76 @@ const voltarAssociados =
 
 
 /* ==========================================
+   BAIXA DO ASSOCIADO
+========================================== */
+
+const areaSituacaoAssociado =
+  document.getElementById(
+    "areaSituacaoAssociado"
+  );
+
+const textoSituacaoAssociado =
+  document.getElementById(
+    "textoSituacaoAssociado"
+  );
+
+const itemDataSaidaTufra =
+  document.getElementById(
+    "itemDataSaidaTufra"
+  );
+
+const textoDataSaidaTufra =
+  document.getElementById(
+    "textoDataSaidaTufra"
+  );
+
+const itemMotivoSaida =
+  document.getElementById(
+    "itemMotivoSaida"
+  );
+
+const textoMotivoSaida =
+  document.getElementById(
+    "textoMotivoSaida"
+  );
+
+const botaoAbrirBaixaAssociado =
+  document.getElementById(
+    "botaoAbrirBaixaAssociado"
+  );
+
+const areaBaixaAssociado =
+  document.getElementById(
+    "areaBaixaAssociado"
+  );
+
+const dataSaidaTufra =
+  document.getElementById(
+    "dataSaidaTufra"
+  );
+
+const motivoSaida =
+  document.getElementById(
+    "motivoSaida"
+  );
+
+const mensagemBaixaAssociado =
+  document.getElementById(
+    "mensagemBaixaAssociado"
+  );
+
+const botaoCancelarBaixaAssociado =
+  document.getElementById(
+    "botaoCancelarBaixaAssociado"
+  );
+
+const botaoConfirmarBaixaAssociado =
+  document.getElementById(
+    "botaoConfirmarBaixaAssociado"
+  );
+
+
+/* ==========================================
    ADMINISTRATIVO
 ========================================== */
 
@@ -224,7 +294,7 @@ let distanciaToqueInicial =
 
 
 /* ==========================================
-   DADOS
+   ESTADO
 ========================================== */
 
 let associadoAtual =
@@ -259,7 +329,7 @@ function obterParametros() {
     origem:
       parametros.get(
         "origem"
-      ) || "lista"
+      )
 
   };
 }
@@ -278,216 +348,244 @@ function configurarVoltar() {
 
 
   if (
-    origem === "carometro"
+    origem ===
+    "carometro"
   ) {
 
     voltarAssociados.href =
       "carometro.html";
 
-    voltarAssociados.textContent =
-      "Voltar para o Carômetro";
+  } else {
 
-    return;
+    voltarAssociados.href =
+      "lista-associados.html";
 
   }
-
-
-  voltarAssociados.href =
-    "lista-associados.html";
-
-  voltarAssociados.textContent =
-    "Voltar para Lista de Associados";
 }
 
 
 /* ==========================================
-   FORMATAÇÃO
+   FORMATAR NOME
 ========================================== */
 
 function formatarNome(
-  nomeCompleto
-) {
-
-  return String(
-    nomeCompleto || ""
-  )
-    .trim()
-    .toLowerCase()
-    .replace(
-      /\b\p{L}/gu,
-      (letra) =>
-        letra.toUpperCase()
-    );
-}
-
-
-function valorOuTraco(
-  valor
+  nome
 ) {
 
   if (
-    valor === undefined ||
-    valor === null ||
-    valor === ""
+    !nome
   ) {
 
-    return "Não informado";
+    return "Associado";
 
   }
 
 
-  return String(
-    valor
+  return nome
+    .trim()
+    .toLowerCase()
+    .split(/\s+/)
+    .map(
+      (parte) =>
+        parte
+          ? parte[0].toUpperCase() +
+            parte.slice(1)
+          : ""
+    )
+    .join(" ");
+}
+
+
+/* ==========================================
+   FORMATAR DATA
+========================================== */
+
+function formatarDataExibicao(
+  valor
+) {
+
+  if (
+    !valor
+  ) {
+
+    return "";
+
+  }
+
+
+  const partes =
+    String(
+      valor
+    )
+      .slice(
+        0,
+        10
+      )
+      .split("-");
+
+
+  if (
+    partes.length !== 3
+  ) {
+
+    return valor;
+
+  }
+
+
+  return (
+    partes[2] +
+    "/" +
+    partes[1] +
+    "/" +
+    partes[0]
   );
 }
 
 
 /* ==========================================
-   DATA ISO -> DD/MM/AAAA
+   DATA PARA BANCO
 ========================================== */
 
-function formatarData(
-  dataISO
+function converterDataParaBanco(
+  valor
 ) {
 
   if (
-    !dataISO
+    !valor
   ) {
 
-    return "Não informado";
+    return null;
 
   }
 
 
   const partes =
-    String(
-      dataISO
-    ).split("-");
+    valor.split("/");
 
 
   if (
     partes.length !== 3
   ) {
 
-    return dataISO;
+    return null;
 
   }
 
 
-  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+  const dia =
+    partes[0];
+
+  const mes =
+    partes[1];
+
+  const ano =
+    partes[2];
+
+
+  if (
+    dia.length !== 2 ||
+    mes.length !== 2 ||
+    ano.length !== 4
+  ) {
+
+    return null;
+
+  }
+
+
+  return (
+    ano +
+    "-" +
+    mes +
+    "-" +
+    dia
+  );
 }
 
 
 /* ==========================================
-   DATA ISO -> CAMPO
-========================================== */
-
-function dataISOParaCampo(
-  dataISO
-) {
-
-  if (
-    !dataISO
-  ) {
-
-    return "";
-
-  }
-
-
-  const partes =
-    String(
-      dataISO
-    ).split("-");
-
-
-  if (
-    partes.length !== 3
-  ) {
-
-    return "";
-
-  }
-
-
-  return `${partes[2]}/${partes[1]}/${partes[0]}`;
-}
-
-
-/* ==========================================
-   MÁSCARA DD/MM/AAAA
+   MÁSCARA DATA
 ========================================== */
 
 function aplicarMascaraData(
   campo
 ) {
 
-  let numeros =
-    campo.value
-      .replace(
-        /\D/g,
-        ""
-      )
-      .slice(
+  let valor =
+    campo.value.replace(
+      /\D/g,
+      ""
+    );
+
+
+  if (
+    valor.length > 8
+  ) {
+
+    valor =
+      valor.slice(
         0,
         8
       );
 
+  }
+
 
   if (
-    numeros.length > 4
+    valor.length >= 5
   ) {
 
-    numeros =
-      `${numeros.slice(
+    valor =
+      valor.slice(
         0,
         2
-      )}/${numeros.slice(
+      ) +
+      "/" +
+      valor.slice(
         2,
         4
-      )}/${numeros.slice(
+      ) +
+      "/" +
+      valor.slice(
         4
-      )}`;
+      );
 
   } else if (
-    numeros.length > 2
+    valor.length >= 3
   ) {
 
-    numeros =
-      `${numeros.slice(
+    valor =
+      valor.slice(
         0,
         2
-      )}/${numeros.slice(
+      ) +
+      "/" +
+      valor.slice(
         2
-      )}`;
+      );
 
   }
 
 
   campo.value =
-    numeros;
+    valor;
 }
 
 
 /* ==========================================
-   DD/MM/AAAA -> ISO
+   VALIDAR DATA
 ========================================== */
 
-function converterDataParaISO(
-  texto
+function dataValida(
+  valor
 ) {
 
-  const valor =
-    String(
-      texto || ""
-    ).trim();
-
-
   if (
-    valor === ""
+    !valor
   ) {
 
-    return null;
+    return true;
 
   }
 
@@ -510,12 +608,10 @@ function converterDataParaISO(
       partes[0]
     );
 
-
   const mes =
     Number(
       partes[1]
     );
-
 
   const ano =
     Number(
@@ -526,8 +622,7 @@ function converterDataParaISO(
   if (
     !dia ||
     !mes ||
-    !ano ||
-    partes[2].length !== 4
+    !ano
   ) {
 
     return false;
@@ -543,41 +638,19 @@ function converterDataParaISO(
     );
 
 
-  if (
-    data.getFullYear() !== ano ||
-    data.getMonth() !== mes - 1 ||
-    data.getDate() !== dia
-  ) {
-
-    return false;
-
-  }
-
-
-  const diaISO =
-    String(
+  return (
+    data.getFullYear() ===
+      ano &&
+    data.getMonth() ===
+      mes - 1 &&
+    data.getDate() ===
       dia
-    ).padStart(
-      2,
-      "0"
-    );
-
-
-  const mesISO =
-    String(
-      mes
-    ).padStart(
-      2,
-      "0"
-    );
-
-
-  return `${ano}-${mesISO}-${diaISO}`;
+  );
 }
 
 
 /* ==========================================
-   ITEM DO RESUMO
+   ADICIONAR ITEM AO RESUMO
 ========================================== */
 
 function adicionarItem(
@@ -612,9 +685,8 @@ function adicionarItem(
 
 
   conteudo.textContent =
-    valorOuTraco(
-      valor
-    );
+    valor ||
+    "Não informado";
 
 
   item.appendChild(
@@ -634,223 +706,52 @@ function adicionarItem(
 
 
 /* ==========================================
-   MENSAGEM
-========================================== */
-
-function mostrarMensagem(
-  texto
-) {
-
-  mensagemAssociadoResumo.textContent =
-    texto;
-
-
-  mensagemAssociadoResumo.hidden =
-    false;
-}
-
-
-/* ==========================================
-   PERMISSÃO DE ATENDIMENTOS
-========================================== */
-
-async function verificarPermissaoAtendimentos() {
-
-  botaoHistoricoAtendimentosAssociado.hidden =
-    true;
-
-
-  try {
-
-    const resultadoSessao =
-      await window.supabaseClient.auth
-        .getSession();
-
-
-    if (
-      resultadoSessao.error
-    ) {
-
-      throw resultadoSessao.error;
-
-    }
-
-
-    const sessao =
-      resultadoSessao.data.session;
-
-
-    if (
-      !sessao
-    ) {
-
-      return;
-
-    }
-
-
-    const resultadoUsuario =
-      await window.supabaseClient
-        .from(
-          "usuarios"
-        )
-        .select(
-          "id"
-        )
-        .eq(
-          "auth_id",
-          sessao.user.id
-        )
-        .maybeSingle();
-
-
-    if (
-      resultadoUsuario.error
-    ) {
-
-      throw resultadoUsuario.error;
-
-    }
-
-
-    if (
-      !resultadoUsuario.data
-    ) {
-
-      return;
-
-    }
-
-
-    const resultadoPermissao =
-      await window.supabaseClient
-        .from(
-          "responsaveis_atendimentos"
-        )
-        .select(
-          "id"
-        )
-        .eq(
-          "usuario_id",
-          resultadoUsuario.data.id
-        )
-        .maybeSingle();
-
-
-    if (
-      resultadoPermissao.error
-    ) {
-
-      throw resultadoPermissao.error;
-
-    }
-
-
-    if (
-      !resultadoPermissao.data
-    ) {
-
-      return;
-
-    }
-
-
-    const {
-      associadoId
-    } =
-      obterParametros();
-
-
-    if (
-      !associadoId
-    ) {
-
-      return;
-
-    }
-
-
-    botaoHistoricoAtendimentosAssociado.href =
-      `atendimentos-realizados.html?usuario_id=${encodeURIComponent(
-        associadoId
-      )}&origem=associado`;
-
-
-    botaoHistoricoAtendimentosAssociado.hidden =
-      false;
-
-
-  } catch (erro) {
-
-    console.error(
-      "Erro ao verificar permissão de atendimentos:",
-      erro
-    );
-
-
-    botaoHistoricoAtendimentosAssociado.hidden =
-      true;
-
-  }
-}
-
-
-/* ==========================================
    FUNÇÕES ATUAIS
 ========================================== */
 
-function possuiFuncaoPrincipal(
+function obterNomesFuncoesAtuais() {
+
+  return funcoesAtuais
+    .map(
+      (funcao) =>
+        funcao.nome
+    )
+    .filter(
+      Boolean
+    );
+}
+
+
+/* ==========================================
+   VERIFICAÇÕES DE FUNÇÃO
+========================================== */
+
+function possuiFuncao(
   nome
 ) {
 
-  return funcoesAtuais.some(
-    (funcao) =>
-      funcao.nome === nome &&
-      !funcao.funcao_pai_id
-  );
-}
-
-
-function estaNoDesenvolvimento() {
-
-  return possuiFuncaoPrincipal(
-    "Médium em Desenvolvimento"
-  );
-}
-
-
-function estaNaCorrentePrincipal() {
-
-  return (
-    possuiFuncaoPrincipal(
-      "Médium Corrente Principal"
-    ) ||
-    possuiFuncaoPrincipal(
-      "Médium Principal"
-    )
-  );
-}
-
-
-function estaNaAssistencia() {
-
-  return possuiFuncaoPrincipal(
-    "Assistência"
-  );
+  return obterNomesFuncoesAtuais()
+    .includes(
+      nome
+    );
 }
 
 
 function mostrarTrajetoriaMediunica() {
 
   return (
-    estaNoDesenvolvimento() ||
-    estaNaCorrentePrincipal()
+    possuiFuncao(
+      "Médium Principal"
+    ) ||
+    possuiFuncao(
+      "Médium Desenvolvimento"
+    )
   );
 }
 
 
 /* ==========================================
-   VISUALIZAÇÃO ADMINISTRATIVA
+   ATUALIZAR DATAS
 ========================================== */
 
 function atualizarVisualizacaoDatas() {
@@ -865,131 +766,64 @@ function atualizarVisualizacaoDatas() {
 
 
   textoDataEntradaTufra.textContent =
-    formatarData(
-      associadoAtual.data_entrada_tufra
-    );
+    formatarDataExibicao(
+      associadoAtual
+        .data_entrada_tufra
+    ) ||
+    "Não informado";
 
 
-  const mostrarTrajetoria =
+  const mostrarMediunidade =
     mostrarTrajetoriaMediunica();
 
 
   itemDataCorrenteDesenvolvimento.hidden =
-    !mostrarTrajetoria;
+    !mostrarMediunidade;
 
 
   itemDataCorrentePrincipal.hidden =
-    !mostrarTrajetoria;
+    !mostrarMediunidade;
+
+
+  campoEdicaoCorrenteDesenvolvimento.hidden =
+    !mostrarMediunidade;
+
+
+  campoEdicaoCorrentePrincipal.hidden =
+    !mostrarMediunidade;
 
 
   if (
-    mostrarTrajetoria
+    mostrarMediunidade
   ) {
 
     textoDataCorrenteDesenvolvimento.textContent =
-      formatarData(
-        associadoAtual.data_corrente_desenvolvimento
-      );
+      formatarDataExibicao(
+        associadoAtual
+          .data_corrente_desenvolvimento
+      ) ||
+      "Não informado";
 
 
     textoDataCorrentePrincipal.textContent =
-      formatarData(
-        associadoAtual.data_corrente_principal
-      );
+      formatarDataExibicao(
+        associadoAtual
+          .data_corrente_principal
+      ) ||
+      "Não informado";
 
   }
 
 
   avisoAssociadoAssistencia.hidden =
-    !estaNaAssistencia();
-}
-
-
-/* ==========================================
-   HISTÓRICO - ORDENAÇÃO
-========================================== */
-
-function ordenarHistorico(
-  historico
-) {
-
-  const ordemFuncoes = {
-    "Ogam": 1,
-    "Cambone": 2,
-    "Cantina": 3
-  };
-
-
-  return [
-    ...historico
-  ].sort(
-    (a, b) => {
-
-      const ordemA =
-        ordemFuncoes[
-          a.funcao_nome
-        ] || 99;
-
-
-      const ordemB =
-        ordemFuncoes[
-          b.funcao_nome
-        ] || 99;
-
-
-      if (
-        ordemA !== ordemB
-      ) {
-
-        return ordemA - ordemB;
-
-      }
-
-
-      return String(
-        a.data_inicio || ""
-      ).localeCompare(
-        String(
-          b.data_inicio || ""
-        )
-      );
-
-    }
-  );
-}
-
-
-/* ==========================================
-   HISTÓRICO - TEXTO
-========================================== */
-
-function formatarPeriodoHistorico(
-  registro
-) {
-
-  const inicio =
-    formatarData(
-      registro.data_inicio
+    (
+      mostrarMediunidade
     );
-
-
-  if (
-    !registro.data_fim
-  ) {
-
-    return `Desde ${inicio}`;
-
-  }
-
-
-  return `${inicio} a ${formatarData(
-    registro.data_fim
-  )}`;
 }
 
 
 /* ==========================================
-   RENDERIZAR HISTÓRICO
+   HISTÓRICO DE FUNÇÕES
 ========================================== */
 
 function renderizarHistoricoFuncoes() {
@@ -1014,351 +848,70 @@ function renderizarHistoricoFuncoes() {
     false;
 
 
-  const historicoOrdenado =
-    ordenarHistorico(
-      historicoFuncoes
-    );
-
-
-  const nomesFuncoes =
-    [
-      ...new Set(
-        historicoOrdenado.map(
-          (registro) =>
-            registro.funcao_nome
-        )
-      )
-    ];
-
-
-  nomesFuncoes.forEach(
-    (funcaoNome) => {
-
-      const bloco =
-        document.createElement(
-          "div"
-        );
-
-
-      bloco.className =
-        "bloco-historico-funcao";
-
-
-      const titulo =
-        document.createElement(
-          "strong"
-        );
-
-
-      titulo.className =
-        "titulo-historico-funcao";
-
-
-      titulo.textContent =
-        funcaoNome;
-
-
-      bloco.appendChild(
-        titulo
-      );
-
-
-      const registros =
-        historicoOrdenado.filter(
-          (registro) =>
-            registro.funcao_nome ===
-            funcaoNome
-        );
-
-
-      registros.forEach(
-        (registro) => {
-
-          const periodo =
-            document.createElement(
-              "span"
-            );
-
-
-          periodo.className =
-            "periodo-historico-funcao";
-
-
-          periodo.textContent =
-            formatarPeriodoHistorico(
-              registro
-            );
-
-
-          bloco.appendChild(
-            periodo
-          );
-
-        }
-      );
-
-
-      listaHistoricoFuncoes.appendChild(
-        bloco
-      );
-
-    }
-  );
-}
-
-
-/* ==========================================
-   RENDERIZAR HISTÓRICO PARA EDIÇÃO
-========================================== */
-
-function renderizarHistoricoEdicao() {
-
-  listaEdicaoHistoricoFuncoes.innerHTML =
-    "";
-
-
-  if (
-    historicoFuncoes.length === 0
-  ) {
-
-    areaEdicaoHistoricoFuncoes.hidden =
-      true;
-
-    return;
-
-  }
-
-
-  areaEdicaoHistoricoFuncoes.hidden =
-    false;
-
-
-  const historicoOrdenado =
-    ordenarHistorico(
-      historicoFuncoes
-    );
-
-
-  historicoOrdenado.forEach(
+  historicoFuncoes.forEach(
     (registro) => {
 
-      const bloco =
+      const item =
         document.createElement(
           "div"
         );
 
 
-      bloco.className =
-        "item-edicao-historico-funcao";
-
-
-      bloco.dataset.historicoId =
-        registro.id;
+      item.className =
+        "item-historico-funcao";
 
 
       const titulo =
         document.createElement(
           "strong"
         );
-
-
-      titulo.className =
-        "titulo-edicao-historico-funcao";
 
 
       titulo.textContent =
         registro.funcao_nome;
 
 
-      bloco.appendChild(
-        titulo
-      );
-
-
-      const grupoInicio =
+      const periodo =
         document.createElement(
-          "div"
+          "span"
         );
 
 
-      grupoInicio.className =
-        "campo-data-administrativa";
-
-
-      const labelInicio =
-        document.createElement(
-          "label"
-        );
-
-
-      labelInicio.textContent =
-        "Data de entrada";
-
-
-      const inputInicio =
-        document.createElement(
-          "input"
-        );
-
-
-      inputInicio.type =
-        "text";
-
-      inputInicio.inputMode =
-        "numeric";
-
-      inputInicio.maxLength =
-        10;
-
-      inputInicio.autocomplete =
-        "off";
-
-      inputInicio.placeholder =
-        "dd/mm/aaaa";
-
-      inputInicio.className =
-        "historico-data-inicio";
-
-
-      inputInicio.value =
-        dataISOParaCampo(
+      const inicio =
+        formatarDataExibicao(
           registro.data_inicio
         );
 
 
-      inputInicio.addEventListener(
-        "input",
-        () => {
-
-          aplicarMascaraData(
-            inputInicio
-          );
-
-        }
-      );
-
-
-      grupoInicio.appendChild(
-        labelInicio
-      );
-
-
-      grupoInicio.appendChild(
-        inputInicio
-      );
-
-
-      bloco.appendChild(
-        grupoInicio
-      );
-
-
-      const grupoFim =
-        document.createElement(
-          "div"
-        );
-
-
-      grupoFim.className =
-        "campo-data-administrativa";
-
-
-      const labelFim =
-        document.createElement(
-          "label"
-        );
-
-
-      labelFim.textContent =
-        "Data de saída";
-
-
-      grupoFim.appendChild(
-        labelFim
-      );
-
-
-      if (
+      const fim =
         registro.data_fim
-      ) {
-
-        const inputFim =
-          document.createElement(
-            "input"
-          );
+          ? formatarDataExibicao(
+              registro.data_fim
+            )
+          : "Atual";
 
 
-        inputFim.type =
-          "text";
-
-        inputFim.inputMode =
-          "numeric";
-
-        inputFim.maxLength =
-          10;
-
-        inputFim.autocomplete =
-          "off";
-
-        inputFim.placeholder =
-          "dd/mm/aaaa";
-
-        inputFim.className =
-          "historico-data-fim";
+      periodo.textContent =
+        (
+          inicio ||
+          "Não informado"
+        ) +
+        " até " +
+        fim;
 
 
-        inputFim.value =
-          dataISOParaCampo(
-            registro.data_fim
-          );
-
-
-        inputFim.addEventListener(
-          "input",
-          () => {
-
-            aplicarMascaraData(
-              inputFim
-            );
-
-          }
-        );
-
-
-        grupoFim.appendChild(
-          inputFim
-        );
-
-      } else {
-
-        const atual =
-          document.createElement(
-            "span"
-          );
-
-
-        atual.className =
-          "funcao-historico-atual";
-
-
-        atual.textContent =
-          "Função atual";
-
-
-        grupoFim.appendChild(
-          atual
-        );
-
-      }
-
-
-      bloco.appendChild(
-        grupoFim
+      item.appendChild(
+        titulo
       );
 
 
-      listaEdicaoHistoricoFuncoes.appendChild(
-        bloco
+      item.appendChild(
+        periodo
+      );
+
+
+      listaHistoricoFuncoes.appendChild(
+        item
       );
 
     }
@@ -1367,7 +920,7 @@ function renderizarHistoricoEdicao() {
 
 
 /* ==========================================
-   ABRIR EDIÇÃO
+   EDITAR DATAS
 ========================================== */
 
 function abrirEdicaoDatas() {
@@ -1382,42 +935,24 @@ function abrirEdicaoDatas() {
 
 
   dataEntradaTufra.value =
-    dataISOParaCampo(
-      associadoAtual.data_entrada_tufra
+    formatarDataExibicao(
+      associadoAtual
+        .data_entrada_tufra
     );
 
 
-  const mostrarTrajetoria =
-    mostrarTrajetoriaMediunica();
+  dataCorrenteDesenvolvimento.value =
+    formatarDataExibicao(
+      associadoAtual
+        .data_corrente_desenvolvimento
+    );
 
 
-  campoEdicaoCorrenteDesenvolvimento.hidden =
-    !mostrarTrajetoria;
-
-
-  campoEdicaoCorrentePrincipal.hidden =
-    !mostrarTrajetoria;
-
-
-  if (
-    mostrarTrajetoria
-  ) {
-
-    dataCorrenteDesenvolvimento.value =
-      dataISOParaCampo(
-        associadoAtual.data_corrente_desenvolvimento
-      );
-
-
-    dataCorrentePrincipal.value =
-      dataISOParaCampo(
-        associadoAtual.data_corrente_principal
-      );
-
-  }
-
-
-  renderizarHistoricoEdicao();
+  dataCorrentePrincipal.value =
+    formatarDataExibicao(
+      associadoAtual
+        .data_corrente_principal
+    );
 
 
   mensagemDatasAdministrativas.hidden =
@@ -1432,16 +967,15 @@ function abrirEdicaoDatas() {
     true;
 
 
-  areaHistoricoFuncoes.hidden =
-    true;
+  edicaoDatasAdministrativas.hidden =
+    false;
 
 
   botaoEditarDatasAdministrativas.hidden =
     true;
 
 
-  edicaoDatasAdministrativas.hidden =
-    false;
+  renderizarEdicaoHistoricoFuncoes();
 }
 
 
@@ -1469,291 +1003,257 @@ function cancelarEdicaoDatas() {
 
   mensagemDatasAdministrativas.textContent =
     "";
-
-
-  renderizarHistoricoFuncoes();
 }
 
 
 /* ==========================================
-   LER DATAS PRINCIPAIS
+   EDIÇÃO DO HISTÓRICO
 ========================================== */
 
-function obterDatasDigitadas() {
+function renderizarEdicaoHistoricoFuncoes() {
 
-  const entrada =
-    converterDataParaISO(
-      dataEntradaTufra.value
-    );
-
-
-  let desenvolvimento =
-    associadoAtual
-      ?.data_corrente_desenvolvimento ||
-    null;
-
-
-  let principal =
-    associadoAtual
-      ?.data_corrente_principal ||
-    null;
+  listaEdicaoHistoricoFuncoes.innerHTML =
+    "";
 
 
   if (
-    mostrarTrajetoriaMediunica()
+    historicoFuncoes.length === 0
   ) {
 
-    desenvolvimento =
-      converterDataParaISO(
-        dataCorrenteDesenvolvimento.value
+    areaEdicaoHistoricoFuncoes.hidden =
+      true;
+
+    return;
+
+  }
+
+
+  areaEdicaoHistoricoFuncoes.hidden =
+    false;
+
+
+  historicoFuncoes.forEach(
+    (
+      registro,
+      indice
+    ) => {
+
+      const bloco =
+        document.createElement(
+          "div"
+        );
+
+
+      bloco.className =
+        "item-edicao-historico-funcao";
+
+
+      const titulo =
+        document.createElement(
+          "strong"
+        );
+
+
+      titulo.textContent =
+        registro.funcao_nome;
+
+
+      bloco.appendChild(
+        titulo
       );
 
 
-    principal =
-      converterDataParaISO(
-        dataCorrentePrincipal.value
+      const linhaDatas =
+        document.createElement(
+          "div"
+        );
+
+
+      linhaDatas.className =
+        "linha-edicao-historico-funcao";
+
+
+      const grupoInicio =
+        document.createElement(
+          "div"
+        );
+
+
+      grupoInicio.className =
+        "campo-data-administrativa";
+
+
+      const labelInicio =
+        document.createElement(
+          "label"
+        );
+
+
+      labelInicio.textContent =
+        "Início";
+
+
+      const inputInicio =
+        document.createElement(
+          "input"
+        );
+
+
+      inputInicio.type =
+        "text";
+
+
+      inputInicio.inputMode =
+        "numeric";
+
+
+      inputInicio.maxLength =
+        10;
+
+
+      inputInicio.placeholder =
+        "DD/MM/AAAA";
+
+
+      inputInicio.value =
+        formatarDataExibicao(
+          registro.data_inicio
+        );
+
+
+      inputInicio.addEventListener(
+        "input",
+        () => {
+
+          aplicarMascaraData(
+            inputInicio
+          );
+
+        }
       );
 
-  }
 
-
-  return {
-    entrada,
-    desenvolvimento,
-    principal
-  };
-}
-
-
-/* ==========================================
-   VALIDAR DATAS
-========================================== */
-
-function validarDatasAdministrativas() {
-
-  const {
-    entrada,
-    desenvolvimento,
-    principal
-  } =
-    obterDatasDigitadas();
-
-
-  if (
-    entrada === false
-  ) {
-
-    return "Informe uma data válida para a entrada na TUFRA.";
-
-  }
-
-
-  if (
-    mostrarTrajetoriaMediunica()
-  ) {
-
-    if (
-      desenvolvimento === false
-    ) {
-
-      return "Informe uma data válida para a Corrente do Desenvolvimento.";
-
-    }
-
-
-    if (
-      principal === false
-    ) {
-
-      return "Informe uma data válida para a Corrente Principal.";
-
-    }
-
-
-    if (
-      entrada &&
-      desenvolvimento &&
-      desenvolvimento < entrada
-    ) {
-
-      return "A data da Corrente do Desenvolvimento não pode ser anterior à entrada na TUFRA.";
-
-    }
-
-
-    if (
-      entrada &&
-      principal &&
-      principal < entrada
-    ) {
-
-      return "A data da Corrente Principal não pode ser anterior à entrada na TUFRA.";
-
-    }
-
-
-    if (
-      desenvolvimento &&
-      principal &&
-      principal < desenvolvimento
-    ) {
-
-      return "A data da Corrente Principal não pode ser anterior à Corrente do Desenvolvimento.";
-
-    }
-
-  }
-
-
-  return "";
-}
-
-
-/* ==========================================
-   LER HISTÓRICO
-========================================== */
-
-function obterHistoricoDigitado() {
-
-  const blocos =
-    Array.from(
-      listaEdicaoHistoricoFuncoes
-        .querySelectorAll(
-          ".item-edicao-historico-funcao"
-        )
-    );
-
-
-  return blocos.map(
-    (bloco) => {
-
-      const id =
-        bloco.dataset.historicoId;
-
-
-      const registroOriginal =
-        historicoFuncoes.find(
-          (registro) =>
-            registro.id === id
+      inputInicio.dataset.indice =
+        String(
+          indice
         );
 
 
-      const campoInicio =
-        bloco.querySelector(
-          ".historico-data-inicio"
+      inputInicio.dataset.tipo =
+        "inicio";
+
+
+      grupoInicio.appendChild(
+        labelInicio
+      );
+
+
+      grupoInicio.appendChild(
+        inputInicio
+      );
+
+
+      linhaDatas.appendChild(
+        grupoInicio
+      );
+
+
+      const grupoFim =
+        document.createElement(
+          "div"
         );
 
 
-      const campoFim =
-        bloco.querySelector(
-          ".historico-data-fim"
+      grupoFim.className =
+        "campo-data-administrativa";
+
+
+      const labelFim =
+        document.createElement(
+          "label"
         );
 
 
-      return {
+      labelFim.textContent =
+        "Fim";
 
-        id,
 
-        funcao_nome:
-          registroOriginal?.funcao_nome ||
-          "",
+      const inputFim =
+        document.createElement(
+          "input"
+        );
 
-        data_inicio:
-          converterDataParaISO(
-            campoInicio?.value
-          ),
 
-        data_fim:
-          campoFim
-            ? converterDataParaISO(
-                campoFim.value
-              )
-            : null,
+      inputFim.type =
+        "text";
 
-        possuiDataFimOriginal:
-          Boolean(
-            registroOriginal?.data_fim
-          )
 
-      };
+      inputFim.inputMode =
+        "numeric";
+
+
+      inputFim.maxLength =
+        10;
+
+
+      inputFim.placeholder =
+        "DD/MM/AAAA";
+
+
+      inputFim.value =
+        formatarDataExibicao(
+          registro.data_fim
+        );
+
+
+      inputFim.addEventListener(
+        "input",
+        () => {
+
+          aplicarMascaraData(
+            inputFim
+          );
+
+        }
+      );
+
+
+      inputFim.dataset.indice =
+        String(
+          indice
+        );
+
+
+      inputFim.dataset.tipo =
+        "fim";
+
+
+      grupoFim.appendChild(
+        labelFim
+      );
+
+
+      grupoFim.appendChild(
+        inputFim
+      );
+
+
+      linhaDatas.appendChild(
+        grupoFim
+      );
+
+
+      bloco.appendChild(
+        linhaDatas
+      );
+
+
+      listaEdicaoHistoricoFuncoes.appendChild(
+        bloco
+      );
 
     }
   );
-}
-
-
-/* ==========================================
-   VALIDAR HISTÓRICO
-========================================== */
-
-function validarHistoricoFuncoes() {
-
-  const registros =
-    obterHistoricoDigitado();
-
-
-  const entradaTufra =
-    converterDataParaISO(
-      dataEntradaTufra.value
-    );
-
-
-  for (
-    const registro of registros
-  ) {
-
-    if (
-      registro.data_inicio === false
-    ) {
-
-      return `Informe uma data de entrada válida para ${registro.funcao_nome}.`;
-
-    }
-
-
-    if (
-      !registro.data_inicio
-    ) {
-
-      return `A data de entrada de ${registro.funcao_nome} é obrigatória.`;
-
-    }
-
-
-    if (
-      registro.data_fim === false
-    ) {
-
-      return `Informe uma data de saída válida para ${registro.funcao_nome}.`;
-
-    }
-
-
-    if (
-      entradaTufra &&
-      registro.data_inicio <
-        entradaTufra
-    ) {
-
-      return `A entrada em ${registro.funcao_nome} não pode ser anterior à entrada na TUFRA.`;
-
-    }
-
-
-    if (
-      registro.data_fim &&
-      registro.data_fim <
-        registro.data_inicio
-    ) {
-
-      return `A saída de ${registro.funcao_nome} não pode ser anterior à entrada na função.`;
-
-    }
-
-  }
-
-
-  return "";
 }
 
 
@@ -1763,43 +1263,103 @@ function validarHistoricoFuncoes() {
 
 async function salvarHistoricoFuncoes() {
 
-  const registros =
-    obterHistoricoDigitado();
+  const inputs =
+    listaEdicaoHistoricoFuncoes
+      .querySelectorAll(
+        "input"
+      );
 
 
   for (
-    const registro of registros
+    const input of inputs
   ) {
 
-    const atualizacao = {
+    const indice =
+      Number(
+        input.dataset.indice
+      );
 
-      data_inicio:
-        registro.data_inicio,
 
-      atualizado_em:
-        new Date().toISOString()
+    const tipo =
+      input.dataset.tipo;
 
-    };
+
+    const registro =
+      historicoFuncoes[indice];
 
 
     if (
-      registro.possuiDataFimOriginal
+      !registro
     ) {
 
-      atualizacao.data_fim =
-        registro.data_fim;
+      continue;
 
     }
 
+
+    const valor =
+      input.value.trim();
+
+
+    if (
+      valor &&
+      !dataValida(
+        valor
+      )
+    ) {
+
+      throw new Error(
+        "Data inválida no histórico de funções."
+      );
+
+    }
+
+
+    const valorBanco =
+      valor
+        ? converterDataParaBanco(
+            valor
+          )
+        : null;
+
+
+    if (
+      tipo === "inicio"
+    ) {
+
+      registro.data_inicio =
+        valorBanco;
+
+    }
+
+
+    if (
+      tipo === "fim"
+    ) {
+
+      registro.data_fim =
+        valorBanco;
+
+    }
+
+  }
+
+
+  for (
+    const registro of historicoFuncoes
+  ) {
 
     const resultado =
       await window.supabaseClient
         .from(
           "historico_funcoes_associado"
         )
-        .update(
-          atualizacao
-        )
+        .update({
+          data_inicio:
+            registro.data_inicio,
+          data_fim:
+            registro.data_fim
+        })
         .eq(
           "id",
           registro.id
@@ -1815,50 +1375,11 @@ async function salvarHistoricoFuncoes() {
     }
 
   }
-
-
-  historicoFuncoes =
-    historicoFuncoes.map(
-      (registroOriginal) => {
-
-        const registroEditado =
-          registros.find(
-            (registro) =>
-              registro.id ===
-              registroOriginal.id
-          );
-
-
-        if (
-          !registroEditado
-        ) {
-
-          return registroOriginal;
-
-        }
-
-
-        return {
-
-          ...registroOriginal,
-
-          data_inicio:
-            registroEditado.data_inicio,
-
-          data_fim:
-            registroEditado.possuiDataFimOriginal
-              ? registroEditado.data_fim
-              : registroOriginal.data_fim
-
-        };
-
-      }
-    );
 }
 
 
 /* ==========================================
-   SALVAR DADOS ADMINISTRATIVOS
+   SALVAR DATAS
 ========================================== */
 
 async function salvarDatasAdministrativas() {
@@ -1872,71 +1393,120 @@ async function salvarDatasAdministrativas() {
   }
 
 
-  const erroDatas =
-    validarDatasAdministrativas();
-
-
-  if (
-    erroDatas
-  ) {
-
-    mensagemDatasAdministrativas.textContent =
-      erroDatas;
-
-
-    mensagemDatasAdministrativas.hidden =
-      false;
-
-
-    return;
-
-  }
-
-
-  const erroHistorico =
-    validarHistoricoFuncoes();
-
-
-  if (
-    erroHistorico
-  ) {
-
-    mensagemDatasAdministrativas.textContent =
-      erroHistorico;
-
-
-    mensagemDatasAdministrativas.hidden =
-      false;
-
-
-    return;
-
-  }
-
-
-  const {
-    entrada,
-    desenvolvimento,
-    principal
-  } =
-    obterDatasDigitadas();
-
-
-  botaoSalvarDatasAdministrativas.disabled =
-    true;
-
-
-  botaoSalvarDatasAdministrativas.textContent =
-    "Salvando...";
-
-
   mensagemDatasAdministrativas.hidden =
     true;
 
 
+  mensagemDatasAdministrativas.textContent =
+    "";
+
+
+  const entradaTexto =
+    dataEntradaTufra.value.trim();
+
+
+  const desenvolvimentoTexto =
+    dataCorrenteDesenvolvimento.value.trim();
+
+
+  const principalTexto =
+    dataCorrentePrincipal.value.trim();
+
+
+  if (
+    entradaTexto &&
+    !dataValida(
+      entradaTexto
+    )
+  ) {
+
+    mensagemDatasAdministrativas.textContent =
+      "Informe uma data de entrada válida.";
+
+
+    mensagemDatasAdministrativas.hidden =
+      false;
+
+    return;
+
+  }
+
+
+  if (
+    mostrarTrajetoriaMediunica() &&
+    desenvolvimentoTexto &&
+    !dataValida(
+      desenvolvimentoTexto
+    )
+  ) {
+
+    mensagemDatasAdministrativas.textContent =
+      "Informe uma data válida para a Corrente de Desenvolvimento.";
+
+
+    mensagemDatasAdministrativas.hidden =
+      false;
+
+    return;
+
+  }
+
+
+  if (
+    mostrarTrajetoriaMediunica() &&
+    principalTexto &&
+    !dataValida(
+      principalTexto
+    )
+  ) {
+
+    mensagemDatasAdministrativas.textContent =
+      "Informe uma data válida para a Corrente Principal.";
+
+
+    mensagemDatasAdministrativas.hidden =
+      false;
+
+    return;
+
+  }
+
+
+  const entrada =
+    entradaTexto
+      ? converterDataParaBanco(
+          entradaTexto
+        )
+      : null;
+
+
+  const desenvolvimento =
+    desenvolvimentoTexto
+      ? converterDataParaBanco(
+          desenvolvimentoTexto
+        )
+      : null;
+
+
+  const principal =
+    principalTexto
+      ? converterDataParaBanco(
+          principalTexto
+        )
+      : null;
+
+
   try {
 
-    const novasDatas = {
+    botaoSalvarDatasAdministrativas.disabled =
+      true;
+
+
+    botaoSalvarDatasAdministrativas.textContent =
+      "Salvando...";
+
+
+    const atualizacao = {
 
       data_entrada_tufra:
         entrada
@@ -1948,11 +1518,11 @@ async function salvarDatasAdministrativas() {
       mostrarTrajetoriaMediunica()
     ) {
 
-      novasDatas.data_corrente_desenvolvimento =
+      atualizacao.data_corrente_desenvolvimento =
         desenvolvimento;
 
 
-      novasDatas.data_corrente_principal =
+      atualizacao.data_corrente_principal =
         principal;
 
     }
@@ -1964,7 +1534,7 @@ async function salvarDatasAdministrativas() {
           "usuarios"
         )
         .update(
-          novasDatas
+          atualizacao
         )
         .eq(
           "id",
@@ -2148,6 +1718,9 @@ async function carregarAssociado() {
           data_entrada_tufra,
           data_corrente_desenvolvimento,
           data_corrente_principal,
+          status,
+          data_saida_tufra,
+          motivo_saida,
 
           usuario_funcoes!usuario_funcoes_usuario_id_fkey (
             funcoes (
@@ -2304,6 +1877,8 @@ async function carregarAssociado() {
 
     atualizarVisualizacaoDatas();
 
+    atualizarSituacaoAssociado();
+
     renderizarHistoricoFuncoes();
 
 
@@ -2334,21 +1909,15 @@ async function carregarAssociado() {
         resultadoFoto.error
       ) {
 
-        throw resultadoFoto.error;
+        console.error(
+          "Erro ao carregar foto:",
+          resultadoFoto.error
+        );
 
-      }
-
-
-      const urlFoto =
-        resultadoFoto.data?.signedUrl;
-
-
-      if (
-        urlFoto
-      ) {
+      } else {
 
         fotoAssociadoResumo.src =
-          urlFoto;
+          resultadoFoto.data.signedUrl;
 
 
         fotoAssociadoResumo.hidden =
@@ -2357,6 +1926,10 @@ async function carregarAssociado() {
 
         fotoAssociadoResumoPadrao.hidden =
           true;
+
+
+        fotoAssociadoAmpliada.src =
+          resultadoFoto.data.signedUrl;
 
       }
 
@@ -2371,8 +1944,74 @@ async function carregarAssociado() {
     );
 
 
-    mostrarMensagem(
-      "Não foi possível carregar os dados do associado."
+    mensagemAssociadoResumo.textContent =
+      "Não foi possível carregar os dados do associado.";
+
+
+    mensagemAssociadoResumo.hidden =
+      false;
+
+  }
+}
+
+
+/* ==========================================
+   PERMISSÃO DE ATENDIMENTOS
+========================================== */
+
+async function verificarPermissaoAtendimentos() {
+
+  if (
+    !window.supabaseClient
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    const resultado =
+      await window.supabaseClient
+        .rpc(
+          "usuario_pode_acessar_atendimentos"
+        );
+
+
+    if (
+      resultado.error
+    ) {
+
+      return;
+
+    }
+
+
+    if (
+      resultado.data === true
+    ) {
+
+      const {
+        associadoId
+      } =
+        obterParametros();
+
+
+      botaoHistoricoAtendimentosAssociado.hidden =
+        false;
+
+
+      botaoHistoricoAtendimentosAssociado.href =
+        `atendimentos-pessoa.html?associado_id=${associadoId}`;
+
+    }
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao verificar permissão de atendimentos:",
+      erro
     );
 
   }
@@ -2380,7 +2019,7 @@ async function carregarAssociado() {
 
 
 /* ==========================================
-   ZOOM
+   FOTO AMPLIADA
 ========================================== */
 
 function aplicarZoomFoto() {
@@ -2399,17 +2038,12 @@ function aplicarZoomFoto() {
 function abrirFotoAmpliada() {
 
   if (
-    !fotoAssociadoResumo.src ||
-    fotoAssociadoResumo.hidden
+    !fotoAssociadoResumo.src
   ) {
 
     return;
 
   }
-
-
-  fotoAssociadoAmpliada.src =
-    fotoAssociadoResumo.src;
 
 
   zoomFoto =
@@ -2440,6 +2074,9 @@ function fecharFotoAmpliada() {
 
   zoomFoto =
     1;
+
+
+  aplicarZoomFoto();
 }
 
 
@@ -2518,6 +2155,322 @@ function calcularDistanciaToques(
 
 
 /* ==========================================
+   SITUAÇÃO / BAIXA DO ASSOCIADO
+========================================== */
+
+function obterDataHojeIso() {
+
+  const agora =
+    new Date();
+
+  const ano =
+    agora.getFullYear();
+
+  const mes =
+    String(
+      agora.getMonth() + 1
+    ).padStart(
+      2,
+      "0"
+    );
+
+  const dia =
+    String(
+      agora.getDate()
+    ).padStart(
+      2,
+      "0"
+    );
+
+  return `${ano}-${mes}-${dia}`;
+}
+
+
+function atualizarSituacaoAssociado() {
+
+  if (
+    !associadoAtual ||
+    !textoSituacaoAssociado
+  ) {
+
+    return;
+
+  }
+
+
+  const inativo =
+    associadoAtual.status ===
+    "inativo";
+
+
+  textoSituacaoAssociado.textContent =
+    inativo
+      ? "Inativo"
+      : "Ativo";
+
+
+  if (
+    inativo
+  ) {
+
+    itemDataSaidaTufra.hidden =
+      false;
+
+    itemMotivoSaida.hidden =
+      false;
+
+    textoDataSaidaTufra.textContent =
+      formatarDataExibicao(
+        associadoAtual.data_saida_tufra
+      ) ||
+      "Não informado";
+
+    textoMotivoSaida.textContent =
+      associadoAtual.motivo_saida ||
+      "Não informado";
+
+    botaoAbrirBaixaAssociado.hidden =
+      true;
+
+    areaBaixaAssociado.hidden =
+      true;
+
+    return;
+
+  }
+
+
+  itemDataSaidaTufra.hidden =
+    true;
+
+  itemMotivoSaida.hidden =
+    true;
+
+  botaoAbrirBaixaAssociado.hidden =
+    false;
+}
+
+
+function abrirBaixaAssociado() {
+
+  mensagemBaixaAssociado.hidden =
+    true;
+
+  mensagemBaixaAssociado.textContent =
+    "";
+
+  dataSaidaTufra.value =
+    obterDataHojeIso();
+
+  motivoSaida.value =
+    "";
+
+  areaBaixaAssociado.hidden =
+    false;
+
+  botaoAbrirBaixaAssociado.hidden =
+    true;
+}
+
+
+function cancelarBaixaAssociado() {
+
+  areaBaixaAssociado.hidden =
+    true;
+
+  botaoAbrirBaixaAssociado.hidden =
+    false;
+
+  mensagemBaixaAssociado.hidden =
+    true;
+
+  mensagemBaixaAssociado.textContent =
+    "";
+}
+
+
+async function confirmarBaixaAssociado() {
+
+  if (
+    !associadoAtual
+  ) {
+
+    return;
+
+  }
+
+
+  const dataSaida =
+    dataSaidaTufra.value;
+
+  const motivo =
+    motivoSaida.value.trim();
+
+
+  mensagemBaixaAssociado.hidden =
+    true;
+
+
+  if (
+    !dataSaida
+  ) {
+
+    mensagemBaixaAssociado.textContent =
+      "Informe a data da saída.";
+
+    mensagemBaixaAssociado.hidden =
+      false;
+
+    return;
+
+  }
+
+
+  if (
+    dataSaida > obterDataHojeIso()
+  ) {
+
+    mensagemBaixaAssociado.textContent =
+      "A data da saída não pode ser futura.";
+
+    mensagemBaixaAssociado.hidden =
+      false;
+
+    return;
+
+  }
+
+
+  if (
+    associadoAtual.data_entrada_tufra &&
+    dataSaida < associadoAtual.data_entrada_tufra
+  ) {
+
+    mensagemBaixaAssociado.textContent =
+      "A data da saída não pode ser anterior à data de entrada na TUFRA.";
+
+    mensagemBaixaAssociado.hidden =
+      false;
+
+    return;
+
+  }
+
+
+  if (
+    !motivo
+  ) {
+
+    mensagemBaixaAssociado.textContent =
+      "Informe o motivo da saída.";
+
+    mensagemBaixaAssociado.hidden =
+      false;
+
+    return;
+
+  }
+
+
+  const confirmar =
+    window.confirm(
+      "Confirma a baixa deste associado?\n\nA ficha ficará inativa e o associado perderá o acesso ao APP. O histórico será mantido."
+    );
+
+
+  if (
+    !confirmar
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    botaoConfirmarBaixaAssociado.disabled =
+      true;
+
+    botaoConfirmarBaixaAssociado.textContent =
+      "Salvando...";
+
+
+    const resultado =
+      await window.supabaseClient
+        .from(
+          "usuarios"
+        )
+        .update({
+          status:
+            "inativo",
+          data_saida_tufra:
+            dataSaida,
+          motivo_saida:
+            motivo
+        })
+        .eq(
+          "id",
+          associadoAtual.id
+        );
+
+
+    if (
+      resultado.error
+    ) {
+
+      throw resultado.error;
+
+    }
+
+
+    associadoAtual.status =
+      "inativo";
+
+    associadoAtual.data_saida_tufra =
+      dataSaida;
+
+    associadoAtual.motivo_saida =
+      motivo;
+
+
+    atualizarSituacaoAssociado();
+
+
+    mensagemAssociadoResumo.textContent =
+      "Baixa do associado registrada com sucesso.";
+
+    mensagemAssociadoResumo.hidden =
+      false;
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao dar baixa no associado:",
+      erro
+    );
+
+    mensagemBaixaAssociado.textContent =
+      "Não foi possível registrar a baixa do associado.";
+
+    mensagemBaixaAssociado.hidden =
+      false;
+
+
+  } finally {
+
+    botaoConfirmarBaixaAssociado.disabled =
+      false;
+
+    botaoConfirmarBaixaAssociado.textContent =
+      "Confirmar baixa";
+
+  }
+}
+
+
+/* ==========================================
    EVENTOS
 ========================================== */
 
@@ -2572,6 +2525,24 @@ botaoCancelarDatasAdministrativas.addEventListener(
 botaoSalvarDatasAdministrativas.addEventListener(
   "click",
   salvarDatasAdministrativas
+);
+
+
+botaoAbrirBaixaAssociado.addEventListener(
+  "click",
+  abrirBaixaAssociado
+);
+
+
+botaoCancelarBaixaAssociado.addEventListener(
+  "click",
+  cancelarBaixaAssociado
+);
+
+
+botaoConfirmarBaixaAssociado.addEventListener(
+  "click",
+  confirmarBaixaAssociado
 );
 
 
@@ -2780,81 +2751,19 @@ const mensagemSemPresencaAssociado =
   );
 
 
-function obterDataAtualISOResumoPresenca() {
-
-  const hoje =
-    new Date();
-
-
-  const ano =
-    hoje.getFullYear();
-
-
-  const mes =
-    String(
-      hoje.getMonth() + 1
-    ).padStart(
-      2,
-      "0"
-    );
-
-
-  const dia =
-    String(
-      hoje.getDate()
-    ).padStart(
-      2,
-      "0"
-    );
-
-
-  return `${ano}-${mes}-${dia}`;
-}
-
-
-function formatarDataCurtaResumoPresenca(
-  dataISO
-) {
-
-  if (
-    !dataISO
-  ) {
-
-    return "";
-
-  }
-
-
-  const partes =
-    String(
-      dataISO
-    ).split("-");
-
-
-  if (
-    partes.length !== 3
-  ) {
-
-    return dataISO;
-
-  }
-
-
-  return `${partes[2]}/${partes[1]}`;
-}
-
-
 function obterNomesListasAtuaisAssociado() {
 
-  const listas =
+  const nomes =
     [];
 
 
   if (
-    estaNaCorrentePrincipal()
+    possuiFuncao(
+      "Médium Principal"
+    )
   ) {
 
-    listas.push(
+    nomes.push(
       "Corrente Principal"
     );
 
@@ -2862,56 +2771,19 @@ function obterNomesListasAtuaisAssociado() {
 
 
   if (
-    estaNoDesenvolvimento()
+    possuiFuncao(
+      "Médium Desenvolvimento"
+    )
   ) {
 
-    listas.push(
+    nomes.push(
       "Desenvolvimento"
     );
 
   }
 
 
-  if (
-    possuiFuncaoPrincipal(
-      "Ogam"
-    )
-  ) {
-
-    listas.push(
-      "Ogans"
-    );
-
-  }
-
-
-  if (
-    possuiFuncaoPrincipal(
-      "Cambone"
-    )
-  ) {
-
-    listas.push(
-      "Cambones"
-    );
-
-  }
-
-
-  if (
-    possuiFuncaoPrincipal(
-      "Cantina"
-    )
-  ) {
-
-    listas.push(
-      "Cantina"
-    );
-
-  }
-
-
-  return listas;
+  return nomes;
 }
 
 
@@ -2933,11 +2805,8 @@ function obterDataEntradaListaResumo(
     "Corrente Principal"
   ) {
 
-    return (
-      associadoAtual.data_corrente_principal ||
-      associadoAtual.data_entrada_tufra ||
-      null
-    );
+    return associadoAtual
+      .data_corrente_principal;
 
   }
 
@@ -2947,80 +2816,244 @@ function obterDataEntradaListaResumo(
     "Desenvolvimento"
   ) {
 
-    return (
-      associadoAtual.data_corrente_desenvolvimento ||
-      associadoAtual.data_entrada_tufra ||
-      null
-    );
+    return associadoAtual
+      .data_corrente_desenvolvimento;
 
   }
 
 
-  let nomeHistorico =
-    null;
+  return associadoAtual
+    .data_entrada_tufra;
+}
 
+
+function normalizarDataResumoPresenca(
+  valor
+) {
 
   if (
-    nomeLista ===
-    "Ogans"
+    !valor
   ) {
 
-    nomeHistorico =
-      "Ogam";
+    return null;
 
   }
 
 
-  if (
-    nomeLista ===
-    "Cambones"
-  ) {
-
-    nomeHistorico =
-      "Cambone";
-
-  }
-
-
-  if (
-    nomeLista ===
-    "Cantina"
-  ) {
-
-    nomeHistorico =
-      "Cantina";
-
-  }
-
-
-  if (
-    nomeHistorico
-  ) {
-
-    const periodoAtual =
-      historicoFuncoes.find(
-        (registro) =>
-          registro.funcao_nome ===
-            nomeHistorico &&
-          !registro.data_fim
+  const texto =
+    String(
+      valor
+    )
+      .slice(
+        0,
+        10
       );
 
 
-    if (
-      periodoAtual?.data_inicio
-    ) {
+  const partes =
+    texto.split(
+      "-"
+    );
 
-      return periodoAtual.data_inicio;
 
-    }
+  if (
+    partes.length !== 3
+  ) {
+
+    return null;
+
+  }
+
+
+  const ano =
+    Number(
+      partes[0]
+    );
+
+  const mes =
+    Number(
+      partes[1]
+    );
+
+  const dia =
+    Number(
+      partes[2]
+    );
+
+
+  if (
+    !ano ||
+    !mes ||
+    !dia
+  ) {
+
+    return null;
+
+  }
+
+
+  return new Date(
+    ano,
+    mes - 1,
+    dia
+  );
+}
+
+
+function dataAtividadeEhAnteriorEntradaResumo(
+  dataAtividade,
+  dataEntrada
+) {
+
+  const atividade =
+    normalizarDataResumoPresenca(
+      dataAtividade
+    );
+
+
+  const entrada =
+    normalizarDataResumoPresenca(
+      dataEntrada
+    );
+
+
+  if (
+    !atividade ||
+    !entrada
+  ) {
+
+    return false;
 
   }
 
 
   return (
-    associadoAtual.data_entrada_tufra ||
-    null
+    atividade <
+    entrada
   );
+}
+
+
+function formatarDataCurtaResumoPresenca(
+  valor
+) {
+
+  const data =
+    normalizarDataResumoPresenca(
+      valor
+    );
+
+
+  if (
+    !data
+  ) {
+
+    return "-";
+
+  }
+
+
+  return (
+    String(
+      data.getDate()
+    ).padStart(
+      2,
+      "0"
+    ) +
+    "/" +
+    String(
+      data.getMonth() + 1
+    ).padStart(
+      2,
+      "0"
+    )
+  );
+}
+
+
+function obterSituacaoResumoPresenca(
+  atividade,
+  presencas,
+  dataEntradaLista
+) {
+
+  if (
+    dataAtividadeEhAnteriorEntradaResumo(
+      atividade.data,
+      dataEntradaLista
+    )
+  ) {
+
+    return {
+      tipo:
+        "antes",
+      texto:
+        "—"
+    };
+
+  }
+
+
+  const registro =
+    presencas.find(
+      (presenca) =>
+        presenca.atividade_id ===
+        atividade.id
+    );
+
+
+  if (
+    !registro
+  ) {
+
+    return {
+      tipo:
+        "pendente",
+      texto:
+        "Pendente"
+    };
+
+  }
+
+
+  if (
+    registro.status ===
+    "presente"
+  ) {
+
+    return {
+      tipo:
+        "presente",
+      texto:
+        "Presente"
+    };
+
+  }
+
+
+  if (
+    registro.status ===
+      "justificada" ||
+    registro.status ===
+      "justificado"
+  ) {
+
+    return {
+      tipo:
+        "justificada",
+      texto:
+        "Justificado"
+    };
+
+  }
+
+
+  return {
+    tipo:
+      "falta",
+    texto:
+      "Falta"
+  };
 }
 
 
@@ -3037,8 +3070,7 @@ async function buscarTipoListaResumo(
         id,
         nome,
         tipo_atividade,
-        ativo,
-        ordem
+        ativo
       `)
       .eq(
         "nome",
@@ -3069,8 +3101,28 @@ async function buscarUltimasAtividadesResumo(
   tipoAtividade
 ) {
 
-  const hojeISO =
-    obterDataAtualISOResumoPresenca();
+  const hoje =
+    new Date();
+
+
+  const dataHoje =
+    [
+      hoje.getFullYear(),
+      String(
+        hoje.getMonth() + 1
+      ).padStart(
+        2,
+        "0"
+      ),
+      String(
+        hoje.getDate()
+      ).padStart(
+        2,
+        "0"
+      )
+    ].join(
+      "-"
+    );
 
 
   const resultado =
@@ -3080,9 +3132,8 @@ async function buscarUltimasAtividadesResumo(
       )
       .select(`
         id,
-        titulo,
         data,
-        hora_inicio,
+        titulo,
         tipo_atividade
       `)
       .eq(
@@ -3091,17 +3142,10 @@ async function buscarUltimasAtividadesResumo(
       )
       .lte(
         "data",
-        hojeISO
+        dataHoje
       )
       .order(
         "data",
-        {
-          ascending:
-            false
-        }
-      )
-      .order(
-        "hora_inicio",
         {
           ascending:
             false
@@ -3156,17 +3200,17 @@ async function buscarPresencasResumo(
         "presencas"
       )
       .select(`
+        id,
         atividade_id,
-        usuario_id,
         status
       `)
       .eq(
-        "tipo_lista_id",
-        tipoListaId
-      )
-      .eq(
         "usuario_id",
         associadoAtual.id
+      )
+      .eq(
+        "tipo_lista_id",
+        tipoListaId
       )
       .in(
         "atividade_id",
@@ -3185,110 +3229,6 @@ async function buscarPresencasResumo(
 
   return resultado.data ||
     [];
-}
-
-
-function obterSituacaoResumoPresenca(
-  atividade,
-  presencas,
-  dataEntradaLista
-) {
-
-  if (
-    dataEntradaLista &&
-    atividade.data <
-      dataEntradaLista
-  ) {
-
-    return {
-      texto:
-        "x",
-
-      tipo:
-        "nao_participava",
-
-      classe:
-        "status-relatorio-nao-participava"
-    };
-
-  }
-
-
-  const registro =
-    presencas.find(
-      (item) =>
-        item.atividade_id ===
-        atividade.id
-    );
-
-
-  if (
-    registro?.status ===
-    "presente"
-  ) {
-
-    return {
-      texto:
-        "P",
-
-      tipo:
-        "presente",
-
-      classe:
-        "status-relatorio-presente"
-    };
-
-  }
-
-
-  if (
-    registro?.status ===
-    "falta"
-  ) {
-
-    return {
-      texto:
-        "F",
-
-      tipo:
-        "falta",
-
-      classe:
-        "status-relatorio-falta"
-    };
-
-  }
-
-
-  if (
-    registro?.status ===
-    "justificada"
-  ) {
-
-    return {
-      texto:
-        "J",
-
-      tipo:
-        "justificada",
-
-      classe:
-        "status-relatorio-justificado"
-    };
-
-  }
-
-
-  return {
-    texto:
-      "—",
-
-    tipo:
-      "pendente",
-
-    classe:
-      "status-relatorio-pendente"
-  };
 }
 
 
@@ -3585,10 +3525,6 @@ function criarBlocoResumoPresenca(
         );
 
 
-      td.className =
-        "celula-status-relatorio";
-
-
       const situacao =
         obterSituacaoResumoPresenca(
           atividade,
@@ -3597,19 +3533,28 @@ function criarBlocoResumoPresenca(
         );
 
 
+      td.className =
+        `situacao-resumo-presenca situacao-resumo-presenca-${situacao.tipo}`;
+
+
       td.textContent =
+        situacao.tipo ===
+          "presente"
+          ? "P"
+          : situacao.tipo ===
+              "falta"
+            ? "F"
+            : situacao.tipo ===
+                "justificada"
+              ? "J"
+              : situacao.tipo ===
+                  "pendente"
+                ? "?"
+                : "—";
+
+
+      td.title =
         situacao.texto;
-
-
-      if (
-        situacao.classe
-      ) {
-
-        td.classList.add(
-          situacao.classe
-        );
-
-      }
 
 
       linha.appendChild(
@@ -3620,24 +3565,24 @@ function criarBlocoResumoPresenca(
   );
 
 
-  const tdPresencas =
+  const tdPresentes =
     document.createElement(
       "td"
     );
 
 
-  tdPresencas.className =
+  tdPresentes.className =
     "valor-atividade-presente coluna-resumo-presenca-final";
 
 
-  tdPresencas.textContent =
+  tdPresentes.textContent =
     String(
       resumo.presentes
     );
 
 
   linha.appendChild(
-    tdPresencas
+    tdPresentes
   );
 
 
