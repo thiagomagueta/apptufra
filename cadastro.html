@@ -41,7 +41,7 @@
       </header>
 
       <form
-          id="formularioDadosPessoais"
+        id="formularioDadosPessoais"
         class="formulario-cadastro"
         action="cadastro2.html"
         method="get"
@@ -144,32 +144,51 @@
           ></small>
         </div>
 
-<div class="acoes-cadastro">
+        <div class="grupo-campo">
+          <label for="confirmarEmail">Confirme seu e-mail</label>
 
-  <a
-    class="botao-anterior"
-    href="index.html"
-  >
-    Anterior
-  </a>
+          <input
+            id="confirmarEmail"
+            name="confirmarEmail"
+            type="email"
+            placeholder="Digite novamente seu e-mail"
+            autocomplete="off"
+            required
+          >
 
-  <button
-    class="botao-solicitar"
-    type="submit"
-  >
-    Próximo
-  </button>
+          <small
+            id="erroConfirmarEmail"
+            class="mensagem-campo"
+          ></small>
+        </div>
 
-</div>
+        <div class="acoes-cadastro">
+
+          <a
+            class="botao-anterior"
+            href="index.html"
+          >
+            Anterior
+          </a>
+
+          <button
+            class="botao-solicitar"
+            type="submit"
+          >
+            Próximo
+          </button>
+
+        </div>
 
       </form>
 
     </section>
 
   </main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script src="supabase.js"></script>
-  <script src="cadastro.js?v=5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="supabase.js"></script>
+  <script src="cadastro.js?v=6"></script>
 </body>
 </html>
