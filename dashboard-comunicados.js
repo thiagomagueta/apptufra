@@ -79,6 +79,9 @@ let respostasUsuario =
 let resultadosEnquetes =
   {};
 
+let nomesPublicacao =
+  {};
+
 
 /* ==========================================
    FORMATAR DATA
@@ -133,29 +136,46 @@ function formatarTipoComunicado(
 
 
 /* ==========================================
-   FORMATAR NOME
+   OBTER NOME DE PUBLICAÇÃO
 ========================================== */
 
-function formatarNomePublicadoPor(
-  nomeCompleto
+function obterNomePublicacao(
+  comunicado
 ) {
 
-  const nome =
-    String(
-      nomeCompleto || ""
-    ).trim();
-
-
   if (
-    !nome
+    comunicado.criado_por &&
+    nomesPublicacao[
+      comunicado.criado_por
+    ]
   ) {
 
-    return "TUFRA";
+    return nomesPublicacao[
+      comunicado.criado_por
+    ];
 
   }
 
 
-  return nome;
+  const nomeCompleto =
+    String(
+      comunicado.criador?.nome_completo ||
+      ""
+    ).trim();
+
+
+  if (
+    nomeCompleto
+  ) {
+
+    return nomeCompleto.split(
+      " "
+    )[0];
+
+  }
+
+
+  return "TUFRA";
 
 }
 
@@ -347,6 +367,83 @@ function usuarioPodeVisualizar(
         funcaoUsuario.id
       )
   );
+
+}
+
+
+/* ==========================================
+   CARREGAR NOMES DE PUBLICAÇÃO
+========================================== */
+
+async function carregarNomesPublicacao() {
+
+  nomesPublicacao =
+    {};
+
+
+  const idsCriadores =
+    [
+      ...new Set(
+        comunicadosAtivos
+          .map(
+            (comunicado) =>
+              comunicado.criado_por
+          )
+          .filter(
+            Boolean
+          )
+      )
+    ];
+
+
+  for (
+    const usuarioId of idsCriadores
+  ) {
+
+    try {
+
+      const resultado =
+        await window.supabaseClient
+          .rpc(
+            "obter_nome_publicacao",
+            {
+              p_usuario_id:
+                usuarioId
+            }
+          );
+
+
+      if (
+        resultado.error
+      ) {
+
+        console.error(
+          "Erro ao carregar nome de publicação:",
+          resultado.error
+        );
+
+        continue;
+
+      }
+
+
+      nomesPublicacao[
+        usuarioId
+      ] =
+        resultado.data ||
+        "TUFRA";
+
+
+    } catch (erro) {
+
+      console.error(
+        "Erro ao carregar nome de publicação:",
+        erro
+      );
+
+    }
+
+  }
 
 }
 
@@ -1013,14 +1110,18 @@ function criarAreaVotacao(
 
 
       label.style.display =
-        "flex";
+        "grid";
+
+
+      label.style.gridTemplateColumns =
+        "22px minmax(0, 1fr) auto";
 
 
       label.style.alignItems =
         "center";
 
 
-      label.style.gap =
+      label.style.columnGap =
         "10px";
 
 
@@ -1030,6 +1131,10 @@ function criarAreaVotacao(
 
       label.style.cursor =
         "pointer";
+
+
+      label.style.width =
+        "100%";
 
 
       const radio =
@@ -1055,10 +1160,26 @@ function criarAreaVotacao(
         opcao.id;
 
 
+      radio.style.margin =
+        "0";
+
+
       const texto =
         document.createElement(
           "span"
         );
+
+
+      texto.textContent =
+        opcao.texto;
+
+
+      texto.style.minWidth =
+        "0";
+
+
+      texto.style.lineHeight =
+        "1.35";
 
 
       const totalVotos =
@@ -1068,8 +1189,30 @@ function criarAreaVotacao(
         );
 
 
-      texto.textContent =
-        `${opcao.texto} — ${totalVotos} ${totalVotos === 1 ? "voto" : "votos"}`;
+      const votos =
+        document.createElement(
+          "span"
+        );
+
+
+      votos.textContent =
+        `${totalVotos} ${totalVotos === 1 ? "voto" : "votos"}`;
+
+
+      votos.style.whiteSpace =
+        "nowrap";
+
+
+      votos.style.textAlign =
+        "right";
+
+
+      votos.style.fontWeight =
+        "600";
+
+
+      votos.style.fontSize =
+        "14px";
 
 
       label.appendChild(
@@ -1079,6 +1222,11 @@ function criarAreaVotacao(
 
       label.appendChild(
         texto
+      );
+
+
+      label.appendChild(
+        votos
       );
 
 
@@ -1322,8 +1470,8 @@ function criarCardComunicado(
 
 
   publicadoPor.textContent =
-    `Publicado por ${formatarNomePublicadoPor(
-      comunicado.criador?.nome_completo
+    `Publicado por ${obterNomePublicacao(
+      comunicado
     )}`;
 
 
@@ -1542,8 +1690,8 @@ function criarPublicadoPorPopup(
 
 
   publicadoPor.textContent =
-    `Publicado por ${formatarNomePublicadoPor(
-      comunicado.criador?.nome_completo
+    `Publicado por ${obterNomePublicacao(
+      comunicado
     )}`;
 
 
@@ -1836,9 +1984,15 @@ async function carregarComunicadosDashboard() {
 
 
     /*
-      Carrega as opções, o voto atual
-      do usuário e os resultados públicos.
+      Carrega:
+      - nome de publicação;
+      - opções das enquetes;
+      - voto atual do usuário;
+      - resultados públicos.
     */
+
+    await carregarNomesPublicacao();
+
 
     await carregarOpcoesEnquetes();
 
