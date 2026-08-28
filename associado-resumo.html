@@ -424,6 +424,169 @@
       </section>
 
 
+      <!-- =====================================
+           BAIXA DO ASSOCIADO
+      ====================================== -->
+
+      <section
+        id="areaBaixaAssociado"
+        class="cartao-app"
+        hidden
+      >
+
+        <h2>
+          Baixa do associado
+        </h2>
+
+
+        <!-- =====================================
+             ASSOCIADO ATIVO
+        ====================================== -->
+
+        <div
+          id="areaAssociadoAtivo"
+        >
+
+          <p class="texto-explicativo-relatorio-atividade">
+            Use esta opção quando o associado deixar de fazer parte da TUFRA.
+          </p>
+
+
+          <button
+            id="botaoAbrirBaixaAssociado"
+            class="botao-principal-app"
+            type="button"
+          >
+            Dar baixa no associado
+          </button>
+
+
+          <div
+            id="formularioBaixaAssociado"
+            hidden
+          >
+
+            <div class="campo-data-administrativa">
+
+              <label for="dataSaidaAssociado">
+                Data da saída
+              </label>
+
+              <input
+                id="dataSaidaAssociado"
+                type="text"
+                inputmode="numeric"
+                maxlength="10"
+                autocomplete="off"
+                placeholder="dd/mm/aaaa"
+              >
+
+            </div>
+
+
+            <div class="campo-data-administrativa">
+
+              <label for="motivoSaidaAssociado">
+                Motivo da baixa
+              </label>
+
+              <textarea
+                id="motivoSaidaAssociado"
+                rows="4"
+                placeholder="Informe o motivo da baixa"
+              ></textarea>
+
+            </div>
+
+
+            <div
+              id="mensagemBaixaAssociado"
+              class="mensagem-formulario"
+              hidden
+            ></div>
+
+
+            <div class="acoes-datas-administrativas">
+
+              <button
+                id="botaoCancelarBaixaAssociado"
+                class="botao-cancelar-datas-administrativas"
+                type="button"
+              >
+                Cancelar
+              </button>
+
+              <button
+                id="botaoConfirmarBaixaAssociado"
+                class="botao-salvar-datas-administrativas"
+                type="button"
+              >
+                Confirmar baixa
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- =====================================
+             ASSOCIADO INATIVO
+        ====================================== -->
+
+        <div
+          id="areaAssociadoInativo"
+          hidden
+        >
+
+          <div class="dados-associado-resumo">
+
+            <div class="item-resumo-associado">
+
+              <span>
+                Situação
+              </span>
+
+              <strong>
+                Associado inativo
+              </strong>
+
+            </div>
+
+
+            <div class="item-resumo-associado">
+
+              <span>
+                Data da saída
+              </span>
+
+              <strong id="textoDataSaidaAssociado">
+                Não informado
+              </strong>
+
+            </div>
+
+
+            <div class="item-resumo-associado">
+
+              <span>
+                Motivo da baixa
+              </span>
+
+              <strong id="textoMotivoSaidaAssociado">
+                Não informado
+              </strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
       <a
         id="botaoCadastroCompleto"
         class="botao-principal-app"
