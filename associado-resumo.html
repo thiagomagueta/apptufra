@@ -203,10 +203,6 @@
         </div>
 
 
-        <!-- =====================================
-             AVISO ASSISTÊNCIA
-        ====================================== -->
-
         <div
           id="avisoAssociadoAssistencia"
           class="aviso-associado-assistencia"
@@ -216,15 +212,10 @@
         </div>
 
 
-        <!-- =====================================
-             VISUALIZAÇÃO DAS DATAS
-        ====================================== -->
-
         <div
           id="visualizacaoDatasAdministrativas"
           class="dados-associado-resumo"
         >
-
 
           <div
             id="itemDataEntradaTufra"
@@ -245,10 +236,11 @@
           <div
             id="itemDataCorrenteDesenvolvimento"
             class="item-resumo-associado"
+            hidden
           >
 
             <span>
-              Entrada na Corrente de Desenvolvimento
+              Data para Corrente do Desenvolvimento
             </span>
 
             <strong id="textoDataCorrenteDesenvolvimento">
@@ -261,10 +253,11 @@
           <div
             id="itemDataCorrentePrincipal"
             class="item-resumo-associado"
+            hidden
           >
 
             <span>
-              Entrada na Corrente Principal
+              Data para Corrente Principal
             </span>
 
             <strong id="textoDataCorrentePrincipal">
@@ -275,10 +268,6 @@
 
         </div>
 
-
-        <!-- =====================================
-             HISTÓRICO DE FUNÇÕES
-        ====================================== -->
 
         <div
           id="areaHistoricoFuncoes"
@@ -298,15 +287,11 @@
         </div>
 
 
-        <!-- =====================================
-             EDIÇÃO DAS DATAS
-        ====================================== -->
-
         <div
           id="edicaoDatasAdministrativas"
+          class="edicao-datas-administrativas"
           hidden
         >
-
 
           <div class="campo-data-administrativa">
 
@@ -319,8 +304,8 @@
               type="text"
               inputmode="numeric"
               maxlength="10"
-              placeholder="DD/MM/AAAA"
               autocomplete="off"
+              placeholder="dd/mm/aaaa"
             >
 
           </div>
@@ -329,10 +314,11 @@
           <div
             id="campoEdicaoCorrenteDesenvolvimento"
             class="campo-data-administrativa"
+            hidden
           >
 
             <label for="dataCorrenteDesenvolvimento">
-              Entrada na Corrente de Desenvolvimento
+              Data para Corrente do Desenvolvimento
             </label>
 
             <input
@@ -340,8 +326,8 @@
               type="text"
               inputmode="numeric"
               maxlength="10"
-              placeholder="DD/MM/AAAA"
               autocomplete="off"
+              placeholder="dd/mm/aaaa"
             >
 
           </div>
@@ -350,10 +336,11 @@
           <div
             id="campoEdicaoCorrentePrincipal"
             class="campo-data-administrativa"
+            hidden
           >
 
             <label for="dataCorrentePrincipal">
-              Entrada na Corrente Principal
+              Data para Corrente Principal
             </label>
 
             <input
@@ -361,8 +348,8 @@
               type="text"
               inputmode="numeric"
               maxlength="10"
-              placeholder="DD/MM/AAAA"
               autocomplete="off"
+              placeholder="dd/mm/aaaa"
             >
 
           </div>
@@ -419,12 +406,13 @@
 
 
       <!-- =====================================
-           SITUAÇÃO DO ASSOCIADO
+           BAIXA DO ASSOCIADO
       ====================================== -->
 
       <section
-        id="areaSituacaoAssociado"
+        id="areaBaixaAssociado"
         class="cartao-app"
+        hidden
       >
 
         <h2>
@@ -432,8 +420,106 @@
         </h2>
 
         <div
-          id="visualizacaoSituacaoAssociado"
+          id="areaAssociadoAtivo"
+          hidden
+        >
+
+          <p class="texto-explicativo-relatorio-atividade">
+            Use esta opção somente quando o associado deixar de fazer parte da TUFRA.
+            O histórico será preservado, mas o cadastro ficará inativo e o acesso ao APP será bloqueado.
+          </p>
+
+          <button
+            id="botaoAbrirBaixaAssociado"
+            class="botao-confirmar-exclusao"
+            type="button"
+            style="width: 100%;"
+          >
+            Dar baixa no associado
+          </button>
+
+          <div
+            id="formularioBaixaAssociado"
+            hidden
+            style="margin-top: 18px;"
+          >
+
+            <div class="campo-data-administrativa">
+
+              <label for="dataSaidaAssociado">
+                Data da saída
+              </label>
+
+              <input
+                id="dataSaidaAssociado"
+                type="text"
+                inputmode="numeric"
+                maxlength="10"
+                autocomplete="off"
+                placeholder="dd/mm/aaaa"
+              >
+
+            </div>
+
+            <div
+              class="campo-data-administrativa"
+              style="margin-top: 14px;"
+            >
+
+              <label for="motivoSaidaAssociado">
+                Motivo da saída
+              </label>
+
+              <textarea
+                id="motivoSaidaAssociado"
+                rows="5"
+                maxlength="2000"
+                placeholder="Descreva o motivo da saída"
+                style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #d7d7d7; border-radius: 8px; background: #ffffff; font-size: 16px; color: #222222; resize: vertical;"
+              ></textarea>
+
+            </div>
+
+            <p class="aviso-exclusao-atividade">
+              Ao confirmar, o associado ficará inativo e perderá o acesso ao APP.
+              Nenhum histórico será apagado.
+            </p>
+
+            <div
+              id="mensagemBaixaAssociado"
+              class="mensagem-formulario"
+              hidden
+            ></div>
+
+            <div class="acoes-confirmacao-exclusao">
+
+              <button
+                id="botaoCancelarBaixaAssociado"
+                class="botao-cancelar-exclusao"
+                type="button"
+              >
+                Cancelar
+              </button>
+
+              <button
+                id="botaoConfirmarBaixaAssociado"
+                class="botao-confirmar-exclusao"
+                type="button"
+              >
+                Confirmar baixa
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="areaAssociadoInativo"
           class="dados-associado-resumo"
+          hidden
         >
 
           <div class="item-resumo-associado">
@@ -442,116 +528,35 @@
               Situação
             </span>
 
-            <strong id="textoSituacaoAssociado">
-              Ativo
+            <strong>
+              Associado inativo
             </strong>
 
           </div>
 
-          <div
-            id="itemDataSaidaTufra"
-            class="item-resumo-associado"
-            hidden
-          >
+
+          <div class="item-resumo-associado">
 
             <span>
-              Data de saída
-            </span>
-
-            <strong id="textoDataSaidaTufra">
-              Não informado
-            </strong>
-
-          </div>
-
-          <div
-            id="itemMotivoSaida"
-            class="item-resumo-associado"
-            hidden
-          >
-
-            <span>
-              Motivo da saída
-            </span>
-
-            <strong id="textoMotivoSaida">
-              Não informado
-            </strong>
-
-          </div>
-
-        </div>
-
-
-        <button
-          id="botaoAbrirBaixaAssociado"
-          class="botao-principal-app"
-          type="button"
-        >
-          Dar baixa no associado
-        </button>
-
-
-        <div
-          id="areaBaixaAssociado"
-          hidden
-        >
-
-          <p class="texto-explicativo-relatorio-atividade">
-            A baixa deixará a ficha inativa e o associado perderá o acesso ao APP. O histórico será mantido.
-          </p>
-
-          <div class="campo-data-administrativa">
-
-            <label for="dataSaidaTufra">
               Data da saída
-            </label>
+            </span>
 
-            <input
-              id="dataSaidaTufra"
-              type="date"
-            >
+            <strong id="textoDataSaidaAssociado">
+              Não informado
+            </strong>
 
           </div>
 
-          <div class="campo-data-administrativa">
 
-            <label for="motivoSaida">
+          <div class="item-resumo-associado">
+
+            <span>
               Motivo da saída
-            </label>
+            </span>
 
-            <textarea
-              id="motivoSaida"
-              rows="5"
-              maxlength="1000"
-              placeholder="Descreva o motivo da saída"
-            ></textarea>
-
-          </div>
-
-          <div
-            id="mensagemBaixaAssociado"
-            class="mensagem-formulario"
-            hidden
-          ></div>
-
-          <div class="acoes-datas-administrativas">
-
-            <button
-              id="botaoCancelarBaixaAssociado"
-              class="botao-cancelar-datas-administrativas"
-              type="button"
-            >
-              Cancelar
-            </button>
-
-            <button
-              id="botaoConfirmarBaixaAssociado"
-              class="botao-salvar-datas-administrativas"
-              type="button"
-            >
-              Confirmar baixa
-            </button>
+            <strong id="textoMotivoSaidaAssociado">
+              Não informado
+            </strong>
 
           </div>
 
@@ -610,26 +615,11 @@
     </button>
 
 
-    <div
-      id="areaZoomFotoAssociado"
-      class="area-zoom-foto-usuario"
-    >
-
-      <img
-        id="fotoAssociadoAmpliada"
-        class="foto-usuario-ampliada"
-        alt="Foto ampliada do associado"
-      >
-
-    </div>
-
-
     <div class="controles-zoom-foto">
 
       <button
         id="diminuirZoomFotoAssociado"
         type="button"
-        aria-label="Diminuir zoom"
       >
         −
       </button>
@@ -644,10 +634,23 @@
       <button
         id="aumentarZoomFotoAssociado"
         type="button"
-        aria-label="Aumentar zoom"
       >
         +
       </button>
+
+    </div>
+
+
+    <div
+      id="areaZoomFotoAssociado"
+      class="area-zoom-foto"
+    >
+
+      <img
+        id="fotoAssociadoAmpliada"
+        class="foto-usuario-ampliada"
+        alt="Foto ampliada do associado"
+      >
 
     </div>
 
@@ -655,92 +658,60 @@
 
 
   <!-- =====================================
-       MENU INFERIOR
+       MENU
   ====================================== -->
 
-  <nav class="menu-inferior">
+  <nav
+    class="menu-inferior"
+    aria-label="Navegação principal"
+  >
 
-    <a
-      href="dashboard.html"
-      class="item-menu"
-    >
+    <div class="menu-inferior-conteudo">
 
-      <span class="icone-menu">
-        🏠
-      </span>
+      <a
+        class="item-menu"
+        href="dashboard.html"
+      >
+        <span class="icone-menu">⌂</span>
+        <span class="texto-menu">Início</span>
+      </a>
 
-      <span>
-        Início
-      </span>
+      <a
+        class="item-menu"
+        href="calendario.html"
+      >
+        <span class="icone-menu">📅</span>
+        <span class="texto-menu">Calendário</span>
+      </a>
 
-    </a>
+      <a
+        class="item-menu"
+        href="minha-ficha.html"
+      >
+        <span class="icone-menu">👤</span>
+        <span class="texto-menu">Minha ficha</span>
+      </a>
 
+      <a
+        id="itemMenuAdm"
+        class="item-menu ativo"
+        href="administrativo.html"
+        hidden
+      >
+        <span class="icone-menu">☰</span>
+        <span class="texto-menu">ADM</span>
+      </a>
 
-    <a
-      href="calendario.html"
-      class="item-menu"
-    >
+      <a
+        class="item-menu"
+        href="#"
+        id="botaoSair"
+      >
+        <span class="icone-menu">🚪</span>
+        <span class="texto-menu">Sair</span>
+      </a>
 
-      <span class="icone-menu">
-        📅
-      </span>
-
-      <span>
-        Calendário
-      </span>
-
-    </a>
-
-
-    <a
-      href="minha-ficha.html"
-      class="item-menu"
-    >
-
-      <span class="icone-menu">
-        👤
-      </span>
-
-      <span>
-        Minha ficha
-      </span>
-
-    </a>
-
-
-    <a
-      id="itemMenuAdm"
-      href="administrativo.html"
-      class="item-menu ativo"
-      hidden
-    >
-
-      <span class="icone-menu">
-        ⚙️
-      </span>
-
-      <span>
-        ADM
-      </span>
-
-    </a>
-
-
-    <button
-      id="botaoSair"
-      class="item-menu botao-menu"
-      type="button"
-    >
-
-      <span class="icone-menu">
-        🚪
-      </span>
-
-      <span>
-        Sair
-      </span>
-
-    </button>
+    </div>
 
   </nav>
 
