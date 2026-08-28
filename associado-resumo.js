@@ -70,6 +70,32 @@ const textoMotivoSaidaAssociado = document.getElementById("textoMotivoSaidaAssoc
 
 
 /* ==========================================
+   REATIVAÇÃO DO ASSOCIADO
+========================================== */
+
+const botaoAbrirReativacaoAssociado =
+  document.getElementById("botaoAbrirReativacaoAssociado");
+
+const formularioReativacaoAssociado =
+  document.getElementById("formularioReativacaoAssociado");
+
+const dataRetornoAssociado =
+  document.getElementById("dataRetornoAssociado");
+
+const observacaoRetornoAssociado =
+  document.getElementById("observacaoRetornoAssociado");
+
+const mensagemReativacaoAssociado =
+  document.getElementById("mensagemReativacaoAssociado");
+
+const botaoCancelarReativacaoAssociado =
+  document.getElementById("botaoCancelarReativacaoAssociado");
+
+const botaoConfirmarReativacaoAssociado =
+  document.getElementById("botaoConfirmarReativacaoAssociado");
+
+
+/* ==========================================
    ADMINISTRATIVO
 ========================================== */
 
@@ -2104,6 +2130,10 @@ function atualizarAreaBaixaAssociado() {
       valorOuTraco(associadoAtual.motivo_saida);
   } else {
     formularioBaixaAssociado.hidden = true;
+
+    if (formularioReativacaoAssociado) {
+      formularioReativacaoAssociado.hidden = true;
+    }
   }
 }
 
@@ -2219,6 +2249,251 @@ async function confirmarBaixaAssociado() {
   } finally {
     botaoConfirmarBaixaAssociado.disabled = false;
     botaoConfirmarBaixaAssociado.textContent = "Confirmar baixa";
+  }
+}
+
+
+/* ==========================================
+   REATIVAÇÃO DO ASSOCIADO
+========================================== */
+
+function abrirReativacaoAssociado() {
+
+  if (
+    !associadoAtual ||
+    associadoAtual.status !== "inativo"
+  ) {
+
+    return;
+
+  }
+
+
+  dataRetornoAssociado.value =
+    obterDataHojeParaCampo();
+
+
+  observacaoRetornoAssociado.value =
+    "";
+
+
+  mensagemReativacaoAssociado.textContent =
+    "";
+
+
+  mensagemReativacaoAssociado.hidden =
+    true;
+
+
+  formularioReativacaoAssociado.hidden =
+    false;
+
+
+  dataRetornoAssociado.focus();
+}
+
+
+function cancelarReativacaoAssociado() {
+
+  formularioReativacaoAssociado.hidden =
+    true;
+
+
+  dataRetornoAssociado.value =
+    "";
+
+
+  observacaoRetornoAssociado.value =
+    "";
+
+
+  mensagemReativacaoAssociado.textContent =
+    "";
+
+
+  mensagemReativacaoAssociado.hidden =
+    true;
+}
+
+
+async function confirmarReativacaoAssociado() {
+
+  if (
+    !associadoAtual ||
+    associadoAtual.status !== "inativo"
+  ) {
+
+    return;
+
+  }
+
+
+  const dataRetorno =
+    converterDataParaISO(
+      dataRetornoAssociado.value
+    );
+
+
+  const observacao =
+    String(
+      observacaoRetornoAssociado.value || ""
+    ).trim();
+
+
+  if (
+    dataRetorno === false ||
+    !dataRetorno
+  ) {
+
+    mensagemReativacaoAssociado.textContent =
+      "Informe uma data de retorno válida.";
+
+
+    mensagemReativacaoAssociado.hidden =
+      false;
+
+
+    return;
+
+  }
+
+
+  if (
+    associadoAtual.data_saida_tufra &&
+    dataRetorno <
+      associadoAtual.data_saida_tufra
+  ) {
+
+    mensagemReativacaoAssociado.textContent =
+      "A data de retorno não pode ser anterior à data da saída.";
+
+
+    mensagemReativacaoAssociado.hidden =
+      false;
+
+
+    return;
+
+  }
+
+
+  if (
+    dataRetorno >
+    obterDataHojeISO()
+  ) {
+
+    mensagemReativacaoAssociado.textContent =
+      "A data de retorno não pode ser uma data futura.";
+
+
+    mensagemReativacaoAssociado.hidden =
+      false;
+
+
+    return;
+
+  }
+
+
+  const confirmar =
+    window.confirm(
+      "Confirma a reativação deste associado? A data de entrada original na TUFRA será preservada."
+    );
+
+
+  if (
+    !confirmar
+  ) {
+
+    return;
+
+  }
+
+
+  botaoConfirmarReativacaoAssociado.disabled =
+    true;
+
+
+  botaoConfirmarReativacaoAssociado.textContent =
+    "Salvando...";
+
+
+  mensagemReativacaoAssociado.hidden =
+    true;
+
+
+  try {
+
+    const resultado =
+      await window.supabaseClient
+        .rpc(
+          "reativar_associado",
+          {
+            p_usuario_id:
+              associadoAtual.id,
+
+            p_data_retorno:
+              dataRetorno,
+
+            p_observacao_retorno:
+              observacao || null
+          }
+        );
+
+
+    if (
+      resultado.error
+    ) {
+
+      throw resultado.error;
+
+    }
+
+
+    associadoAtual.status =
+      "ativo";
+
+
+    associadoAtual.data_saida_tufra =
+      null;
+
+
+    associadoAtual.motivo_saida =
+      null;
+
+
+    formularioReativacaoAssociado.hidden =
+      true;
+
+
+    atualizarAreaBaixaAssociado();
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao reativar associado:",
+      erro
+    );
+
+
+    mensagemReativacaoAssociado.textContent =
+      "Não foi possível reativar o associado.";
+
+
+    mensagemReativacaoAssociado.hidden =
+      false;
+
+
+  } finally {
+
+    botaoConfirmarReativacaoAssociado.disabled =
+      false;
+
+
+    botaoConfirmarReativacaoAssociado.textContent =
+      "Confirmar reativação";
+
   }
 }
 
@@ -2958,6 +3233,39 @@ if (botaoConfirmarBaixaAssociado) {
   botaoConfirmarBaixaAssociado.addEventListener(
     "click",
     confirmarBaixaAssociado
+  );
+}
+
+
+/* ==========================================
+   EVENTOS DA REATIVAÇÃO DO ASSOCIADO
+========================================== */
+
+if (dataRetornoAssociado) {
+  dataRetornoAssociado.addEventListener(
+    "input",
+    () => aplicarMascaraData(dataRetornoAssociado)
+  );
+}
+
+if (botaoAbrirReativacaoAssociado) {
+  botaoAbrirReativacaoAssociado.addEventListener(
+    "click",
+    abrirReativacaoAssociado
+  );
+}
+
+if (botaoCancelarReativacaoAssociado) {
+  botaoCancelarReativacaoAssociado.addEventListener(
+    "click",
+    cancelarReativacaoAssociado
+  );
+}
+
+if (botaoConfirmarReativacaoAssociado) {
+  botaoConfirmarReativacaoAssociado.addEventListener(
+    "click",
+    confirmarReativacaoAssociado
   );
 }
 
