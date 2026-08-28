@@ -582,6 +582,87 @@
 
           </div>
 
+
+          <!-- =====================================
+               REATIVAÇÃO DO ASSOCIADO
+          ====================================== -->
+
+          <button
+            id="botaoAbrirReativacaoAssociado"
+            class="botao-principal-app"
+            type="button"
+          >
+            Reativar associado
+          </button>
+
+
+          <div
+            id="formularioReativacaoAssociado"
+            hidden
+          >
+
+            <div class="campo-data-administrativa">
+
+              <label for="dataRetornoAssociado">
+                Data do retorno
+              </label>
+
+              <input
+                id="dataRetornoAssociado"
+                type="text"
+                inputmode="numeric"
+                maxlength="10"
+                autocomplete="off"
+                placeholder="dd/mm/aaaa"
+              >
+
+            </div>
+
+
+            <div class="campo-data-administrativa">
+
+              <label for="observacaoRetornoAssociado">
+                Observação do retorno
+              </label>
+
+              <textarea
+                id="observacaoRetornoAssociado"
+                rows="4"
+                placeholder="Observação opcional"
+              ></textarea>
+
+            </div>
+
+
+            <div
+              id="mensagemReativacaoAssociado"
+              class="mensagem-formulario"
+              hidden
+            ></div>
+
+
+            <div class="acoes-datas-administrativas">
+
+              <button
+                id="botaoCancelarReativacaoAssociado"
+                class="botao-cancelar-datas-administrativas"
+                type="button"
+              >
+                Cancelar
+              </button>
+
+              <button
+                id="botaoConfirmarReativacaoAssociado"
+                class="botao-salvar-datas-administrativas"
+                type="button"
+              >
+                Confirmar reativação
+              </button>
+
+            </div>
+
+          </div>
+
         </div>
 
       </section>
