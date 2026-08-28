@@ -1997,10 +1997,6 @@ async function salvarDatasAdministrativas() {
         principal;
 
     }
-           associadoAtual.data_corrente_principal =
-        principal;
-
-    }
 
 
     await salvarHistoricoFuncoes();
@@ -2502,7 +2498,9 @@ function calcularDistanciaToques(
 
   const toque2 =
     evento.touches[1];
-     const distanciaX =
+
+
+  const distanciaX =
     toque2.clientX -
     toque1.clientX;
 
@@ -2782,22 +2780,81 @@ const mensagemSemPresencaAssociado =
   );
 
 
+function obterDataAtualISOResumoPresenca() {
+
+  const hoje =
+    new Date();
+
+
+  const ano =
+    hoje.getFullYear();
+
+
+  const mes =
+    String(
+      hoje.getMonth() + 1
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  const dia =
+    String(
+      hoje.getDate()
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  return `${ano}-${mes}-${dia}`;
+}
+
+
+function formatarDataCurtaResumoPresenca(
+  dataISO
+) {
+
+  if (
+    !dataISO
+  ) {
+
+    return "";
+
+  }
+
+
+  const partes =
+    String(
+      dataISO
+    ).split("-");
+
+
+  if (
+    partes.length !== 3
+  ) {
+
+    return dataISO;
+
+  }
+
+
+  return `${partes[2]}/${partes[1]}`;
+}
+
+
 function obterNomesListasAtuaisAssociado() {
 
-  const nomes =
+  const listas =
     [];
 
 
   if (
-    possuiFuncaoPrincipal(
-      "Médium Corrente Principal"
-    ) ||
-    possuiFuncaoPrincipal(
-      "Médium Principal"
-    )
+    estaNaCorrentePrincipal()
   ) {
 
-    nomes.push(
+    listas.push(
       "Corrente Principal"
     );
 
@@ -2805,19 +2862,56 @@ function obterNomesListasAtuaisAssociado() {
 
 
   if (
-    possuiFuncaoPrincipal(
-      "Médium em Desenvolvimento"
-    )
+    estaNoDesenvolvimento()
   ) {
 
-    nomes.push(
+    listas.push(
       "Desenvolvimento"
     );
 
   }
 
 
-  return nomes;
+  if (
+    possuiFuncaoPrincipal(
+      "Ogam"
+    )
+  ) {
+
+    listas.push(
+      "Ogans"
+    );
+
+  }
+
+
+  if (
+    possuiFuncaoPrincipal(
+      "Cambone"
+    )
+  ) {
+
+    listas.push(
+      "Cambones"
+    );
+
+  }
+
+
+  if (
+    possuiFuncaoPrincipal(
+      "Cantina"
+    )
+  ) {
+
+    listas.push(
+      "Cantina"
+    );
+
+  }
+
+
+  return listas;
 }
 
 
@@ -2839,8 +2933,11 @@ function obterDataEntradaListaResumo(
     "Corrente Principal"
   ) {
 
-    return associadoAtual
-      .data_corrente_principal;
+    return (
+      associadoAtual.data_corrente_principal ||
+      associadoAtual.data_entrada_tufra ||
+      null
+    );
 
   }
 
@@ -2850,246 +2947,80 @@ function obterDataEntradaListaResumo(
     "Desenvolvimento"
   ) {
 
-    return associadoAtual
-      .data_corrente_desenvolvimento;
+    return (
+      associadoAtual.data_corrente_desenvolvimento ||
+      associadoAtual.data_entrada_tufra ||
+      null
+    );
 
   }
 
 
-  return associadoAtual
-    .data_entrada_tufra;
-}
+  let nomeHistorico =
+    null;
 
-
-function normalizarDataResumoPresenca(
-  valor
-) {
 
   if (
-    !valor
+    nomeLista ===
+    "Ogans"
   ) {
 
-    return null;
+    nomeHistorico =
+      "Ogam";
 
   }
 
 
-  const texto =
-    String(
-      valor
-    )
-      .slice(
-        0,
-        10
+  if (
+    nomeLista ===
+    "Cambones"
+  ) {
+
+    nomeHistorico =
+      "Cambone";
+
+  }
+
+
+  if (
+    nomeLista ===
+    "Cantina"
+  ) {
+
+    nomeHistorico =
+      "Cantina";
+
+  }
+
+
+  if (
+    nomeHistorico
+  ) {
+
+    const periodoAtual =
+      historicoFuncoes.find(
+        (registro) =>
+          registro.funcao_nome ===
+            nomeHistorico &&
+          !registro.data_fim
       );
 
 
-  const partes =
-    texto.split(
-      "-"
-    );
+    if (
+      periodoAtual?.data_inicio
+    ) {
 
+      return periodoAtual.data_inicio;
 
-  if (
-    partes.length !== 3
-  ) {
-
-    return null;
-
-  }
-
-
-  const ano =
-    Number(
-      partes[0]
-    );
-
-
-  const mes =
-    Number(
-      partes[1]
-    );
-
-
-  const dia =
-    Number(
-      partes[2]
-    );
-
-
-  if (
-    !ano ||
-    !mes ||
-    !dia
-  ) {
-
-    return null;
-
-  }
-
-
-  return new Date(
-    ano,
-    mes - 1,
-    dia
-  );
-}
-
-
-function dataAtividadeEhAnteriorEntradaResumo(
-  dataAtividade,
-  dataEntrada
-) {
-
-  const atividade =
-    normalizarDataResumoPresenca(
-      dataAtividade
-    );
-
-
-  const entrada =
-    normalizarDataResumoPresenca(
-      dataEntrada
-    );
-
-
-  if (
-    !atividade ||
-    !entrada
-  ) {
-
-    return false;
+    }
 
   }
 
 
   return (
-    atividade <
-    entrada
+    associadoAtual.data_entrada_tufra ||
+    null
   );
-}
-
-
-function formatarDataCurtaResumoPresenca(
-  valor
-) {
-
-  const data =
-    normalizarDataResumoPresenca(
-      valor
-    );
-
-
-  if (
-    !data
-  ) {
-
-    return "-";
-
-  }
-
-
-  return (
-    String(
-      data.getDate()
-    ).padStart(
-      2,
-      "0"
-    ) +
-    "/" +
-    String(
-      data.getMonth() + 1
-    ).padStart(
-      2,
-      "0"
-    )
-  );
-}
-
-
-function obterSituacaoResumoPresenca(
-  atividade,
-  presencas,
-  dataEntradaLista
-) {
-
-  if (
-    dataAtividadeEhAnteriorEntradaResumo(
-      atividade.data,
-      dataEntradaLista
-    )
-  ) {
-
-    return {
-      tipo:
-        "antes",
-      texto:
-        "—"
-    };
-
-  }
-
-
-  const registro =
-    presencas.find(
-      (presenca) =>
-        presenca.atividade_id ===
-        atividade.id
-    );
-
-
-  if (
-    !registro
-  ) {
-
-    return {
-      tipo:
-        "pendente",
-      texto:
-        "Pendente"
-    };
-
-  }
-
-
-  if (
-    registro.status ===
-    "presente"
-  ) {
-
-    return {
-      tipo:
-        "presente",
-      texto:
-        "Presente"
-    };
-
-  }
-
-
-  if (
-    registro.status ===
-      "justificada" ||
-    registro.status ===
-      "justificado"
-  ) {
-
-    return {
-      tipo:
-        "justificada",
-      texto:
-        "Justificado"
-    };
-
-  }
-
-
-  return {
-    tipo:
-      "falta",
-    texto:
-      "Falta"
-  };
 }
 
 
@@ -3106,7 +3037,8 @@ async function buscarTipoListaResumo(
         id,
         nome,
         tipo_atividade,
-        ativo
+        ativo,
+        ordem
       `)
       .eq(
         "nome",
@@ -3137,28 +3069,8 @@ async function buscarUltimasAtividadesResumo(
   tipoAtividade
 ) {
 
-  const hoje =
-    new Date();
-
-
-  const dataHoje =
-    [
-      hoje.getFullYear(),
-      String(
-        hoje.getMonth() + 1
-      ).padStart(
-        2,
-        "0"
-      ),
-      String(
-        hoje.getDate()
-      ).padStart(
-        2,
-        "0"
-      )
-    ].join(
-      "-"
-    );
+  const hojeISO =
+    obterDataAtualISOResumoPresenca();
 
 
   const resultado =
@@ -3168,8 +3080,9 @@ async function buscarUltimasAtividadesResumo(
       )
       .select(`
         id,
-        data,
         titulo,
+        data,
+        hora_inicio,
         tipo_atividade
       `)
       .eq(
@@ -3178,10 +3091,17 @@ async function buscarUltimasAtividadesResumo(
       )
       .lte(
         "data",
-        dataHoje
+        hojeISO
       )
       .order(
         "data",
+        {
+          ascending:
+            false
+        }
+      )
+      .order(
+        "hora_inicio",
         {
           ascending:
             false
@@ -3236,17 +3156,17 @@ async function buscarPresencasResumo(
         "presencas"
       )
       .select(`
-        id,
         atividade_id,
+        usuario_id,
         status
       `)
       .eq(
-        "usuario_id",
-        associadoAtual.id
-      )
-      .eq(
         "tipo_lista_id",
         tipoListaId
+      )
+      .eq(
+        "usuario_id",
+        associadoAtual.id
       )
       .in(
         "atividade_id",
@@ -3268,6 +3188,110 @@ async function buscarPresencasResumo(
 }
 
 
+function obterSituacaoResumoPresenca(
+  atividade,
+  presencas,
+  dataEntradaLista
+) {
+
+  if (
+    dataEntradaLista &&
+    atividade.data <
+      dataEntradaLista
+  ) {
+
+    return {
+      texto:
+        "x",
+
+      tipo:
+        "nao_participava",
+
+      classe:
+        "status-relatorio-nao-participava"
+    };
+
+  }
+
+
+  const registro =
+    presencas.find(
+      (item) =>
+        item.atividade_id ===
+        atividade.id
+    );
+
+
+  if (
+    registro?.status ===
+    "presente"
+  ) {
+
+    return {
+      texto:
+        "P",
+
+      tipo:
+        "presente",
+
+      classe:
+        "status-relatorio-presente"
+    };
+
+  }
+
+
+  if (
+    registro?.status ===
+    "falta"
+  ) {
+
+    return {
+      texto:
+        "F",
+
+      tipo:
+        "falta",
+
+      classe:
+        "status-relatorio-falta"
+    };
+
+  }
+
+
+  if (
+    registro?.status ===
+    "justificada"
+  ) {
+
+    return {
+      texto:
+        "J",
+
+      tipo:
+        "justificada",
+
+      classe:
+        "status-relatorio-justificado"
+    };
+
+  }
+
+
+  return {
+    texto:
+      "—",
+
+    tipo:
+      "pendente",
+
+    classe:
+      "status-relatorio-pendente"
+  };
+}
+
+
 function calcularResumoPresencaLista(
   atividades,
   presencas,
@@ -3277,10 +3301,8 @@ function calcularResumoPresencaLista(
   let presentes =
     0;
 
-
   let faltas =
     0;
-
 
   let justificadas =
     0;
@@ -3563,6 +3585,10 @@ function criarBlocoResumoPresenca(
         );
 
 
+      td.className =
+        "celula-status-relatorio";
+
+
       const situacao =
         obterSituacaoResumoPresenca(
           atividade,
@@ -3571,28 +3597,19 @@ function criarBlocoResumoPresenca(
         );
 
 
-      td.className =
-        `situacao-resumo-presenca situacao-resumo-presenca-${situacao.tipo}`;
-
-
       td.textContent =
-        situacao.tipo ===
-          "presente"
-          ? "P"
-          : situacao.tipo ===
-              "falta"
-            ? "F"
-            : situacao.tipo ===
-                "justificada"
-              ? "J"
-              : situacao.tipo ===
-                  "pendente"
-                ? "?"
-                : "—";
-
-
-      td.title =
         situacao.texto;
+
+
+      if (
+        situacao.classe
+      ) {
+
+        td.classList.add(
+          situacao.classe
+        );
+
+      }
 
 
       linha.appendChild(
@@ -3603,24 +3620,24 @@ function criarBlocoResumoPresenca(
   );
 
 
-  const tdPresentes =
+  const tdPresencas =
     document.createElement(
       "td"
     );
 
 
-  tdPresentes.className =
+  tdPresencas.className =
     "valor-atividade-presente coluna-resumo-presenca-final";
 
 
-  tdPresentes.textContent =
+  tdPresencas.textContent =
     String(
       resumo.presentes
     );
 
 
   linha.appendChild(
-    tdPresentes
+    tdPresencas
   );
 
 
