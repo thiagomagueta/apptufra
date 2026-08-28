@@ -76,6 +76,9 @@ let opcoesEnquetes =
 let respostasUsuario =
   {};
 
+let resultadosEnquetes =
+  {};
+
 
 /* ==========================================
    FORMATAR DATA
@@ -447,6 +450,236 @@ async function carregarOpcoesEnquetes() {
 
 
 /* ==========================================
+   CARREGAR RESULTADOS PÚBLICOS
+========================================== */
+
+async function carregarResultadosEnquetes() {
+
+  resultadosEnquetes =
+    {};
+
+
+  const enquetes =
+    comunicadosAtivos.filter(
+      (comunicado) =>
+        comunicado.tipo ===
+        "enquete"
+    );
+
+
+  if (
+    enquetes.length === 0
+  ) {
+
+    return;
+
+  }
+
+
+  for (
+    const enquete of enquetes
+  ) {
+
+    const resultado =
+      await window.supabaseClient
+        .rpc(
+          "obter_resultado_publico_enquete",
+          {
+            p_comunicado_id:
+              enquete.id
+          }
+        );
+
+
+    if (
+      resultado.error
+    ) {
+
+      console.error(
+        "Erro ao carregar resultado público da enquete:",
+        resultado.error
+      );
+
+
+      resultadosEnquetes[
+        enquete.id
+      ] =
+        [];
+
+
+      continue;
+
+    }
+
+
+    resultadosEnquetes[
+      enquete.id
+    ] =
+      resultado.data ||
+      [];
+
+  }
+
+}
+
+
+/* ==========================================
+   ATUALIZAR RESULTADO DE UMA ENQUETE
+========================================== */
+
+async function atualizarResultadoEnquete(
+  comunicadoId
+) {
+
+  if (
+    !comunicadoId
+  ) {
+
+    return;
+
+  }
+
+
+  const resultado =
+    await window.supabaseClient
+      .rpc(
+        "obter_resultado_publico_enquete",
+        {
+          p_comunicado_id:
+            comunicadoId
+        }
+      );
+
+
+  if (
+    resultado.error
+  ) {
+
+    throw resultado.error;
+
+  }
+
+
+  resultadosEnquetes[
+    comunicadoId
+  ] =
+    resultado.data ||
+    [];
+
+}
+
+
+/* ==========================================
+   OBTER TOTAL DE VOTOS DE UMA OPÇÃO
+========================================== */
+
+function obterTotalVotosOpcao(
+  comunicadoId,
+  opcaoId
+) {
+
+  const resultados =
+    resultadosEnquetes[
+      comunicadoId
+    ] ||
+    [];
+
+
+  const resultadoOpcao =
+    resultados.find(
+      (item) =>
+        item.opcao_id ===
+        opcaoId
+    );
+
+
+  return Number(
+    resultadoOpcao?.total_votos ||
+    0
+  );
+
+}
+
+
+/* ==========================================
+   CRIAR RESUMO DA ENQUETE
+========================================== */
+
+function criarResumoEnquete(
+  comunicadoId
+) {
+
+  const resultados =
+    resultadosEnquetes[
+      comunicadoId
+    ] ||
+    [];
+
+
+  if (
+    resultados.length === 0
+  ) {
+
+    return null;
+
+  }
+
+
+  const primeiroResultado =
+    resultados[0];
+
+
+  const totalAptos =
+    Number(
+      primeiroResultado.total_aptos ||
+      0
+    );
+
+
+  const totalResponderam =
+    Number(
+      primeiroResultado.total_responderam ||
+      0
+    );
+
+
+  const faltamVotar =
+    Number(
+      primeiroResultado.faltam_votar ||
+      0
+    );
+
+
+  const resumo =
+    document.createElement(
+      "p"
+    );
+
+
+  resumo.style.margin =
+    "8px 0 6px";
+
+
+  resumo.style.fontSize =
+    "13px";
+
+
+  resumo.style.fontWeight =
+    "600";
+
+
+  resumo.textContent =
+    `${totalResponderam} de ${totalAptos} ` +
+    `${totalAptos === 1 ? "pessoa respondeu" : "pessoas responderam"} • ` +
+    `${faltamVotar} ${faltamVotar === 1 ? "ainda não votou" : "ainda não votaram"}`;
+
+
+  return resumo;
+
+}
+
+
+/* ==========================================
    CARREGAR RESPOSTAS DO USUÁRIO
 ========================================== */
 
@@ -710,6 +943,23 @@ function criarAreaVotacao(
     "10px";
 
 
+  const resumoEnquete =
+    criarResumoEnquete(
+      comunicado.id
+    );
+
+
+  if (
+    resumoEnquete
+  ) {
+
+    area.appendChild(
+      resumoEnquete
+    );
+
+  }
+
+
   const opcoes =
     opcoesEnquetes[
       comunicado.id
@@ -811,8 +1061,15 @@ function criarAreaVotacao(
         );
 
 
+      const totalVotos =
+        obterTotalVotosOpcao(
+          comunicado.id,
+          opcao.id
+        );
+
+
       texto.textContent =
-        opcao.texto;
+        `${opcao.texto} — ${totalVotos} ${totalVotos === 1 ? "voto" : "votos"}`;
 
 
       label.appendChild(
@@ -930,29 +1187,13 @@ function criarAreaVotacao(
         );
 
 
-        const textoOpcao =
-          opcoes.find(
-            (opcao) =>
-              opcao.id ===
-              selecionado.value
-          )?.texto ||
-          "";
+        await atualizarResultadoEnquete(
+          comunicado.id
+        );
 
-
-        mensagemResposta.textContent =
-          `Sua resposta: ${textoOpcao}`;
-
-
-        botao.textContent =
-          "Resposta salva";
-
-
-        /* Atualiza também o card do dashboard */
 
         renderizarComunicadosDashboard();
 
-
-        /* Se estamos no popup, recria a votação atualizada */
 
         if (
           modoPopup &&
@@ -984,7 +1225,9 @@ function criarAreaVotacao(
 
 
         botao.textContent =
-          respostaAtual
+          respostasUsuario[
+            comunicado.id
+          ]
             ? "Alterar resposta"
             : "Confirmar resposta";
 
@@ -1593,15 +1836,17 @@ async function carregarComunicadosDashboard() {
 
 
     /*
-      Antes de desenhar os cards,
-      carregamos as opções e o eventual
-      voto já existente do usuário.
+      Carrega as opções, o voto atual
+      do usuário e os resultados públicos.
     */
 
     await carregarOpcoesEnquetes();
 
 
     await carregarRespostasUsuario();
+
+
+    await carregarResultadosEnquetes();
 
 
     renderizarComunicadosDashboard();
