@@ -203,6 +203,10 @@
         </div>
 
 
+        <!-- =====================================
+             AVISO ASSISTÊNCIA
+        ====================================== -->
+
         <div
           id="avisoAssociadoAssistencia"
           class="aviso-associado-assistencia"
@@ -212,10 +216,15 @@
         </div>
 
 
+        <!-- =====================================
+             VISUALIZAÇÃO DAS DATAS
+        ====================================== -->
+
         <div
           id="visualizacaoDatasAdministrativas"
           class="dados-associado-resumo"
         >
+
 
           <div
             id="itemDataEntradaTufra"
@@ -266,8 +275,13 @@
 
           </div>
 
+
         </div>
 
+
+        <!-- =====================================
+             HISTÓRICO DE FUNÇÕES
+        ====================================== -->
 
         <div
           id="areaHistoricoFuncoes"
@@ -287,11 +301,16 @@
         </div>
 
 
+        <!-- =====================================
+             EDIÇÃO
+        ====================================== -->
+
         <div
           id="edicaoDatasAdministrativas"
           class="edicao-datas-administrativas"
           hidden
         >
+
 
           <div class="campo-data-administrativa">
 
@@ -397,166 +416,6 @@
             >
               Salvar dados
             </button>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- =====================================
-           BAIXA DO ASSOCIADO
-      ====================================== -->
-
-      <section
-        id="areaBaixaAssociado"
-        class="cartao-app"
-        hidden
-      >
-
-        <h2>
-          Situação do associado
-        </h2>
-
-        <div
-          id="areaAssociadoAtivo"
-          hidden
-        >
-
-          <p class="texto-explicativo-relatorio-atividade">
-            Use esta opção somente quando o associado deixar de fazer parte da TUFRA.
-            O histórico será preservado, mas o cadastro ficará inativo e o acesso ao APP será bloqueado.
-          </p>
-
-          <button
-            id="botaoAbrirBaixaAssociado"
-            class="botao-confirmar-exclusao"
-            type="button"
-            style="width: 100%;"
-          >
-            Dar baixa no associado
-          </button>
-
-          <div
-            id="formularioBaixaAssociado"
-            hidden
-            style="margin-top: 18px;"
-          >
-
-            <div class="campo-data-administrativa">
-
-              <label for="dataSaidaAssociado">
-                Data da saída
-              </label>
-
-              <input
-                id="dataSaidaAssociado"
-                type="text"
-                inputmode="numeric"
-                maxlength="10"
-                autocomplete="off"
-                placeholder="dd/mm/aaaa"
-              >
-
-            </div>
-
-            <div
-              class="campo-data-administrativa"
-              style="margin-top: 14px;"
-            >
-
-              <label for="motivoSaidaAssociado">
-                Motivo da saída
-              </label>
-
-              <textarea
-                id="motivoSaidaAssociado"
-                rows="5"
-                maxlength="2000"
-                placeholder="Descreva o motivo da saída"
-                style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #d7d7d7; border-radius: 8px; background: #ffffff; font-size: 16px; color: #222222; resize: vertical;"
-              ></textarea>
-
-            </div>
-
-            <p class="aviso-exclusao-atividade">
-              Ao confirmar, o associado ficará inativo e perderá o acesso ao APP.
-              Nenhum histórico será apagado.
-            </p>
-
-            <div
-              id="mensagemBaixaAssociado"
-              class="mensagem-formulario"
-              hidden
-            ></div>
-
-            <div class="acoes-confirmacao-exclusao">
-
-              <button
-                id="botaoCancelarBaixaAssociado"
-                class="botao-cancelar-exclusao"
-                type="button"
-              >
-                Cancelar
-              </button>
-
-              <button
-                id="botaoConfirmarBaixaAssociado"
-                class="botao-confirmar-exclusao"
-                type="button"
-              >
-                Confirmar baixa
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div
-          id="areaAssociadoInativo"
-          class="dados-associado-resumo"
-          hidden
-        >
-
-          <div class="item-resumo-associado">
-
-            <span>
-              Situação
-            </span>
-
-            <strong>
-              Associado inativo
-            </strong>
-
-          </div>
-
-
-          <div class="item-resumo-associado">
-
-            <span>
-              Data da saída
-            </span>
-
-            <strong id="textoDataSaidaAssociado">
-              Não informado
-            </strong>
-
-          </div>
-
-
-          <div class="item-resumo-associado">
-
-            <span>
-              Motivo da saída
-            </span>
-
-            <strong id="textoMotivoSaidaAssociado">
-              Não informado
-            </strong>
 
           </div>
 
@@ -722,7 +581,7 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="associado-resumo.js?v=9"></script>
+  <script src="associado-resumo.js?v=8"></script>
 
   <script src="menu-adm.js?v=1"></script>
 
