@@ -2179,26 +2179,32 @@ async function confirmarBaixaAssociado() {
   try {
     const resultado =
       await window.supabaseClient
-        .from("usuarios")
-        .update({
-          status: "inativo",
-          data_saida_tufra: dataSaida,
-          motivo_saida: motivo
-        })
-        .eq("id", associadoAtual.id)
-        .eq("status", "ativo")
-        .select("status, data_saida_tufra, motivo_saida")
-        .maybeSingle();
+        .rpc(
+          "dar_baixa_associado",
+          {
+            p_usuario_id:
+              associadoAtual.id,
 
-    if (resultado.error) throw resultado.error;
+            p_data_saida:
+              dataSaida,
 
-    if (!resultado.data) {
-      throw new Error("Não foi possível concluir a baixa do associado.");
+            p_motivo_saida:
+              motivo
+          }
+        );
+
+    if (resultado.error) {
+      throw resultado.error;
     }
 
-    associadoAtual.status = resultado.data.status;
-    associadoAtual.data_saida_tufra = resultado.data.data_saida_tufra;
-    associadoAtual.motivo_saida = resultado.data.motivo_saida;
+    associadoAtual.status =
+      "inativo";
+
+    associadoAtual.data_saida_tufra =
+      dataSaida;
+
+    associadoAtual.motivo_saida =
+      motivo;
 
     formularioBaixaAssociado.hidden = true;
     atualizarAreaBaixaAssociado();
