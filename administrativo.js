@@ -20,6 +20,11 @@ const moduloAssociados =
     "moduloAssociados"
   );
 
+const moduloBaixasAssociados =
+  document.getElementById(
+    "moduloBaixasAssociados"
+  );
+
 const moduloPresenca =
   document.getElementById(
     "moduloPresenca"
@@ -420,6 +425,21 @@ async function carregarModulosAdministrativos() {
     ) {
 
       moduloAssociados.hidden =
+        !pertenceDiretoria;
+
+    }
+
+
+    /* ======================================
+       ASSOCIADOS INATIVOS
+       DIRETORIA
+    ====================================== */
+
+    if (
+      moduloBaixasAssociados
+    ) {
+
+      moduloBaixasAssociados.hidden =
         !pertenceDiretoria;
 
     }
