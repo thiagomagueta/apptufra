@@ -245,11 +245,10 @@
           <div
             id="itemDataCorrenteDesenvolvimento"
             class="item-resumo-associado"
-            hidden
           >
 
             <span>
-              Data para Corrente do Desenvolvimento
+              Entrada na Corrente de Desenvolvimento
             </span>
 
             <strong id="textoDataCorrenteDesenvolvimento">
@@ -262,11 +261,10 @@
           <div
             id="itemDataCorrentePrincipal"
             class="item-resumo-associado"
-            hidden
           >
 
             <span>
-              Data para Corrente Principal
+              Entrada na Corrente Principal
             </span>
 
             <strong id="textoDataCorrentePrincipal">
@@ -274,7 +272,6 @@
             </strong>
 
           </div>
-
 
         </div>
 
@@ -302,12 +299,11 @@
 
 
         <!-- =====================================
-             EDIÇÃO
+             EDIÇÃO DAS DATAS
         ====================================== -->
 
         <div
           id="edicaoDatasAdministrativas"
-          class="edicao-datas-administrativas"
           hidden
         >
 
@@ -323,8 +319,8 @@
               type="text"
               inputmode="numeric"
               maxlength="10"
+              placeholder="DD/MM/AAAA"
               autocomplete="off"
-              placeholder="dd/mm/aaaa"
             >
 
           </div>
@@ -333,11 +329,10 @@
           <div
             id="campoEdicaoCorrenteDesenvolvimento"
             class="campo-data-administrativa"
-            hidden
           >
 
             <label for="dataCorrenteDesenvolvimento">
-              Data para Corrente do Desenvolvimento
+              Entrada na Corrente de Desenvolvimento
             </label>
 
             <input
@@ -345,8 +340,8 @@
               type="text"
               inputmode="numeric"
               maxlength="10"
+              placeholder="DD/MM/AAAA"
               autocomplete="off"
-              placeholder="dd/mm/aaaa"
             >
 
           </div>
@@ -355,11 +350,10 @@
           <div
             id="campoEdicaoCorrentePrincipal"
             class="campo-data-administrativa"
-            hidden
           >
 
             <label for="dataCorrentePrincipal">
-              Data para Corrente Principal
+              Entrada na Corrente Principal
             </label>
 
             <input
@@ -367,8 +361,8 @@
               type="text"
               inputmode="numeric"
               maxlength="10"
+              placeholder="DD/MM/AAAA"
               autocomplete="off"
-              placeholder="dd/mm/aaaa"
             >
 
           </div>
@@ -415,6 +409,148 @@
               type="button"
             >
               Salvar dados
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================
+           SITUAÇÃO DO ASSOCIADO
+      ====================================== -->
+
+      <section
+        id="areaSituacaoAssociado"
+        class="cartao-app"
+      >
+
+        <h2>
+          Situação do associado
+        </h2>
+
+        <div
+          id="visualizacaoSituacaoAssociado"
+          class="dados-associado-resumo"
+        >
+
+          <div class="item-resumo-associado">
+
+            <span>
+              Situação
+            </span>
+
+            <strong id="textoSituacaoAssociado">
+              Ativo
+            </strong>
+
+          </div>
+
+          <div
+            id="itemDataSaidaTufra"
+            class="item-resumo-associado"
+            hidden
+          >
+
+            <span>
+              Data de saída
+            </span>
+
+            <strong id="textoDataSaidaTufra">
+              Não informado
+            </strong>
+
+          </div>
+
+          <div
+            id="itemMotivoSaida"
+            class="item-resumo-associado"
+            hidden
+          >
+
+            <span>
+              Motivo da saída
+            </span>
+
+            <strong id="textoMotivoSaida">
+              Não informado
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <button
+          id="botaoAbrirBaixaAssociado"
+          class="botao-principal-app"
+          type="button"
+        >
+          Dar baixa no associado
+        </button>
+
+
+        <div
+          id="areaBaixaAssociado"
+          hidden
+        >
+
+          <p class="texto-explicativo-relatorio-atividade">
+            A baixa deixará a ficha inativa e o associado perderá o acesso ao APP. O histórico será mantido.
+          </p>
+
+          <div class="campo-data-administrativa">
+
+            <label for="dataSaidaTufra">
+              Data da saída
+            </label>
+
+            <input
+              id="dataSaidaTufra"
+              type="date"
+            >
+
+          </div>
+
+          <div class="campo-data-administrativa">
+
+            <label for="motivoSaida">
+              Motivo da saída
+            </label>
+
+            <textarea
+              id="motivoSaida"
+              rows="5"
+              maxlength="1000"
+              placeholder="Descreva o motivo da saída"
+            ></textarea>
+
+          </div>
+
+          <div
+            id="mensagemBaixaAssociado"
+            class="mensagem-formulario"
+            hidden
+          ></div>
+
+          <div class="acoes-datas-administrativas">
+
+            <button
+              id="botaoCancelarBaixaAssociado"
+              class="botao-cancelar-datas-administrativas"
+              type="button"
+            >
+              Cancelar
+            </button>
+
+            <button
+              id="botaoConfirmarBaixaAssociado"
+              class="botao-salvar-datas-administrativas"
+              type="button"
+            >
+              Confirmar baixa
             </button>
 
           </div>
@@ -474,11 +610,26 @@
     </button>
 
 
+    <div
+      id="areaZoomFotoAssociado"
+      class="area-zoom-foto-usuario"
+    >
+
+      <img
+        id="fotoAssociadoAmpliada"
+        class="foto-usuario-ampliada"
+        alt="Foto ampliada do associado"
+      >
+
+    </div>
+
+
     <div class="controles-zoom-foto">
 
       <button
         id="diminuirZoomFotoAssociado"
         type="button"
+        aria-label="Diminuir zoom"
       >
         −
       </button>
@@ -493,23 +644,10 @@
       <button
         id="aumentarZoomFotoAssociado"
         type="button"
+        aria-label="Aumentar zoom"
       >
         +
       </button>
-
-    </div>
-
-
-    <div
-      id="areaZoomFotoAssociado"
-      class="area-zoom-foto"
-    >
-
-      <img
-        id="fotoAssociadoAmpliada"
-        class="foto-usuario-ampliada"
-        alt="Foto ampliada do associado"
-      >
 
     </div>
 
@@ -517,60 +655,92 @@
 
 
   <!-- =====================================
-       MENU
+       MENU INFERIOR
   ====================================== -->
 
-  <nav
-    class="menu-inferior"
-    aria-label="Navegação principal"
-  >
+  <nav class="menu-inferior">
 
-    <div class="menu-inferior-conteudo">
+    <a
+      href="dashboard.html"
+      class="item-menu"
+    >
 
-      <a
-        class="item-menu"
-        href="dashboard.html"
-      >
-        <span class="icone-menu">⌂</span>
-        <span class="texto-menu">Início</span>
-      </a>
+      <span class="icone-menu">
+        🏠
+      </span>
 
-      <a
-        class="item-menu"
-        href="calendario.html"
-      >
-        <span class="icone-menu">📅</span>
-        <span class="texto-menu">Calendário</span>
-      </a>
+      <span>
+        Início
+      </span>
 
-      <a
-        class="item-menu"
-        href="minha-ficha.html"
-      >
-        <span class="icone-menu">👤</span>
-        <span class="texto-menu">Minha ficha</span>
-      </a>
+    </a>
 
-      <a
-        id="itemMenuAdm"
-        class="item-menu ativo"
-        href="administrativo.html"
-        hidden
-      >
-        <span class="icone-menu">☰</span>
-        <span class="texto-menu">ADM</span>
-      </a>
 
-      <a
-        class="item-menu"
-        href="#"
-        id="botaoSair"
-      >
-        <span class="icone-menu">🚪</span>
-        <span class="texto-menu">Sair</span>
-      </a>
+    <a
+      href="calendario.html"
+      class="item-menu"
+    >
 
-    </div>
+      <span class="icone-menu">
+        📅
+      </span>
+
+      <span>
+        Calendário
+      </span>
+
+    </a>
+
+
+    <a
+      href="minha-ficha.html"
+      class="item-menu"
+    >
+
+      <span class="icone-menu">
+        👤
+      </span>
+
+      <span>
+        Minha ficha
+      </span>
+
+    </a>
+
+
+    <a
+      id="itemMenuAdm"
+      href="administrativo.html"
+      class="item-menu ativo"
+      hidden
+    >
+
+      <span class="icone-menu">
+        ⚙️
+      </span>
+
+      <span>
+        ADM
+      </span>
+
+    </a>
+
+
+    <button
+      id="botaoSair"
+      class="item-menu botao-menu"
+      type="button"
+    >
+
+      <span class="icone-menu">
+        🚪
+      </span>
+
+      <span>
+        Sair
+      </span>
+
+    </button>
 
   </nav>
 
@@ -581,7 +751,7 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="associado-resumo.js?v=8"></script>
+  <script src="associado-resumo.js?v=9"></script>
 
   <script src="menu-adm.js?v=1"></script>
 
