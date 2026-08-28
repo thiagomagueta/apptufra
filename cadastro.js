@@ -3,6 +3,13 @@
 const campoCPF = document.getElementById("cpf");
 const campoDataNascimento = document.getElementById("dataNascimento");
 const campoTelefone = document.getElementById("telefone");
+const campoEmail = document.getElementById("email");
+const campoConfirmarEmail = document.getElementById(
+  "confirmarEmail"
+);
+const erroConfirmarEmail = document.getElementById(
+  "erroConfirmarEmail"
+);
 
 const CHAVE_DADOS_PESSOAIS =
   "tufra_dados_pessoais";
@@ -58,6 +65,33 @@ campoTelefone.addEventListener("input", () => {
   );
 });
 
+campoConfirmarEmail.addEventListener(
+  "paste",
+  (evento) => {
+    evento.preventDefault();
+
+    erroConfirmarEmail.textContent =
+      "Digite novamente seu e-mail para confirmação.";
+  }
+);
+
+campoConfirmarEmail.addEventListener(
+  "drop",
+  (evento) => {
+    evento.preventDefault();
+
+    erroConfirmarEmail.textContent =
+      "Digite novamente seu e-mail para confirmação.";
+  }
+);
+
+campoConfirmarEmail.addEventListener(
+  "input",
+  () => {
+    erroConfirmarEmail.textContent = "";
+  }
+);
+
 const formularioDadosPessoais = document.getElementById(
   "formularioDadosPessoais"
 );
@@ -66,6 +100,24 @@ formularioDadosPessoais.addEventListener(
   "submit",
   (evento) => {
     evento.preventDefault();
+
+    const email = campoEmail.value.trim();
+    const confirmarEmail =
+      campoConfirmarEmail.value.trim();
+
+    if (
+      email.toLowerCase() !==
+      confirmarEmail.toLowerCase()
+    ) {
+      erroConfirmarEmail.textContent =
+        "Os e-mails informados não são iguais. Confira e tente novamente.";
+
+      campoConfirmarEmail.focus();
+
+      return;
+    }
+
+    erroConfirmarEmail.textContent = "";
 
     const dadosPessoais = {
       nomeCompleto:
@@ -84,10 +136,7 @@ formularioDadosPessoais.addEventListener(
         campoTelefone.value,
 
       email:
-        document
-          .getElementById("email")
-          .value
-          .trim()
+        email
     };
 
     localStorage.setItem(
