@@ -52,6 +52,24 @@ const voltarAssociados =
 
 
 /* ==========================================
+   BAIXA DO ASSOCIADO
+========================================== */
+
+const areaBaixaAssociado = document.getElementById("areaBaixaAssociado");
+const areaAssociadoAtivo = document.getElementById("areaAssociadoAtivo");
+const areaAssociadoInativo = document.getElementById("areaAssociadoInativo");
+const botaoAbrirBaixaAssociado = document.getElementById("botaoAbrirBaixaAssociado");
+const formularioBaixaAssociado = document.getElementById("formularioBaixaAssociado");
+const dataSaidaAssociado = document.getElementById("dataSaidaAssociado");
+const motivoSaidaAssociado = document.getElementById("motivoSaidaAssociado");
+const botaoCancelarBaixaAssociado = document.getElementById("botaoCancelarBaixaAssociado");
+const botaoConfirmarBaixaAssociado = document.getElementById("botaoConfirmarBaixaAssociado");
+const mensagemBaixaAssociado = document.getElementById("mensagemBaixaAssociado");
+const textoDataSaidaAssociado = document.getElementById("textoDataSaidaAssociado");
+const textoMotivoSaidaAssociado = document.getElementById("textoMotivoSaidaAssociado");
+
+
+/* ==========================================
    ADMINISTRATIVO
 ========================================== */
 
@@ -2049,6 +2067,157 @@ async function salvarDatasAdministrativas() {
 
 
 /* ==========================================
+   BAIXA DO ASSOCIADO
+========================================== */
+
+function obterDataHojeParaCampo() {
+  const hoje = new Date();
+  const dia = String(hoje.getDate()).padStart(2, "0");
+  const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+  const ano = hoje.getFullYear();
+  return `${dia}/${mes}/${ano}`;
+}
+
+function obterDataHojeISO() {
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+  const dia = String(hoje.getDate()).padStart(2, "0");
+  return `${ano}-${mes}-${dia}`;
+}
+
+function atualizarAreaBaixaAssociado() {
+  if (!areaBaixaAssociado || !associadoAtual) return;
+
+  areaBaixaAssociado.hidden = false;
+
+  const estaInativo = associadoAtual.status === "inativo";
+
+  areaAssociadoAtivo.hidden = estaInativo;
+  areaAssociadoInativo.hidden = !estaInativo;
+
+  if (estaInativo) {
+    textoDataSaidaAssociado.textContent =
+      formatarData(associadoAtual.data_saida_tufra);
+
+    textoMotivoSaidaAssociado.textContent =
+      valorOuTraco(associadoAtual.motivo_saida);
+  } else {
+    formularioBaixaAssociado.hidden = true;
+  }
+}
+
+function abrirBaixaAssociado() {
+  if (!associadoAtual || associadoAtual.status === "inativo") return;
+
+  dataSaidaAssociado.value = obterDataHojeParaCampo();
+  motivoSaidaAssociado.value = "";
+  mensagemBaixaAssociado.textContent = "";
+  mensagemBaixaAssociado.hidden = true;
+  formularioBaixaAssociado.hidden = false;
+  dataSaidaAssociado.focus();
+}
+
+function cancelarBaixaAssociado() {
+  formularioBaixaAssociado.hidden = true;
+  dataSaidaAssociado.value = "";
+  motivoSaidaAssociado.value = "";
+  mensagemBaixaAssociado.textContent = "";
+  mensagemBaixaAssociado.hidden = true;
+}
+
+async function confirmarBaixaAssociado() {
+  if (!associadoAtual || associadoAtual.status === "inativo") return;
+
+  const dataSaida =
+    converterDataParaISO(dataSaidaAssociado.value);
+
+  const motivo =
+    String(motivoSaidaAssociado.value || "").trim();
+
+  if (dataSaida === false || !dataSaida) {
+    mensagemBaixaAssociado.textContent =
+      "Informe uma data de saída válida.";
+    mensagemBaixaAssociado.hidden = false;
+    return;
+  }
+
+  if (
+    associadoAtual.data_entrada_tufra &&
+    dataSaida < associadoAtual.data_entrada_tufra
+  ) {
+    mensagemBaixaAssociado.textContent =
+      "A data de saída não pode ser anterior à data de entrada na TUFRA.";
+    mensagemBaixaAssociado.hidden = false;
+    return;
+  }
+
+  if (dataSaida > obterDataHojeISO()) {
+    mensagemBaixaAssociado.textContent =
+      "A data de saída não pode ser uma data futura.";
+    mensagemBaixaAssociado.hidden = false;
+    return;
+  }
+
+  if (!motivo) {
+    mensagemBaixaAssociado.textContent =
+      "Informe o motivo da baixa.";
+    mensagemBaixaAssociado.hidden = false;
+    return;
+  }
+
+  const confirmar = window.confirm(
+    "Confirma a baixa deste associado? O cadastro e o histórico serão preservados, mas o associado ficará inativo."
+  );
+
+  if (!confirmar) return;
+
+  botaoConfirmarBaixaAssociado.disabled = true;
+  botaoConfirmarBaixaAssociado.textContent = "Salvando...";
+  mensagemBaixaAssociado.hidden = true;
+
+  try {
+    const resultado =
+      await window.supabaseClient
+        .from("usuarios")
+        .update({
+          status: "inativo",
+          data_saida_tufra: dataSaida,
+          motivo_saida: motivo
+        })
+        .eq("id", associadoAtual.id)
+        .eq("status", "ativo")
+        .select("status, data_saida_tufra, motivo_saida")
+        .maybeSingle();
+
+    if (resultado.error) throw resultado.error;
+
+    if (!resultado.data) {
+      throw new Error("Não foi possível concluir a baixa do associado.");
+    }
+
+    associadoAtual.status = resultado.data.status;
+    associadoAtual.data_saida_tufra = resultado.data.data_saida_tufra;
+    associadoAtual.motivo_saida = resultado.data.motivo_saida;
+
+    formularioBaixaAssociado.hidden = true;
+    atualizarAreaBaixaAssociado();
+
+  } catch (erro) {
+    console.error("Erro ao dar baixa no associado:", erro);
+
+    mensagemBaixaAssociado.textContent =
+      "Não foi possível concluir a baixa do associado.";
+    mensagemBaixaAssociado.hidden = false;
+
+  } finally {
+    botaoConfirmarBaixaAssociado.disabled = false;
+    botaoConfirmarBaixaAssociado.textContent = "Confirmar baixa";
+  }
+}
+
+
+/* ==========================================
    CARREGAR HISTÓRICO
 ========================================== */
 
@@ -2145,9 +2314,12 @@ async function carregarAssociado() {
           id,
           nome_completo,
           foto_path,
+          status,
           data_entrada_tufra,
           data_corrente_desenvolvimento,
           data_corrente_principal,
+          data_saida_tufra,
+          motivo_saida,
 
           usuario_funcoes!usuario_funcoes_usuario_id_fkey (
             funcoes (
@@ -2305,6 +2477,8 @@ async function carregarAssociado() {
     atualizarVisualizacaoDatas();
 
     renderizarHistoricoFuncoes();
+
+    atualizarAreaBaixaAssociado();
 
 
     botaoCadastroCompleto.href =
@@ -2747,6 +2921,39 @@ areaZoomFotoAssociado.addEventListener(
 
   }
 );
+
+
+/* ==========================================
+   EVENTOS DA BAIXA DO ASSOCIADO
+========================================== */
+
+if (dataSaidaAssociado) {
+  dataSaidaAssociado.addEventListener(
+    "input",
+    () => aplicarMascaraData(dataSaidaAssociado)
+  );
+}
+
+if (botaoAbrirBaixaAssociado) {
+  botaoAbrirBaixaAssociado.addEventListener(
+    "click",
+    abrirBaixaAssociado
+  );
+}
+
+if (botaoCancelarBaixaAssociado) {
+  botaoCancelarBaixaAssociado.addEventListener(
+    "click",
+    cancelarBaixaAssociado
+  );
+}
+
+if (botaoConfirmarBaixaAssociado) {
+  botaoConfirmarBaixaAssociado.addEventListener(
+    "click",
+    confirmarBaixaAssociado
+  );
+}
 
 
 /* ==========================================
