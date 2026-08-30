@@ -40,6 +40,11 @@ const moduloComunicados =
     "moduloComunicados"
   );
 
+const moduloFinanceiro =
+  document.getElementById(
+    "moduloFinanceiro"
+  );
+
 const moduloRelatorios =
   document.getElementById(
     "moduloRelatorios"
@@ -356,6 +361,51 @@ async function carregarModulosAdministrativos() {
 
 
     /* ======================================
+       RESPONSÁVEL PELO FINANCEIRO
+    ====================================== */
+
+    let ehResponsavelFinanceiro =
+      false;
+
+
+    const resultadoResponsavelFinanceiro =
+      await window.supabaseClient
+        .from(
+          "responsaveis_financeiro"
+        )
+        .select(
+          "id"
+        )
+        .eq(
+          "usuario_id",
+          usuarioId
+        )
+        .limit(
+          1
+        );
+
+
+    if (
+      resultadoResponsavelFinanceiro.error
+    ) {
+
+      console.error(
+        "Erro ao verificar responsável pelo financeiro:",
+        resultadoResponsavelFinanceiro.error
+      );
+
+    } else {
+
+      ehResponsavelFinanceiro =
+        (
+          resultadoResponsavelFinanceiro.data ||
+          []
+        ).length > 0;
+
+    }
+
+
+    /* ======================================
        EXISTE ALGUM ACESSO ADMINISTRATIVO?
     ====================================== */
 
@@ -364,7 +414,8 @@ async function carregarModulosAdministrativos() {
       ehTesoureiro ||
       ehResponsavelPresenca ||
       ehResponsavelComunicados ||
-      ehResponsavelAtendimentos;
+      ehResponsavelAtendimentos ||
+      ehResponsavelFinanceiro;
 
 
     /*
@@ -491,6 +542,21 @@ async function carregarModulosAdministrativos() {
 
       moduloComunicados.hidden =
         !ehResponsavelComunicados;
+
+    }
+
+
+    /* ======================================
+       FINANCEIRO
+       RESPONSÁVEL AUTORIZADO
+    ====================================== */
+
+    if (
+      moduloFinanceiro
+    ) {
+
+      moduloFinanceiro.hidden =
+        !ehResponsavelFinanceiro;
 
     }
 
