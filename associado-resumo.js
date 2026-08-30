@@ -280,6 +280,9 @@ let funcoesAtuais =
 let historicoFuncoes =
   [];
 
+let podeDarBaixaAssociado =
+  false;
+
 
 /* ==========================================
    PARÂMETROS
@@ -836,6 +839,129 @@ async function verificarPermissaoAtendimentos() {
       true;
 
   }
+}
+
+
+/* ==========================================
+   PERMISSÃO PARA DAR BAIXA
+========================================== */
+
+async function verificarPermissaoBaixaAssociado() {
+
+  podeDarBaixaAssociado =
+    false;
+
+
+  atualizarAreaBaixaAssociado();
+
+
+  try {
+
+    const resultadoSessao =
+      await window.supabaseClient.auth
+        .getSession();
+
+
+    if (
+      resultadoSessao.error
+    ) {
+
+      throw resultadoSessao.error;
+
+    }
+
+
+    const sessao =
+      resultadoSessao.data.session;
+
+
+    if (
+      !sessao
+    ) {
+
+      return;
+
+    }
+
+
+    const resultadoUsuario =
+      await window.supabaseClient
+        .from(
+          "usuarios"
+        )
+        .select(
+          "id"
+        )
+        .eq(
+          "auth_id",
+          sessao.user.id
+        )
+        .maybeSingle();
+
+
+    if (
+      resultadoUsuario.error
+    ) {
+
+      throw resultadoUsuario.error;
+
+    }
+
+
+    if (
+      !resultadoUsuario.data
+    ) {
+
+      return;
+
+    }
+
+
+    const resultadoPermissao =
+      await window.supabaseClient
+        .from(
+          "responsaveis_baixas_associados"
+        )
+        .select(
+          "id"
+        )
+        .eq(
+          "usuario_id",
+          resultadoUsuario.data.id
+        )
+        .maybeSingle();
+
+
+    if (
+      resultadoPermissao.error
+    ) {
+
+      throw resultadoPermissao.error;
+
+    }
+
+
+    podeDarBaixaAssociado =
+      Boolean(
+        resultadoPermissao.data
+      );
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao verificar permissão para dar baixa:",
+      erro
+    );
+
+
+    podeDarBaixaAssociado =
+      false;
+
+  }
+
+
+  atualizarAreaBaixaAssociado();
 }
 
 
@@ -2115,9 +2241,17 @@ function obterDataHojeISO() {
 function atualizarAreaBaixaAssociado() {
   if (!areaBaixaAssociado || !associadoAtual) return;
 
-  areaBaixaAssociado.hidden = false;
-
   const estaInativo = associadoAtual.status === "inativo";
+
+  if (
+    !estaInativo &&
+    !podeDarBaixaAssociado
+  ) {
+    areaBaixaAssociado.hidden = true;
+    return;
+  }
+
+  areaBaixaAssociado.hidden = false;
 
   areaAssociadoAtivo.hidden = estaInativo;
   areaAssociadoInativo.hidden = !estaInativo;
@@ -3279,6 +3413,8 @@ configurarVoltar();
 carregarAssociado();
 
 verificarPermissaoAtendimentos();
+
+verificarPermissaoBaixaAssociado();
 
 
 /* ==========================================
