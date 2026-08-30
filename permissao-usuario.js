@@ -70,6 +70,21 @@ const mensagemSalvarFuncoes =
     "mensagemSalvarFuncoes"
   );
 
+const dataCorrenteDesenvolvimentoAprovacao =
+  document.getElementById(
+    "dataCorrenteDesenvolvimentoAprovacao"
+  );
+
+const dataCorrentePrincipalAprovacao =
+  document.getElementById(
+    "dataCorrentePrincipalAprovacao"
+  );
+
+const mensagemDatasAprovacao =
+  document.getElementById(
+    "mensagemDatasAprovacao"
+  );
+
 const modalFotoUsuario =
   document.getElementById(
     "modalFotoUsuario"
@@ -158,6 +173,28 @@ function formatarNome(
       (letra) =>
         letra.toUpperCase()
     );
+}
+
+
+/* ==========================================
+   NORMALIZA DATA PARA INPUT
+========================================== */
+
+function normalizarDataInput(
+  data
+) {
+
+  if (!data) {
+    return "";
+  }
+
+
+  return String(
+    data
+  ).slice(
+    0,
+    10
+  );
 }
 
 
@@ -941,12 +978,64 @@ async function sincronizarFuncoesUsuario(
 
 
 /* ==========================================
+   SALVAR DATAS DA APROVAÇÃO
+========================================== */
+
+async function salvarDatasAprovacao(
+  usuarioId
+) {
+
+  const dataDesenvolvimento =
+    dataCorrenteDesenvolvimentoAprovacao
+      ?.value ||
+    null;
+
+
+  const dataPrincipal =
+    dataCorrentePrincipalAprovacao
+      ?.value ||
+    null;
+
+
+  const resultadoAtualizacao =
+    await window.supabaseClient
+      .from(
+        "usuarios"
+      )
+      .update({
+
+        data_corrente_desenvolvimento:
+          dataDesenvolvimento,
+
+        data_corrente_principal:
+          dataPrincipal
+
+      })
+      .eq(
+        "id",
+        usuarioId
+      );
+
+
+  if (
+    resultadoAtualizacao.error
+  ) {
+
+    throw resultadoAtualizacao.error;
+
+  }
+
+}
+
+
+/* ==========================================
    ATUALIZAR DATAS AUTOMÁTICAS
 ========================================== */
 
 async function atualizarDatasAutomaticas(
   usuarioId,
-  preencherEntradaTufra
+  preencherEntradaTufra,
+  preencherDatasCorrentes = true
 ) {
 
   const resultadoUsuario =
@@ -1019,46 +1108,49 @@ async function atualizarDatasAutomaticas(
 
 
   /* --------------------------------------
-     CORRENTE DO DESENVOLVIMENTO
+     DATAS DE CORRENTE
+     PARA USUÁRIOS JÁ ATIVOS
   -------------------------------------- */
 
-  const entrouCorrenteDesenvolvimento =
-    nomesFuncoes.includes(
-      "Corrente do Desenvolvimento"
-    );
-
-
   if (
-    entrouCorrenteDesenvolvimento &&
-    !usuario.data_corrente_desenvolvimento
+    preencherDatasCorrentes
   ) {
 
-    atualizacoes.data_corrente_desenvolvimento =
-      dataHoje;
-
-  }
-
-
-  /* --------------------------------------
-     CORRENTE PRINCIPAL
-  -------------------------------------- */
-
-  const entrouCorrentePrincipal =
-    nomesFuncoes.includes(
-      "Médium Corrente Principal"
-    ) ||
-    nomesFuncoes.includes(
-      "Médium Principal"
-    );
+    const entrouCorrenteDesenvolvimento =
+      nomesFuncoes.includes(
+        "Corrente do Desenvolvimento"
+      );
 
 
-  if (
-    entrouCorrentePrincipal &&
-    !usuario.data_corrente_principal
-  ) {
+    if (
+      entrouCorrenteDesenvolvimento &&
+      !usuario.data_corrente_desenvolvimento
+    ) {
 
-    atualizacoes.data_corrente_principal =
-      dataHoje;
+      atualizacoes.data_corrente_desenvolvimento =
+        dataHoje;
+
+    }
+
+
+    const entrouCorrentePrincipal =
+      nomesFuncoes.includes(
+        "Médium Corrente Principal"
+      ) ||
+      nomesFuncoes.includes(
+        "Médium Principal"
+      );
+
+
+    if (
+      entrouCorrentePrincipal &&
+      !usuario.data_corrente_principal
+    ) {
+
+      atualizacoes.data_corrente_principal =
+        dataHoje;
+
+    }
 
   }
 
@@ -1149,7 +1241,8 @@ async function salvarFuncoesUsuario() {
 
     await atualizarDatasAutomaticas(
       usuarioId,
-      false
+      false,
+      true
     );
 
 
@@ -1237,6 +1330,10 @@ async function aprovarCadastro() {
   }
 
 
+  mensagemDatasAprovacao.textContent =
+    "";
+
+
   botaoAprovarCadastro.disabled =
     true;
 
@@ -1257,9 +1354,31 @@ async function aprovarCadastro() {
     );
 
 
+    /*
+      Primeiro salvamos as datas informadas
+      manualmente na tela de aprovação.
+    */
+
+    await salvarDatasAprovacao(
+      usuarioId
+    );
+
+
+    /*
+      Na aprovação, apenas a data de entrada
+      na TUFRA continua automática quando
+      ainda estiver vazia.
+
+      As datas de Desenvolvimento e Principal
+      são controladas pelos campos da tela,
+      evitando gravar a data de hoje em
+      associados históricos.
+    */
+
     await atualizarDatasAutomaticas(
       usuarioId,
-      true
+      true,
+      false
     );
 
 
@@ -1322,9 +1441,8 @@ async function aprovarCadastro() {
     );
 
 
-    alert(
-      "Não foi possível aprovar o cadastro. Tente novamente."
-    );
+    mensagemDatasAprovacao.textContent =
+      "Não foi possível aprovar o cadastro. Tente novamente.";
 
 
     botaoAprovarCadastro.disabled =
@@ -1385,7 +1503,9 @@ async function carregarUsuario() {
           nome_completo,
           email,
           status,
-          foto_path
+          foto_path,
+          data_corrente_desenvolvimento,
+          data_corrente_principal
         `)
         .eq(
           "id",
@@ -1446,6 +1566,24 @@ async function carregarUsuario() {
     statusUsuarioPermissao.textContent =
       usuario.status ||
       "";
+
+
+    if (
+      tipo === "pendente"
+    ) {
+
+      dataCorrenteDesenvolvimentoAprovacao.value =
+        normalizarDataInput(
+          usuario.data_corrente_desenvolvimento
+        );
+
+
+      dataCorrentePrincipalAprovacao.value =
+        normalizarDataInput(
+          usuario.data_corrente_principal
+        );
+
+    }
 
 
     await carregarFoto(
