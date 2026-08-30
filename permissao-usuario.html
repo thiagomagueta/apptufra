@@ -133,8 +133,39 @@
         <h2>Aprovação do cadastro</h2>
 
         <p>
-          Após definir as funções, o cadastro poderá ser aprovado.
+          Após definir as funções, confira as datas históricas antes de aprovar o cadastro.
         </p>
+
+        <div class="grupo-campo">
+
+          <label for="dataCorrenteDesenvolvimentoAprovacao">
+            Entrada na Corrente do Desenvolvimento
+          </label>
+
+          <input
+            id="dataCorrenteDesenvolvimentoAprovacao"
+            type="date"
+          >
+
+        </div>
+
+        <div class="grupo-campo">
+
+          <label for="dataCorrentePrincipalAprovacao">
+            Entrada na Corrente Principal
+          </label>
+
+          <input
+            id="dataCorrentePrincipalAprovacao"
+            type="date"
+          >
+
+        </div>
+
+        <div
+          id="mensagemDatasAprovacao"
+          class="mensagem-campo"
+        ></div>
 
         <button
           id="botaoAprovarCadastro"
@@ -269,7 +300,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js?v=2"></script>
   <script src="app.js?v=2"></script>
-  <script src="permissao-usuario.js?v=7"></script>
+  <script src="permissao-usuario.js?v=8"></script>
   <script src="menu-adm.js?v=1"></script>
 
 </body>
