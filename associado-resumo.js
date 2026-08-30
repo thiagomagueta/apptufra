@@ -2244,10 +2244,18 @@ function atualizarAreaBaixaAssociado() {
   const estaInativo = associadoAtual.status === "inativo";
 
   if (
-    !estaInativo &&
     !podeDarBaixaAssociado
   ) {
     areaBaixaAssociado.hidden = true;
+
+    if (formularioBaixaAssociado) {
+      formularioBaixaAssociado.hidden = true;
+    }
+
+    if (formularioReativacaoAssociado) {
+      formularioReativacaoAssociado.hidden = true;
+    }
+
     return;
   }
 
@@ -2262,6 +2270,10 @@ function atualizarAreaBaixaAssociado() {
 
     textoMotivoSaidaAssociado.textContent =
       valorOuTraco(associadoAtual.motivo_saida);
+
+    if (formularioBaixaAssociado) {
+      formularioBaixaAssociado.hidden = true;
+    }
   } else {
     formularioBaixaAssociado.hidden = true;
 
