@@ -1,3 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta
+    name="theme-color"
+    content="#651b1d"
+  >
+
+  <title>
+    Início | TUFRA
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="layout.css?v=40"
+  >
+
+  <link
+    rel="stylesheet"
+    href="dashboard-comunicados.css?v=1"
+  >
+
+</head>
+
+
+<body>
+
+  <main class="app">
+
+    <div class="conteudo-app">
+
+
+      <!-- =====================================
+           CABEÇALHO
+      ====================================== -->
+
+      <header class="cabecalho-app">
+
+        <img
+          class="logo-app"
+          src="logo-tufra.png"
+          alt="Logo da TUFRA"
+        >
+
+
+        <div class="identidade-app">
+
+          <strong>
+            TUFRA
+          </strong>
+
+          <span>
+            Tenda de Umbanda Francisco de Assis
+          </span>
+
+        </div>
+
+
+        <div class="area-foto-usuario">
+
+          <img
+            id="fotoUsuarioDashboard"
+            class="foto-usuario-dashboard"
+            alt="Foto do usuário"
+            hidden
+          >
+
+          <div
+            id="fotoUsuarioPadrao"
+            class="foto-usuario-padrao"
+            aria-hidden="true"
+          >
+            👤
+          </div>
+
+        </div>
+
+      </header>
+
+
+      <!-- =====================================
+           SAUDAÇÃO
+      ====================================== -->
+
+      <section>
+
+        <h1
+          id="saudacaoDashboard"
+          class="titulo-pagina"
+        >
+          Seja bem-vindo!
+        </h1>
+
+        <p class="subtitulo-pagina">
+          Seja bem-vindo à Tenda de Umbanda Francisco de Assis.
+        </p>
+
+      </section>
+
+
+      <!-- =====================================
+           RECADOS E ENQUETES
+           SÓ APARECE QUANDO EXISTIR ATIVO
+      ====================================== -->
+
+      <section
+        id="areaComunicadosDashboard"
+        class="cartao-app cartao-comunicado-dashboard"
+        hidden
+      >
+
+        <div class="cabecalho-comunicado-dashboard">
+
+          <h2>
+            Recados
+          </h2>
+
+        </div>
+
+
+        <div
+          id="listaComunicadosDashboard"
+          class="lista-comunicados-dashboard"
+        >
+        </div>
+
+      </section>
+
+
+      <!-- =====================================
+           PRÓXIMA ATIVIDADE
+      ====================================== -->
+
+      <section class="cartao-app">
+
+        <h2>
+          Próxima atividade
+        </h2>
+
+        <div
+          id="proximaAtividadeDashboard"
+          class="item-atividade"
+        >
+
+          <div class="dados-atividade">
+
+            <span>
+              Carregando próxima atividade...
+            </span>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================
+           FUNÇÕES
+      ====================================== -->
+
+      <section class="cartao-app">
+
+        <div
+          id="listaFuncoesDashboard"
+          class="lista-funcoes-dashboard"
+        >
+
+          <p>
+            Carregando funções...
+          </p>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================
+           PRESENÇA
+      ====================================== -->
+
+      <section
+        id="areaPresencaDashboard"
+        class="cartao-app"
+        hidden
+      >
+
+        <h2>
+          Presença - Últimas 10 giras
+        </h2>
+
+
+        <div
+          id="listasPresencaDashboard"
+          class="listas-resumo-presenca-associado"
+        >
+        </div>
+
+
+        <div
+          id="mensagemSemPresencaDashboard"
+          class="mensagem-sem-atividades"
+          hidden
+        >
+          Nenhuma lista de presença disponível.
+        </div>
+
+      </section>
+
+
       <!-- =====================================
            FINANCEIRO
            AVISO PÚBLICO
@@ -40,3 +259,229 @@
         </p>
 
       </section>
+
+
+      <!-- =====================================
+           SITUAÇÃO CADASTRAL
+      ====================================== -->
+
+      <section class="cartao-app">
+
+        <h2>
+          Situação cadastral
+        </h2>
+
+        <p>
+          Associado ativo
+        </p>
+
+      </section>
+
+
+    </div>
+
+  </main>
+
+
+  <!-- =====================================
+       POP-UP DE COMUNICADO
+  ====================================== -->
+
+  <div
+    id="popupComunicadoDashboard"
+    class="popup-comunicado-dashboard"
+    hidden
+  >
+
+    <div
+      class="fundo-popup-comunicado-dashboard"
+    ></div>
+
+
+    <section
+      class="janela-popup-comunicado-dashboard"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="tituloPopupComunicadoDashboard"
+    >
+
+      <div class="cabecalho-popup-comunicado-dashboard">
+
+        <span
+          id="tipoPopupComunicadoDashboard"
+          class="tipo-popup-comunicado-dashboard"
+        >
+          Recado
+        </span>
+
+
+        <button
+          id="botaoFecharPopupComunicadoDashboard"
+          class="botao-fechar-popup-comunicado-dashboard"
+          type="button"
+          aria-label="Fechar recado"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <h2
+        id="tituloPopupComunicadoDashboard"
+        class="titulo-popup-comunicado-dashboard"
+      >
+      </h2>
+
+
+      <div
+        id="mensagemPopupComunicadoDashboard"
+        class="mensagem-popup-comunicado-dashboard"
+      >
+      </div>
+
+
+      <div
+        id="areaEnquetePopupDashboard"
+        class="area-enquete-popup-dashboard"
+        hidden
+      >
+      </div>
+
+
+      <button
+        id="botaoFecharPopupComunicadoDashboardInferior"
+        class="botao-principal-app"
+        type="button"
+      >
+        Fechar
+      </button>
+
+    </section>
+
+  </div>
+
+
+  <!-- =====================================
+       MENU INFERIOR
+  ====================================== -->
+
+  <nav
+    class="menu-inferior"
+    aria-label="Navegação principal"
+  >
+
+    <div class="menu-inferior-conteudo">
+
+
+      <a
+        class="item-menu ativo"
+        href="dashboard.html"
+      >
+
+        <span class="icone-menu">
+          ⌂
+        </span>
+
+        <span class="texto-menu">
+          Início
+        </span>
+
+      </a>
+
+
+      <a
+        class="item-menu"
+        href="calendario.html"
+      >
+
+        <span class="icone-menu">
+          📅
+        </span>
+
+        <span class="texto-menu">
+          Calendário
+        </span>
+
+      </a>
+
+
+      <a
+        class="item-menu"
+        href="minha-ficha.html"
+      >
+
+        <span class="icone-menu">
+          👤
+        </span>
+
+        <span class="texto-menu">
+          Minha ficha
+        </span>
+
+      </a>
+
+
+      <!-- =================================
+           ADM
+           SÓ APARECE PARA QUEM TEM ACESSO
+      ================================== -->
+
+      <a
+        id="itemMenuAdm"
+        class="item-menu"
+        href="administrativo.html"
+        hidden
+      >
+
+        <span class="icone-menu">
+          ☰
+        </span>
+
+        <span class="texto-menu">
+          ADM
+        </span>
+
+      </a>
+
+
+      <a
+        class="item-menu"
+        href="#"
+        id="botaoSair"
+      >
+
+        <span class="icone-menu">
+          🚪
+        </span>
+
+        <span class="texto-menu">
+          Sair
+        </span>
+
+      </a>
+
+
+    </div>
+
+  </nav>
+
+
+  <!-- =====================================
+       SCRIPTS
+  ====================================== -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="supabase.js?v=2"></script>
+
+  <script src="app.js?v=2"></script>
+
+  <script src="dashboard.js?v=9"></script>
+
+  <script src="dashboard-comunicados.js?v=1"></script>
+
+
+</body>
+
+</html>
