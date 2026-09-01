@@ -37,6 +37,21 @@ const proximaAtividadeDashboard =
 
 
 /* ==========================================
+   FINANCEIRO
+========================================== */
+
+const areaFinanceiroEmConstrucaoDashboard =
+  document.getElementById(
+    "areaFinanceiroEmConstrucaoDashboard"
+  );
+
+const areaFinanceiroDashboard =
+  document.getElementById(
+    "areaFinanceiroDashboard"
+  );
+
+
+/* ==========================================
    PRESENÇA
 ========================================== */
 
@@ -331,6 +346,111 @@ async function carregarFotoUsuario() {
       "Erro ao carregar foto do usuário:",
       erro
     );
+
+  }
+}
+
+
+/* ==========================================
+   ACESSO AO FINANCEIRO
+========================================== */
+
+async function verificarAcessoFinanceiroDashboard() {
+
+  if (
+    !areaFinanceiroEmConstrucaoDashboard ||
+    !areaFinanceiroDashboard
+  ) {
+
+    return;
+
+  }
+
+
+  /*
+    Estado seguro inicial:
+
+    todos continuam vendo apenas
+    "Em Construção".
+
+    A área nova só será exibida
+    depois que o banco confirmar
+    a autorização.
+  */
+
+  areaFinanceiroEmConstrucaoDashboard.hidden =
+    false;
+
+  areaFinanceiroDashboard.hidden =
+    true;
+
+
+  if (
+    !window.supabaseClient
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    const resultado =
+      await window.supabaseClient
+        .rpc(
+          "usuario_pode_acessar_financeiro"
+        );
+
+
+    if (
+      resultado.error
+    ) {
+
+      throw resultado.error;
+
+    }
+
+
+    const possuiAcesso =
+      resultado.data ===
+      true;
+
+
+    if (
+      !possuiAcesso
+    ) {
+
+      return;
+
+    }
+
+
+    areaFinanceiroEmConstrucaoDashboard.hidden =
+      true;
+
+    areaFinanceiroDashboard.hidden =
+      false;
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao verificar acesso ao Financeiro:",
+      erro
+    );
+
+
+    /*
+      Em caso de erro, não liberamos
+      a área em desenvolvimento.
+    */
+
+    areaFinanceiroEmConstrucaoDashboard.hidden =
+      false;
+
+    areaFinanceiroDashboard.hidden =
+      true;
 
   }
 }
@@ -3160,6 +3280,8 @@ async function carregarResumoPresencaDashboard() {
 atualizarSaudacao();
 
 carregarFotoUsuario();
+
+verificarAcessoFinanceiroDashboard();
 
 carregarFuncoesUsuario();
 
