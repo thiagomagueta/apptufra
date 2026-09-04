@@ -523,58 +523,27 @@
               <button
                 id="botaoReproduzirAudioRelato"
                 type="button"
-                style="
-                  padding: 8px 12px;
-                  border: 1px solid #bbb;
-                  border-radius: 8px;
-                  background: #fff;
-                  font-size: 14px;
-                  cursor: pointer;
-                "
                 hidden
               >
                 ▶ Reproduzir
               </button>
 
-
               <button
                 id="botaoPararAudioRelato"
                 type="button"
-                style="
-                  padding: 8px 12px;
-                  border: 1px solid #bbb;
-                  border-radius: 8px;
-                  background: #fff;
-                  font-size: 14px;
-                  cursor: pointer;
-                "
                 hidden
               >
                 ■ Parar
               </button>
 
-
               <span
                 id="duracaoAudioRelato"
-                style="
-                  font-size: 14px;
-                  font-weight: 600;
-                "
                 hidden
               ></span>
-
 
               <button
                 id="botaoApagarAudioRelato"
                 type="button"
-                style="
-                  padding: 8px 12px;
-                  border: 1px solid #bbb;
-                  border-radius: 8px;
-                  background: #fff;
-                  font-size: 14px;
-                  cursor: pointer;
-                "
                 hidden
               >
                 🗑️ Apagar gravação
@@ -588,7 +557,7 @@
 
 
         <!-- =================================
-             ORIENTAÇÃO / CONDUTA
+             ORIENTAÇÃO
         ================================== -->
 
         <div style="margin-bottom: 24px;">
@@ -617,30 +586,13 @@
             <button
               id="botaoGravarOrientacao"
               type="button"
-              style="
-                padding: 8px 12px;
-                border: 1px solid #bbb;
-                border-radius: 8px;
-                background: #fff;
-                font-size: 14px;
-                cursor: pointer;
-              "
             >
               🎙️ Gravar áudio
             </button>
 
-
             <button
               id="botaoFalarTextoOrientacao"
               type="button"
-              style="
-                padding: 8px 12px;
-                border: 1px solid #bbb;
-                border-radius: 8px;
-                background: #fff;
-                font-size: 14px;
-                cursor: pointer;
-              "
             >
               🎤 Falar para texto
             </button>
@@ -652,127 +604,57 @@
             id="orientacaoAtendimento"
             rows="7"
             placeholder="Digite a orientação, grave um áudio ou use Falar para texto."
-            style="
-              width: 100%;
-              box-sizing: border-box;
-              padding: 12px;
-              border: 1px solid #ccc;
-              border-radius: 8px;
-              font-size: 16px;
-              font-family: inherit;
-              resize: vertical;
-            "
           ></textarea>
 
 
           <p
             id="statusFalaTextoOrientacao"
-            style="
-              margin-top: 8px;
-              margin-bottom: 0;
-              font-size: 13px;
-            "
             hidden
           ></p>
 
 
           <div
             id="areaAudioOrientacao"
-            style="
-              margin-top: 12px;
-              padding: 12px;
-              border: 1px solid #ddd;
-              border-radius: 8px;
-            "
             hidden
           >
 
             <div
               id="statusAudioOrientacao"
-              style="
-                margin-bottom: 10px;
-                font-size: 14px;
-                font-weight: 600;
-              "
             ></div>
-
 
             <audio
               id="playerAudioOrientacao"
               hidden
             ></audio>
 
-
-            <div
-              style="
-                display: flex;
-                flex-wrap: wrap;
-                gap: 8px;
-                align-items: center;
-              "
+            <button
+              id="botaoReproduzirAudioOrientacao"
+              type="button"
+              hidden
             >
+              ▶ Reproduzir
+            </button>
 
-              <button
-                id="botaoReproduzirAudioOrientacao"
-                type="button"
-                style="
-                  padding: 8px 12px;
-                  border: 1px solid #bbb;
-                  border-radius: 8px;
-                  background: #fff;
-                  font-size: 14px;
-                  cursor: pointer;
-                "
-                hidden
-              >
-                ▶ Reproduzir
-              </button>
+            <button
+              id="botaoPararAudioOrientacao"
+              type="button"
+              hidden
+            >
+              ■ Parar
+            </button>
 
+            <span
+              id="duracaoAudioOrientacao"
+              hidden
+            ></span>
 
-              <button
-                id="botaoPararAudioOrientacao"
-                type="button"
-                style="
-                  padding: 8px 12px;
-                  border: 1px solid #bbb;
-                  border-radius: 8px;
-                  background: #fff;
-                  font-size: 14px;
-                  cursor: pointer;
-                "
-                hidden
-              >
-                ■ Parar
-              </button>
-
-
-              <span
-                id="duracaoAudioOrientacao"
-                style="
-                  font-size: 14px;
-                  font-weight: 600;
-                "
-                hidden
-              ></span>
-
-
-              <button
-                id="botaoApagarAudioOrientacao"
-                type="button"
-                style="
-                  padding: 8px 12px;
-                  border: 1px solid #bbb;
-                  border-radius: 8px;
-                  background: #fff;
-                  font-size: 14px;
-                  cursor: pointer;
-                "
-                hidden
-              >
-                🗑️ Apagar gravação
-              </button>
-
-            </div>
+            <button
+              id="botaoApagarAudioOrientacao"
+              type="button"
+              hidden
+            >
+              🗑️ Apagar gravação
+            </button>
 
           </div>
 
@@ -785,15 +667,7 @@
 
         <div style="margin-bottom: 20px;">
 
-          <label
-            style="
-              display: flex;
-              align-items: center;
-              gap: 10px;
-              cursor: pointer;
-            "
-          >
-
+          <label>
             <input
               id="precisaAcompanhamento"
               type="checkbox"
@@ -802,7 +676,6 @@
             <span>
               Precisa de acompanhamento / retorno
             </span>
-
           </label>
 
         </div>
@@ -810,17 +683,11 @@
 
         <div
           id="areaDataRetorno"
-          style="margin-bottom: 22px;"
           hidden
         >
 
           <label
             for="dataRetorno"
-            style="
-              display: block;
-              margin-bottom: 6px;
-              font-weight: 600;
-            "
           >
             Data sugerida para retorno
           </label>
@@ -828,14 +695,6 @@
           <input
             id="dataRetorno"
             type="date"
-            style="
-              width: 100%;
-              box-sizing: border-box;
-              padding: 12px;
-              border: 1px solid #ccc;
-              border-radius: 8px;
-              font-size: 16px;
-            "
           >
 
         </div>
@@ -873,10 +732,6 @@
 
   </main>
 
-
-  <!-- =====================================
-       MENU INFERIOR
-  ====================================== -->
 
   <nav
     class="menu-inferior"
@@ -939,7 +794,7 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="novo-atendimento.js?v=7"></script>
+  <script src="novo-atendimento.js?v=8"></script>
 
   <script src="menu-adm.js?v=1"></script>
 
