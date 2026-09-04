@@ -367,17 +367,6 @@ async function verificarAcessoFinanceiroDashboard() {
   }
 
 
-  /*
-    Estado seguro inicial:
-
-    todos continuam vendo apenas
-    "Em Construção".
-
-    A área nova só será exibida
-    depois que o banco confirmar
-    a autorização.
-  */
-
   areaFinanceiroEmConstrucaoDashboard.hidden =
     false;
 
@@ -440,11 +429,6 @@ async function verificarAcessoFinanceiroDashboard() {
       erro
     );
 
-
-    /*
-      Em caso de erro, não liberamos
-      a área em desenvolvimento.
-    */
 
     areaFinanceiroEmConstrucaoDashboard.hidden =
       false;
@@ -1538,7 +1522,7 @@ async function atualizarBotoesProximaAtividadeDashboard() {
     );
 
 
-  const podeVerAusencias =
+  const podeVerConfirmacoes =
     usuarioEhDiretoriaDashboard() &&
     atividadePermiteAusenciasDashboard(
       proximaAtividadeAtualDashboard
@@ -1551,7 +1535,7 @@ async function atualizarBotoesProximaAtividadeDashboard() {
 
   if (
     !podeConfirmar &&
-    !podeVerAusencias
+    !podeVerConfirmacoes
   ) {
 
     area.hidden =
@@ -1581,8 +1565,36 @@ async function atualizarBotoesProximaAtividadeDashboard() {
 
 
   if (
-    podeVerAusencias
+    podeVerConfirmacoes
   ) {
+
+    const areaBotoesDiretoria =
+      document.createElement(
+        "div"
+      );
+
+
+    areaBotoesDiretoria.style.display =
+      "grid";
+
+
+    areaBotoesDiretoria.style.gridTemplateColumns =
+      "repeat(3, minmax(0, 1fr))";
+
+
+    areaBotoesDiretoria.style.gap =
+      "8px";
+
+
+    areaBotoesDiretoria.style.width =
+      "100%";
+
+
+    areaBotoesDiretoria.style.marginTop =
+      podeConfirmar
+        ? "8px"
+        : "0";
+
 
     const botaoAusencias =
       document.createElement(
@@ -1593,24 +1605,41 @@ async function atualizarBotoesProximaAtividadeDashboard() {
     botaoAusencias.type =
       "button";
 
+
     botaoAusencias.id =
       "botaoVerAusenciasDashboard";
 
+
     botaoAusencias.className =
       "botao-confirmar-presenca-dashboard";
+
 
     botaoAusencias.textContent =
       "Ver ausências";
 
 
-    if (
-      podeConfirmar
-    ) {
+    botaoAusencias.style.marginTop =
+      "0";
 
-      botaoAusencias.style.marginTop =
-        "8px";
 
-    }
+    botaoAusencias.style.width =
+      "100%";
+
+
+    botaoAusencias.style.minWidth =
+      "0";
+
+
+    botaoAusencias.style.paddingLeft =
+      "6px";
+
+
+    botaoAusencias.style.paddingRight =
+      "6px";
+
+
+    botaoAusencias.style.whiteSpace =
+      "normal";
 
 
     botaoAusencias.addEventListener(
@@ -1624,8 +1653,131 @@ async function atualizarBotoesProximaAtividadeDashboard() {
     );
 
 
-    area.appendChild(
+    areaBotoesDiretoria.appendChild(
       botaoAusencias
+    );
+
+
+    const botaoPresencas =
+      document.createElement(
+        "button"
+      );
+
+
+    botaoPresencas.type =
+      "button";
+
+
+    botaoPresencas.id =
+      "botaoVerPresencasDashboard";
+
+
+    botaoPresencas.className =
+      "botao-confirmar-presenca-dashboard";
+
+
+    botaoPresencas.textContent =
+      "Ver presenças";
+
+
+    botaoPresencas.style.marginTop =
+      "0";
+
+
+    botaoPresencas.style.width =
+      "100%";
+
+
+    botaoPresencas.style.minWidth =
+      "0";
+
+
+    botaoPresencas.style.paddingLeft =
+      "6px";
+
+
+    botaoPresencas.style.paddingRight =
+      "6px";
+
+
+    botaoPresencas.style.whiteSpace =
+      "normal";
+
+
+    botaoPresencas.disabled =
+      true;
+
+
+    botaoPresencas.title =
+      "Tela de presenças será criada na próxima etapa.";
+
+
+    areaBotoesDiretoria.appendChild(
+      botaoPresencas
+    );
+
+
+    const botaoNaoRespondeu =
+      document.createElement(
+        "button"
+      );
+
+
+    botaoNaoRespondeu.type =
+      "button";
+
+
+    botaoNaoRespondeu.id =
+      "botaoVerNaoRespondeuDashboard";
+
+
+    botaoNaoRespondeu.className =
+      "botao-confirmar-presenca-dashboard";
+
+
+    botaoNaoRespondeu.textContent =
+      "Ver quem não respondeu";
+
+
+    botaoNaoRespondeu.style.marginTop =
+      "0";
+
+
+    botaoNaoRespondeu.style.width =
+      "100%";
+
+
+    botaoNaoRespondeu.style.minWidth =
+      "0";
+
+
+    botaoNaoRespondeu.style.paddingLeft =
+      "6px";
+
+
+    botaoNaoRespondeu.style.paddingRight =
+      "6px";
+
+
+    botaoNaoRespondeu.style.whiteSpace =
+      "normal";
+
+
+    botaoNaoRespondeu.disabled =
+      true;
+
+
+    botaoNaoRespondeu.title =
+      "Tela de pessoas que ainda não responderam será criada depois.";
+
+
+    areaBotoesDiretoria.appendChild(
+      botaoNaoRespondeu
+    );
+
+
+    area.appendChild(
+      areaBotoesDiretoria
     );
 
   }
