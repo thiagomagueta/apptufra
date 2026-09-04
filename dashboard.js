@@ -50,6 +50,11 @@ const areaFinanceiroDashboard =
     "areaFinanceiroDashboard"
   );
 
+const resumoFinanceiroDashboard =
+  document.getElementById(
+    "resumoFinanceiroDashboard"
+  );
+
 
 /* ==========================================
    PRESENÇA
@@ -352,6 +357,430 @@ async function carregarFotoUsuario() {
 
 
 /* ==========================================
+   FINANCEIRO
+   ESTADO VISUAL DOS MESES
+========================================== */
+
+function definirEstadoMesFinanceiroDashboard(
+  numeroMes,
+  status
+) {
+
+  const numero =
+    String(
+      numeroMes
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  const elemento =
+    document.getElementById(
+      `financeiroMes${numero}Dashboard`
+    );
+
+
+  if (
+    !elemento
+  ) {
+
+    return;
+
+  }
+
+
+  const areaStatus =
+    elemento.querySelector(
+      "div"
+    );
+
+
+  /* --------------------------------------
+     SEM COBRANÇA
+  -------------------------------------- */
+
+  if (
+    !status
+  ) {
+
+    elemento.style.background =
+      "#f5f5f5";
+
+    elemento.style.borderColor =
+      "#d8d8d8";
+
+    elemento.style.color =
+      "";
+
+
+    if (
+      areaStatus
+    ) {
+
+      areaStatus.textContent =
+        "—";
+
+    }
+
+
+    return;
+
+  }
+
+
+  /* --------------------------------------
+     MENSALIDADE PAGA
+  -------------------------------------- */
+
+  if (
+    status ===
+    "paga"
+  ) {
+
+    elemento.style.background =
+      "#e4f3e8";
+
+    elemento.style.borderColor =
+      "#70ad7d";
+
+    elemento.style.color =
+      "#246b35";
+
+
+    if (
+      areaStatus
+    ) {
+
+      areaStatus.textContent =
+        "✓";
+
+    }
+
+
+    return;
+
+  }
+
+
+  /* --------------------------------------
+     MENSALIDADE EM ABERTO
+  -------------------------------------- */
+
+  if (
+    status ===
+    "aberta"
+  ) {
+
+    elemento.style.background =
+      "#f7dddd";
+
+    elemento.style.borderColor =
+      "#c97575";
+
+    elemento.style.color =
+      "#9a2929";
+
+
+    if (
+      areaStatus
+    ) {
+
+      areaStatus.textContent =
+        "!";
+
+    }
+
+
+    return;
+
+  }
+
+
+  /* --------------------------------------
+     OUTRO STATUS
+  -------------------------------------- */
+
+  elemento.style.background =
+    "#f5f5f5";
+
+  elemento.style.borderColor =
+    "#d8d8d8";
+
+  elemento.style.color =
+    "";
+
+
+  if (
+    areaStatus
+  ) {
+
+    areaStatus.textContent =
+      "—";
+
+  }
+
+}
+
+
+/* ==========================================
+   FINANCEIRO
+   LIMPAR QUADRO
+========================================== */
+
+function limparMesesFinanceiroDashboard() {
+
+  for (
+    let mes = 1;
+    mes <= 12;
+    mes++
+  ) {
+
+    definirEstadoMesFinanceiroDashboard(
+      mes,
+      null
+    );
+
+  }
+
+}
+
+
+/* ==========================================
+   FINANCEIRO
+   CARREGAR MENSALIDADES
+========================================== */
+
+async function carregarMensalidadesFinanceiroDashboard() {
+
+  if (
+    !window.supabaseClient ||
+    !areaFinanceiroDashboard
+  ) {
+
+    return;
+
+  }
+
+
+  limparMesesFinanceiroDashboard();
+
+
+  if (
+    resumoFinanceiroDashboard
+  ) {
+
+    resumoFinanceiroDashboard.textContent =
+      "Carregando situação financeira...";
+
+  }
+
+
+  try {
+
+    const resultadoSessao =
+      await window.supabaseClient.auth
+        .getSession();
+
+
+    if (
+      resultadoSessao.error
+    ) {
+
+      throw resultadoSessao.error;
+
+    }
+
+
+    const sessao =
+      resultadoSessao.data.session;
+
+
+    if (
+      !sessao
+    ) {
+
+      return;
+
+    }
+
+
+    const resultadoUsuario =
+      await window.supabaseClient
+        .from(
+          "usuarios"
+        )
+        .select(
+          "id"
+        )
+        .eq(
+          "auth_id",
+          sessao.user.id
+        )
+        .maybeSingle();
+
+
+    if (
+      resultadoUsuario.error
+    ) {
+
+      throw resultadoUsuario.error;
+
+    }
+
+
+    if (
+      !resultadoUsuario.data
+    ) {
+
+      return;
+
+    }
+
+
+    const usuarioId =
+      resultadoUsuario.data.id;
+
+
+    const resultadoCobrancas =
+      await window.supabaseClient
+        .from(
+          "financeiro_cobrancas"
+        )
+        .select(`
+          id,
+          competencia,
+          status
+        `)
+        .eq(
+          "usuario_id",
+          usuarioId
+        )
+        .eq(
+          "tipo",
+          "mensalidade"
+        )
+        .gte(
+          "competencia",
+          "2026-01-01"
+        )
+        .lte(
+          "competencia",
+          "2026-12-31"
+        )
+        .order(
+          "competencia",
+          {
+            ascending:
+              true
+          }
+        );
+
+
+    if (
+      resultadoCobrancas.error
+    ) {
+
+      throw resultadoCobrancas.error;
+
+    }
+
+
+    const cobrancas =
+      resultadoCobrancas.data ||
+      [];
+
+
+    cobrancas.forEach(
+      (cobranca) => {
+
+        if (
+          !cobranca.competencia
+        ) {
+
+          return;
+
+        }
+
+
+        const partes =
+          String(
+            cobranca.competencia
+          ).split(
+            "-"
+          );
+
+
+        if (
+          partes.length < 2
+        ) {
+
+          return;
+
+        }
+
+
+        const mes =
+          Number(
+            partes[1]
+          );
+
+
+        if (
+          mes < 1 ||
+          mes > 12
+        ) {
+
+          return;
+
+        }
+
+
+        definirEstadoMesFinanceiroDashboard(
+          mes,
+          cobranca.status
+        );
+
+      }
+    );
+
+
+    if (
+      resumoFinanceiroDashboard
+    ) {
+
+      resumoFinanceiroDashboard.textContent =
+        "Situação financeira em desenvolvimento.";
+
+    }
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao carregar mensalidades do Financeiro:",
+      erro
+    );
+
+
+    limparMesesFinanceiroDashboard();
+
+
+    if (
+      resumoFinanceiroDashboard
+    ) {
+
+      resumoFinanceiroDashboard.textContent =
+        "Não foi possível carregar sua situação financeira.";
+
+    }
+
+  }
+
+}
+
+
+/* ==========================================
    ACESSO AO FINANCEIRO
 ========================================== */
 
@@ -420,6 +849,9 @@ async function verificarAcessoFinanceiroDashboard() {
 
     areaFinanceiroDashboard.hidden =
       false;
+
+
+    await carregarMensalidadesFinanceiroDashboard();
 
 
   } catch (erro) {
@@ -593,10 +1025,7 @@ function criarNomesFuncoesExibicaoDashboard(
 
 
   return resultado;
-}
-
-
-/* ==========================================
+}/* ==========================================
    FUNÇÕES DO USUÁRIO
 ========================================== */
 
@@ -1483,1966 +1912,3 @@ function criarBotaoConfirmacaoMediumDashboard(
   }
 
 }
-
-
-/* ==========================================
-   BOTÕES DA PRÓXIMA ATIVIDADE
-========================================== */
-
-async function atualizarBotoesProximaAtividadeDashboard() {
-
-  if (
-    !proximaAtividadeCarregadaDashboard ||
-    !funcoesUsuarioCarregadasDashboard
-  ) {
-
-    return;
-
-  }
-
-
-  const area =
-    document.getElementById(
-      "areaConfirmacaoProximaAtividadeDashboard"
-    );
-
-
-  if (
-    !area
-  ) {
-
-    return;
-
-  }
-
-
-  const podeConfirmar =
-    usuarioPodeConfirmarAtividadeDashboard(
-      proximaAtividadeAtualDashboard
-    );
-
-
-  const podeVerConfirmacoes =
-    usuarioEhDiretoriaDashboard() &&
-    atividadePermiteAusenciasDashboard(
-      proximaAtividadeAtualDashboard
-    );
-
-
-  area.innerHTML =
-    "";
-
-
-  if (
-    !podeConfirmar &&
-    !podeVerConfirmacoes
-  ) {
-
-    area.hidden =
-      true;
-
-    return;
-
-  }
-
-
-  area.hidden =
-    false;
-
-
-  if (
-    podeConfirmar
-  ) {
-
-    await buscarConfirmacaoDashboard();
-
-
-    criarBotaoConfirmacaoMediumDashboard(
-      area
-    );
-
-  }
-
-
-  if (
-    podeVerConfirmacoes
-  ) {
-
-    const areaBotoesDiretoria =
-      document.createElement(
-        "div"
-      );
-
-
-    areaBotoesDiretoria.style.display =
-      "grid";
-
-
-    areaBotoesDiretoria.style.gridTemplateColumns =
-      "repeat(3, minmax(0, 1fr))";
-
-
-    areaBotoesDiretoria.style.gap =
-      "8px";
-
-
-    areaBotoesDiretoria.style.width =
-      "100%";
-
-
-    areaBotoesDiretoria.style.marginTop =
-      podeConfirmar
-        ? "8px"
-        : "0";
-
-
-    const botaoAusencias =
-      document.createElement(
-        "button"
-      );
-
-
-    botaoAusencias.type =
-      "button";
-
-
-    botaoAusencias.id =
-      "botaoVerAusenciasDashboard";
-
-
-    botaoAusencias.className =
-      "botao-confirmar-presenca-dashboard";
-
-
-    botaoAusencias.textContent =
-      "Ver ausências";
-
-
-    botaoAusencias.style.marginTop =
-      "0";
-
-
-    botaoAusencias.style.width =
-      "100%";
-
-
-    botaoAusencias.style.minWidth =
-      "0";
-
-
-    botaoAusencias.style.paddingLeft =
-      "6px";
-
-
-    botaoAusencias.style.paddingRight =
-      "6px";
-
-
-    botaoAusencias.style.whiteSpace =
-      "normal";
-
-
-    botaoAusencias.addEventListener(
-      "click",
-      () => {
-
-        window.location.href =
-          "ausencias-atividade.html";
-
-      }
-    );
-
-
-    areaBotoesDiretoria.appendChild(
-      botaoAusencias
-    );
-
-
-    const botaoPresencas =
-      document.createElement(
-        "button"
-      );
-
-
-    botaoPresencas.type =
-      "button";
-
-
-    botaoPresencas.id =
-      "botaoVerPresencasDashboard";
-
-
-    botaoPresencas.className =
-      "botao-confirmar-presenca-dashboard";
-
-
-    botaoPresencas.textContent =
-      "Ver presenças";
-
-
-    botaoPresencas.style.marginTop =
-      "0";
-
-
-    botaoPresencas.style.width =
-      "100%";
-
-
-    botaoPresencas.style.minWidth =
-      "0";
-
-
-    botaoPresencas.style.paddingLeft =
-      "6px";
-
-
-    botaoPresencas.style.paddingRight =
-      "6px";
-
-
-    botaoPresencas.style.whiteSpace =
-      "normal";
-
-
-    botaoPresencas.addEventListener(
-      "click",
-      () => {
-
-        window.location.href =
-          "presencas-atividade.html";
-
-      }
-    );
-
-
-    areaBotoesDiretoria.appendChild(
-      botaoPresencas
-    );
-
-
-    const botaoNaoRespondeu =
-      document.createElement(
-        "button"
-      );
-
-
-    botaoNaoRespondeu.type =
-      "button";
-
-
-    botaoNaoRespondeu.id =
-      "botaoVerNaoRespondeuDashboard";
-
-
-    botaoNaoRespondeu.className =
-      "botao-confirmar-presenca-dashboard";
-
-
-    botaoNaoRespondeu.textContent =
-      "Ver quem não respondeu";
-
-
-    botaoNaoRespondeu.style.marginTop =
-      "0";
-
-
-    botaoNaoRespondeu.style.width =
-      "100%";
-
-
-    botaoNaoRespondeu.style.minWidth =
-      "0";
-
-
-    botaoNaoRespondeu.style.paddingLeft =
-      "6px";
-
-
-    botaoNaoRespondeu.style.paddingRight =
-      "6px";
-
-
-    botaoNaoRespondeu.style.whiteSpace =
-      "normal";
-
-
-    botaoNaoRespondeu.addEventListener(
-      "click",
-      () => {
-
-        window.location.href =
-          "nao-responderam-atividade.html";
-
-      }
-    );
-
-
-    areaBotoesDiretoria.appendChild(
-      botaoNaoRespondeu
-    );
-
-
-    area.appendChild(
-      areaBotoesDiretoria
-    );
-
-  }
-
-}
-
-
-/* ==========================================
-   PRÓXIMA ATIVIDADE
-========================================== */
-
-async function carregarProximaAtividade() {
-
-  if (
-    !window.supabaseClient ||
-    !proximaAtividadeDashboard
-  ) {
-
-    return;
-
-  }
-
-
-  try {
-
-    proximaAtividadeAtualDashboard =
-      null;
-
-    proximaAtividadeCarregadaDashboard =
-      false;
-
-
-    const agora =
-      new Date();
-
-
-    const ano =
-      agora.getFullYear();
-
-
-    const mes =
-      String(
-        agora.getMonth() + 1
-      ).padStart(
-        2,
-        "0"
-      );
-
-
-    const dia =
-      String(
-        agora.getDate()
-      ).padStart(
-        2,
-        "0"
-      );
-
-
-    const hojeISO =
-      `${ano}-${mes}-${dia}`;
-
-
-    const resultado =
-      await window.supabaseClient
-        .from(
-          "atividades"
-        )
-        .select(`
-          id,
-          titulo,
-          data,
-          hora_inicio,
-          tipo_atividade,
-          tipo_outro
-        `)
-        .gte(
-          "data",
-          hojeISO
-        )
-        .order(
-          "data",
-          {
-            ascending:
-              true
-          }
-        )
-        .order(
-          "hora_inicio",
-          {
-            ascending:
-              true
-          }
-        );
-
-
-    if (
-      resultado.error
-    ) {
-
-      throw resultado.error;
-
-    }
-
-
-    const atividades =
-      resultado.data ||
-      [];
-
-
-    const agoraMinutos =
-      agora.getHours() *
-        60 +
-      agora.getMinutes();
-
-
-    const proxima =
-      atividades.find(
-        (atividade) => {
-
-          if (
-            atividade.data !==
-            hojeISO
-          ) {
-
-            return true;
-
-          }
-
-
-          const horario =
-            removerSegundos(
-              atividade.hora_inicio
-            );
-
-
-          if (
-            !horario
-          ) {
-
-            return true;
-
-          }
-
-
-          const [
-            hora,
-            minuto
-          ] =
-            horario
-              .split(
-                ":"
-              )
-              .map(
-                Number
-              );
-
-
-          const atividadeMinutos =
-            hora * 60 +
-            minuto;
-
-
-          return (
-            atividadeMinutos >=
-            agoraMinutos
-          );
-
-        }
-      );
-
-
-    if (
-      !proxima
-    ) {
-
-      proximaAtividadeAtualDashboard =
-        null;
-
-      proximaAtividadeCarregadaDashboard =
-        true;
-
-
-      proximaAtividadeDashboard.innerHTML =
-        `
-          <div class="dados-atividade">
-            <span>
-              Nenhuma próxima atividade cadastrada.
-            </span>
-          </div>
-        `;
-
-
-      await atualizarBotoesProximaAtividadeDashboard();
-
-
-      return;
-
-    }
-
-
-    const data =
-      criarDataLocal(
-        proxima.data
-      );
-
-
-    const horario =
-      removerSegundos(
-        proxima.hora_inicio
-      );
-
-
-    const tipo =
-      formatarTipoAtividade(
-        proxima
-      );
-
-
-    proximaAtividadeAtualDashboard =
-      proxima;
-
-    proximaAtividadeCarregadaDashboard =
-      true;
-
-
-    proximaAtividadeDashboard.innerHTML =
-      `
-        <div class="data-atividade">
-
-          ${String(
-            data.getDate()
-          ).padStart(
-            2,
-            "0"
-          )}
-
-          <br>
-
-          ${formatarMesCurto(
-            data
-          )}
-
-        </div>
-
-
-        <div class="dados-atividade">
-
-          <strong>
-            ${tipo}
-          </strong>
-
-          <strong>
-            ${proxima.titulo}
-          </strong>
-
-          <span>
-
-            ${formatarDiaSemana(
-              data
-            )}
-
-            ${
-              horario
-                ? ` • ${horario}`
-                : ""
-            }
-
-          </span>
-
-        </div>
-
-
-        <div
-          id="areaConfirmacaoProximaAtividadeDashboard"
-          class="area-confirmacao-proxima-atividade"
-          hidden
-        >
-        </div>
-      `;
-
-
-    await atualizarBotoesProximaAtividadeDashboard();
-
-
-  } catch (erro) {
-
-    console.error(
-      "Erro ao carregar próxima atividade:",
-      erro
-    );
-
-
-    proximaAtividadeAtualDashboard =
-      null;
-
-    proximaAtividadeCarregadaDashboard =
-      true;
-
-
-    proximaAtividadeDashboard.innerHTML =
-      `
-        <div class="dados-atividade">
-
-          <span>
-            Não foi possível carregar a próxima atividade.
-          </span>
-
-        </div>
-      `;
-
-
-    await atualizarBotoesProximaAtividadeDashboard();
-
-  }
-}
-
-
-/* ==========================================
-   DATA ATUAL PARA PRESENÇA
-========================================== */
-
-function obterDataAtualISOPresencaDashboard() {
-
-  const hoje =
-    new Date();
-
-
-  const ano =
-    hoje.getFullYear();
-
-
-  const mes =
-    String(
-      hoje.getMonth() + 1
-    ).padStart(
-      2,
-      "0"
-    );
-
-
-  const dia =
-    String(
-      hoje.getDate()
-    ).padStart(
-      2,
-      "0"
-    );
-
-
-  return `${ano}-${mes}-${dia}`;
-}
-
-
-/* ==========================================
-   DATA CURTA
-========================================== */
-
-function formatarDataCurtaPresencaDashboard(
-  dataISO
-) {
-
-  if (
-    !dataISO
-  ) {
-
-    return "";
-
-  }
-
-
-  const partes =
-    String(
-      dataISO
-    ).split(
-      "-"
-    );
-
-
-  if (
-    partes.length !== 3
-  ) {
-
-    return dataISO;
-
-  }
-
-
-  return `${partes[2]}/${partes[1]}`;
-}
-
-
-/* ==========================================
-   FUNÇÃO PRINCIPAL
-========================================== */
-
-function possuiFuncaoPrincipalDashboard(
-  nome
-) {
-
-  return funcoesPresencaDashboard.some(
-    (funcao) =>
-      funcao.nome ===
-        nome &&
-      !funcao.funcao_pai_id
-  );
-}
-
-
-/* ==========================================
-   LISTAS ATUAIS
-========================================== */
-
-function obterListasAtuaisDashboard() {
-
-  const listas =
-    [];
-
-
-  if (
-    possuiFuncaoPrincipalDashboard(
-      "Médium Corrente Principal"
-    ) ||
-    possuiFuncaoPrincipalDashboard(
-      "Médium Principal"
-    )
-  ) {
-
-    listas.push(
-      "Corrente Principal"
-    );
-
-  }
-
-
-  if (
-    possuiFuncaoPrincipalDashboard(
-      "Médium em Desenvolvimento"
-    )
-  ) {
-
-    listas.push(
-      "Desenvolvimento"
-    );
-
-  }
-
-
-  if (
-    possuiFuncaoPrincipalDashboard(
-      "Ogam"
-    )
-  ) {
-
-    listas.push(
-      "Ogans"
-    );
-
-  }
-
-
-  if (
-    possuiFuncaoPrincipalDashboard(
-      "Cambone"
-    )
-  ) {
-
-    listas.push(
-      "Cambones"
-    );
-
-  }
-
-
-  if (
-    possuiFuncaoPrincipalDashboard(
-      "Cantina"
-    )
-  ) {
-
-    listas.push(
-      "Cantina"
-    );
-
-  }
-
-
-  return listas;
-}
-
-
-/* ==========================================
-   DATA DE ENTRADA NA LISTA
-========================================== */
-
-function obterDataEntradaListaDashboard(
-  nomeLista
-) {
-
-  if (
-    !usuarioPresencaDashboard
-  ) {
-
-    return null;
-
-  }
-
-
-  if (
-    nomeLista ===
-    "Corrente Principal"
-  ) {
-
-    return (
-      usuarioPresencaDashboard
-        .data_corrente_principal ||
-      usuarioPresencaDashboard
-        .data_entrada_tufra ||
-      null
-    );
-
-  }
-
-
-  if (
-    nomeLista ===
-    "Desenvolvimento"
-  ) {
-
-    return (
-      usuarioPresencaDashboard
-        .data_corrente_desenvolvimento ||
-      usuarioPresencaDashboard
-        .data_entrada_tufra ||
-      null
-    );
-
-  }
-
-
-  let nomeHistorico =
-    null;
-
-
-  if (
-    nomeLista ===
-    "Ogans"
-  ) {
-
-    nomeHistorico =
-      "Ogam";
-
-  }
-
-
-  if (
-    nomeLista ===
-    "Cambones"
-  ) {
-
-    nomeHistorico =
-      "Cambone";
-
-  }
-
-
-  if (
-    nomeLista ===
-    "Cantina"
-  ) {
-
-    nomeHistorico =
-      "Cantina";
-
-  }
-
-
-  if (
-    nomeHistorico
-  ) {
-
-    const periodosAtuais =
-      historicoPresencaDashboard
-        .filter(
-          (registro) =>
-            registro.funcao_nome ===
-              nomeHistorico &&
-            !registro.data_fim
-        )
-        .sort(
-          (a, b) =>
-            String(
-              b.data_inicio || ""
-            ).localeCompare(
-              String(
-                a.data_inicio || ""
-              )
-            )
-        );
-
-
-    if (
-      periodosAtuais[0]
-        ?.data_inicio
-    ) {
-
-      return periodosAtuais[0]
-        .data_inicio;
-
-    }
-
-  }
-
-
-  return (
-    usuarioPresencaDashboard
-      .data_entrada_tufra ||
-    null
-  );
-}
-
-
-/* ==========================================
-   BUSCAR TIPO DA LISTA
-========================================== */
-
-async function buscarTipoListaDashboard(
-  nomeLista
-) {
-
-  const resultado =
-    await window.supabaseClient
-      .from(
-        "tipos_lista_presenca"
-      )
-      .select(`
-        id,
-        nome,
-        tipo_atividade,
-        ativo,
-        ordem
-      `)
-      .eq(
-        "nome",
-        nomeLista
-      )
-      .eq(
-        "ativo",
-        true
-      )
-      .maybeSingle();
-
-
-  if (
-    resultado.error
-  ) {
-
-    throw resultado.error;
-
-  }
-
-
-  return resultado.data ||
-    null;
-}
-
-
-/* ==========================================
-   ÚLTIMAS 10 ATIVIDADES
-========================================== */
-
-async function buscarUltimasAtividadesDashboard(
-  tipoAtividade
-) {
-
-  const hojeISO =
-    obterDataAtualISOPresencaDashboard();
-
-
-  const resultado =
-    await window.supabaseClient
-      .from(
-        "atividades"
-      )
-      .select(`
-        id,
-        titulo,
-        data,
-        hora_inicio,
-        tipo_atividade
-      `)
-      .eq(
-        "tipo_atividade",
-        tipoAtividade
-      )
-      .lte(
-        "data",
-        hojeISO
-      )
-      .order(
-        "data",
-        {
-          ascending:
-            false
-        }
-      )
-      .order(
-        "hora_inicio",
-        {
-          ascending:
-            false
-        }
-      )
-      .limit(
-        10
-      );
-
-
-  if (
-    resultado.error
-  ) {
-
-    throw resultado.error;
-
-  }
-
-
-  return (
-    resultado.data ||
-    []
-  ).reverse();
-}
-
-
-/* ==========================================
-   BUSCAR PRESENÇAS
-========================================== */
-
-async function buscarPresencasDashboard(
-  tipoListaId,
-  atividades
-) {
-
-  if (
-    !usuarioPresencaDashboard ||
-    atividades.length === 0
-  ) {
-
-    return [];
-
-  }
-
-
-  const idsAtividades =
-    atividades.map(
-      (atividade) =>
-        atividade.id
-    );
-
-
-  const resultado =
-    await window.supabaseClient
-      .from(
-        "presencas"
-      )
-      .select(`
-        atividade_id,
-        usuario_id,
-        status
-      `)
-      .eq(
-        "tipo_lista_id",
-        tipoListaId
-      )
-      .eq(
-        "usuario_id",
-        usuarioPresencaDashboard.id
-      )
-      .in(
-        "atividade_id",
-        idsAtividades
-      );
-
-
-  if (
-    resultado.error
-  ) {
-
-    throw resultado.error;
-
-  }
-
-
-  return resultado.data ||
-    [];
-}
-
-
-/* ==========================================
-   SITUAÇÃO
-========================================== */
-
-function obterSituacaoPresencaDashboard(
-  atividade,
-  presencas,
-  dataEntradaLista
-) {
-
-  if (
-    dataEntradaLista &&
-    atividade.data <
-      dataEntradaLista
-  ) {
-
-    return {
-
-      texto:
-        "x",
-
-      tipo:
-        "nao_participava",
-
-      classe:
-        "status-relatorio-nao-participava"
-
-    };
-
-  }
-
-
-  const registro =
-    presencas.find(
-      (item) =>
-        item.atividade_id ===
-        atividade.id
-    );
-
-
-  if (
-    registro?.status ===
-    "presente"
-  ) {
-
-    return {
-
-      texto:
-        "P",
-
-      tipo:
-        "presente",
-
-      classe:
-        "status-relatorio-presente"
-
-    };
-
-  }
-
-
-  if (
-    registro?.status ===
-    "falta"
-  ) {
-
-    return {
-
-      texto:
-        "F",
-
-      tipo:
-        "falta",
-
-      classe:
-        "status-relatorio-falta"
-
-    };
-
-  }
-
-
-  if (
-    registro?.status ===
-    "justificada"
-  ) {
-
-    return {
-
-      texto:
-        "J",
-
-      tipo:
-        "justificada",
-
-      classe:
-        "status-relatorio-justificado"
-
-    };
-
-  }
-
-
-  return {
-
-    texto:
-      "—",
-
-    tipo:
-      "pendente",
-
-    classe:
-      "status-relatorio-pendente"
-
-  };
-}
-
-
-/* ==========================================
-   CALCULAR RESUMO
-========================================== */
-
-function calcularResumoPresencaDashboard(
-  atividades,
-  presencas,
-  dataEntradaLista
-) {
-
-  let presentes =
-    0;
-
-  let faltas =
-    0;
-
-  let justificadas =
-    0;
-
-
-  atividades.forEach(
-    (atividade) => {
-
-      const situacao =
-        obterSituacaoPresencaDashboard(
-          atividade,
-          presencas,
-          dataEntradaLista
-        );
-
-
-      if (
-        situacao.tipo ===
-        "presente"
-      ) {
-
-        presentes++;
-
-      }
-
-
-      if (
-        situacao.tipo ===
-        "falta"
-      ) {
-
-        faltas++;
-
-      }
-
-
-      if (
-        situacao.tipo ===
-        "justificada"
-      ) {
-
-        justificadas++;
-
-      }
-
-    }
-  );
-
-
-  const totalValidos =
-    presentes +
-    faltas +
-    justificadas;
-
-
-  let frequencia =
-    null;
-
-
-  if (
-    totalValidos > 0
-  ) {
-
-    frequencia =
-      (
-        presentes /
-        totalValidos
-      ) * 100;
-
-  }
-
-
-  return {
-
-    presentes,
-    faltas,
-    justificadas,
-    frequencia
-
-  };
-}
-
-
-/* ==========================================
-   CRIAR BLOCO DA LISTA
-========================================== */
-
-function criarBlocoPresencaDashboard(
-  tipoLista,
-  atividades,
-  presencas
-) {
-
-  const bloco =
-    document.createElement(
-      "div"
-    );
-
-
-  bloco.className =
-    "bloco-resumo-presenca-associado";
-
-
-  const titulo =
-    document.createElement(
-      "h3"
-    );
-
-
-  titulo.className =
-    "titulo-resumo-presenca-associado";
-
-
-  titulo.textContent =
-    tipoLista.nome;
-
-
-  bloco.appendChild(
-    titulo
-  );
-
-
-  if (
-    atividades.length === 0
-  ) {
-
-    const mensagem =
-      document.createElement(
-        "p"
-      );
-
-
-    mensagem.className =
-      "mensagem-sem-atividades";
-
-
-    mensagem.textContent =
-      "Nenhuma atividade realizada.";
-
-
-    bloco.appendChild(
-      mensagem
-    );
-
-
-    return bloco;
-
-  }
-
-
-  const dataEntradaLista =
-    obterDataEntradaListaDashboard(
-      tipoLista.nome
-    );
-
-
-  const resumo =
-    calcularResumoPresencaDashboard(
-      atividades,
-      presencas,
-      dataEntradaLista
-    );
-
-
-  const container =
-    document.createElement(
-      "div"
-    );
-
-
-  container.className =
-    "container-tabela-relatorio-presenca";
-
-
-  const tabela =
-    document.createElement(
-      "table"
-    );
-
-
-  tabela.className =
-    "tabela-relatorio-presenca tabela-resumo-presenca-associado";
-
-
-  const thead =
-    document.createElement(
-      "thead"
-    );
-
-
-  const linhaCabecalho =
-    document.createElement(
-      "tr"
-    );
-
-
-  atividades.forEach(
-    (atividade) => {
-
-      const th =
-        document.createElement(
-          "th"
-        );
-
-
-      th.className =
-        "coluna-data-relatorio";
-
-
-      th.textContent =
-        formatarDataCurtaPresencaDashboard(
-          atividade.data
-        );
-
-
-      th.title =
-        atividade.titulo;
-
-
-      linhaCabecalho.appendChild(
-        th
-      );
-
-    }
-  );
-
-
-  [
-    "P",
-    "F",
-    "J",
-    "Freq."
-  ].forEach(
-    (texto) => {
-
-      const th =
-        document.createElement(
-          "th"
-        );
-
-
-      th.className =
-        "coluna-resumo-presenca-final";
-
-
-      if (
-        texto ===
-        "Freq."
-      ) {
-
-        th.classList.add(
-          "coluna-resumo-presenca-frequencia"
-        );
-
-      }
-
-
-      th.textContent =
-        texto;
-
-
-      linhaCabecalho.appendChild(
-        th
-      );
-
-    }
-  );
-
-
-  thead.appendChild(
-    linhaCabecalho
-  );
-
-
-  tabela.appendChild(
-    thead
-  );
-
-
-  const tbody =
-    document.createElement(
-      "tbody"
-    );
-
-
-  const linha =
-    document.createElement(
-      "tr"
-    );
-
-
-  atividades.forEach(
-    (atividade) => {
-
-      const td =
-        document.createElement(
-          "td"
-        );
-
-
-      td.className =
-        "celula-status-relatorio";
-
-
-      const situacao =
-        obterSituacaoPresencaDashboard(
-          atividade,
-          presencas,
-          dataEntradaLista
-        );
-
-
-      td.textContent =
-        situacao.texto;
-
-
-      if (
-        situacao.classe
-      ) {
-
-        td.classList.add(
-          situacao.classe
-        );
-
-      }
-
-
-      linha.appendChild(
-        td
-      );
-
-    }
-  );
-
-
-  const tdP =
-    document.createElement(
-      "td"
-    );
-
-
-  tdP.className =
-    "valor-atividade-presente coluna-resumo-presenca-final";
-
-
-  tdP.textContent =
-    String(
-      resumo.presentes
-    );
-
-
-  linha.appendChild(
-    tdP
-  );
-
-
-  const tdF =
-    document.createElement(
-      "td"
-    );
-
-
-  tdF.className =
-    "valor-atividade-falta coluna-resumo-presenca-final";
-
-
-  tdF.textContent =
-    String(
-      resumo.faltas
-    );
-
-
-  linha.appendChild(
-    tdF
-  );
-
-
-  const tdJ =
-    document.createElement(
-      "td"
-    );
-
-
-  tdJ.className =
-    "valor-atividade-justificada coluna-resumo-presenca-final";
-
-
-  tdJ.textContent =
-    String(
-      resumo.justificadas
-    );
-
-
-  linha.appendChild(
-    tdJ
-  );
-
-
-  const tdFreq =
-    document.createElement(
-      "td"
-    );
-
-
-  tdFreq.className =
-    "valor-frequencia-atividade coluna-resumo-presenca-frequencia";
-
-
-  if (
-    resumo.frequencia ===
-    null
-  ) {
-
-    tdFreq.textContent =
-      "—";
-
-  } else {
-
-    tdFreq.textContent =
-      `${resumo.frequencia
-        .toFixed(
-          1
-        )
-        .replace(
-          ".",
-          ","
-        )}%`;
-
-  }
-
-
-  linha.appendChild(
-    tdFreq
-  );
-
-
-  tbody.appendChild(
-    linha
-  );
-
-
-  tabela.appendChild(
-    tbody
-  );
-
-
-  container.appendChild(
-    tabela
-  );
-
-
-  bloco.appendChild(
-    container
-  );
-
-
-  return bloco;
-}
-
-
-/* ==========================================
-   CARREGAR DADOS DO USUÁRIO PARA PRESENÇA
-========================================== */
-
-async function carregarDadosPresencaDashboard() {
-
-  if (
-    !window.supabaseClient ||
-    !areaPresencaDashboard
-  ) {
-
-    return;
-
-  }
-
-
-  try {
-
-    const resultadoSessao =
-      await window.supabaseClient.auth
-        .getSession();
-
-
-    if (
-      resultadoSessao.error
-    ) {
-
-      throw resultadoSessao.error;
-
-    }
-
-
-    const sessao =
-      resultadoSessao.data.session;
-
-
-    if (
-      !sessao
-    ) {
-
-      return;
-
-    }
-
-
-    const resultadoUsuario =
-      await window.supabaseClient
-        .from(
-          "usuarios"
-        )
-        .select(`
-          id,
-          data_entrada_tufra,
-          data_corrente_desenvolvimento,
-          data_corrente_principal,
-
-          usuario_funcoes!usuario_funcoes_usuario_id_fkey (
-
-            funcoes (
-              id,
-              nome,
-              funcao_pai_id
-            )
-
-          )
-        `)
-        .eq(
-          "auth_id",
-          sessao.user.id
-        )
-        .maybeSingle();
-
-
-    if (
-      resultadoUsuario.error
-    ) {
-
-      throw resultadoUsuario.error;
-
-    }
-
-
-    if (
-      !resultadoUsuario.data
-    ) {
-
-      return;
-
-    }
-
-
-    usuarioPresencaDashboard =
-      resultadoUsuario.data;
-
-
-    funcoesPresencaDashboard =
-      (
-        resultadoUsuario.data
-          .usuario_funcoes ||
-        []
-      )
-        .map(
-          (item) =>
-            item.funcoes
-        )
-        .filter(
-          Boolean
-        );
-
-
-    const resultadoHistorico =
-      await window.supabaseClient
-        .from(
-          "historico_funcoes_associado"
-        )
-        .select(`
-          id,
-          funcao_nome,
-          data_inicio,
-          data_fim
-        `)
-        .eq(
-          "usuario_id",
-          usuarioPresencaDashboard.id
-        );
-
-
-    if (
-      resultadoHistorico.error
-    ) {
-
-      throw resultadoHistorico.error;
-
-    }
-
-
-    historicoPresencaDashboard =
-      resultadoHistorico.data ||
-      [];
-
-
-    await carregarResumoPresencaDashboard();
-
-
-  } catch (erro) {
-
-    console.error(
-      "Erro ao carregar presença do dashboard:",
-      erro
-    );
-
-
-    areaPresencaDashboard.hidden =
-      false;
-
-
-    listasPresencaDashboard.innerHTML =
-      "<p>Não foi possível carregar suas presenças.</p>";
-
-  }
-}
-
-
-/* ==========================================
-   CARREGAR RESUMO DE PRESENÇA
-========================================== */
-
-async function carregarResumoPresencaDashboard() {
-
-  listasPresencaDashboard.innerHTML =
-    "";
-
-
-  const nomesListas =
-    obterListasAtuaisDashboard();
-
-
-  if (
-    nomesListas.length === 0
-  ) {
-
-    areaPresencaDashboard.hidden =
-      true;
-
-
-    return;
-
-  }
-
-
-  areaPresencaDashboard.hidden =
-    false;
-
-
-  mensagemSemPresencaDashboard.hidden =
-    true;
-
-
-  for (
-    const nomeLista of nomesListas
-  ) {
-
-    const tipoLista =
-      await buscarTipoListaDashboard(
-        nomeLista
-      );
-
-
-    if (
-      !tipoLista
-    ) {
-
-      continue;
-
-    }
-
-
-    const atividades =
-      await buscarUltimasAtividadesDashboard(
-        tipoLista.tipo_atividade
-      );
-
-
-    const presencas =
-      await buscarPresencasDashboard(
-        tipoLista.id,
-        atividades
-      );
-
-
-    const bloco =
-      criarBlocoPresencaDashboard(
-        tipoLista,
-        atividades,
-        presencas
-      );
-
-
-    listasPresencaDashboard.appendChild(
-      bloco
-    );
-
-  }
-
-
-  if (
-    listasPresencaDashboard.children.length ===
-    0
-  ) {
-
-    mensagemSemPresencaDashboard.hidden =
-      false;
-
-  }
-}
-
-
-/* ==========================================
-   INICIALIZAÇÃO
-========================================== */
-
-atualizarSaudacao();
-
-carregarFotoUsuario();
-
-verificarAcessoFinanceiroDashboard();
-
-carregarFuncoesUsuario();
-
-carregarProximaAtividade();
-
-carregarDadosPresencaDashboard();
