@@ -1,6 +1,5 @@
 "use strict";
 
-
 /* ==========================================
    ELEMENTOS
 ========================================== */
@@ -259,7 +258,6 @@ let audioRelatoUrl =
 let audioRelatoDuracao =
   null;
 
-
 let audioOrientacaoBlob =
   null;
 
@@ -268,7 +266,6 @@ let audioOrientacaoUrl =
 
 let audioOrientacaoDuracao =
   null;
-
 
 let gravacaoAtual =
   null;
@@ -374,10 +371,8 @@ function definirDataAtual() {
   const agora =
     new Date();
 
-
   const ano =
     agora.getFullYear();
-
 
   const mes =
     String(
@@ -387,7 +382,6 @@ function definirDataAtual() {
       "0"
     );
 
-
   const dia =
     String(
       agora.getDate()
@@ -395,7 +389,6 @@ function definirDataAtual() {
       2,
       "0"
     );
-
 
   dataAtendimento.value =
     `${ano}-${mes}-${dia}`;
@@ -414,7 +407,6 @@ function mostrarMensagem(
   mensagemNovoAtendimento.textContent =
     texto;
 
-
   mensagemNovoAtendimento.hidden =
     false;
 
@@ -425,7 +417,6 @@ function esconderMensagem() {
 
   mensagemNovoAtendimento.textContent =
     "";
-
 
   mensagemNovoAtendimento.hidden =
     true;
@@ -446,16 +437,13 @@ function formatarTempo(
       segundos || 0
     );
 
-
   const minutos =
     Math.floor(
       total / 60
     );
 
-
   const restante =
     total % 60;
-
 
   return `${String(
     minutos
@@ -482,7 +470,6 @@ function pararCronometro() {
       intervaloCronometro
     );
 
-
     intervaloCronometro =
       null;
 
@@ -505,7 +492,6 @@ function obterTipoAudioSuportado() {
       "audio/ogg;codecs=opus"
     ];
 
-
   for (
     const tipo
     of tipos
@@ -524,7 +510,6 @@ function obterTipoAudioSuportado() {
 
   }
 
-
   return "";
 
 }
@@ -539,7 +524,6 @@ function obterExtensaoAudio(
       blob?.type || ""
     ).toLowerCase();
 
-
   if (
     tipo.includes(
       "mp4"
@@ -550,7 +534,6 @@ function obterExtensaoAudio(
 
   }
 
-
   if (
     tipo.includes(
       "ogg"
@@ -560,7 +543,6 @@ function obterExtensaoAudio(
     return "ogg";
 
   }
-
 
   if (
     tipo.includes(
@@ -574,7 +556,6 @@ function obterExtensaoAudio(
     return "mp3";
 
   }
-
 
   return "webm";
 
@@ -620,7 +601,6 @@ function pararTodosAudios() {
   playerAudioRelato.currentTime =
     0;
 
-
   playerAudioOrientacao.pause();
 
   playerAudioOrientacao.currentTime =
@@ -635,12 +615,10 @@ async function reproduzirAudio(
 
   pararTodosAudios();
 
-
   try {
 
     player.currentTime =
       0;
-
 
     await player.play();
 
@@ -650,7 +628,6 @@ async function reproduzirAudio(
       "Erro ao reproduzir áudio:",
       erro
     );
-
 
     mostrarMensagem(
       "Não foi possível reproduzir o áudio."
@@ -666,7 +643,6 @@ function pararAudio(
 ) {
 
   player.pause();
-
 
   player.currentTime =
     0;
@@ -713,10 +689,8 @@ function atualizarStatusFalaTexto(
       ? statusFalaTextoRelato
       : statusFalaTextoOrientacao;
 
-
   elemento.textContent =
     texto;
-
 
   elemento.hidden =
     !visivel;
@@ -764,10 +738,8 @@ function finalizarFalarParaTexto() {
 
   }
 
-
   reconhecimentoTextoFinalizando =
     true;
-
 
   try {
 
@@ -795,9 +767,7 @@ function iniciarFalarParaTexto(
 
   esconderMensagem();
 
-
   pararTodosAudios();
-
 
   if (
     gravacaoAtual
@@ -811,12 +781,6 @@ function iniciarFalarParaTexto(
 
   }
 
-
-  /*
-    Se já está reconhecendo este campo,
-    o toque serve para finalizar.
-  */
-
   if (
     reconhecimentoTextoAtual &&
     tipoReconhecimentoTextoAtual === tipo
@@ -827,7 +791,6 @@ function iniciarFalarParaTexto(
     return;
 
   }
-
 
   if (
     reconhecimentoTextoAtual
@@ -840,7 +803,6 @@ function iniciarFalarParaTexto(
     return;
 
   }
-
 
   if (
     !reconhecimentoDisponivel()
@@ -855,79 +817,51 @@ function iniciarFalarParaTexto(
 
   }
 
-
   const ClasseReconhecimento =
     obterClasseReconhecimento();
-
 
   const reconhecimento =
     new ClasseReconhecimento();
 
-
   reconhecimento.lang =
     "pt-BR";
-
-
-  /*
-    Muito importante:
-
-    Não usamos resultados provisórios.
-    Isso evita aquela duplicação que
-    aconteceu no primeiro teste.
-  */
 
   reconhecimento.interimResults =
     false;
 
-
   reconhecimento.continuous =
     true;
-
 
   reconhecimento.maxAlternatives =
     1;
 
-
   reconhecimentoTextoAtual =
     reconhecimento;
-
 
   tipoReconhecimentoTextoAtual =
     tipo;
 
-
   textoReconhecidoAtual =
     "";
 
-
   reconhecimentoTextoFinalizando =
     false;
-
 
   const botao =
     obterBotaoFalaTexto(
       tipo
     );
 
-
   botao.textContent =
     "■ Finalizar fala";
-
 
   atualizarStatusFalaTexto(
     tipo,
     "Ouvindo... fale normalmente. O texto aparecerá somente quando finalizar."
   );
 
-
   reconhecimento.onresult =
     (evento) => {
-
-      /*
-        Começamos em resultIndex para
-        não processar resultados antigos
-        novamente.
-      */
 
       for (
         let indice =
@@ -942,7 +876,6 @@ function iniciarFalarParaTexto(
             indice
           ];
 
-
         if (
           !resultado.isFinal
         ) {
@@ -951,13 +884,11 @@ function iniciarFalarParaTexto(
 
         }
 
-
         const trecho =
           String(
             resultado[0]?.transcript ||
             ""
           ).trim();
-
 
         if (
           !trecho
@@ -966,7 +897,6 @@ function iniciarFalarParaTexto(
           continue;
 
         }
-
 
         textoReconhecidoAtual =
           juntarTextos(
@@ -978,7 +908,6 @@ function iniciarFalarParaTexto(
 
     };
 
-
   reconhecimento.onerror =
     (evento) => {
 
@@ -986,7 +915,6 @@ function iniciarFalarParaTexto(
         "Erro no reconhecimento de voz:",
         evento.error
       );
-
 
       if (
         evento.error === "not-allowed" ||
@@ -998,12 +926,10 @@ function iniciarFalarParaTexto(
           "O acesso ao microfone não foi autorizado."
         );
 
-
         reconhecimentoTextoFinalizando =
           true;
 
       }
-
 
       if (
         evento.error === "no-speech"
@@ -1015,7 +941,6 @@ function iniciarFalarParaTexto(
         );
 
       }
-
 
       if (
         evento.error === "audio-capture"
@@ -1030,16 +955,8 @@ function iniciarFalarParaTexto(
 
     };
 
-
   reconhecimento.onend =
     () => {
-
-      /*
-        Se o navegador encerrou sozinho
-        durante uma pausa e o usuário ainda
-        não pediu para finalizar, tentamos
-        continuar ouvindo.
-      */
 
       if (
         !reconhecimentoTextoFinalizando
@@ -1062,18 +979,15 @@ function iniciarFalarParaTexto(
 
       }
 
-
       const campo =
         obterCampoTexto(
           tipo
         );
 
-
       const textoFinal =
         String(
           textoReconhecidoAtual || ""
         ).trim();
-
 
       if (
         textoFinal
@@ -1084,7 +998,6 @@ function iniciarFalarParaTexto(
             campo.value,
             textoFinal
           );
-
 
         atualizarStatusFalaTexto(
           tipo,
@@ -1100,28 +1013,22 @@ function iniciarFalarParaTexto(
 
       }
 
-
       botao.textContent =
         "🎤 Falar para texto";
-
 
       reconhecimentoTextoAtual =
         null;
 
-
       tipoReconhecimentoTextoAtual =
         null;
 
-
       textoReconhecidoAtual =
         "";
-
 
       reconhecimentoTextoFinalizando =
         false;
 
     };
-
 
   try {
 
@@ -1134,18 +1041,14 @@ function iniciarFalarParaTexto(
       erro
     );
 
-
     botao.textContent =
       "🎤 Falar para texto";
-
 
     reconhecimentoTextoAtual =
       null;
 
-
     tipoReconhecimentoTextoAtual =
       null;
-
 
     atualizarStatusFalaTexto(
       tipo,
@@ -1187,9 +1090,7 @@ async function iniciarGravacao(
 
   esconderMensagem();
 
-
   pararTodosAudios();
-
 
   if (
     reconhecimentoTextoAtual
@@ -1203,7 +1104,6 @@ async function iniciarGravacao(
 
   }
 
-
   if (
     !gravacaoDisponivel()
   ) {
@@ -1216,7 +1116,6 @@ async function iniciarGravacao(
 
   }
 
-
   if (
     gravacaoAtual
   ) {
@@ -1227,10 +1126,8 @@ async function iniciarGravacao(
 
   }
 
-
   let stream =
     null;
-
 
   try {
 
@@ -1240,10 +1137,8 @@ async function iniciarGravacao(
           audio: true
         });
 
-
     const mimeType =
       obterTipoAudioSuportado();
-
 
     const opcoes =
       mimeType
@@ -1253,57 +1148,46 @@ async function iniciarGravacao(
           }
         : undefined;
 
-
     const mediaRecorder =
       new MediaRecorder(
         stream,
         opcoes
       );
 
-
     const partesAudio =
       [];
 
-
     const ehRelato =
       tipo === "relato";
-
 
     const botao =
       ehRelato
         ? botaoGravarRelato
         : botaoGravarOrientacao;
 
-
     const area =
       ehRelato
         ? areaAudioRelato
         : areaAudioOrientacao;
-
 
     const status =
       ehRelato
         ? statusAudioRelato
         : statusAudioOrientacao;
 
-
     area.hidden =
       false;
-
 
     botao.textContent =
       "■ Finalizar gravação";
 
-
     segundosGravacao =
       0;
-
 
     status.textContent =
       `● Gravando... ${formatarTempo(
         segundosGravacao
       )}`;
-
 
     intervaloCronometro =
       setInterval(
@@ -1311,7 +1195,6 @@ async function iniciarGravacao(
 
           segundosGravacao +=
             1;
-
 
           status.textContent =
             `● Gravando... ${formatarTempo(
@@ -1321,7 +1204,6 @@ async function iniciarGravacao(
         },
         1000
       );
-
 
     mediaRecorder.addEventListener(
       "dataavailable",
@@ -1341,13 +1223,11 @@ async function iniciarGravacao(
       }
     );
 
-
     mediaRecorder.addEventListener(
       "stop",
       () => {
 
         pararCronometro();
-
 
         const duracaoFinal =
           Math.max(
@@ -1355,12 +1235,10 @@ async function iniciarGravacao(
             segundosGravacao
           );
 
-
         const tipoFinal =
           mediaRecorder.mimeType ||
           mimeType ||
           "audio/webm";
-
 
         const blob =
           new Blob(
@@ -1371,7 +1249,6 @@ async function iniciarGravacao(
             }
           );
 
-
         stream
           .getTracks()
           .forEach(
@@ -1381,7 +1258,6 @@ async function iniciarGravacao(
 
             }
           );
-
 
         if (
           ehRelato
@@ -1401,20 +1277,17 @@ async function iniciarGravacao(
 
         }
 
-
         gravacaoAtual =
           null;
 
       }
     );
 
-
     mediaRecorder.addEventListener(
       "error",
       () => {
 
         pararCronometro();
-
 
         stream
           .getTracks()
@@ -1426,14 +1299,11 @@ async function iniciarGravacao(
             }
           );
 
-
         gravacaoAtual =
           null;
 
-
         botao.textContent =
           "🎙️ Gravar áudio";
-
 
         mostrarMensagem(
           "Não foi possível concluir a gravação do áudio."
@@ -1441,7 +1311,6 @@ async function iniciarGravacao(
 
       }
     );
-
 
     gravacaoAtual = {
       tipo:
@@ -1454,9 +1323,7 @@ async function iniciarGravacao(
         stream
     };
 
-
     mediaRecorder.start();
-
 
   } catch (erro) {
 
@@ -1465,9 +1332,7 @@ async function iniciarGravacao(
       erro
     );
 
-
     pararCronometro();
-
 
     if (
       stream
@@ -1485,10 +1350,8 @@ async function iniciarGravacao(
 
     }
 
-
     gravacaoAtual =
       null;
-
 
     if (
       erro.name ===
@@ -1502,7 +1365,6 @@ async function iniciarGravacao(
       return;
 
     }
-
 
     mostrarMensagem(
       "Não foi possível acessar o microfone deste aparelho."
@@ -1526,50 +1388,39 @@ function salvarGravacaoRelato(
     audioRelatoUrl
   );
 
-
   audioRelatoBlob =
     blob;
 
-
   audioRelatoDuracao =
     duracao;
-
 
   audioRelatoUrl =
     URL.createObjectURL(
       blob
     );
 
-
   playerAudioRelato.src =
     audioRelatoUrl;
 
-
   statusAudioRelato.textContent =
     "Gravação finalizada";
-
 
   duracaoAudioRelato.textContent =
     `⏱ ${formatarTempo(
       audioRelatoDuracao
     )}`;
 
-
   duracaoAudioRelato.hidden =
     false;
-
 
   botaoReproduzirAudioRelato.hidden =
     false;
 
-
   botaoPararAudioRelato.hidden =
     false;
 
-
   botaoApagarAudioRelato.hidden =
     false;
-
 
   botaoGravarRelato.textContent =
     "🎙️ Gravar novamente";
@@ -1590,50 +1441,39 @@ function salvarGravacaoOrientacao(
     audioOrientacaoUrl
   );
 
-
   audioOrientacaoBlob =
     blob;
 
-
   audioOrientacaoDuracao =
     duracao;
-
 
   audioOrientacaoUrl =
     URL.createObjectURL(
       blob
     );
 
-
   playerAudioOrientacao.src =
     audioOrientacaoUrl;
 
-
   statusAudioOrientacao.textContent =
     "Gravação finalizada";
-
 
   duracaoAudioOrientacao.textContent =
     `⏱ ${formatarTempo(
       audioOrientacaoDuracao
     )}`;
 
-
   duracaoAudioOrientacao.hidden =
     false;
-
 
   botaoReproduzirAudioOrientacao.hidden =
     false;
 
-
   botaoPararAudioOrientacao.hidden =
     false;
 
-
   botaoApagarAudioOrientacao.hidden =
     false;
-
 
   botaoGravarOrientacao.textContent =
     "🎙️ Gravar novamente";
@@ -1655,61 +1495,47 @@ function apagarAudioRelato() {
 
   }
 
-
   pararAudio(
     playerAudioRelato
   );
-
 
   playerAudioRelato.removeAttribute(
     "src"
   );
 
-
   liberarUrlAudio(
     audioRelatoUrl
   );
 
-
   audioRelatoBlob =
     null;
-
 
   audioRelatoUrl =
     null;
 
-
   audioRelatoDuracao =
     null;
-
 
   duracaoAudioRelato.textContent =
     "";
 
-
   duracaoAudioRelato.hidden =
     true;
-
 
   botaoReproduzirAudioRelato.hidden =
     true;
 
-
   botaoPararAudioRelato.hidden =
     true;
-
 
   botaoApagarAudioRelato.hidden =
     true;
 
-
   statusAudioRelato.textContent =
     "";
 
-
   areaAudioRelato.hidden =
     true;
-
 
   botaoGravarRelato.textContent =
     "🎙️ Gravar áudio";
@@ -1731,61 +1557,47 @@ function apagarAudioOrientacao() {
 
   }
 
-
   pararAudio(
     playerAudioOrientacao
   );
-
 
   playerAudioOrientacao.removeAttribute(
     "src"
   );
 
-
   liberarUrlAudio(
     audioOrientacaoUrl
   );
 
-
   audioOrientacaoBlob =
     null;
-
 
   audioOrientacaoUrl =
     null;
 
-
   audioOrientacaoDuracao =
     null;
-
 
   duracaoAudioOrientacao.textContent =
     "";
 
-
   duracaoAudioOrientacao.hidden =
     true;
-
 
   botaoReproduzirAudioOrientacao.hidden =
     true;
 
-
   botaoPararAudioOrientacao.hidden =
     true;
-
 
   botaoApagarAudioOrientacao.hidden =
     true;
 
-
   statusAudioOrientacao.textContent =
     "";
 
-
   areaAudioOrientacao.hidden =
     true;
-
 
   botaoGravarOrientacao.textContent =
     "🎙️ Gravar áudio";
@@ -1811,16 +1623,13 @@ async function enviarAudio(
 
   }
 
-
   const extensao =
     obterExtensaoAudio(
       blob
     );
 
-
   const caminho =
     `${atendimentoId}/${tipo}.${extensao}`;
-
 
   const resultado =
     await window.supabaseClient
@@ -1841,7 +1650,6 @@ async function enviarAudio(
         }
       );
 
-
   if (
     resultado.error
   ) {
@@ -1849,7 +1657,6 @@ async function enviarAudio(
     throw resultado.error;
 
   }
-
 
   return caminho;
 
@@ -1869,7 +1676,6 @@ async function removerAudiosEnviados(
       Boolean
     );
 
-
   if (
     !caminhosValidos.length
   ) {
@@ -1877,7 +1683,6 @@ async function removerAudiosEnviados(
     return;
 
   }
-
 
   try {
 
@@ -1911,10 +1716,8 @@ function limparAssociadoSelecionado() {
   associadoEscolhido =
     null;
 
-
   associadoSelecionado.hidden =
     true;
-
 
   nomeAssociadoSelecionado.textContent =
     "";
@@ -1927,10 +1730,8 @@ function limparNaoAssociadoSelecionado() {
   naoAssociadoEscolhido =
     null;
 
-
   naoAssociadoSelecionado.hidden =
     true;
-
 
   nomeNaoAssociadoSelecionado.textContent =
     "";
@@ -1946,7 +1747,6 @@ function atualizarTipoPessoa() {
 
   esconderMensagem();
 
-
   if (
     tipoAssociado.checked
   ) {
@@ -1954,46 +1754,35 @@ function atualizarTipoPessoa() {
     areaAssociado.hidden =
       false;
 
-
     areaNaoAssociado.hidden =
       true;
-
 
     campoBuscaNaoAssociado.value =
       "";
 
-
     resultadoBuscaNaoAssociado.innerHTML =
       "<p>Digite pelo menos 2 letras para procurar.</p>";
 
-
     limparNaoAssociadoSelecionado();
-
 
     avisoNovoNaoAssociado.hidden =
       true;
-
 
     return;
 
   }
 
-
   areaAssociado.hidden =
     true;
-
 
   areaNaoAssociado.hidden =
     false;
 
-
   campoBuscaAssociado.value =
     "";
 
-
   resultadoBuscaAssociado.innerHTML =
     "<p>Digite o nome do associado.</p>";
-
 
   limparAssociadoSelecionado();
 
@@ -2015,61 +1804,48 @@ function criarBotaoResultado(
       "button"
     );
 
-
   botao.type =
     "button";
-
 
   botao.className =
     "item-permissao-lista";
 
-
   botao.style.width =
     "100%";
-
 
   botao.style.border =
     "0";
 
-
   botao.style.background =
     "transparent";
-
 
   botao.style.cursor =
     "pointer";
 
-
   botao.style.textAlign =
     "left";
-
 
   const dados =
     document.createElement(
       "div"
     );
 
-
   dados.className =
     "dados-permissao-lista";
-
 
   const nomeElemento =
     document.createElement(
       "strong"
     );
 
-
   nomeElemento.textContent =
     formatarNome(
       nome
     );
 
-
   dados.appendChild(
     nomeElemento
   );
-
 
   if (
     descricao
@@ -2080,10 +1856,8 @@ function criarBotaoResultado(
         "span"
       );
 
-
     descricaoElemento.textContent =
       descricao;
-
 
     dados.appendChild(
       descricaoElemento
@@ -2091,36 +1865,29 @@ function criarBotaoResultado(
 
   }
 
-
   const seta =
     document.createElement(
       "span"
     );
 
-
   seta.className =
     "seta-permissao-lista";
 
-
   seta.textContent =
     "›";
-
 
   botao.appendChild(
     dados
   );
 
-
   botao.appendChild(
     seta
   );
-
 
   botao.addEventListener(
     "click",
     acao
   );
-
 
   return botao;
 
@@ -2136,13 +1903,10 @@ async function buscarAssociados() {
   const busca =
     campoBuscaAssociado.value.trim();
 
-
   limparAssociadoSelecionado();
-
 
   resultadoBuscaAssociado.innerHTML =
     "";
-
 
   if (
     busca.length < 2
@@ -2155,60 +1919,209 @@ async function buscarAssociados() {
 
   }
 
-
   resultadoBuscaAssociado.innerHTML =
     "<p>Pesquisando...</p>";
 
-
   try {
 
-    const resultado =
-      await window.supabaseClient
-        .from(
-          "usuarios"
-        )
-        .select(`
-          id,
-          nome_completo,
-          status
-        `)
-        .eq(
-          "status",
-          "ativo"
-        )
-        .ilike(
-          "nome_completo",
-          `%${busca}%`
-        )
-        .order(
-          "nome_completo",
-          {
-            ascending:
-              true
-          }
-        )
-        .limit(
-          30
-        );
+    const [
+      resultadoUsuarios,
+      resultadoBase
+    ] =
+      await Promise.all([
 
+        window.supabaseClient
+          .from(
+            "usuarios"
+          )
+          .select(`
+            id,
+            nome_completo,
+            status
+          `)
+          .eq(
+            "status",
+            "ativo"
+          )
+          .ilike(
+            "nome_completo",
+            `%${busca}%`
+          )
+          .order(
+            "nome_completo",
+            {
+              ascending:
+                true
+            }
+          )
+          .limit(
+            30
+          ),
+
+        window.supabaseClient
+          .from(
+            "atendimentos_associados_base"
+          )
+          .select(`
+            id,
+            nome_completo,
+            usuario_id,
+            ativo
+          `)
+          .eq(
+            "ativo",
+            true
+          )
+          .ilike(
+            "nome_completo",
+            `%${busca}%`
+          )
+          .order(
+            "nome_completo",
+            {
+              ascending:
+                true
+            }
+          )
+          .limit(
+            30
+          )
+
+      ]);
 
     if (
-      resultado.error
+      resultadoUsuarios.error
     ) {
 
-      throw resultado.error;
+      throw resultadoUsuarios.error;
 
     }
 
+    if (
+      resultadoBase.error
+    ) {
 
-    const associados =
-      resultado.data ||
+      throw resultadoBase.error;
+
+    }
+
+    const associadosPorNome =
+      new Map();
+
+    const usuarios =
+      resultadoUsuarios.data ||
       [];
 
+    const associadosBase =
+      resultadoBase.data ||
+      [];
+
+    /*
+      Primeiro entram os usuários oficiais.
+
+      Caso o mesmo nome também exista
+      na base auxiliar, o cadastro oficial
+      terá prioridade.
+    */
+
+    usuarios.forEach(
+      (usuario) => {
+
+        const chave =
+          normalizarTexto(
+            usuario.nome_completo
+          );
+
+        if (
+          !chave
+        ) {
+
+          return;
+
+        }
+
+        associadosPorNome.set(
+          chave,
+          {
+            origem:
+              "usuario",
+
+            id:
+              usuario.id,
+
+            nome_completo:
+              usuario.nome_completo,
+
+            usuario_id:
+              usuario.id
+          }
+        );
+
+      }
+    );
+
+    associadosBase.forEach(
+      (associadoBase) => {
+
+        const chave =
+          normalizarTexto(
+            associadoBase.nome_completo
+          );
+
+        if (
+          !chave ||
+          associadosPorNome.has(
+            chave
+          )
+        ) {
+
+          return;
+
+        }
+
+        associadosPorNome.set(
+          chave,
+          {
+            origem:
+              "base",
+
+            id:
+              associadoBase.id,
+
+            nome_completo:
+              associadoBase.nome_completo,
+
+            usuario_id:
+              associadoBase.usuario_id ||
+              null
+          }
+        );
+
+      }
+    );
+
+    const associados =
+      Array.from(
+        associadosPorNome.values()
+      )
+        .sort(
+          (a, b) =>
+            formatarNome(
+              a.nome_completo
+            ).localeCompare(
+              formatarNome(
+                b.nome_completo
+              ),
+              "pt-BR"
+            )
+        )
+        .slice(
+          0,
+          30
+        );
 
     resultadoBuscaAssociado.innerHTML =
       "";
-
 
     if (
       !associados.length
@@ -2220,7 +2133,6 @@ async function buscarAssociados() {
       return;
 
     }
-
 
     associados.forEach(
       (associado) => {
@@ -2234,22 +2146,18 @@ async function buscarAssociados() {
               associadoEscolhido =
                 associado;
 
-
               campoBuscaAssociado.value =
                 formatarNome(
                   associado.nome_completo
                 );
-
 
               nomeAssociadoSelecionado.textContent =
                 formatarNome(
                   associado.nome_completo
                 );
 
-
               associadoSelecionado.hidden =
                 false;
-
 
               resultadoBuscaAssociado.innerHTML =
                 "";
@@ -2261,14 +2169,12 @@ async function buscarAssociados() {
       }
     );
 
-
   } catch (erro) {
 
     console.error(
       "Erro ao pesquisar associados:",
       erro
     );
-
 
     resultadoBuscaAssociado.innerHTML =
       "<p>Não foi possível pesquisar os associados.</p>";
@@ -2287,17 +2193,13 @@ async function buscarNaoAssociados() {
   const busca =
     campoBuscaNaoAssociado.value.trim();
 
-
   limparNaoAssociadoSelecionado();
-
 
   avisoNovoNaoAssociado.hidden =
     true;
 
-
   resultadoBuscaNaoAssociado.innerHTML =
     "";
-
 
   if (
     busca.length < 2
@@ -2310,10 +2212,8 @@ async function buscarNaoAssociados() {
 
   }
 
-
   resultadoBuscaNaoAssociado.innerHTML =
     "<p>Pesquisando...</p>";
-
 
   try {
 
@@ -2341,7 +2241,6 @@ async function buscarNaoAssociados() {
           30
         );
 
-
     if (
       resultado.error
     ) {
@@ -2350,15 +2249,12 @@ async function buscarNaoAssociados() {
 
     }
 
-
     const pessoas =
       resultado.data ||
       [];
 
-
     resultadoBuscaNaoAssociado.innerHTML =
       "";
-
 
     pessoas.forEach(
       (pessoa) => {
@@ -2372,26 +2268,21 @@ async function buscarNaoAssociados() {
               naoAssociadoEscolhido =
                 pessoa;
 
-
               campoBuscaNaoAssociado.value =
                 formatarNome(
                   pessoa.nome_completo
                 );
-
 
               nomeNaoAssociadoSelecionado.textContent =
                 formatarNome(
                   pessoa.nome_completo
                 );
 
-
               naoAssociadoSelecionado.hidden =
                 false;
 
-
               avisoNovoNaoAssociado.hidden =
                 true;
-
 
               resultadoBuscaNaoAssociado.innerHTML =
                 "";
@@ -2402,7 +2293,6 @@ async function buscarNaoAssociados() {
 
       }
     );
-
 
     const nomeExatoExiste =
       pessoas.some(
@@ -2420,7 +2310,6 @@ async function buscarNaoAssociados() {
         }
       );
 
-
     if (
       !nomeExatoExiste
     ) {
@@ -2429,7 +2318,6 @@ async function buscarNaoAssociados() {
         false;
 
     }
-
 
     if (
       !pessoas.length
@@ -2440,14 +2328,12 @@ async function buscarNaoAssociados() {
 
     }
 
-
   } catch (erro) {
 
     console.error(
       "Erro ao pesquisar pessoas não associadas:",
       erro
     );
-
 
     resultadoBuscaNaoAssociado.innerHTML =
       "<p>Não foi possível pesquisar as pessoas.</p>";
@@ -2468,7 +2354,6 @@ async function criarPessoaNaoAssociada() {
       campoBuscaNaoAssociado.value
     );
 
-
   if (
     nome.length < 2
   ) {
@@ -2478,7 +2363,6 @@ async function criarPessoaNaoAssociada() {
     );
 
   }
-
 
   const resultado =
     await window.supabaseClient
@@ -2498,7 +2382,6 @@ async function criarPessoaNaoAssociada() {
       `)
       .single();
 
-
   if (
     resultado.error
   ) {
@@ -2506,7 +2389,6 @@ async function criarPessoaNaoAssociada() {
     throw resultado.error;
 
   }
-
 
   return resultado.data;
 
@@ -2527,11 +2409,9 @@ function validarFormulario() {
       "Finalize a gravação de áudio antes de salvar o atendimento."
     );
 
-
     return false;
 
   }
-
 
   if (
     reconhecimentoTextoAtual
@@ -2541,11 +2421,9 @@ function validarFormulario() {
       "Finalize Falar para texto antes de salvar o atendimento."
     );
 
-
     return false;
 
   }
-
 
   if (
     !dataAtendimento.value
@@ -2555,11 +2433,9 @@ function validarFormulario() {
       "Informe a data do atendimento."
     );
 
-
     return false;
 
   }
-
 
   if (
     tipoAssociado.checked &&
@@ -2570,11 +2446,9 @@ function validarFormulario() {
       "Selecione o associado atendido."
     );
 
-
     return false;
 
   }
-
 
   if (
     tipoNaoAssociado.checked &&
@@ -2586,11 +2460,9 @@ function validarFormulario() {
       "Informe o nome da pessoa atendida."
     );
 
-
     return false;
 
   }
-
 
   if (
     !relatoAtendimento.value.trim() &&
@@ -2601,11 +2473,9 @@ function validarFormulario() {
       "Preencha o relato ou grave um áudio do relato."
     );
 
-
     return false;
 
   }
-
 
   if (
     !orientacaoAtendimento.value.trim() &&
@@ -2616,11 +2486,9 @@ function validarFormulario() {
       "Preencha a orientação / conduta ou grave um áudio."
     );
 
-
     return false;
 
   }
-
 
   return true;
 
@@ -2635,9 +2503,7 @@ async function salvarAtendimento() {
 
   esconderMensagem();
 
-
   pararTodosAudios();
-
 
   if (
     !validarFormulario()
@@ -2647,42 +2513,63 @@ async function salvarAtendimento() {
 
   }
 
-
   botaoSalvarAtendimento.disabled =
     true;
-
 
   botaoSalvarAtendimento.textContent =
     "SALVANDO...";
 
-
   let relatoAudioPath =
     null;
 
-
   let orientacaoAudioPath =
     null;
-
 
   try {
 
     let usuarioAtendidoId =
       null;
 
+    let associadoBaseId =
+      null;
 
     let pessoaNaoAssociadaId =
       null;
-
 
     if (
       tipoAssociado.checked
     ) {
 
-      usuarioAtendidoId =
-        associadoEscolhido.id;
+      if (
+        associadoEscolhido.origem ===
+        "usuario"
+      ) {
+
+        usuarioAtendidoId =
+          associadoEscolhido.id;
+
+      } else if (
+        associadoEscolhido.usuario_id
+      ) {
+
+        /*
+          Caso no futuro este registro da
+          base auxiliar seja ligado ao
+          cadastro oficial do APP,
+          usamos automaticamente o usuário.
+        */
+
+        usuarioAtendidoId =
+          associadoEscolhido.usuario_id;
+
+      } else {
+
+        associadoBaseId =
+          associadoEscolhido.id;
+
+      }
 
     }
-
 
     if (
       tipoNaoAssociado.checked
@@ -2700,7 +2587,6 @@ async function salvarAtendimento() {
         const novaPessoa =
           await criarPessoaNaoAssociada();
 
-
         pessoaNaoAssociadaId =
           novaPessoa.id;
 
@@ -2708,10 +2594,8 @@ async function salvarAtendimento() {
 
     }
 
-
     const atendimentoId =
       crypto.randomUUID();
-
 
     if (
       audioRelatoBlob
@@ -2726,7 +2610,6 @@ async function salvarAtendimento() {
 
     }
 
-
     if (
       audioOrientacaoBlob
     ) {
@@ -2740,7 +2623,6 @@ async function salvarAtendimento() {
 
     }
 
-
     const resultado =
       await window.supabaseClient
         .from(
@@ -2753,6 +2635,9 @@ async function salvarAtendimento() {
 
           usuario_id:
             usuarioAtendidoId,
+
+          associado_base_id:
+            associadoBaseId,
 
           pessoa_nao_associada_id:
             pessoaNaoAssociadaId,
@@ -2802,7 +2687,6 @@ async function salvarAtendimento() {
 
         });
 
-
     if (
       resultado.error
     ) {
@@ -2811,15 +2695,12 @@ async function salvarAtendimento() {
 
     }
 
-
     mostrarMensagem(
       "Atendimento salvo com sucesso."
     );
 
-
     botaoSalvarAtendimento.textContent =
       "Atendimento salvo";
-
 
     setTimeout(
       () => {
@@ -2831,7 +2712,6 @@ async function salvarAtendimento() {
       1200
     );
 
-
   } catch (erro) {
 
     console.error(
@@ -2839,22 +2719,18 @@ async function salvarAtendimento() {
       erro
     );
 
-
     await removerAudiosEnviados([
       relatoAudioPath,
       orientacaoAudioPath
     ]);
-
 
     mostrarMensagem(
       erro.message ||
       "Não foi possível salvar o atendimento."
     );
 
-
     botaoSalvarAtendimento.disabled =
       false;
-
 
     botaoSalvarAtendimento.textContent =
       "Salvar atendimento";
@@ -2872,7 +2748,6 @@ function atualizarAcompanhamento() {
 
   areaDataRetorno.hidden =
     !precisaAcompanhamento.checked;
-
 
   if (
     !precisaAcompanhamento.checked
@@ -2896,7 +2771,6 @@ async function carregarUsuarioLogado() {
     await window.supabaseClient.auth
       .getSession();
 
-
   if (
     resultadoSessao.error
   ) {
@@ -2905,10 +2779,8 @@ async function carregarUsuarioLogado() {
 
   }
 
-
   const sessao =
     resultadoSessao.data.session;
-
 
   if (
     !sessao
@@ -2917,11 +2789,9 @@ async function carregarUsuarioLogado() {
     window.location.href =
       "index.html";
 
-
     return false;
 
   }
-
 
   const resultadoUsuario =
     await window.supabaseClient
@@ -2937,7 +2807,6 @@ async function carregarUsuarioLogado() {
       )
       .maybeSingle();
 
-
   if (
     resultadoUsuario.error
   ) {
@@ -2945,7 +2814,6 @@ async function carregarUsuarioLogado() {
     throw resultadoUsuario.error;
 
   }
-
 
   if (
     !resultadoUsuario.data
@@ -2957,10 +2825,8 @@ async function carregarUsuarioLogado() {
 
   }
 
-
   usuarioLogadoId =
     resultadoUsuario.data.id;
-
 
   const resultadoPermissao =
     await window.supabaseClient
@@ -2976,7 +2842,6 @@ async function carregarUsuarioLogado() {
       )
       .maybeSingle();
 
-
   if (
     resultadoPermissao.error
   ) {
@@ -2985,7 +2850,6 @@ async function carregarUsuarioLogado() {
 
   }
 
-
   if (
     !resultadoPermissao.data
   ) {
@@ -2993,11 +2857,9 @@ async function carregarUsuarioLogado() {
     window.location.href =
       "administrativo.html";
 
-
     return false;
 
   }
-
 
   return true;
 
@@ -3013,12 +2875,10 @@ tipoAssociado.addEventListener(
   atualizarTipoPessoa
 );
 
-
 tipoNaoAssociado.addEventListener(
   "change",
   atualizarTipoPessoa
 );
-
 
 campoBuscaAssociado.addEventListener(
   "input",
@@ -3026,11 +2886,9 @@ campoBuscaAssociado.addEventListener(
 
     limparAssociadoSelecionado();
 
-
     clearTimeout(
       temporizadorBuscaAssociado
     );
-
 
     temporizadorBuscaAssociado =
       setTimeout(
@@ -3041,18 +2899,15 @@ campoBuscaAssociado.addEventListener(
   }
 );
 
-
 campoBuscaNaoAssociado.addEventListener(
   "input",
   () => {
 
     limparNaoAssociadoSelecionado();
 
-
     clearTimeout(
       temporizadorBuscaNaoAssociado
     );
-
 
     temporizadorBuscaNaoAssociado =
       setTimeout(
@@ -3080,11 +2935,9 @@ botaoGravarRelato.addEventListener(
 
       finalizarGravacaoAtual();
 
-
       return;
 
     }
-
 
     iniciarGravacao(
       "relato"
@@ -3092,7 +2945,6 @@ botaoGravarRelato.addEventListener(
 
   }
 );
-
 
 botaoGravarOrientacao.addEventListener(
   "click",
@@ -3106,11 +2958,9 @@ botaoGravarOrientacao.addEventListener(
 
       finalizarGravacaoAtual();
 
-
       return;
 
     }
-
 
     iniciarGravacao(
       "orientacao"
@@ -3134,7 +2984,6 @@ botaoFalarTextoRelato.addEventListener(
 
   }
 );
-
 
 botaoFalarTextoOrientacao.addEventListener(
   "click",
@@ -3163,7 +3012,6 @@ botaoReproduzirAudioRelato.addEventListener(
   }
 );
 
-
 botaoPararAudioRelato.addEventListener(
   "click",
   () => {
@@ -3175,7 +3023,6 @@ botaoPararAudioRelato.addEventListener(
   }
 );
 
-
 botaoReproduzirAudioOrientacao.addEventListener(
   "click",
   () => {
@@ -3186,7 +3033,6 @@ botaoReproduzirAudioOrientacao.addEventListener(
 
   }
 );
-
 
 botaoPararAudioOrientacao.addEventListener(
   "click",
@@ -3209,7 +3055,6 @@ botaoApagarAudioRelato.addEventListener(
   apagarAudioRelato
 );
 
-
 botaoApagarAudioOrientacao.addEventListener(
   "click",
   apagarAudioOrientacao
@@ -3224,7 +3069,6 @@ precisaAcompanhamento.addEventListener(
   "change",
   atualizarAcompanhamento
 );
-
 
 botaoSalvarAtendimento.addEventListener(
   "click",
@@ -3242,9 +3086,7 @@ window.addEventListener(
 
     pararCronometro();
 
-
     pararTodosAudios();
-
 
     if (
       reconhecimentoTextoAtual
@@ -3252,7 +3094,6 @@ window.addEventListener(
 
       reconhecimentoTextoFinalizando =
         true;
-
 
       try {
 
@@ -3268,7 +3109,6 @@ window.addEventListener(
       }
 
     }
-
 
     if (
       gravacaoAtual
@@ -3286,11 +3126,9 @@ window.addEventListener(
 
     }
 
-
     liberarUrlAudio(
       audioRelatoUrl
     );
-
 
     liberarUrlAudio(
       audioOrientacaoUrl
@@ -3314,20 +3152,15 @@ async function iniciarPagina() {
       "Não foi possível conectar ao banco de dados."
     );
 
-
     return;
 
   }
 
-
   definirDataAtual();
-
 
   atualizarTipoPessoa();
 
-
   atualizarAcompanhamento();
-
 
   if (
     !gravacaoDisponivel()
@@ -3336,12 +3169,10 @@ async function iniciarPagina() {
     botaoGravarRelato.disabled =
       true;
 
-
     botaoGravarOrientacao.disabled =
       true;
 
   }
-
 
   if (
     !reconhecimentoDisponivel()
@@ -3350,16 +3181,13 @@ async function iniciarPagina() {
     botaoFalarTextoRelato.disabled =
       true;
 
-
     botaoFalarTextoOrientacao.disabled =
       true;
-
 
     atualizarStatusFalaTexto(
       "relato",
       "Falar para texto não está disponível neste navegador."
     );
-
 
     atualizarStatusFalaTexto(
       "orientacao",
@@ -3368,12 +3196,10 @@ async function iniciarPagina() {
 
   }
 
-
   try {
 
     const autorizado =
       await carregarUsuarioLogado();
-
 
     if (
       !autorizado
@@ -3383,10 +3209,8 @@ async function iniciarPagina() {
 
     }
 
-
     botaoSalvarAtendimento.disabled =
       false;
-
 
   } catch (erro) {
 
@@ -3394,7 +3218,6 @@ async function iniciarPagina() {
       "Erro ao iniciar Novo Atendimento:",
       erro
     );
-
 
     mostrarMensagem(
       "Não foi possível carregar esta tela."
