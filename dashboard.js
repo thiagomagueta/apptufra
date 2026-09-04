@@ -650,6 +650,7 @@ async function carregarMensalidadesFinanceiroDashboard() {
         .select(`
           id,
           competencia,
+          valor_original,
           status
         `)
         .eq(
@@ -745,12 +746,83 @@ async function carregarMensalidadesFinanceiroDashboard() {
     );
 
 
+    const mensalidadesAbertas =
+      cobrancas.filter(
+        (cobranca) =>
+          cobranca.status ===
+          "aberta"
+      );
+
+
+    const quantidadeAbertas =
+      mensalidadesAbertas.length;
+
+
+    const valorTotalAberto =
+      mensalidadesAbertas.reduce(
+        (
+          total,
+          cobranca
+        ) => {
+
+          const valor =
+            Number(
+              cobranca.valor_original ||
+              0
+            );
+
+
+          return (
+            total +
+            valor
+          );
+
+        },
+        0
+      );
+
+
     if (
       resumoFinanceiroDashboard
     ) {
 
-      resumoFinanceiroDashboard.textContent =
-        "Situação financeira em desenvolvimento.";
+      if (
+        quantidadeAbertas === 0
+      ) {
+
+        resumoFinanceiroDashboard.textContent =
+          "✅ Você está com todas as mensalidades em dia.";
+
+      } else {
+
+        const valorFormatado =
+          valorTotalAberto.toLocaleString(
+            "pt-BR",
+            {
+              style:
+                "currency",
+
+              currency:
+                "BRL"
+            }
+          );
+
+
+        if (
+          quantidadeAbertas === 1
+        ) {
+
+          resumoFinanceiroDashboard.textContent =
+            `⚠️ Você está com 1 mensalidade em aberto, totalizando ${valorFormatado}.`;
+
+        } else {
+
+          resumoFinanceiroDashboard.textContent =
+            `⚠️ Você está com ${quantidadeAbertas} mensalidades em aberto, totalizando ${valorFormatado}.`;
+
+        }
+
+      }
 
     }
 
