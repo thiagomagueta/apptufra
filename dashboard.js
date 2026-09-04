@@ -1704,12 +1704,15 @@ async function atualizarBotoesProximaAtividadeDashboard() {
       "normal";
 
 
-    botaoPresencas.disabled =
-      true;
+    botaoPresencas.addEventListener(
+      "click",
+      () => {
 
+        window.location.href =
+          "presencas-atividade.html";
 
-    botaoPresencas.title =
-      "Tela de presenças será criada na próxima etapa.";
+      }
+    );
 
 
     areaBotoesDiretoria.appendChild(
