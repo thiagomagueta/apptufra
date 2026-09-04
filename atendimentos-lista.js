@@ -72,6 +72,26 @@ function formatarNome(
 }
 
 
+function normalizarTexto(
+  texto
+) {
+
+  return String(
+    texto || ""
+  )
+    .normalize(
+      "NFD"
+    )
+    .replace(
+      /[\u0300-\u036f]/g,
+      ""
+    )
+    .toLowerCase()
+    .trim();
+
+}
+
+
 function formatarData(
   data
 ) {
@@ -854,9 +874,9 @@ function criarBotaoPessoa(
 
 
   tipo.textContent =
-    pessoa.tipo === "associado"
-      ? "Associado"
-      : "Não associado";
+    pessoa.tipo === "nao_associado"
+      ? "Não associado"
+      : "Associado";
 
 
   dados.appendChild(
@@ -944,7 +964,9 @@ function mostrarLista() {
       pessoasFiltradas.filter(
         (pessoa) =>
           pessoa.tipo ===
-          "associado"
+            "associado" ||
+          pessoa.tipo ===
+            "associado_base"
       );
 
   }
@@ -1013,6 +1035,7 @@ async function carregarPessoasComAtendimento() {
       )
       .select(`
         usuario_id,
+        associado_base_id,
         pessoa_nao_associada_id
       `);
 
@@ -1046,6 +1069,21 @@ async function carregarPessoasComAtendimento() {
     ];
 
 
+  const idsAssociadosBase =
+    [
+      ...new Set(
+        registros
+          .map(
+            (item) =>
+              item.associado_base_id
+          )
+          .filter(
+            Boolean
+          )
+      )
+    ];
+
+
   const idsNaoAssociados =
     [
       ...new Set(
@@ -1062,6 +1100,10 @@ async function carregarPessoasComAtendimento() {
 
 
   let associados =
+    [];
+
+
+  let associadosBase =
     [];
 
 
@@ -1104,14 +1146,81 @@ async function carregarPessoasComAtendimento() {
       )
         .map(
           (pessoa) => ({
+
             id:
               pessoa.id,
+
+            usuario_id:
+              pessoa.id,
+
+            associado_base_id:
+              null,
 
             nome_completo:
               pessoa.nome_completo,
 
             tipo:
               "associado"
+
+          })
+        );
+
+  }
+
+
+  if (
+    idsAssociadosBase.length > 0
+  ) {
+
+    const resultadoAssociadosBase =
+      await window.supabaseClient
+        .from(
+          "atendimentos_associados_base"
+        )
+        .select(`
+          id,
+          nome_completo,
+          usuario_id
+        `)
+        .in(
+          "id",
+          idsAssociadosBase
+        );
+
+
+    if (
+      resultadoAssociadosBase.error
+    ) {
+
+      throw resultadoAssociadosBase.error;
+
+    }
+
+
+    associadosBase =
+      (
+        resultadoAssociadosBase.data ||
+        []
+      )
+        .map(
+          (pessoa) => ({
+
+            id:
+              pessoa.id,
+
+            usuario_id:
+              pessoa.usuario_id ||
+              null,
+
+            associado_base_id:
+              pessoa.id,
+
+            nome_completo:
+              pessoa.nome_completo,
+
+            tipo:
+              "associado_base"
+
           })
         );
 
@@ -1153,6 +1262,7 @@ async function carregarPessoasComAtendimento() {
       )
         .map(
           (pessoa) => ({
+
             id:
               pessoa.id,
 
@@ -1161,15 +1271,98 @@ async function carregarPessoasComAtendimento() {
 
             tipo:
               "nao_associado"
+
           })
         );
 
   }
 
 
+  /*
+    Junta associados oficiais e associados
+    da base auxiliar.
+
+    Se o mesmo nome existir nas duas bases,
+    mostramos somente uma pessoa.
+  */
+
+  const associadosUnificados =
+    new Map();
+
+
+  associados.forEach(
+    (pessoa) => {
+
+      const chave =
+        normalizarTexto(
+          pessoa.nome_completo
+        );
+
+
+      associadosUnificados.set(
+        chave,
+        pessoa
+      );
+
+    }
+  );
+
+
+  associadosBase.forEach(
+    (pessoa) => {
+
+      const chave =
+        normalizarTexto(
+          pessoa.nome_completo
+        );
+
+
+      if (
+        associadosUnificados.has(
+          chave
+        )
+      ) {
+
+        const existente =
+          associadosUnificados.get(
+            chave
+          );
+
+
+        existente.associado_base_id =
+          pessoa.associado_base_id;
+
+
+        if (
+          !existente.usuario_id &&
+          pessoa.usuario_id
+        ) {
+
+          existente.usuario_id =
+            pessoa.usuario_id;
+
+        }
+
+
+        return;
+
+      }
+
+
+      associadosUnificados.set(
+        chave,
+        pessoa
+      );
+
+    }
+  );
+
+
   pessoasComAtendimento =
     [
-      ...associados,
+      ...Array.from(
+        associadosUnificados.values()
+      ),
       ...naoAssociados
     ]
       .sort(
@@ -1807,9 +2000,9 @@ async function abrirHistoricoPessoa(
 
 
   tipoPessoaHistorico.textContent =
-    pessoa.tipo === "associado"
-      ? "Associado"
-      : "Não associado";
+    pessoa.tipo === "nao_associado"
+      ? "Não associado"
+      : "Associado";
 
 
   secaoHistoricoAtendimentos.hidden =
@@ -1829,6 +2022,9 @@ async function abrirHistoricoPessoa(
         )
         .select(`
           id,
+          usuario_id,
+          associado_base_id,
+          pessoa_nao_associada_id,
           data_atendimento,
           motivo,
           relato,
@@ -1868,22 +2064,79 @@ async function abrirHistoricoPessoa(
 
     if (
       pessoa.tipo ===
-      "associado"
+      "nao_associado"
     ) {
-
-      consulta =
-        consulta.eq(
-          "usuario_id",
-          pessoa.id
-        );
-
-    } else {
 
       consulta =
         consulta.eq(
           "pessoa_nao_associada_id",
           pessoa.id
         );
+
+    } else {
+
+      const filtros =
+        [];
+
+
+      if (
+        pessoa.usuario_id
+      ) {
+
+        filtros.push(
+          `usuario_id.eq.${pessoa.usuario_id}`
+        );
+
+      }
+
+
+      if (
+        pessoa.associado_base_id
+      ) {
+
+        filtros.push(
+          `associado_base_id.eq.${pessoa.associado_base_id}`
+        );
+
+      }
+
+
+      if (
+        filtros.length === 1
+      ) {
+
+        if (
+          pessoa.usuario_id
+        ) {
+
+          consulta =
+            consulta.eq(
+              "usuario_id",
+              pessoa.usuario_id
+            );
+
+        } else {
+
+          consulta =
+            consulta.eq(
+              "associado_base_id",
+              pessoa.associado_base_id
+            );
+
+        }
+
+      } else if (
+        filtros.length > 1
+      ) {
+
+        consulta =
+          consulta.or(
+            filtros.join(
+              ","
+            )
+          );
+
+      }
 
     }
 
