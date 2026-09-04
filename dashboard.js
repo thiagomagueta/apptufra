@@ -1766,12 +1766,15 @@ async function atualizarBotoesProximaAtividadeDashboard() {
       "normal";
 
 
-    botaoNaoRespondeu.disabled =
-      true;
+    botaoNaoRespondeu.addEventListener(
+      "click",
+      () => {
 
+        window.location.href =
+          "nao-responderam-atividade.html";
 
-    botaoNaoRespondeu.title =
-      "Tela de pessoas que ainda não responderam será criada depois.";
+      }
+    );
 
 
     areaBotoesDiretoria.appendChild(
