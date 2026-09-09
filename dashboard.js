@@ -37,6 +37,56 @@ const proximaAtividadeDashboard =
 
 
 /* ==========================================
+   RESUMO DOS ASSOCIADOS
+========================================== */
+
+const areaResumoAssociadosDashboard =
+  document.getElementById(
+    "areaResumoAssociadosDashboard"
+  );
+
+const totalAssociadosDashboard =
+  document.getElementById(
+    "totalAssociadosDashboard"
+  );
+
+const totalDesenvolvimentoDashboard =
+  document.getElementById(
+    "totalDesenvolvimentoDashboard"
+  );
+
+const totalDesenvolvimentoCorrenteDashboard =
+  document.getElementById(
+    "totalDesenvolvimentoCorrenteDashboard"
+  );
+
+const totalDesenvolvimentoBancoDashboard =
+  document.getElementById(
+    "totalDesenvolvimentoBancoDashboard"
+  );
+
+const totalCorrentePrincipalDashboard =
+  document.getElementById(
+    "totalCorrentePrincipalDashboard"
+  );
+
+const totalCambonesDashboard =
+  document.getElementById(
+    "totalCambonesDashboard"
+  );
+
+const totalCantinaDashboard =
+  document.getElementById(
+    "totalCantinaDashboard"
+  );
+
+const totalAssistenciaAssociadaDashboard =
+  document.getElementById(
+    "totalAssistenciaAssociadaDashboard"
+  );
+
+
+/* ==========================================
    FINANCEIRO
 ========================================== */
 
@@ -357,6 +407,214 @@ async function carregarFotoUsuario() {
 
 
 /* ==========================================
+   RESUMO DOS ASSOCIADOS
+========================================== */
+
+async function carregarResumoAssociadosDashboard() {
+
+  if (
+    !window.supabaseClient ||
+    !areaResumoAssociadosDashboard
+  ) {
+
+    return;
+
+  }
+
+
+  areaResumoAssociadosDashboard.hidden =
+    true;
+
+
+  try {
+
+    const resultadoPermissao =
+      await window.supabaseClient
+        .rpc(
+          "usuario_pode_visualizar_resumo_associados"
+        );
+
+
+    if (
+      resultadoPermissao.error
+    ) {
+
+      throw resultadoPermissao.error;
+
+    }
+
+
+    const possuiPermissao =
+      resultadoPermissao.data ===
+      true;
+
+
+    if (
+      !possuiPermissao
+    ) {
+
+      return;
+
+    }
+
+
+    const resultadoResumo =
+      await window.supabaseClient
+        .rpc(
+          "obter_resumo_associados"
+        );
+
+
+    if (
+      resultadoResumo.error
+    ) {
+
+      throw resultadoResumo.error;
+
+    }
+
+
+    const resumo =
+      Array.isArray(
+        resultadoResumo.data
+      )
+        ? resultadoResumo.data[0]
+        : resultadoResumo.data;
+
+
+    if (
+      !resumo
+    ) {
+
+      return;
+
+    }
+
+
+    if (
+      totalAssociadosDashboard
+    ) {
+
+      totalAssociadosDashboard.textContent =
+        String(
+          resumo.total_associados ??
+          0
+        );
+
+    }
+
+
+    if (
+      totalDesenvolvimentoDashboard
+    ) {
+
+      totalDesenvolvimentoDashboard.textContent =
+        String(
+          resumo.total_desenvolvimento ??
+          0
+        );
+
+    }
+
+
+    if (
+      totalDesenvolvimentoCorrenteDashboard
+    ) {
+
+      totalDesenvolvimentoCorrenteDashboard.textContent =
+        String(
+          resumo.total_desenvolvimento_corrente ??
+          0
+        );
+
+    }
+
+
+    if (
+      totalDesenvolvimentoBancoDashboard
+    ) {
+
+      totalDesenvolvimentoBancoDashboard.textContent =
+        String(
+          resumo.total_desenvolvimento_banco ??
+          0
+        );
+
+    }
+
+
+    if (
+      totalCorrentePrincipalDashboard
+    ) {
+
+      totalCorrentePrincipalDashboard.textContent =
+        String(
+          resumo.total_corrente_principal ??
+          0
+        );
+
+    }
+
+
+    if (
+      totalCambonesDashboard
+    ) {
+
+      totalCambonesDashboard.textContent =
+        String(
+          resumo.total_cambones ??
+          0
+        );
+
+    }
+
+
+    if (
+      totalCantinaDashboard
+    ) {
+
+      totalCantinaDashboard.textContent =
+        String(
+          resumo.total_cantina ??
+          0
+        );
+
+    }
+
+
+    if (
+      totalAssistenciaAssociadaDashboard
+    ) {
+
+      totalAssistenciaAssociadaDashboard.textContent =
+        String(
+          resumo.total_assistencia_associada ??
+          0
+        );
+
+    }
+
+
+    areaResumoAssociadosDashboard.hidden =
+      false;
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao carregar resumo dos associados:",
+      erro
+    );
+
+
+    areaResumoAssociadosDashboard.hidden =
+      true;
+
+  }
+}
+
+
+/* ==========================================
    FINANCEIRO
    ESTADO VISUAL DOS MESES
 ========================================== */
@@ -396,10 +654,6 @@ function definirEstadoMesFinanceiroDashboard(
     );
 
 
-  /* --------------------------------------
-     SEM COBRANÇA
-  -------------------------------------- */
-
   if (
     !status
   ) {
@@ -428,10 +682,6 @@ function definirEstadoMesFinanceiroDashboard(
 
   }
 
-
-  /* --------------------------------------
-     MENSALIDADE PAGA
-  -------------------------------------- */
 
   if (
     status ===
@@ -463,10 +713,6 @@ function definirEstadoMesFinanceiroDashboard(
   }
 
 
-  /* --------------------------------------
-     MENSALIDADE EM ABERTO
-  -------------------------------------- */
-
   if (
     status ===
     "aberta"
@@ -496,10 +742,6 @@ function definirEstadoMesFinanceiroDashboard(
 
   }
 
-
-  /* --------------------------------------
-     OUTRO STATUS
-  -------------------------------------- */
 
   elemento.style.background =
     "#f5f5f5";
@@ -1097,7 +1339,10 @@ function criarNomesFuncoesExibicaoDashboard(
 
 
   return resultado;
-}/* ==========================================
+}
+
+
+/* ==========================================
    FUNÇÕES DO USUÁRIO
 ========================================== */
 
@@ -1984,6 +2229,8 @@ function criarBotaoConfirmacaoMediumDashboard(
   }
 
 }
+
+
 /* ==========================================
    BOTÕES DA PRÓXIMA ATIVIDADE
 ========================================== */
@@ -2671,7 +2918,10 @@ function formatarDataCurtaPresencaDashboard(
 
 
   return `${partes[2]}/${partes[1]}`;
-}/* ==========================================
+}
+
+
+/* ==========================================
    FUNÇÃO PRINCIPAL
 ========================================== */
 
@@ -3290,7 +3540,10 @@ function calcularResumoPresencaDashboard(
     frequencia
 
   };
-}/* ==========================================
+}
+
+
+/* ==========================================
    CRIAR BLOCO DA LISTA
 ========================================== */
 
@@ -3931,6 +4184,8 @@ async function carregarResumoPresencaDashboard() {
 atualizarSaudacao();
 
 carregarFotoUsuario();
+
+carregarResumoAssociadosDashboard();
 
 verificarAcessoFinanceiroDashboard();
 
