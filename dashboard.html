@@ -109,7 +109,6 @@
 
       <!-- =====================================
            RECADOS E ENQUETES
-           SÓ APARECE QUANDO EXISTIR ATIVO
       ====================================== -->
 
       <section
@@ -182,261 +181,73 @@
 
         <div
           style="
-            display: grid;
-            gap: 10px;
             margin-top: 14px;
+            line-height: 1.7;
           "
         >
 
-
-          <!-- TOTAL DE ASSOCIADOS -->
-
-          <div
-            style="
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              gap: 12px;
-              padding: 10px 0;
-              border-bottom: 1px solid #e5e5e5;
-            "
-          >
-
-            <span>
-              Total de associados
-            </span>
-
-            <strong
-              id="totalAssociadosDashboard"
-              style="
-                font-size: 18px;
-              "
-            >
+          <div>
+            Total de associados:
+            <strong id="totalAssociadosDashboard">
               —
             </strong>
-
           </div>
 
-
-          <!-- DESENVOLVIMENTO -->
-
-          <div
-            style="
-              padding: 10px 0;
-              border-bottom: 1px solid #e5e5e5;
-            "
-          >
-
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                gap: 12px;
-              "
-            >
-
-              <span>
-                Desenvolvimento
-              </span>
-
-              <strong
-                id="totalDesenvolvimentoDashboard"
-                style="
-                  font-size: 18px;
-                "
-              >
-                —
-              </strong>
-
-            </div>
-
-
-            <div
-              style="
-                display: grid;
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 8px;
-                margin-top: 10px;
-              "
-            >
-
-              <div
-                style="
-                  padding: 10px;
-                  border-radius: 8px;
-                  background: #f5f5f5;
-                  text-align: center;
-                "
-              >
-
-                <div
-                  style="
-                    font-size: 12px;
-                    margin-bottom: 4px;
-                  "
-                >
-                  Corrente
-                </div>
-
-                <strong
-                  id="totalDesenvolvimentoCorrenteDashboard"
-                  style="
-                    font-size: 18px;
-                  "
-                >
-                  —
-                </strong>
-
-              </div>
-
-
-              <div
-                style="
-                  padding: 10px;
-                  border-radius: 8px;
-                  background: #f5f5f5;
-                  text-align: center;
-                "
-              >
-
-                <div
-                  style="
-                    font-size: 12px;
-                    margin-bottom: 4px;
-                  "
-                >
-                  Banco
-                </div>
-
-                <strong
-                  id="totalDesenvolvimentoBancoDashboard"
-                  style="
-                    font-size: 18px;
-                  "
-                >
-                  —
-                </strong>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <!-- CORRENTE PRINCIPAL -->
-
-          <div
-            style="
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              gap: 12px;
-              padding: 10px 0;
-              border-bottom: 1px solid #e5e5e5;
-            "
-          >
-
-            <span>
-              Corrente Principal
-            </span>
-
-            <strong
-              id="totalCorrentePrincipalDashboard"
-              style="
-                font-size: 18px;
-              "
-            >
+          <div>
+            Desenvolvimento:
+            <strong id="totalDesenvolvimentoDashboard">
               —
             </strong>
-
           </div>
-
-
-          <!-- CAMBONES -->
 
           <div
             style="
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              gap: 12px;
-              padding: 10px 0;
-              border-bottom: 1px solid #e5e5e5;
+              padding-left: 18px;
             "
           >
-
-            <span>
-              Cambones
-            </span>
-
-            <strong
-              id="totalCambonesDashboard"
-              style="
-                font-size: 18px;
-              "
-            >
+            Corrente:
+            <strong id="totalDesenvolvimentoCorrenteDashboard">
               —
             </strong>
-
           </div>
-
-
-          <!-- CANTINA -->
 
           <div
             style="
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              gap: 12px;
-              padding: 10px 0;
-              border-bottom: 1px solid #e5e5e5;
+              padding-left: 18px;
             "
           >
-
-            <span>
-              Trabalhadores na cantina
-            </span>
-
-            <strong
-              id="totalCantinaDashboard"
-              style="
-                font-size: 18px;
-              "
-            >
+            Banco:
+            <strong id="totalDesenvolvimentoBancoDashboard">
               —
             </strong>
-
           </div>
 
-
-          <!-- ASSISTÊNCIA -->
-
-          <div
-            style="
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              gap: 12px;
-              padding: 10px 0 0 0;
-            "
-          >
-
-            <span>
-              Assistência associada
-            </span>
-
-            <strong
-              id="totalAssistenciaAssociadaDashboard"
-              style="
-                font-size: 18px;
-              "
-            >
+          <div>
+            Corrente Principal:
+            <strong id="totalCorrentePrincipalDashboard">
               —
             </strong>
+          </div>
 
+          <div>
+            Cambones:
+            <strong id="totalCambonesDashboard">
+              —
+            </strong>
+          </div>
+
+          <div>
+            Trabalhadores na cantina:
+            <strong id="totalCantinaDashboard">
+              —
+            </strong>
+          </div>
+
+          <div>
+            Assistência associada:
+            <strong id="totalAssistenciaAssociadaDashboard">
+              —
+            </strong>
           </div>
 
         </div>
@@ -521,7 +332,6 @@
       <!-- =====================================
            FINANCEIRO
            ÁREA DE DESENVOLVIMENTO
-           SÓ APARECE PARA AUTORIZADOS
       ====================================== -->
 
       <section
@@ -900,11 +710,6 @@
 
       </a>
 
-
-      <!-- =================================
-           ADM
-           SÓ APARECE PARA QUEM TEM ACESSO
-      ================================== -->
 
       <a
         id="itemMenuAdm"
