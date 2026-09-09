@@ -104,14 +104,109 @@
 
       <section class="cartao-app">
 
-        <h2>
-          Dados do associado
-        </h2>
+        <div class="cabecalho-dados-administrativos">
+
+          <h2>
+            Dados do associado
+          </h2>
+
+          <button
+            id="botaoEditarDadosAssociado"
+            class="botao-editar-datas-administrativas"
+            type="button"
+            hidden
+          >
+            Editar dados
+          </button>
+
+        </div>
+
 
         <div
           id="dadosAssociadoResumo"
           class="dados-associado-resumo"
         ></div>
+
+
+        <div
+          id="edicaoDadosAssociado"
+          class="edicao-datas-administrativas"
+          hidden
+        >
+
+          <div class="campo-data-administrativa">
+
+            <label for="nomeCompletoEdicaoAssociado">
+              Nome completo
+            </label>
+
+            <input
+              id="nomeCompletoEdicaoAssociado"
+              type="text"
+              autocomplete="off"
+            >
+
+          </div>
+
+
+          <div class="campo-data-administrativa">
+
+            <label for="orixaFrenteEdicaoAssociado">
+              Orixá de Frente
+            </label>
+
+            <input
+              id="orixaFrenteEdicaoAssociado"
+              type="text"
+              autocomplete="off"
+            >
+
+          </div>
+
+
+          <div class="campo-data-administrativa">
+
+            <label for="orixaAdjuntoEdicaoAssociado">
+              Orixá Adjunto
+            </label>
+
+            <input
+              id="orixaAdjuntoEdicaoAssociado"
+              type="text"
+              autocomplete="off"
+            >
+
+          </div>
+
+
+          <div
+            id="mensagemEdicaoDadosAssociado"
+            class="mensagem-formulario"
+            hidden
+          ></div>
+
+
+          <div class="acoes-datas-administrativas">
+
+            <button
+              id="botaoCancelarEdicaoDadosAssociado"
+              class="botao-cancelar-datas-administrativas"
+              type="button"
+            >
+              Cancelar
+            </button>
+
+            <button
+              id="botaoSalvarEdicaoDadosAssociado"
+              class="botao-salvar-datas-administrativas"
+              type="button"
+            >
+              Salvar alterações
+            </button>
+
+          </div>
+
+        </div>
 
       </section>
 
@@ -196,16 +291,13 @@
             id="botaoEditarDatasAdministrativas"
             class="botao-editar-datas-administrativas"
             type="button"
+            hidden
           >
             Editar dados
           </button>
 
         </div>
 
-
-        <!-- =====================================
-             AVISO ASSISTÊNCIA
-        ====================================== -->
 
         <div
           id="avisoAssociadoAssistencia"
@@ -216,15 +308,10 @@
         </div>
 
 
-        <!-- =====================================
-             VISUALIZAÇÃO DAS DATAS
-        ====================================== -->
-
         <div
           id="visualizacaoDatasAdministrativas"
           class="dados-associado-resumo"
         >
-
 
           <div
             id="itemDataEntradaTufra"
@@ -275,7 +362,6 @@
 
           </div>
 
-
         </div>
 
 
@@ -310,7 +396,6 @@
           class="edicao-datas-administrativas"
           hidden
         >
-
 
           <div class="campo-data-administrativa">
 
@@ -439,13 +524,7 @@
         </h2>
 
 
-        <!-- =====================================
-             ASSOCIADO ATIVO
-        ====================================== -->
-
-        <div
-          id="areaAssociadoAtivo"
-        >
+        <div id="areaAssociadoAtivo">
 
           <p class="texto-explicativo-relatorio-atividade">
             Use esta opção quando o associado deixar de fazer parte da TUFRA.
@@ -531,10 +610,6 @@
         </div>
 
 
-        <!-- =====================================
-             ASSOCIADO INATIVO
-        ====================================== -->
-
         <div
           id="areaAssociadoInativo"
           hidden
@@ -582,10 +657,6 @@
 
           </div>
 
-
-          <!-- =====================================
-               REATIVAÇÃO DO ASSOCIADO
-          ====================================== -->
 
           <button
             id="botaoAbrirReativacaoAssociado"
@@ -825,7 +896,7 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="associado-resumo.js?v=8"></script>
+  <script src="associado-resumo.js?v=9"></script>
 
   <script src="menu-adm.js?v=1"></script>
 
