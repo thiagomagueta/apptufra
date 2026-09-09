@@ -165,6 +165,286 @@
 
 
       <!-- =====================================
+           RESUMO DOS ASSOCIADOS
+           SÓ APARECE PARA AUTORIZADOS
+      ====================================== -->
+
+      <section
+        id="areaResumoAssociadosDashboard"
+        class="cartao-app"
+        hidden
+      >
+
+        <h2>
+          Resumo dos associados
+        </h2>
+
+
+        <div
+          style="
+            display: grid;
+            gap: 10px;
+            margin-top: 14px;
+          "
+        >
+
+
+          <!-- TOTAL DE ASSOCIADOS -->
+
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 12px;
+              padding: 10px 0;
+              border-bottom: 1px solid #e5e5e5;
+            "
+          >
+
+            <span>
+              Total de associados
+            </span>
+
+            <strong
+              id="totalAssociadosDashboard"
+              style="
+                font-size: 18px;
+              "
+            >
+              —
+            </strong>
+
+          </div>
+
+
+          <!-- DESENVOLVIMENTO -->
+
+          <div
+            style="
+              padding: 10px 0;
+              border-bottom: 1px solid #e5e5e5;
+            "
+          >
+
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+              "
+            >
+
+              <span>
+                Desenvolvimento
+              </span>
+
+              <strong
+                id="totalDesenvolvimentoDashboard"
+                style="
+                  font-size: 18px;
+                "
+              >
+                —
+              </strong>
+
+            </div>
+
+
+            <div
+              style="
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 8px;
+                margin-top: 10px;
+              "
+            >
+
+              <div
+                style="
+                  padding: 10px;
+                  border-radius: 8px;
+                  background: #f5f5f5;
+                  text-align: center;
+                "
+              >
+
+                <div
+                  style="
+                    font-size: 12px;
+                    margin-bottom: 4px;
+                  "
+                >
+                  Corrente
+                </div>
+
+                <strong
+                  id="totalDesenvolvimentoCorrenteDashboard"
+                  style="
+                    font-size: 18px;
+                  "
+                >
+                  —
+                </strong>
+
+              </div>
+
+
+              <div
+                style="
+                  padding: 10px;
+                  border-radius: 8px;
+                  background: #f5f5f5;
+                  text-align: center;
+                "
+              >
+
+                <div
+                  style="
+                    font-size: 12px;
+                    margin-bottom: 4px;
+                  "
+                >
+                  Banco
+                </div>
+
+                <strong
+                  id="totalDesenvolvimentoBancoDashboard"
+                  style="
+                    font-size: 18px;
+                  "
+                >
+                  —
+                </strong>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- CORRENTE PRINCIPAL -->
+
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 12px;
+              padding: 10px 0;
+              border-bottom: 1px solid #e5e5e5;
+            "
+          >
+
+            <span>
+              Corrente Principal
+            </span>
+
+            <strong
+              id="totalCorrentePrincipalDashboard"
+              style="
+                font-size: 18px;
+              "
+            >
+              —
+            </strong>
+
+          </div>
+
+
+          <!-- CAMBONES -->
+
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 12px;
+              padding: 10px 0;
+              border-bottom: 1px solid #e5e5e5;
+            "
+          >
+
+            <span>
+              Cambones
+            </span>
+
+            <strong
+              id="totalCambonesDashboard"
+              style="
+                font-size: 18px;
+              "
+            >
+              —
+            </strong>
+
+          </div>
+
+
+          <!-- CANTINA -->
+
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 12px;
+              padding: 10px 0;
+              border-bottom: 1px solid #e5e5e5;
+            "
+          >
+
+            <span>
+              Trabalhadores na cantina
+            </span>
+
+            <strong
+              id="totalCantinaDashboard"
+              style="
+                font-size: 18px;
+              "
+            >
+              —
+            </strong>
+
+          </div>
+
+
+          <!-- ASSISTÊNCIA -->
+
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 12px;
+              padding: 10px 0 0 0;
+            "
+          >
+
+            <span>
+              Assistência associada
+            </span>
+
+            <strong
+              id="totalAssistenciaAssociadaDashboard"
+              style="
+                font-size: 18px;
+              "
+            >
+              —
+            </strong>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================
            FUNÇÕES
       ====================================== -->
 
@@ -676,7 +956,7 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="dashboard.js?v=14"></script>
+  <script src="dashboard.js?v=15"></script>
 
   <script src="dashboard-comunicados.js?v=1"></script>
 
