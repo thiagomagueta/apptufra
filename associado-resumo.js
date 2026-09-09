@@ -2240,68 +2240,44 @@ function validarHistoricoFuncoes() {
 
 
 /* ==========================================
-   SALVAR HISTÓRICO
+   PREPARAR HISTÓRICO PARA O SUPABASE
 ========================================== */
 
-async function salvarHistoricoFuncoes() {
+function prepararHistoricoParaSalvar() {
 
-  const registros =
-    obterHistoricoDigitado();
+  return obterHistoricoDigitado()
+    .map(
+      (registro) => ({
 
-  for (
-    const registro of registros
-  ) {
+        id:
+          registro.id,
 
-    const atualizacao = {
+        data_inicio:
+          registro.data_inicio,
 
-      data_inicio:
-        registro.data_inicio,
+        data_fim:
+          registro.data_fim
 
-      atualizado_em:
-        new Date()
-          .toISOString()
+      })
+    );
 
-    };
+}
 
-    if (
-      registro.possuiDataFimOriginal
-    ) {
 
-      atualizacao.data_fim =
-        registro.data_fim;
+/* ==========================================
+   ATUALIZAR HISTÓRICO LOCAL
+========================================== */
 
-    }
-
-    const resultado =
-      await window.supabaseClient
-        .from(
-          "historico_funcoes_associado"
-        )
-        .update(
-          atualizacao
-        )
-        .eq(
-          "id",
-          registro.id
-        );
-
-    if (
-      resultado.error
-    ) {
-
-      throw resultado.error;
-
-    }
-
-  }
-
+function atualizarHistoricoLocal(
+  registrosEditados
+) {
 
   historicoFuncoes =
     historicoFuncoes.map(
       (registroOriginal) => {
 
         const registroEditado =
-          registros.find(
+          registrosEditados.find(
             (registro) =>
               registro.id ===
               registroOriginal.id
@@ -2323,10 +2299,7 @@ async function salvarHistoricoFuncoes() {
             registroEditado.data_inicio,
 
           data_fim:
-            registroEditado
-              .possuiDataFimOriginal
-              ? registroEditado.data_fim
-              : registroOriginal.data_fim
+            registroEditado.data_fim
 
         };
 
@@ -2338,6 +2311,7 @@ async function salvarHistoricoFuncoes() {
 
 /* ==========================================
    SALVAR ADMINISTRATIVO
+   VIA FUNÇÃO SEGURA DO SUPABASE
 ========================================== */
 
 async function salvarDatasAdministrativas() {
@@ -2394,6 +2368,10 @@ async function salvarDatasAdministrativas() {
     obterDatasDigitadas();
 
 
+  const historicoParaSalvar =
+    prepararHistoricoParaSalvar();
+
+
   botaoSalvarDatasAdministrativas.disabled =
     true;
 
@@ -2406,38 +2384,30 @@ async function salvarDatasAdministrativas() {
 
   try {
 
-    const novasDatas = {
-
-      data_entrada_tufra:
-        entrada
-
-    };
-
-    if (
-      mostrarTrajetoriaMediunica()
-    ) {
-
-      novasDatas.data_corrente_desenvolvimento =
-        desenvolvimento;
-
-      novasDatas.data_corrente_principal =
-        principal;
-
-    }
-
-
     const resultado =
       await window.supabaseClient
-        .from(
-          "usuarios"
-        )
-        .update(
-          novasDatas
-        )
-        .eq(
-          "id",
-          associadoAtual.id
+        .rpc(
+          "editar_dados_administrativos_associado",
+          {
+
+            p_usuario_id:
+              associadoAtual.id,
+
+            p_data_entrada_tufra:
+              entrada,
+
+            p_data_corrente_desenvolvimento:
+              desenvolvimento,
+
+            p_data_corrente_principal:
+              principal,
+
+            p_historico_funcoes:
+              historicoParaSalvar
+
+          }
         );
+
 
     if (
       resultado.error
@@ -2451,20 +2421,16 @@ async function salvarDatasAdministrativas() {
     associadoAtual.data_entrada_tufra =
       entrada;
 
-    if (
-      mostrarTrajetoriaMediunica()
-    ) {
+    associadoAtual.data_corrente_desenvolvimento =
+      desenvolvimento;
 
-      associadoAtual.data_corrente_desenvolvimento =
-        desenvolvimento;
-
-      associadoAtual.data_corrente_principal =
-        principal;
-
-    }
+    associadoAtual.data_corrente_principal =
+      principal;
 
 
-    await salvarHistoricoFuncoes();
+    atualizarHistoricoLocal(
+      historicoParaSalvar
+    );
 
 
     atualizarVisualizacaoDatas();
@@ -2479,7 +2445,7 @@ async function salvarDatasAdministrativas() {
       false;
 
     botaoEditarDatasAdministrativas.hidden =
-      false;
+      !podeEditarAssociado;
 
   } catch (erro) {
 
