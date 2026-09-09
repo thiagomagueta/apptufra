@@ -64,14 +64,39 @@ const edicaoDadosAssociado =
     "edicaoDadosAssociado"
   );
 
+const campoNomeEdicaoAssociado =
+  document.getElementById(
+    "campoNomeEdicaoAssociado"
+  );
+
 const nomeCompletoEdicaoAssociado =
   document.getElementById(
     "nomeCompletoEdicaoAssociado"
   );
 
+const campoEmailEdicaoAssociado =
+  document.getElementById(
+    "campoEmailEdicaoAssociado"
+  );
+
+const emailEdicaoAssociado =
+  document.getElementById(
+    "emailEdicaoAssociado"
+  );
+
+const campoOrixaFrenteEdicaoAssociado =
+  document.getElementById(
+    "campoOrixaFrenteEdicaoAssociado"
+  );
+
 const orixaFrenteEdicaoAssociado =
   document.getElementById(
     "orixaFrenteEdicaoAssociado"
+  );
+
+const campoOrixaAdjuntoEdicaoAssociado =
+  document.getElementById(
+    "campoOrixaAdjuntoEdicaoAssociado"
   );
 
 const orixaAdjuntoEdicaoAssociado =
@@ -396,6 +421,8 @@ let historicoUmbandaAtual = {};
 
 let podeEditarAssociado = false;
 
+let podeAlterarEmailAssociado = false;
+
 let podeDarBaixaAssociado = false;
 
 let zoomFoto = 1;
@@ -502,6 +529,22 @@ function valorOuTraco(
   }
 
   return String(
+    valor
+  );
+
+}
+
+
+function emailValido(
+  email
+) {
+
+  const valor =
+    String(
+      email || ""
+    ).trim();
+
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
     valor
   );
 
@@ -860,6 +903,11 @@ function renderizarDadosPrincipaisAssociado() {
   );
 
   adicionarItem(
+    "E-mail de acesso",
+    associadoAtual.email
+  );
+
+  adicionarItem(
     "Data de nascimento",
     dadosPessoaisAtual.nascimento
   );
@@ -883,6 +931,21 @@ function renderizarDadosPrincipaisAssociado() {
 
 
 /* ==========================================
+   ATUALIZAR BOTÃO DE EDIÇÃO PRINCIPAL
+========================================== */
+
+function atualizarBotaoEdicaoPrincipal() {
+
+  botaoEditarDadosAssociado.hidden =
+    !(
+      podeEditarAssociado ||
+      podeAlterarEmailAssociado
+    );
+
+}
+
+
+/* ==========================================
    PERMISSÃO PARA EDITAR ASSOCIADOS
 ========================================== */
 
@@ -891,11 +954,10 @@ async function verificarPermissaoEdicaoAssociado() {
   podeEditarAssociado =
     false;
 
-  botaoEditarDadosAssociado.hidden =
-    true;
-
   botaoEditarDatasAdministrativas.hidden =
     true;
+
+  atualizarBotaoEdicaoPrincipal();
 
   try {
 
@@ -928,11 +990,58 @@ async function verificarPermissaoEdicaoAssociado() {
 
   }
 
-  botaoEditarDadosAssociado.hidden =
-    !podeEditarAssociado;
-
   botaoEditarDatasAdministrativas.hidden =
     !podeEditarAssociado;
+
+  atualizarBotaoEdicaoPrincipal();
+
+}
+
+
+/* ==========================================
+   PERMISSÃO PARA ALTERAR E-MAIL
+   SOMENTE TESOUREIRO
+========================================== */
+
+async function verificarPermissaoAlteracaoEmail() {
+
+  podeAlterarEmailAssociado =
+    false;
+
+  atualizarBotaoEdicaoPrincipal();
+
+  try {
+
+    const resultado =
+      await window.supabaseClient
+        .rpc(
+          "usuario_pode_gerenciar_permissoes"
+        );
+
+    if (
+      resultado.error
+    ) {
+
+      throw resultado.error;
+
+    }
+
+    podeAlterarEmailAssociado =
+      resultado.data === true;
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao verificar permissão para alterar e-mail:",
+      erro
+    );
+
+    podeAlterarEmailAssociado =
+      false;
+
+  }
+
+  atualizarBotaoEdicaoPrincipal();
 
 }
 
@@ -944,7 +1053,10 @@ async function verificarPermissaoEdicaoAssociado() {
 function abrirEdicaoDadosAssociado() {
 
   if (
-    !podeEditarAssociado ||
+    (
+      !podeEditarAssociado &&
+      !podeAlterarEmailAssociado
+    ) ||
     !associadoAtual
   ) {
 
@@ -952,9 +1064,27 @@ function abrirEdicaoDadosAssociado() {
 
   }
 
+
+  campoNomeEdicaoAssociado.hidden =
+    !podeEditarAssociado;
+
+  campoOrixaFrenteEdicaoAssociado.hidden =
+    !podeEditarAssociado;
+
+  campoOrixaAdjuntoEdicaoAssociado.hidden =
+    !podeEditarAssociado;
+
+  campoEmailEdicaoAssociado.hidden =
+    !podeAlterarEmailAssociado;
+
+
   nomeCompletoEdicaoAssociado.value =
     associadoAtual.nome_completo ||
     dadosPessoaisAtual.nome ||
+    "";
+
+  emailEdicaoAssociado.value =
+    associadoAtual.email ||
     "";
 
   orixaFrenteEdicaoAssociado.value =
@@ -964,6 +1094,7 @@ function abrirEdicaoDadosAssociado() {
   orixaAdjuntoEdicaoAssociado.value =
     historicoUmbandaAtual.orixaAdjunto ||
     "";
+
 
   mensagemEdicaoDadosAssociado.textContent =
     "";
@@ -980,7 +1111,20 @@ function abrirEdicaoDadosAssociado() {
   edicaoDadosAssociado.hidden =
     false;
 
-  nomeCompletoEdicaoAssociado.focus();
+
+  if (
+    podeEditarAssociado
+  ) {
+
+    nomeCompletoEdicaoAssociado.focus();
+
+  } else if (
+    podeAlterarEmailAssociado
+  ) {
+
+    emailEdicaoAssociado.focus();
+
+  }
 
 }
 
@@ -997,8 +1141,7 @@ function cancelarEdicaoDadosAssociado() {
   dadosAssociadoResumo.hidden =
     false;
 
-  botaoEditarDadosAssociado.hidden =
-    !podeEditarAssociado;
+  atualizarBotaoEdicaoPrincipal();
 
   mensagemEdicaoDadosAssociado.textContent =
     "";
@@ -1010,13 +1153,85 @@ function cancelarEdicaoDadosAssociado() {
 
 
 /* ==========================================
+   ALTERAR E-MAIL VIA EDGE FUNCTION
+========================================== */
+
+async function alterarEmailAssociado(
+  novoEmail
+) {
+
+  const resultado =
+    await window.supabaseClient
+      .functions
+      .invoke(
+        "alterar-email-associado",
+        {
+          body: {
+
+            usuario_id:
+              associadoAtual.id,
+
+            novo_email:
+              novoEmail
+
+          }
+        }
+      );
+
+
+  if (
+    resultado.error
+  ) {
+
+    let mensagemErro =
+      "Não foi possível alterar o e-mail de acesso.";
+
+
+    if (
+      resultado.data?.error
+    ) {
+
+      mensagemErro =
+        resultado.data.error;
+
+    }
+
+
+    throw new Error(
+      mensagemErro
+    );
+
+  }
+
+
+  if (
+    resultado.data?.sucesso !== true
+  ) {
+
+    throw new Error(
+      resultado.data?.error ||
+      "Não foi possível alterar o e-mail de acesso."
+    );
+
+  }
+
+
+  return resultado.data;
+
+}
+
+
+/* ==========================================
    SALVAR DADOS PRINCIPAIS
 ========================================== */
 
 async function salvarDadosPrincipaisAssociado() {
 
   if (
-    !podeEditarAssociado ||
+    (
+      !podeEditarAssociado &&
+      !podeAlterarEmailAssociado
+    ) ||
     !associadoAtual
   ) {
 
@@ -1024,11 +1239,20 @@ async function salvarDadosPrincipaisAssociado() {
 
   }
 
+
   const nomeCompleto =
     String(
       nomeCompletoEdicaoAssociado.value ||
       ""
     ).trim();
+
+  const novoEmail =
+    String(
+      emailEdicaoAssociado.value ||
+      ""
+    )
+      .trim()
+      .toLowerCase();
 
   const orixaFrente =
     String(
@@ -1044,6 +1268,7 @@ async function salvarDadosPrincipaisAssociado() {
 
 
   if (
+    podeEditarAssociado &&
     !nomeCompleto
   ) {
 
@@ -1060,6 +1285,58 @@ async function salvarDadosPrincipaisAssociado() {
   }
 
 
+  if (
+    podeAlterarEmailAssociado &&
+    !novoEmail
+  ) {
+
+    mensagemEdicaoDadosAssociado.textContent =
+      "Informe o e-mail de acesso do associado.";
+
+    mensagemEdicaoDadosAssociado.hidden =
+      false;
+
+    emailEdicaoAssociado.focus();
+
+    return;
+
+  }
+
+
+  if (
+    podeAlterarEmailAssociado &&
+    !emailValido(
+      novoEmail
+    )
+  ) {
+
+    mensagemEdicaoDadosAssociado.textContent =
+      "Informe um e-mail válido.";
+
+    mensagemEdicaoDadosAssociado.hidden =
+      false;
+
+    emailEdicaoAssociado.focus();
+
+    return;
+
+  }
+
+
+  const emailAtual =
+    String(
+      associadoAtual.email ||
+      ""
+    )
+      .trim()
+      .toLowerCase();
+
+
+  const emailFoiAlterado =
+    podeAlterarEmailAssociado &&
+    novoEmail !== emailAtual;
+
+
   botaoSalvarEdicaoDadosAssociado.disabled =
     true;
 
@@ -1072,47 +1349,78 @@ async function salvarDadosPrincipaisAssociado() {
 
   try {
 
-    const resultado =
-      await window.supabaseClient
-        .rpc(
-          "editar_dados_principais_associado",
-          {
-
-            p_usuario_id:
-              associadoAtual.id,
-
-            p_nome_completo:
-              nomeCompleto,
-
-            p_orixa_frente:
-              orixaFrente,
-
-            p_orixa_adjunto:
-              orixaAdjunto
-
-          }
-        );
+    /* --------------------------------------
+       NOME E ORIXÁS
+    -------------------------------------- */
 
     if (
-      resultado.error
+      podeEditarAssociado
     ) {
 
-      throw resultado.error;
+      const resultado =
+        await window.supabaseClient
+          .rpc(
+            "editar_dados_principais_associado",
+            {
+
+              p_usuario_id:
+                associadoAtual.id,
+
+              p_nome_completo:
+                nomeCompleto,
+
+              p_orixa_frente:
+                orixaFrente,
+
+              p_orixa_adjunto:
+                orixaAdjunto
+
+            }
+          );
+
+
+      if (
+        resultado.error
+      ) {
+
+        throw resultado.error;
+
+      }
+
+
+      associadoAtual.nome_completo =
+        nomeCompleto;
+
+      dadosPessoaisAtual.nome =
+        nomeCompleto;
+
+      historicoUmbandaAtual.orixaFrente =
+        orixaFrente;
+
+      historicoUmbandaAtual.orixaAdjunto =
+        orixaAdjunto;
 
     }
 
 
-    associadoAtual.nome_completo =
-      nomeCompleto;
+    /* --------------------------------------
+       E-MAIL DE ACESSO
+       SOMENTE SE FOI ALTERADO
+    -------------------------------------- */
 
-    dadosPessoaisAtual.nome =
-      nomeCompleto;
+    if (
+      emailFoiAlterado
+    ) {
 
-    historicoUmbandaAtual.orixaFrente =
-      orixaFrente;
+      await alterarEmailAssociado(
+        novoEmail
+      );
 
-    historicoUmbandaAtual.orixaAdjunto =
-      orixaAdjunto;
+
+      associadoAtual.email =
+        novoEmail;
+
+    }
 
 
     renderizarDadosPrincipaisAssociado();
@@ -1124,8 +1432,8 @@ async function salvarDadosPrincipaisAssociado() {
     dadosAssociadoResumo.hidden =
       false;
 
-    botaoEditarDadosAssociado.hidden =
-      false;
+    atualizarBotaoEdicaoPrincipal();
+
 
   } catch (erro) {
 
@@ -1134,11 +1442,14 @@ async function salvarDadosPrincipaisAssociado() {
       erro
     );
 
+
     mensagemEdicaoDadosAssociado.textContent =
+      erro?.message ||
       "Não foi possível salvar as alterações.";
 
     mensagemEdicaoDadosAssociado.hidden =
       false;
+
 
   } finally {
 
@@ -3101,6 +3412,7 @@ async function carregarAssociado() {
         .select(`
           id,
           nome_completo,
+          email,
           foto_path,
           status,
           data_entrada_tufra,
@@ -4911,6 +5223,8 @@ configurarVoltar();
 carregarAssociado();
 
 verificarPermissaoEdicaoAssociado();
+
+verificarPermissaoAlteracaoEmail();
 
 verificarPermissaoAtendimentos();
 
