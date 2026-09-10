@@ -89,6 +89,483 @@ function formatarValorObrigacao(
 
 
 /* ==========================================
+   CONVERTER VALOR INFORMADO
+========================================== */
+
+function converterValorObrigacao(
+  valor
+) {
+
+  let texto =
+    String(
+      valor || ""
+    )
+      .trim()
+      .replace(
+        "R$",
+        ""
+      )
+      .replace(
+        /\s/g,
+        ""
+      );
+
+
+  if (
+    texto.includes(",")
+  ) {
+
+    texto =
+      texto
+        .replace(
+          /\./g,
+          ""
+        )
+        .replace(
+          ",",
+          "."
+        );
+
+  }
+
+
+  const numero =
+    Number(
+      texto
+    );
+
+
+  if (
+    !Number.isFinite(
+      numero
+    ) ||
+    numero < 0
+  ) {
+
+    return null;
+
+  }
+
+
+  return Number(
+    numero.toFixed(
+      2
+    )
+  );
+}
+
+
+/* ==========================================
+   CRIAR BOTÃO
+========================================== */
+
+function criarBotaoObrigacao(
+  texto
+) {
+
+  const botao =
+    document.createElement(
+      "button"
+    );
+
+
+  botao.type =
+    "button";
+
+  botao.textContent =
+    texto;
+
+
+  botao.style.width =
+    "100%";
+
+  botao.style.marginTop =
+    "10px";
+
+  botao.style.padding =
+    "10px 12px";
+
+  botao.style.border =
+    "1px solid #651b1d";
+
+  botao.style.borderRadius =
+    "9px";
+
+  botao.style.background =
+    "#ffffff";
+
+  botao.style.color =
+    "#651b1d";
+
+  botao.style.fontWeight =
+    "700";
+
+  botao.style.cursor =
+    "pointer";
+
+
+  return botao;
+}
+
+
+/* ==========================================
+   ABRIR FORMULÁRIO DE VALOR
+========================================== */
+
+function abrirFormularioValorObrigacao(
+  atividade,
+  configuracao,
+  bloco
+) {
+
+  const areaExistente =
+    bloco.querySelector(
+      ".area-edicao-valor-obrigacao"
+    );
+
+
+  if (
+    areaExistente
+  ) {
+
+    areaExistente.remove();
+
+  }
+
+
+  const area =
+    document.createElement(
+      "div"
+    );
+
+
+  area.className =
+    "area-edicao-valor-obrigacao";
+
+
+  area.style.marginTop =
+    "12px";
+
+  area.style.paddingTop =
+    "12px";
+
+  area.style.borderTop =
+    "1px solid #e1d6d6";
+
+
+  /* --------------------------------------
+     LABEL
+  -------------------------------------- */
+
+  const label =
+    document.createElement(
+      "label"
+    );
+
+
+  label.textContent =
+    "Valor da obrigação";
+
+
+  label.style.display =
+    "block";
+
+  label.style.marginBottom =
+    "6px";
+
+  label.style.fontWeight =
+    "700";
+
+
+  area.appendChild(
+    label
+  );
+
+
+  /* --------------------------------------
+     INPUT
+  -------------------------------------- */
+
+  const input =
+    document.createElement(
+      "input"
+    );
+
+
+  input.type =
+    "text";
+
+  input.inputMode =
+    "decimal";
+
+  input.placeholder =
+    "Ex.: 150,00";
+
+
+  if (
+    configuracao
+  ) {
+
+    input.value =
+      Number(
+        configuracao.valor || 0
+      )
+        .toFixed(
+          2
+        )
+        .replace(
+          ".",
+          ","
+        );
+
+  }
+
+
+  input.style.width =
+    "100%";
+
+  input.style.boxSizing =
+    "border-box";
+
+  input.style.padding =
+    "10px";
+
+  input.style.border =
+    "1px solid #cfc2c2";
+
+  input.style.borderRadius =
+    "8px";
+
+  input.style.fontFamily =
+    "inherit";
+
+  input.style.fontSize =
+    "15px";
+
+
+  area.appendChild(
+    input
+  );
+
+
+  /* --------------------------------------
+     MENSAGEM
+  -------------------------------------- */
+
+  const mensagem =
+    document.createElement(
+      "div"
+    );
+
+
+  mensagem.style.marginTop =
+    "8px";
+
+  mensagem.style.fontSize =
+    "13px";
+
+
+  area.appendChild(
+    mensagem
+  );
+
+
+  /* --------------------------------------
+     BOTÃO SALVAR
+  -------------------------------------- */
+
+  const botaoSalvar =
+    criarBotaoObrigacao(
+      "Salvar valor"
+    );
+
+
+  botaoSalvar.addEventListener(
+    "click",
+    async () => {
+
+      const valor =
+        converterValorObrigacao(
+          input.value
+        );
+
+
+      if (
+        valor === null
+      ) {
+
+        mensagem.textContent =
+          "Informe um valor válido.";
+
+        mensagem.style.color =
+          "#9a2929";
+
+        return;
+
+      }
+
+
+      botaoSalvar.disabled =
+        true;
+
+
+      mensagem.textContent =
+        "Salvando...";
+
+      mensagem.style.color =
+        "#6b5d5d";
+
+
+      try {
+
+        let resultado;
+
+
+        /* ----------------------------------
+           EDITAR CONFIGURAÇÃO EXISTENTE
+        ---------------------------------- */
+
+        if (
+          configuracao
+        ) {
+
+          resultado =
+            await window.supabaseClient
+              .from(
+                "financeiro_obrigacoes"
+              )
+              .update({
+                valor:
+                  valor,
+
+                atualizado_em:
+                  new Date()
+                    .toISOString()
+              })
+              .eq(
+                "id",
+                configuracao.id
+              );
+
+        }
+
+
+        /* ----------------------------------
+           CRIAR NOVA CONFIGURAÇÃO
+        ---------------------------------- */
+
+        else {
+
+          resultado =
+            await window.supabaseClient
+              .from(
+                "financeiro_obrigacoes"
+              )
+              .insert({
+                atividade_id:
+                  atividade.id,
+
+                valor:
+                  valor,
+
+                ativo:
+                  true
+              });
+
+        }
+
+
+        if (
+          resultado.error
+        ) {
+
+          throw resultado.error;
+
+        }
+
+
+        mensagem.textContent =
+          "Valor salvo com sucesso.";
+
+        mensagem.style.color =
+          "#267341";
+
+
+        await carregarObrigacoesFinanceiro();
+
+
+      } catch (erro) {
+
+        console.error(
+          "Erro ao salvar valor da obrigação:",
+          erro
+        );
+
+
+        mensagem.textContent =
+          "Não foi possível salvar o valor.";
+
+        mensagem.style.color =
+          "#9a2929";
+
+
+        botaoSalvar.disabled =
+          false;
+
+      }
+
+    }
+  );
+
+
+  area.appendChild(
+    botaoSalvar
+  );
+
+
+  /* --------------------------------------
+     BOTÃO CANCELAR
+  -------------------------------------- */
+
+  const botaoCancelar =
+    criarBotaoObrigacao(
+      "Cancelar"
+    );
+
+
+  botaoCancelar.style.borderColor =
+    "#b9abab";
+
+  botaoCancelar.style.color =
+    "#5f5555";
+
+
+  botaoCancelar.addEventListener(
+    "click",
+    () => {
+
+      area.remove();
+
+    }
+  );
+
+
+  area.appendChild(
+    botaoCancelar
+  );
+
+
+  bloco.appendChild(
+    area
+  );
+
+
+  input.focus();
+
+}
+
+
+/* ==========================================
    CRIAR BLOCO DA OBRIGAÇÃO
 ========================================== */
 
@@ -118,6 +595,10 @@ function criarBlocoObrigacao(
     "#ffffff";
 
 
+  /* --------------------------------------
+     DATA
+  -------------------------------------- */
+
   const data =
     document.createElement(
       "div"
@@ -145,6 +626,10 @@ function criarBlocoObrigacao(
   );
 
 
+  /* --------------------------------------
+     TÍTULO
+  -------------------------------------- */
+
   const titulo =
     document.createElement(
       "div"
@@ -168,10 +653,18 @@ function criarBlocoObrigacao(
   );
 
 
+  /* --------------------------------------
+     CONFIGURAÇÃO FINANCEIRA
+  -------------------------------------- */
+
   const configuracao =
     atividade.financeiro_obrigacoes?.[0] ||
     null;
 
+
+  /* ======================================
+     JÁ CONFIGURADA
+  ====================================== */
 
   if (
     configuracao
@@ -189,6 +682,12 @@ function criarBlocoObrigacao(
     status.style.fontSize =
       "14px";
 
+    status.style.color =
+      "#267341";
+
+    status.style.fontWeight =
+      "700";
+
 
     status.textContent =
       `✅ Configurada — ${formatarValorObrigacao(
@@ -201,31 +700,20 @@ function criarBlocoObrigacao(
     );
 
 
-    const botao =
-      document.createElement(
-        "button"
+    const botaoEditar =
+      criarBotaoObrigacao(
+        "Editar valor"
       );
 
 
-    botao.type =
-      "button";
-
-    botao.textContent =
-      "Editar valor";
-
-    botao.style.marginTop =
-      "10px";
-
-    botao.style.width =
-      "100%";
-
-
-    botao.addEventListener(
+    botaoEditar.addEventListener(
       "click",
       () => {
 
-        alert(
-          "A edição do valor será liberada no próximo passo."
+        abrirFormularioValorObrigacao(
+          atividade,
+          configuracao,
+          bloco
         );
 
       }
@@ -233,10 +721,17 @@ function criarBlocoObrigacao(
 
 
     bloco.appendChild(
-      botao
+      botaoEditar
     );
 
-  } else {
+  }
+
+
+  /* ======================================
+     AINDA NÃO CONFIGURADA
+  ====================================== */
+
+  else {
 
     const status =
       document.createElement(
@@ -260,31 +755,20 @@ function criarBlocoObrigacao(
     );
 
 
-    const botao =
-      document.createElement(
-        "button"
+    const botaoDefinir =
+      criarBotaoObrigacao(
+        "Definir valor"
       );
 
 
-    botao.type =
-      "button";
-
-    botao.textContent =
-      "Definir valor";
-
-    botao.style.marginTop =
-      "10px";
-
-    botao.style.width =
-      "100%";
-
-
-    botao.addEventListener(
+    botaoDefinir.addEventListener(
       "click",
       () => {
 
-        alert(
-          "O cadastro do valor será liberado no próximo passo."
+        abrirFormularioValorObrigacao(
+          atividade,
+          null,
+          bloco
         );
 
       }
@@ -292,7 +776,7 @@ function criarBlocoObrigacao(
 
 
     bloco.appendChild(
-      botao
+      botaoDefinir
     );
 
   }
@@ -325,6 +809,9 @@ async function carregarObrigacoesFinanceiro() {
   if (
     mensagemObrigacoesFinanceiro
   ) {
+
+    mensagemObrigacoesFinanceiro.hidden =
+      false;
 
     mensagemObrigacoesFinanceiro.textContent =
       "Carregando obrigações...";
@@ -385,6 +872,9 @@ async function carregarObrigacoesFinanceiro() {
       if (
         mensagemObrigacoesFinanceiro
       ) {
+
+        mensagemObrigacoesFinanceiro.hidden =
+          false;
 
         mensagemObrigacoesFinanceiro.textContent =
           "Nenhuma obrigação foi encontrada no calendário.";
@@ -468,6 +958,10 @@ async function carregarAcessoObrigacoesFinanceiro() {
 
   try {
 
+    /* --------------------------------------
+       SESSÃO
+    -------------------------------------- */
+
     const resultadoSessao =
       await window.supabaseClient.auth
         .getSession();
@@ -497,6 +991,10 @@ async function carregarAcessoObrigacoesFinanceiro() {
 
     }
 
+
+    /* --------------------------------------
+       USUÁRIO
+    -------------------------------------- */
 
     const resultadoUsuario =
       await window.supabaseClient
@@ -537,6 +1035,10 @@ async function carregarAcessoObrigacoesFinanceiro() {
     const usuarioId =
       resultadoUsuario.data.id;
 
+
+    /* --------------------------------------
+       RESPONSÁVEL PELO FINANCEIRO
+    -------------------------------------- */
 
     const resultadoResponsavel =
       await window.supabaseClient
@@ -582,6 +1084,10 @@ async function carregarAcessoObrigacoesFinanceiro() {
 
     }
 
+
+    /* --------------------------------------
+       ACESSO LIBERADO
+    -------------------------------------- */
 
     if (
       conteudoObrigacoesFinanceiro
