@@ -724,6 +724,33 @@ function criarBlocoObrigacao(
       botaoEditar
     );
 
+
+    /* --------------------------------------
+       PARTICIPANTES
+    -------------------------------------- */
+
+    const botaoParticipantes =
+      criarBotaoObrigacao(
+        "Participantes"
+      );
+
+
+    botaoParticipantes.addEventListener(
+      "click",
+      () => {
+
+        window.location.href =
+          "financeiro-obrigacao-participantes.html?id=" +
+          configuracao.id;
+
+      }
+    );
+
+
+    bloco.appendChild(
+      botaoParticipantes
+    );
+
   }
 
 
