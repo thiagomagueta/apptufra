@@ -181,8 +181,6 @@
         </p>
 
 
-        <!-- BOTÕES DE SELEÇÃO -->
-
         <div
           style="
             display: flex;
@@ -213,8 +211,6 @@
         </div>
 
 
-        <!-- LISTA DISPONÍVEL -->
-
         <p
           id="mensagemParticipantesDisponiveis"
         >
@@ -227,8 +223,6 @@
         >
         </div>
 
-
-        <!-- SALVAR -->
 
         <button
           id="botaoSalvarParticipantesManuais"
@@ -302,68 +296,112 @@
 
     </div>
 
+  </main>
 
-    <!-- =====================================
-         MENU INFERIOR
-    ====================================== -->
 
-    <nav class="menu-inferior">
+  <!-- =====================================
+       MENU INFERIOR
+  ====================================== -->
+
+  <nav
+    class="menu-inferior"
+    aria-label="Navegação principal"
+  >
+
+    <div class="menu-inferior-conteudo">
+
 
       <a
-        href="dashboard.html"
         class="item-menu"
+        href="dashboard.html"
       >
-        <span>
+
+        <span class="icone-menu">
+          ⌂
+        </span>
+
+        <span class="texto-menu">
           Início
         </span>
+
       </a>
 
 
       <a
-        href="calendario.html"
         class="item-menu"
+        href="calendario.html"
       >
-        <span>
+
+        <span class="icone-menu">
+          📅
+        </span>
+
+        <span class="texto-menu">
           Calendário
         </span>
+
       </a>
 
 
       <a
-        href="minha-ficha.html"
         class="item-menu"
+        href="minha-ficha.html"
       >
-        <span>
+
+        <span class="icone-menu">
+          👤
+        </span>
+
+        <span class="texto-menu">
           Minha ficha
         </span>
+
       </a>
 
+
+      <!-- =================================
+           ADM
+           SÓ APARECE PARA QUEM TEM ACESSO
+      ================================== -->
 
       <a
         id="itemMenuAdm"
-        href="administrativo.html"
         class="item-menu ativo"
+        href="administrativo.html"
         hidden
       >
-        <span>
+
+        <span class="icone-menu">
+          ☰
+        </span>
+
+        <span class="texto-menu">
           ADM
         </span>
+
       </a>
 
 
       <a
-        href="#"
         class="item-menu"
-        onclick="logout(); return false;"
+        href="#"
+        id="botaoSair"
       >
-        <span>
+
+        <span class="icone-menu">
+          🚪
+        </span>
+
+        <span class="texto-menu">
           Sair
         </span>
+
       </a>
 
-    </nav>
 
-  </main>
+    </div>
+
+  </nav>
 
 
   <!-- =====================================
