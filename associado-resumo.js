@@ -1323,6 +1323,10 @@ async function salvarDadosPrincipaisAssociado() {
   }
 
 
+  /* ==========================================
+     VERIFICAR O QUE REALMENTE FOI ALTERADO
+  ========================================== */
+
   const emailAtual =
     String(
       associadoAtual.email ||
@@ -1332,9 +1336,62 @@ async function salvarDadosPrincipaisAssociado() {
       .toLowerCase();
 
 
+  const nomeAtual =
+    String(
+      associadoAtual.nome_completo ||
+      dadosPessoaisAtual.nome ||
+      ""
+    ).trim();
+
+
+  const orixaFrenteAtual =
+    String(
+      historicoUmbandaAtual.orixaFrente ||
+      ""
+    ).trim();
+
+
+  const orixaAdjuntoAtual =
+    String(
+      historicoUmbandaAtual.orixaAdjunto ||
+      ""
+    ).trim();
+
+
   const emailFoiAlterado =
     podeAlterarEmailAssociado &&
     novoEmail !== emailAtual;
+
+
+  const dadosFichaForamAlterados =
+    podeEditarAssociado &&
+    (
+      nomeCompleto !== nomeAtual ||
+      orixaFrente !== orixaFrenteAtual ||
+      orixaAdjunto !== orixaAdjuntoAtual
+    );
+
+
+  /* ==========================================
+     NADA FOI ALTERADO
+  ========================================== */
+
+  if (
+    !emailFoiAlterado &&
+    !dadosFichaForamAlterados
+  ) {
+
+    edicaoDadosAssociado.hidden =
+      true;
+
+    dadosAssociadoResumo.hidden =
+      false;
+
+    atualizarBotaoEdicaoPrincipal();
+
+    return;
+
+  }
 
 
   botaoSalvarEdicaoDadosAssociado.disabled =
@@ -1351,10 +1408,13 @@ async function salvarDadosPrincipaisAssociado() {
 
     /* --------------------------------------
        NOME E ORIXÁS
+
+       SOMENTE SE ALGUM DESSES DADOS
+       REALMENTE FOI ALTERADO
     -------------------------------------- */
 
     if (
-      podeEditarAssociado
+      dadosFichaForamAlterados
     ) {
 
       const resultado =
@@ -1405,7 +1465,8 @@ async function salvarDadosPrincipaisAssociado() {
 
     /* --------------------------------------
        E-MAIL DE ACESSO
-       SOMENTE SE FOI ALTERADO
+
+       INDEPENDENTE DA EXISTÊNCIA DA FICHA
     -------------------------------------- */
 
     if (
@@ -1422,6 +1483,10 @@ async function salvarDadosPrincipaisAssociado() {
 
     }
 
+
+    /* --------------------------------------
+       ATUALIZAR TELA
+    -------------------------------------- */
 
     renderizarDadosPrincipaisAssociado();
 
@@ -1462,7 +1527,6 @@ async function salvarDadosPrincipaisAssociado() {
   }
 
 }
-
 
 /* ==========================================
    USUÁRIO LOGADO
