@@ -22,6 +22,22 @@ const listaRegrasObrigacoes =
 
 
 /* ==========================================
+   FUNÇÕES MACRO QUE PARTICIPAM DAS REGRAS
+========================================== */
+
+const nomesFuncoesMacroObrigacoes = [
+  "Sacerdote",
+  "Pai/Mãe Pequeno (a)",
+  "Médium Corrente Principal",
+  "Médium em Desenvolvimento",
+  "Assistência",
+  "Ogam",
+  "Cambone",
+  "Cantina"
+];
+
+
+/* ==========================================
    CRIAR SELECT DE REGRA
 ========================================== */
 
@@ -510,9 +526,23 @@ async function carregarRegrasObrigacoes() {
     }
 
 
-    const funcoes =
+    const funcoesTodas =
       resultadoFuncoes.data ||
       [];
+
+
+    /* ======================================
+       2. FILTRAR APENAS FUNÇÕES MACRO
+    ====================================== */
+
+    const funcoes =
+      funcoesTodas.filter(
+        (funcao) =>
+          nomesFuncoesMacroObrigacoes.includes(
+            funcao.nome
+          ) &&
+          !funcao.funcao_pai_id
+      );
 
 
     if (
@@ -527,7 +557,7 @@ async function carregarRegrasObrigacoes() {
           false;
 
         mensagemRegrasObrigacoes.textContent =
-          "Nenhuma função ativa foi encontrada.";
+          "Nenhuma função disponível para configuração.";
 
       }
 
@@ -538,7 +568,7 @@ async function carregarRegrasObrigacoes() {
 
 
     /* ======================================
-       2. BUSCAR REGRAS JÁ SALVAS
+       3. BUSCAR REGRAS JÁ SALVAS
     ====================================== */
 
     const resultadoRegras =
@@ -568,7 +598,7 @@ async function carregarRegrasObrigacoes() {
 
 
     /* ======================================
-       3. MONTAR TELA
+       4. MONTAR TELA
     ====================================== */
 
     if (
@@ -689,10 +719,6 @@ async function carregarAcessoRegrasObrigacoes() {
     }
 
 
-    /* ======================================
-       USUÁRIO
-    ====================================== */
-
     const resultadoUsuario =
       await window.supabaseClient
         .from(
@@ -729,10 +755,6 @@ async function carregarAcessoRegrasObrigacoes() {
     }
 
 
-    /* ======================================
-       ACESSO FINANCEIRO
-    ====================================== */
-
     const resultadoAcesso =
       await window.supabaseClient
         .rpc(
@@ -760,10 +782,6 @@ async function carregarAcessoRegrasObrigacoes() {
 
     }
 
-
-    /* ======================================
-       LIBERAR TELA
-    ====================================== */
 
     if (
       conteudoRegrasObrigacoes
