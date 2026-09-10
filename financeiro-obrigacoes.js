@@ -821,7 +821,11 @@ async function carregarObrigacoesFinanceiro() {
 
   try {
 
-    const resultado =
+    /* ======================================
+       1. BUSCAR ATIVIDADES COM OBRIGAÇÃO
+    ====================================== */
+
+    const resultadoAtividades =
       await window.supabaseClient
         .from(
           "atividades"
@@ -830,13 +834,7 @@ async function carregarObrigacoesFinanceiro() {
           id,
           titulo,
           data,
-          tipo_atividade,
-
-          financeiro_obrigacoes (
-            id,
-            valor,
-            ativo
-          )
+          tipo_atividade
         `)
         .ilike(
           "titulo",
@@ -852,16 +850,16 @@ async function carregarObrigacoesFinanceiro() {
 
 
     if (
-      resultado.error
+      resultadoAtividades.error
     ) {
 
-      throw resultado.error;
+      throw resultadoAtividades.error;
 
     }
 
 
     const atividades =
-      resultado.data ||
+      resultadoAtividades.data ||
       [];
 
 
@@ -886,6 +884,66 @@ async function carregarObrigacoesFinanceiro() {
 
     }
 
+
+    /* ======================================
+       2. BUSCAR CONFIGURAÇÕES FINANCEIRAS
+    ====================================== */
+
+    const resultadoObrigacoes =
+      await window.supabaseClient
+        .from(
+          "financeiro_obrigacoes"
+        )
+        .select(`
+          id,
+          atividade_id,
+          valor,
+          ativo
+        `);
+
+
+    if (
+      resultadoObrigacoes.error
+    ) {
+
+      throw resultadoObrigacoes.error;
+
+    }
+
+
+    const obrigacoes =
+      resultadoObrigacoes.data ||
+      [];
+
+
+    /* ======================================
+       3. LIGAR CONFIGURAÇÃO À ATIVIDADE
+    ====================================== */
+
+    atividades.forEach(
+      (atividade) => {
+
+        const configuracao =
+          obrigacoes.find(
+            (obrigacao) =>
+              obrigacao.atividade_id ===
+              atividade.id
+          ) ||
+          null;
+
+
+        atividade.financeiro_obrigacoes =
+          configuracao
+            ? [configuracao]
+            : [];
+
+      }
+    );
+
+
+    /* ======================================
+       4. MONTAR TELA
+    ====================================== */
 
     if (
       mensagemObrigacoesFinanceiro
@@ -935,6 +993,7 @@ async function carregarObrigacoesFinanceiro() {
     }
 
   }
+
 }
 
 
