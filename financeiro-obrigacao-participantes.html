@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta
+    name="theme-color"
+    content="#651b1d"
+  >
+
+  <title>
+    Participantes da Obrigação | TUFRA
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="layout.css?v=40"
+  >
+
+</head>
+
+
+<body>
+
+  <main class="app">
+
+    <div class="conteudo-app">
+
+
+      <!-- =====================================
+           CABEÇALHO
+      ====================================== -->
+
+      <header class="cabecalho-app">
+
+        <img
+          class="logo-app"
+          src="logo-tufra.png"
+          alt="Logo da TUFRA"
+        >
+
+        <div class="identidade-app">
+
+          <strong>
+            TUFRA
+          </strong>
+
+          <span>
+            Financeiro
+          </span>
+
+        </div>
+
+      </header>
+
+
+      <!-- =====================================
+           TÍTULO
+      ====================================== -->
+
+      <section class="titulo-pagina">
+
+        <h1>
+          Participantes da Obrigação
+        </h1>
+
+        <p>
+          Confira os participantes e faça os ajustes antes de gerar as cobranças.
+        </p>
+
+      </section>
+
+
+      <!-- =====================================
+           DADOS DA OBRIGAÇÃO
+      ====================================== -->
+
+      <section
+        id="conteudoParticipantesObrigacao"
+        class="cartao-app"
+        hidden
+      >
+
+        <h2
+          id="tituloObrigacaoParticipantes"
+        >
+          Obrigação
+        </h2>
+
+        <p
+          id="dataObrigacaoParticipantes"
+        >
+        </p>
+
+        <p
+          id="valorObrigacaoParticipantes"
+        >
+        </p>
+
+      </section>
+
+
+      <!-- =====================================
+           RESUMO
+      ====================================== -->
+
+      <section
+        id="resumoParticipantesObrigacao"
+        class="cartao-app"
+        hidden
+      >
+
+        <h2>
+          Resumo
+        </h2>
+
+        <p
+          id="textoResumoParticipantesObrigacao"
+        >
+          Carregando participantes...
+        </p>
+
+      </section>
+
+
+      <!-- =====================================
+           JÁ INCLUÍDOS
+      ====================================== -->
+
+      <section
+        id="cardParticipantesIncluidos"
+        class="cartao-app"
+        hidden
+      >
+
+        <h2>
+          Já incluídos nesta obrigação
+        </h2>
+
+        <p>
+          Aqui aparecem os participantes obrigatórios, isentos, opcionais confirmados e inclusões manuais.
+        </p>
+
+        <p
+          id="mensagemParticipantesIncluidos"
+        >
+          Carregando...
+        </p>
+
+        <div
+          id="listaParticipantesIncluidos"
+        >
+        </div>
+
+      </section>
+
+
+      <!-- =====================================
+           ADICIONAR MANUALMENTE
+      ====================================== -->
+
+      <section
+        id="cardAdicionarParticipantes"
+        class="cartao-app"
+        hidden
+      >
+
+        <h2>
+          Adicionar pessoas manualmente
+        </h2>
+
+        <p>
+          Selecione pessoas que ainda não fazem parte desta obrigação.
+        </p>
+
+
+        <!-- BOTÕES DE SELEÇÃO -->
+
+        <div
+          style="
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+            margin-bottom: 14px;
+          "
+        >
+
+          <button
+            id="botaoSelecionarTodosParticipantes"
+            type="button"
+            class="botao-secundario"
+          >
+            Selecionar todos
+          </button>
+
+
+          <button
+            id="botaoTirarSelecaoTodosParticipantes"
+            type="button"
+            class="botao-secundario"
+          >
+            Tirar seleção de todos
+          </button>
+
+        </div>
+
+
+        <!-- LISTA DISPONÍVEL -->
+
+        <p
+          id="mensagemParticipantesDisponiveis"
+        >
+          Carregando...
+        </p>
+
+
+        <div
+          id="listaParticipantesDisponiveis"
+        >
+        </div>
+
+
+        <!-- SALVAR -->
+
+        <button
+          id="botaoSalvarParticipantesManuais"
+          type="button"
+          class="botao-principal"
+          style="
+            width: 100%;
+            margin-top: 18px;
+          "
+        >
+          Salvar selecionados
+        </button>
+
+
+        <p
+          id="mensagemSalvarParticipantesManuais"
+          style="
+            margin-top: 12px;
+          "
+        >
+        </p>
+
+      </section>
+
+
+      <!-- =====================================
+           GERAÇÃO DE COBRANÇAS
+      ====================================== -->
+
+      <section
+        id="cardGerarCobrancasObrigacao"
+        class="cartao-app"
+        hidden
+      >
+
+        <h2>
+          Cobranças
+        </h2>
+
+        <p>
+          Depois da conferência final dos participantes, as cobranças poderão ser geradas.
+        </p>
+
+        <button
+          id="botaoGerarCobrancasObrigacao"
+          type="button"
+          class="botao-principal"
+          disabled
+        >
+          Gerar cobranças da obrigação
+        </button>
+
+        <p>
+          Esta função ainda será liberada em uma próxima etapa.
+        </p>
+
+      </section>
+
+
+      <!-- =====================================
+           VOLTAR
+      ====================================== -->
+
+      <a
+        class="botao-voltar"
+        href="financeiro-obrigacoes.html"
+      >
+        ← Voltar para Obrigações
+      </a>
+
+
+    </div>
+
+
+    <!-- =====================================
+         MENU INFERIOR
+    ====================================== -->
+
+    <nav class="menu-inferior">
+
+      <a
+        href="dashboard.html"
+        class="item-menu"
+      >
+        <span>
+          Início
+        </span>
+      </a>
+
+
+      <a
+        href="calendario.html"
+        class="item-menu"
+      >
+        <span>
+          Calendário
+        </span>
+      </a>
+
+
+      <a
+        href="minha-ficha.html"
+        class="item-menu"
+      >
+        <span>
+          Minha ficha
+        </span>
+      </a>
+
+
+      <a
+        id="itemMenuAdm"
+        href="administrativo.html"
+        class="item-menu ativo"
+        hidden
+      >
+        <span>
+          ADM
+        </span>
+      </a>
+
+
+      <a
+        href="#"
+        class="item-menu"
+        onclick="logout(); return false;"
+      >
+        <span>
+          Sair
+        </span>
+      </a>
+
+    </nav>
+
+  </main>
+
+
+  <!-- =====================================
+       SCRIPTS
+  ====================================== -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+  <script
+    src="supabase.js?v=2"
+  ></script>
+
+  <script
+    src="app.js?v=2"
+  ></script>
+
+  <script
+    src="financeiro-obrigacao-participantes.js?v=1"
+  ></script>
+
+  <script
+    src="menu-adm.js?v=1"
+  ></script>
+
+</body>
+
+</html>
