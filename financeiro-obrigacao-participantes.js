@@ -697,28 +697,56 @@ async function carregarParticipantesIncluidos() {
         "button";
 
       botaoRemover.textContent =
+        "×";
+
+      botaoRemover.title =
         "Remover desta obrigação";
 
+      botaoRemover.setAttribute(
+        "aria-label",
+        "Remover " +
+        participante.nome +
+        " desta obrigação"
+      );
+
+      botaoRemover.style.float =
+        "right";
+
       botaoRemover.style.marginTop =
-        "8px";
+        "-34px";
+
+      botaoRemover.style.width =
+        "30px";
+
+      botaoRemover.style.height =
+        "30px";
 
       botaoRemover.style.padding =
-        "7px 10px";
+        "0";
 
       botaoRemover.style.border =
-        "1px solid #9a2929";
+        "none";
 
       botaoRemover.style.borderRadius =
-        "8px";
+        "50%";
 
       botaoRemover.style.background =
-        "#ffffff";
+        "transparent";
 
       botaoRemover.style.color =
         "#9a2929";
 
+      botaoRemover.style.fontSize =
+        "25px";
+
       botaoRemover.style.fontWeight =
         "700";
+
+      botaoRemover.style.lineHeight =
+        "30px";
+
+      botaoRemover.style.textAlign =
+        "center";
 
       botaoRemover.style.cursor =
         "pointer";
@@ -726,22 +754,22 @@ async function carregarParticipantesIncluidos() {
 
       if (
         participante.cobranca_id
-      ) {
+      ) 
+      {
 
         botaoRemover.disabled =
           true;
 
-        botaoRemover.textContent =
+        botaoRemover.title =
           "Cobrança já vinculada";
 
         botaoRemover.style.opacity =
-          "0.6";
+          "0.3";
 
         botaoRemover.style.cursor =
           "default";
 
       }
-
 
       botaoRemover.addEventListener(
         "click",
