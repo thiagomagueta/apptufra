@@ -410,22 +410,15 @@ async function removerParticipanteObrigacao(
   participante
 ) {
 
-  if (
+  const mensagemConfirmacao =
     participante.cobranca_id
-  ) {
-
-    alert(
-      "Este participante já possui uma cobrança vinculada e não pode ser removido por esta tela."
-    );
-
-    return;
-
-  }
+      ? "Deseja realmente remover esta pessoa desta obrigação?\n\nComo já existe uma cobrança vinculada, ela também será removida se estiver aberta e sem nenhum pagamento aplicado.\n\nSe existir pagamento, a remoção será bloqueada."
+      : "Deseja realmente remover esta pessoa desta obrigação?";
 
 
   const confirmar =
     window.confirm(
-      "Deseja realmente remover esta pessoa desta obrigação?"
+      mensagemConfirmacao
     );
 
 
@@ -442,17 +435,12 @@ async function removerParticipanteObrigacao(
 
     const resultado =
       await window.supabaseClient
-        .from(
-          "financeiro_obrigacao_participantes"
-        )
-        .delete()
-        .eq(
-          "id",
-          participante.id
-        )
-        .eq(
-          "obrigacao_id",
-          obrigacaoIdAtual
+        .rpc(
+          "financeiro_remover_participante_obrigacao",
+          {
+            p_participante_id:
+              participante.id
+          }
         );
 
 
@@ -478,6 +466,41 @@ async function removerParticipanteObrigacao(
       "Erro ao remover participante:",
       erro
     );
+
+
+    const mensagemErro =
+      erro?.message ||
+      "";
+
+
+    if (
+      mensagemErro.includes(
+        "já possui pagamento aplicado"
+      )
+    ) {
+
+      alert(
+        "Não é possível remover esta pessoa porque a cobrança já possui pagamento aplicado."
+      );
+
+      return;
+
+    }
+
+
+    if (
+      mensagemErro.includes(
+        "não está aberta"
+      )
+    ) {
+
+      alert(
+        "Não é possível remover esta pessoa porque a cobrança vinculada não está aberta."
+      );
+
+      return;
+
+    }
 
 
     alert(
@@ -755,25 +778,6 @@ async function carregarParticipantesIncluidos() {
 
       botaoRemover.style.cursor =
         "pointer";
-
-
-      if (
-        participante.cobranca_id
-      ) {
-
-        botaoRemover.disabled =
-          true;
-
-        botaoRemover.title =
-          "Cobrança já vinculada";
-
-        botaoRemover.style.opacity =
-          "0.3";
-
-        botaoRemover.style.cursor =
-          "default";
-
-      }
 
 
       botaoRemover.addEventListener(
