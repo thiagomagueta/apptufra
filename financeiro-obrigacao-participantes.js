@@ -30,6 +30,11 @@ const cardGerarCobrancasObrigacao =
     "cardGerarCobrancasObrigacao"
   );
 
+const botaoGerarCobrancasObrigacao =
+  document.getElementById(
+    "botaoGerarCobrancasObrigacao"
+  );
+
 
 const tituloObrigacaoParticipantes =
   document.getElementById(
@@ -754,8 +759,7 @@ async function carregarParticipantesIncluidos() {
 
       if (
         participante.cobranca_id
-      ) 
-      {
+      ) {
 
         botaoRemover.disabled =
           true;
@@ -770,6 +774,7 @@ async function carregarParticipantesIncluidos() {
           "default";
 
       }
+
 
       botaoRemover.addEventListener(
         "click",
@@ -1221,6 +1226,126 @@ async function salvarParticipantesManuais() {
 
 
 /* ==========================================
+   GERAR COBRANÇAS DA OBRIGAÇÃO
+========================================== */
+
+async function gerarCobrancasObrigacao() {
+
+  const confirmar =
+    window.confirm(
+      "Gerar cobranças para todos os participantes desta obrigação que ainda não possuem cobrança?\n\nOs participantes isentos não receberão cobrança."
+    );
+
+
+  if (
+    !confirmar
+  ) {
+
+    return;
+
+  }
+
+
+  botaoGerarCobrancasObrigacao.disabled =
+    true;
+
+
+  const textoOriginal =
+    botaoGerarCobrancasObrigacao.textContent;
+
+
+  botaoGerarCobrancasObrigacao.textContent =
+    "Gerando cobranças...";
+
+
+  try {
+
+    const resultado =
+      await window.supabaseClient
+        .rpc(
+          "financeiro_gerar_cobrancas_obrigacao",
+          {
+            p_obrigacao_id:
+              obrigacaoIdAtual
+          }
+        );
+
+
+    if (
+      resultado.error
+    ) {
+
+      throw resultado.error;
+
+    }
+
+
+    const quantidade =
+      Number(
+        resultado.data || 0
+      );
+
+
+    if (
+      quantidade === 0
+    ) {
+
+      alert(
+        "Nenhuma nova cobrança foi gerada.\n\nTodos os participantes que precisam pagar já possuem cobrança."
+      );
+
+    } else if (
+      quantidade === 1
+    ) {
+
+      alert(
+        "1 cobrança foi gerada com sucesso."
+      );
+
+    } else {
+
+      alert(
+        quantidade +
+        " cobranças foram geradas com sucesso."
+      );
+
+    }
+
+
+    await carregarParticipantesIncluidos();
+
+    atualizarResumoParticipantes();
+
+    await carregarUsuariosDisponiveis();
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao gerar cobranças da obrigação:",
+      erro
+    );
+
+
+    alert(
+      "Não foi possível gerar as cobranças desta obrigação."
+    );
+
+
+  } finally {
+
+    botaoGerarCobrancasObrigacao.disabled =
+      false;
+
+    botaoGerarCobrancasObrigacao.textContent =
+      textoOriginal;
+
+  }
+
+}
+
+
+/* ==========================================
    CARREGAR TELA
 ========================================== */
 
@@ -1251,6 +1376,16 @@ async function carregarTelaParticipantesObrigacao() {
 
     cardGerarCobrancasObrigacao.hidden =
       false;
+
+
+    if (
+      botaoGerarCobrancasObrigacao
+    ) {
+
+      botaoGerarCobrancasObrigacao.disabled =
+        false;
+
+    }
 
 
   } catch (erro) {
@@ -1461,6 +1596,19 @@ if (
     .addEventListener(
       "click",
       salvarParticipantesManuais
+    );
+
+}
+
+
+if (
+  botaoGerarCobrancasObrigacao
+) {
+
+  botaoGerarCobrancasObrigacao
+    .addEventListener(
+      "click",
+      gerarCobrancasObrigacao
     );
 
 }
