@@ -398,6 +398,93 @@ async function carregarDadosObrigacao() {
 
 
 /* ==========================================
+   REMOVER PARTICIPANTE
+========================================== */
+
+async function removerParticipanteObrigacao(
+  participante
+) {
+
+  if (
+    participante.cobranca_id
+  ) {
+
+    alert(
+      "Este participante já possui uma cobrança vinculada e não pode ser removido por esta tela."
+    );
+
+    return;
+
+  }
+
+
+  const confirmar =
+    window.confirm(
+      "Deseja realmente remover esta pessoa desta obrigação?"
+    );
+
+
+  if (
+    !confirmar
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    const resultado =
+      await window.supabaseClient
+        .from(
+          "financeiro_obrigacao_participantes"
+        )
+        .delete()
+        .eq(
+          "id",
+          participante.id
+        )
+        .eq(
+          "obrigacao_id",
+          obrigacaoIdAtual
+        );
+
+
+    if (
+      resultado.error
+    ) {
+
+      throw resultado.error;
+
+    }
+
+
+    await carregarParticipantesIncluidos();
+
+    atualizarResumoParticipantes();
+
+    await carregarUsuariosDisponiveis();
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao remover participante:",
+      erro
+    );
+
+
+    alert(
+      "Não foi possível remover esta pessoa da obrigação."
+    );
+
+  }
+
+}
+
+
+/* ==========================================
    CARREGAR PARTICIPANTES JÁ INCLUÍDOS
 ========================================== */
 
@@ -600,12 +687,84 @@ async function carregarParticipantesIncluidos() {
         );
 
 
+      const botaoRemover =
+        document.createElement(
+          "button"
+        );
+
+
+      botaoRemover.type =
+        "button";
+
+      botaoRemover.textContent =
+        "Remover desta obrigação";
+
+      botaoRemover.style.marginTop =
+        "8px";
+
+      botaoRemover.style.padding =
+        "7px 10px";
+
+      botaoRemover.style.border =
+        "1px solid #9a2929";
+
+      botaoRemover.style.borderRadius =
+        "8px";
+
+      botaoRemover.style.background =
+        "#ffffff";
+
+      botaoRemover.style.color =
+        "#9a2929";
+
+      botaoRemover.style.fontWeight =
+        "700";
+
+      botaoRemover.style.cursor =
+        "pointer";
+
+
+      if (
+        participante.cobranca_id
+      ) {
+
+        botaoRemover.disabled =
+          true;
+
+        botaoRemover.textContent =
+          "Cobrança já vinculada";
+
+        botaoRemover.style.opacity =
+          "0.6";
+
+        botaoRemover.style.cursor =
+          "default";
+
+      }
+
+
+      botaoRemover.addEventListener(
+        "click",
+        async () => {
+
+          await removerParticipanteObrigacao(
+            participante
+          );
+
+        }
+      );
+
+
       bloco.appendChild(
         nome
       );
 
       bloco.appendChild(
         detalhes
+      );
+
+      bloco.appendChild(
+        botaoRemover
       );
 
 
@@ -909,10 +1068,10 @@ async function salvarParticipantesManuais() {
         ".checkbox-participante-manual:checked"
       )
     )
-    .map(
-      (checkbox) =>
-        checkbox.value
-    );
+      .map(
+        (checkbox) =>
+          checkbox.value
+      );
 
 
   if (
