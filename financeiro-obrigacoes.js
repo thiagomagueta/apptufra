@@ -10,15 +10,36 @@ const conteudoObrigacoesFinanceiro =
     "conteudoObrigacoesFinanceiro"
   );
 
+
 const mensagemObrigacoesFinanceiro =
   document.getElementById(
     "mensagemObrigacoesFinanceiro"
   );
 
+
 const listaObrigacoesFinanceiro =
   document.getElementById(
     "listaObrigacoesFinanceiro"
   );
+
+
+/* ==========================================
+   ORIXÁS DISPONÍVEIS
+========================================== */
+
+const ORIXAS_OBRIGACOES = [
+  "Oxalá",
+  "Iemanjá",
+  "Oxossi",
+  "Oxum",
+  "Ogum",
+  "Iansã",
+  "Xangô",
+  "Ibeji",
+  "Obaluaê/Omulu",
+  "Nanã",
+  "Exu"
+];
 
 
 /* ==========================================
@@ -209,7 +230,7 @@ function criarBotaoObrigacao(
 
 
 /* ==========================================
-   ABRIR FORMULÁRIO DE VALOR
+   ABRIR FORMULÁRIO DE CONFIGURAÇÃO
 ========================================== */
 
 function abrirFormularioValorObrigacao(
@@ -254,7 +275,7 @@ function abrirFormularioValorObrigacao(
 
 
   /* --------------------------------------
-     LABEL
+     LABEL DO VALOR
   -------------------------------------- */
 
   const label =
@@ -283,7 +304,7 @@ function abrirFormularioValorObrigacao(
 
 
   /* --------------------------------------
-     INPUT
+     INPUT DO VALOR
   -------------------------------------- */
 
   const input =
@@ -349,6 +370,142 @@ function abrirFormularioValorObrigacao(
 
 
   /* --------------------------------------
+     ORIXÁS DA OBRIGAÇÃO
+  -------------------------------------- */
+
+  const tituloOrixas =
+    document.createElement(
+      "div"
+    );
+
+
+  tituloOrixas.textContent =
+    "Orixás da obrigação";
+
+  tituloOrixas.style.marginTop =
+    "14px";
+
+  tituloOrixas.style.marginBottom =
+    "8px";
+
+  tituloOrixas.style.fontWeight =
+    "700";
+
+
+  area.appendChild(
+    tituloOrixas
+  );
+
+
+  const gradeOrixas =
+    document.createElement(
+      "div"
+    );
+
+
+  gradeOrixas.style.display =
+    "grid";
+
+  gradeOrixas.style.gridTemplateColumns =
+    "repeat(2, minmax(0, 1fr))";
+
+  gradeOrixas.style.gap =
+    "8px";
+
+
+  const orixasConfigurados =
+    Array.isArray(
+      configuracao?.orixas
+    )
+      ? configuracao.orixas
+      : [];
+
+
+  ORIXAS_OBRIGACOES.forEach(
+    (nomeOrixa) => {
+
+      const labelOrixa =
+        document.createElement(
+          "label"
+        );
+
+
+      labelOrixa.style.display =
+        "flex";
+
+      labelOrixa.style.alignItems =
+        "center";
+
+      labelOrixa.style.gap =
+        "7px";
+
+      labelOrixa.style.padding =
+        "8px";
+
+      labelOrixa.style.border =
+        "1px solid #e1d6d6";
+
+      labelOrixa.style.borderRadius =
+        "8px";
+
+      labelOrixa.style.cursor =
+        "pointer";
+
+
+      const checkbox =
+        document.createElement(
+          "input"
+        );
+
+
+      checkbox.type =
+        "checkbox";
+
+      checkbox.value =
+        nomeOrixa;
+
+      checkbox.checked =
+        orixasConfigurados.includes(
+          nomeOrixa
+        );
+
+      checkbox.className =
+        "checkbox-orixa-obrigacao";
+
+
+      const textoOrixa =
+        document.createElement(
+          "span"
+        );
+
+
+      textoOrixa.textContent =
+        nomeOrixa;
+
+
+      labelOrixa.appendChild(
+        checkbox
+      );
+
+      labelOrixa.appendChild(
+        textoOrixa
+      );
+
+
+      gradeOrixas.appendChild(
+        labelOrixa
+      );
+
+    }
+  );
+
+
+  area.appendChild(
+    gradeOrixas
+  );
+
+
+  /* --------------------------------------
      MENSAGEM
   -------------------------------------- */
 
@@ -376,7 +533,7 @@ function abrirFormularioValorObrigacao(
 
   const botaoSalvar =
     criarBotaoObrigacao(
-      "Salvar valor"
+      "Salvar configuração"
     );
 
 
@@ -396,6 +553,32 @@ function abrirFormularioValorObrigacao(
 
         mensagem.textContent =
           "Informe um valor válido.";
+
+        mensagem.style.color =
+          "#9a2929";
+
+        return;
+
+      }
+
+
+      const orixasSelecionados =
+        Array.from(
+          gradeOrixas.querySelectorAll(
+            ".checkbox-orixa-obrigacao:checked"
+          )
+        ).map(
+          (checkbox) =>
+            checkbox.value
+        );
+
+
+      if (
+        orixasSelecionados.length === 0
+      ) {
+
+        mensagem.textContent =
+          "Selecione pelo menos um Orixá.";
 
         mensagem.style.color =
           "#9a2929";
@@ -438,6 +621,9 @@ function abrirFormularioValorObrigacao(
                 valor:
                   valor,
 
+                orixas:
+                  orixasSelecionados,
+
                 atualizado_em:
                   new Date()
                     .toISOString()
@@ -468,6 +654,9 @@ function abrirFormularioValorObrigacao(
                 valor:
                   valor,
 
+                orixas:
+                  orixasSelecionados,
+
                 ativo:
                   true
               });
@@ -485,7 +674,7 @@ function abrirFormularioValorObrigacao(
 
 
         mensagem.textContent =
-          "Valor salvo com sucesso.";
+          "Configuração salva com sucesso.";
 
         mensagem.style.color =
           "#267341";
@@ -497,13 +686,13 @@ function abrirFormularioValorObrigacao(
       } catch (erro) {
 
         console.error(
-          "Erro ao salvar valor da obrigação:",
+          "Erro ao salvar configuração da obrigação:",
           erro
         );
 
 
         mensagem.textContent =
-          "Não foi possível salvar o valor.";
+          "Não foi possível salvar a configuração.";
 
         mensagem.style.color =
           "#9a2929";
@@ -700,9 +889,52 @@ function criarBlocoObrigacao(
     );
 
 
+    /* --------------------------------------
+       ORIXÁS CONFIGURADOS
+    -------------------------------------- */
+
+    const orixas =
+      document.createElement(
+        "div"
+      );
+
+
+    orixas.style.marginTop =
+      "6px";
+
+    orixas.style.fontSize =
+      "14px";
+
+    orixas.style.color =
+      "#5f5555";
+
+
+    const listaOrixas =
+      Array.isArray(
+        configuracao.orixas
+      )
+        ? configuracao.orixas
+        : [];
+
+
+    orixas.textContent =
+      listaOrixas.length > 0
+        ? `Orixás: ${listaOrixas.join(" e ")}`
+        : "Orixás ainda não definidos.";
+
+
+    bloco.appendChild(
+      orixas
+    );
+
+
+    /* --------------------------------------
+       EDITAR CONFIGURAÇÃO
+    -------------------------------------- */
+
     const botaoEditar =
       criarBotaoObrigacao(
-        "Editar valor"
+        "Editar configuração"
       );
 
 
@@ -784,7 +1016,7 @@ function criarBlocoObrigacao(
 
     const botaoDefinir =
       criarBotaoObrigacao(
-        "Definir valor"
+        "Configurar obrigação"
       );
 
 
@@ -925,6 +1157,7 @@ async function carregarObrigacoesFinanceiro() {
           id,
           atividade_id,
           valor,
+          orixas,
           ativo
         `);
 
