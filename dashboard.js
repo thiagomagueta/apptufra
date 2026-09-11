@@ -105,6 +105,16 @@ const resumoFinanceiroDashboard =
     "resumoFinanceiroDashboard"
   );
 
+const areaObrigacoesFinanceiroDashboard =
+  document.getElementById(
+    "areaObrigacoesFinanceiroDashboard"
+  );
+
+const listaObrigacoesFinanceiroDashboard =
+  document.getElementById(
+    "listaObrigacoesFinanceiroDashboard"
+  );
+
 
 /* ==========================================
    PRESENÇA
@@ -1069,6 +1079,11 @@ async function carregarMensalidadesFinanceiroDashboard() {
     }
 
 
+    await carregarObrigacoesFinanceiroDashboard(
+      usuarioId
+    );
+
+
   } catch (erro) {
 
     console.error(
@@ -1078,6 +1093,26 @@ async function carregarMensalidadesFinanceiroDashboard() {
 
 
     limparMesesFinanceiroDashboard();
+
+
+    if (
+      areaObrigacoesFinanceiroDashboard
+    ) {
+
+      areaObrigacoesFinanceiroDashboard.hidden =
+        true;
+
+    }
+
+
+    if (
+      listaObrigacoesFinanceiroDashboard
+    ) {
+
+      listaObrigacoesFinanceiroDashboard.innerHTML =
+        "";
+
+    }
 
 
     if (
@@ -1091,6 +1126,621 @@ async function carregarMensalidadesFinanceiroDashboard() {
 
   }
 
+}
+
+
+/* ==========================================
+   FINANCEIRO
+   OBRIGAÇÕES
+========================================== */
+
+function formatarDataObrigacaoFinanceiroDashboard(
+  dataISO
+) {
+
+  if (
+    !dataISO
+  ) {
+
+    return "";
+
+  }
+
+
+  const partes =
+    String(
+      dataISO
+    ).split(
+      "-"
+    );
+
+
+  if (
+    partes.length !== 3
+  ) {
+
+    return dataISO;
+
+  }
+
+
+  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+
+function definirVisualObrigacaoFinanceiroDashboard(
+  situacao,
+  statusCobranca
+) {
+
+  if (
+    situacao === "isento"
+  ) {
+
+    return {
+      texto: "ISENTO",
+      simbolo: "✓",
+      fundo: "#eef1f4",
+      borda: "#aeb7c1",
+      cor: "#4b5864"
+    };
+
+  }
+
+
+  if (
+    statusCobranca === "paga"
+  ) {
+
+    return {
+      texto: "PAGO",
+      simbolo: "✓",
+      fundo: "#e4f3e8",
+      borda: "#70ad7d",
+      cor: "#246b35"
+    };
+
+  }
+
+
+  if (
+    statusCobranca === "aberta" ||
+    statusCobranca === "parcial"
+  ) {
+
+    return {
+      texto:
+        statusCobranca === "parcial"
+          ? "PARCIAL"
+          : "EM ABERTO",
+      simbolo: "!",
+      fundo: "#f7dddd",
+      borda: "#c97575",
+      cor: "#9a2929"
+    };
+
+  }
+
+
+  return {
+    texto: "PENDENTE",
+    simbolo: "—",
+    fundo: "#f5f5f5",
+    borda: "#d8d8d8",
+    cor: ""
+  };
+}
+
+
+function criarCartaoObrigacaoFinanceiroDashboard(
+  obrigacao
+) {
+
+  const visual =
+    definirVisualObrigacaoFinanceiroDashboard(
+      obrigacao.situacao,
+      obrigacao.status_cobranca
+    );
+
+
+  const cartao =
+    document.createElement(
+      "div"
+    );
+
+
+  cartao.style.padding =
+    "12px";
+
+  cartao.style.border =
+    `1px solid ${visual.borda}`;
+
+  cartao.style.borderRadius =
+    "10px";
+
+  cartao.style.background =
+    visual.fundo;
+
+  cartao.style.color =
+    visual.cor;
+
+
+  const data =
+    document.createElement(
+      "div"
+    );
+
+
+  data.style.fontSize =
+    "12px";
+
+  data.style.fontWeight =
+    "700";
+
+  data.style.marginBottom =
+    "5px";
+
+  data.textContent =
+    formatarDataObrigacaoFinanceiroDashboard(
+      obrigacao.data
+    );
+
+
+  const titulo =
+    document.createElement(
+      "div"
+    );
+
+
+  titulo.style.fontSize =
+    "13px";
+
+  titulo.style.fontWeight =
+    "700";
+
+  titulo.style.lineHeight =
+    "1.35";
+
+  titulo.style.minHeight =
+    "36px";
+
+  titulo.textContent =
+    obrigacao.titulo ||
+    "Obrigação";
+
+
+  const status =
+    document.createElement(
+      "div"
+    );
+
+
+  status.style.marginTop =
+    "9px";
+
+  status.style.fontSize =
+    "12px";
+
+  status.style.fontWeight =
+    "800";
+
+  status.textContent =
+    `${visual.simbolo} ${visual.texto}`;
+
+
+  cartao.appendChild(
+    data
+  );
+
+  cartao.appendChild(
+    titulo
+  );
+
+  cartao.appendChild(
+    status
+  );
+
+
+  return cartao;
+}
+
+
+async function carregarObrigacoesFinanceiroDashboard(
+  usuarioId
+) {
+
+  if (
+    !window.supabaseClient ||
+    !areaObrigacoesFinanceiroDashboard ||
+    !listaObrigacoesFinanceiroDashboard ||
+    !usuarioId
+  ) {
+
+    return;
+
+  }
+
+
+  areaObrigacoesFinanceiroDashboard.hidden =
+    true;
+
+  listaObrigacoesFinanceiroDashboard.innerHTML =
+    "";
+
+
+  try {
+
+    const resultadoParticipantes =
+      await window.supabaseClient
+        .from(
+          "financeiro_obrigacao_participantes"
+        )
+        .select(`
+          id,
+          obrigacao_id,
+          situacao,
+          cobranca_id
+        `)
+        .eq(
+          "usuario_id",
+          usuarioId
+        );
+
+
+    if (
+      resultadoParticipantes.error
+    ) {
+
+      throw resultadoParticipantes.error;
+
+    }
+
+
+    const participantes =
+      resultadoParticipantes.data ||
+      [];
+
+
+    if (
+      participantes.length === 0
+    ) {
+
+      return;
+
+    }
+
+
+    const idsObrigacoes =
+      [
+        ...new Set(
+          participantes.map(
+            (participante) =>
+              participante.obrigacao_id
+          )
+        )
+      ];
+
+
+    const resultadoObrigacoes =
+      await window.supabaseClient
+        .from(
+          "financeiro_obrigacoes"
+        )
+        .select(`
+          id,
+          atividade_id,
+          valor,
+          ativo
+        `)
+        .in(
+          "id",
+          idsObrigacoes
+        )
+        .eq(
+          "ativo",
+          true
+        );
+
+
+    if (
+      resultadoObrigacoes.error
+    ) {
+
+      throw resultadoObrigacoes.error;
+
+    }
+
+
+    const obrigacoes =
+      resultadoObrigacoes.data ||
+      [];
+
+
+    if (
+      obrigacoes.length === 0
+    ) {
+
+      return;
+
+    }
+
+
+    const idsAtividades =
+      [
+        ...new Set(
+          obrigacoes
+            .map(
+              (obrigacao) =>
+                obrigacao.atividade_id
+            )
+            .filter(Boolean)
+        )
+      ];
+
+
+    const resultadoAtividades =
+      await window.supabaseClient
+        .from(
+          "atividades"
+        )
+        .select(`
+          id,
+          titulo,
+          data
+        `)
+        .in(
+          "id",
+          idsAtividades
+        )
+        .gte(
+          "data",
+          "2026-01-01"
+        )
+        .lte(
+          "data",
+          "2026-12-31"
+        );
+
+
+    if (
+      resultadoAtividades.error
+    ) {
+
+      throw resultadoAtividades.error;
+
+    }
+
+
+    const atividades =
+      resultadoAtividades.data ||
+      [];
+
+
+    const idsCobrancas =
+      [
+        ...new Set(
+          participantes
+            .map(
+              (participante) =>
+                participante.cobranca_id
+            )
+            .filter(Boolean)
+        )
+      ];
+
+
+    let cobrancas =
+      [];
+
+
+    if (
+      idsCobrancas.length > 0
+    ) {
+
+      const resultadoCobrancas =
+        await window.supabaseClient
+          .from(
+            "financeiro_cobrancas"
+          )
+          .select(`
+            id,
+            status,
+            valor_original
+          `)
+          .in(
+            "id",
+            idsCobrancas
+          );
+
+
+      if (
+        resultadoCobrancas.error
+      ) {
+
+        throw resultadoCobrancas.error;
+
+      }
+
+
+      cobrancas =
+        resultadoCobrancas.data ||
+        [];
+
+    }
+
+
+    const mapaObrigacoes =
+      new Map(
+        obrigacoes.map(
+          (obrigacao) => [
+            obrigacao.id,
+            obrigacao
+          ]
+        )
+      );
+
+
+    const mapaAtividades =
+      new Map(
+        atividades.map(
+          (atividade) => [
+            atividade.id,
+            atividade
+          ]
+        )
+      );
+
+
+    const mapaCobrancas =
+      new Map(
+        cobrancas.map(
+          (cobranca) => [
+            cobranca.id,
+            cobranca
+          ]
+        )
+      );
+
+
+    const registros =
+      participantes
+        .map(
+          (participante) => {
+
+            const obrigacao =
+              mapaObrigacoes.get(
+                participante.obrigacao_id
+              );
+
+
+            if (
+              !obrigacao
+            ) {
+
+              return null;
+
+            }
+
+
+            const atividade =
+              mapaAtividades.get(
+                obrigacao.atividade_id
+              );
+
+
+            if (
+              !atividade
+            ) {
+
+              return null;
+
+            }
+
+
+            const cobranca =
+              participante.cobranca_id
+                ? mapaCobrancas.get(
+                    participante.cobranca_id
+                  )
+                : null;
+
+
+            return {
+              obrigacao_id:
+                obrigacao.id,
+              data:
+                atividade.data,
+              titulo:
+                atividade.titulo,
+              valor:
+                Number(
+                  obrigacao.valor ||
+                  0
+                ),
+              situacao:
+                participante.situacao,
+              cobranca_id:
+                participante.cobranca_id,
+              status_cobranca:
+                cobranca?.status ||
+                null,
+              valor_original:
+                Number(
+                  cobranca?.valor_original ||
+                  0
+                )
+            };
+
+          }
+        )
+        .filter(Boolean)
+        .sort(
+          (a, b) =>
+            String(
+              a.data || ""
+            ).localeCompare(
+              String(
+                b.data || ""
+              )
+            )
+        );
+
+
+    if (
+      registros.length === 0
+    ) {
+
+      return;
+
+    }
+
+
+    listaObrigacoesFinanceiroDashboard.style.display =
+      "grid";
+
+    listaObrigacoesFinanceiroDashboard.style.gridTemplateColumns =
+      "repeat(2, minmax(0, 1fr))";
+
+    listaObrigacoesFinanceiroDashboard.style.gap =
+      "8px";
+
+
+    registros.forEach(
+      (obrigacao) => {
+
+        const cartao =
+          criarCartaoObrigacaoFinanceiroDashboard(
+            obrigacao
+          );
+
+
+        listaObrigacoesFinanceiroDashboard.appendChild(
+          cartao
+        );
+
+      }
+    );
+
+
+    areaObrigacoesFinanceiroDashboard.hidden =
+      false;
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao carregar obrigações do Financeiro:",
+      erro
+    );
+
+
+    listaObrigacoesFinanceiroDashboard.innerHTML =
+      "";
+
+    areaObrigacoesFinanceiroDashboard.hidden =
+      true;
+
+  }
 }
 
 
