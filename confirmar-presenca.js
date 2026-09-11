@@ -937,13 +937,10 @@ async function buscarPresencaOficialExistente() {
    SINCRONIZAR LISTA OFICIAL
 ========================================== */
 
-async function sincronizarPresencaOficial(
-  resposta,
-  justificativa
-) {
+async function sincronizarPresencaOficial() {
 
   if (
-    !tipoListaConfirmacaoAtual
+    !atividadeConfirmacaoAtual
   ) {
 
     return;
@@ -951,116 +948,22 @@ async function sincronizarPresencaOficial(
   }
 
 
-  const presencaExistente =
-    await buscarPresencaOficialExistente();
-
-
-  if (
-    resposta ===
-    "presente"
-  ) {
-
-    if (
-      presencaExistente?.origem ===
-      "confirmacao_previa"
-    ) {
-
-      const resultadoExcluir =
-        await window.supabaseClient
-          .from(
-            "presencas"
-          )
-          .delete()
-          .eq(
-            "tipo_lista_id",
-            tipoListaConfirmacaoAtual.id
-          )
-          .eq(
-            "atividade_id",
-            atividadeConfirmacaoAtual.id
-          )
-          .eq(
-            "usuario_id",
-            usuarioConfirmacaoAtual.id
-          )
-          .eq(
-            "origem",
-            "confirmacao_previa"
-          );
-
-
-      if (
-        resultadoExcluir.error
-      ) {
-
-        throw resultadoExcluir.error;
-
-      }
-
-    }
-
-
-    return;
-
-  }
-
-
-  if (
-    presencaExistente &&
-    presencaExistente.origem !==
-      "confirmacao_previa"
-  ) {
-
-    return;
-
-  }
-
-
-  const status =
-    justificativa
-      ? "justificada"
-      : "falta";
-
-
-  const registro = {
-
-    tipo_lista_id:
-      tipoListaConfirmacaoAtual.id,
-
-    atividade_id:
-      atividadeConfirmacaoAtual.id,
-
-    usuario_id:
-      usuarioConfirmacaoAtual.id,
-
-    status:
-      status,
-
-    origem:
-      "confirmacao_previa"
-
-  };
-
-
-  const resultadoSalvar =
+  const resultado =
     await window.supabaseClient
-      .from(
-        "presencas"
-      )
-      .upsert(
-        registro,
+      .rpc(
+        "sincronizar_confirmacao_presenca",
         {
-          onConflict:
-            "tipo_lista_id,atividade_id,usuario_id"
+          p_atividade_id:
+            atividadeConfirmacaoAtual.id
         }
       );
 
 
   if (
-    resultadoSalvar.error
+    resultado.error
   ) {
 
-    throw resultadoSalvar.error;
+    throw resultado.error;
 
   }
 }
@@ -1223,7 +1126,7 @@ async function salvarConfirmacaoPresenca() {
 
         window.location.href =
           "dashboard.html";
-         
+
 
       },
       1200
