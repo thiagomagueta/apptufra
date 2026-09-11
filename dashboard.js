@@ -1164,7 +1164,7 @@ function formatarDataObrigacaoFinanceiroDashboard(
   }
 
 
-  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+  return `${partes[2]}/${partes[1]}`;
 }
 
 
@@ -1178,7 +1178,7 @@ function definirVisualObrigacaoFinanceiroDashboard(
   ) {
 
     return {
-      texto: "ISENTO",
+      texto: "Isento",
       simbolo: "✓",
       fundo: "#eef1f4",
       borda: "#aeb7c1",
@@ -1193,7 +1193,7 @@ function definirVisualObrigacaoFinanceiroDashboard(
   ) {
 
     return {
-      texto: "PAGO",
+      texto: "Pago",
       simbolo: "✓",
       fundo: "#e4f3e8",
       borda: "#70ad7d",
@@ -1211,8 +1211,8 @@ function definirVisualObrigacaoFinanceiroDashboard(
     return {
       texto:
         statusCobranca === "parcial"
-          ? "PARCIAL"
-          : "EM ABERTO",
+          ? "Parcial"
+          : "Em aberto",
       simbolo: "!",
       fundo: "#f7dddd",
       borda: "#c97575",
@@ -1223,7 +1223,7 @@ function definirVisualObrigacaoFinanceiroDashboard(
 
 
   return {
-    texto: "PENDENTE",
+    texto: "Pendente",
     simbolo: "—",
     fundo: "#f5f5f5",
     borda: "#d8d8d8",
@@ -1250,13 +1250,13 @@ function criarCartaoObrigacaoFinanceiroDashboard(
 
 
   cartao.style.padding =
-    "12px";
+    "8px 6px";
 
   cartao.style.border =
     `1px solid ${visual.borda}`;
 
   cartao.style.borderRadius =
-    "10px";
+    "8px";
 
   cartao.style.background =
     visual.fundo;
@@ -1272,13 +1272,16 @@ function criarCartaoObrigacaoFinanceiroDashboard(
 
 
   data.style.fontSize =
-    "12px";
+    "11px";
 
   data.style.fontWeight =
     "700";
 
+  data.style.textAlign =
+    "center";
+
   data.style.marginBottom =
-    "5px";
+    "3px";
 
   data.textContent =
     formatarDataObrigacaoFinanceiroDashboard(
@@ -1293,19 +1296,22 @@ function criarCartaoObrigacaoFinanceiroDashboard(
 
 
   titulo.style.fontSize =
-    "13px";
+    "12px";
 
   titulo.style.fontWeight =
     "700";
 
+  titulo.style.textAlign =
+    "center";
+
   titulo.style.lineHeight =
-    "1.35";
+    "1.2";
 
   titulo.style.minHeight =
-    "36px";
+    "30px";
 
   titulo.textContent =
-    obrigacao.titulo ||
+    obrigacao.nome_orixas ||
     "Obrigação";
 
 
@@ -1316,13 +1322,16 @@ function criarCartaoObrigacaoFinanceiroDashboard(
 
 
   status.style.marginTop =
-    "9px";
+    "5px";
 
   status.style.fontSize =
-    "12px";
+    "11px";
 
   status.style.fontWeight =
     "800";
+
+  status.style.textAlign =
+    "center";
 
   status.textContent =
     `${visual.simbolo} ${visual.texto}`;
@@ -1430,6 +1439,7 @@ async function carregarObrigacoesFinanceiroDashboard(
           id,
           atividade_id,
           valor,
+          orixas,
           ativo
         `)
         .in(
@@ -1652,6 +1662,21 @@ async function carregarObrigacoesFinanceiroDashboard(
                 atividade.data,
               titulo:
                 atividade.titulo,
+              orixas:
+                Array.isArray(
+                  obrigacao.orixas
+                )
+                  ? obrigacao.orixas
+                  : [],
+              nome_orixas:
+                Array.isArray(
+                  obrigacao.orixas
+                ) &&
+                obrigacao.orixas.length > 0
+                  ? obrigacao.orixas.join(
+                      " e "
+                    )
+                  : "Obrigação",
               valor:
                 Number(
                   obrigacao.valor ||
@@ -1699,10 +1724,10 @@ async function carregarObrigacoesFinanceiroDashboard(
       "grid";
 
     listaObrigacoesFinanceiroDashboard.style.gridTemplateColumns =
-      "repeat(2, minmax(0, 1fr))";
+      "repeat(3, minmax(0, 1fr))";
 
     listaObrigacoesFinanceiroDashboard.style.gap =
-      "8px";
+      "6px";
 
 
     registros.forEach(
