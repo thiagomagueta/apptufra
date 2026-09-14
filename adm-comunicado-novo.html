@@ -233,12 +233,83 @@
           </div>
 
 
-          <!-- ÁREA DE ENQUETE -->
+          <!-- =====================================
+               ÁREA DE ENQUETE
+          ====================================== -->
 
           <div
             id="areaEnquete"
             hidden
           >
+
+
+            <!-- ENQUETE DE OBRIGAÇÃO -->
+
+            <div class="campo-formulario">
+
+              <label>
+                Tipo de enquete
+              </label>
+
+              <label
+                class="item-responsavel-presenca"
+                for="enqueteObrigacao"
+              >
+
+                <input
+                  id="enqueteObrigacao"
+                  name="enqueteObrigacao"
+                  type="checkbox"
+                >
+
+                <span>
+                  Esta enquete é de obrigação financeira
+                </span>
+
+              </label>
+
+              <p class="subtitulo-pagina">
+                Ao marcar esta opção, a enquete será vinculada a uma obrigação e as respostas serão preenchidas automaticamente.
+              </p>
+
+            </div>
+
+
+            <!-- SELECIONAR OBRIGAÇÃO -->
+
+            <div
+              id="areaSelecionarObrigacao"
+              class="campo-formulario"
+              hidden
+            >
+
+              <label
+                for="financeiroObrigacaoId"
+              >
+                Obrigação
+              </label>
+
+              <select
+                id="financeiroObrigacaoId"
+                name="financeiroObrigacaoId"
+              >
+
+                <option value="">
+                  Selecione a obrigação
+                </option>
+
+              </select>
+
+              <p
+                id="mensagemObrigacoes"
+                class="subtitulo-pagina"
+                hidden
+              ></p>
+
+            </div>
+
+
+            <!-- OPÇÕES -->
 
             <div class="campo-formulario">
 
@@ -246,7 +317,10 @@
                 Opções da enquete
               </label>
 
-              <p class="subtitulo-pagina">
+              <p
+                id="descricaoOpcoesEnquete"
+                class="subtitulo-pagina"
+              >
                 Adicione as respostas que ficarão disponíveis para votação.
               </p>
 
@@ -421,7 +495,7 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="adm-comunicado-novo.js?v=1"></script>
+  <script src="adm-comunicado-novo.js?v=2"></script>
 
   <script src="menu-adm.js?v=1"></script>
 
