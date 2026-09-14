@@ -409,6 +409,7 @@ async function carregarComunicado() {
           criado_em,
           criado_por,
           encerrado_em,
+          financeiro_obrigacao_id,
           criador:usuarios!comunicados_criado_por_fkey (
             nome_completo
           )
@@ -634,7 +635,8 @@ async function carregarResultadosEnquete() {
           id,
           comunicado_id,
           texto,
-          ordem
+          ordem,
+          codigo_sistema
         `)
         .eq(
           "comunicado_id",
@@ -1400,6 +1402,65 @@ async function obterUsuarioAtualId() {
 
 
 /* ==========================================
+   PREPARAR REVISÃO FINANCEIRA
+========================================== */
+
+async function prepararRevisaoFinanceiraEnquete() {
+
+  if (
+    !comunicadoAtual ||
+    comunicadoAtual.tipo !== "enquete" ||
+    !comunicadoAtual.financeiro_obrigacao_id
+  ) {
+
+    return {
+      vinculada:
+        false,
+
+      quantidade:
+        0
+    };
+
+  }
+
+
+  const resultado =
+    await window.supabaseClient
+      .rpc(
+        "financeiro_candidatos_enquete_obrigacao",
+        {
+          p_comunicado_id:
+            comunicadoAtual.id
+        }
+      );
+
+
+  if (
+    resultado.error
+  ) {
+
+    throw resultado.error;
+
+  }
+
+
+  const candidatos =
+    resultado.data ||
+    [];
+
+
+  return {
+    vinculada:
+      true,
+
+    quantidade:
+      candidatos.length
+  };
+
+}
+
+
+/* ==========================================
    ENCERRAR
 ========================================== */
 
@@ -1416,7 +1477,10 @@ async function encerrarComunicado() {
 
   const confirmar =
     window.confirm(
-      "Deseja realmente encerrar este comunicado agora?"
+      comunicadoAtual.tipo === "enquete" &&
+      comunicadoAtual.financeiro_obrigacao_id
+        ? "Deseja realmente encerrar esta enquete agora? As respostas de participação ficarão disponíveis para revisão no Financeiro."
+        : "Deseja realmente encerrar este comunicado agora?"
     );
 
 
@@ -1493,11 +1557,97 @@ async function encerrarComunicado() {
       agora;
 
 
-    mostrarMensagem(
-      comunicadoAtual.tipo === "enquete"
-        ? "Enquete encerrada com sucesso."
-        : "Comunicado encerrado com sucesso."
-    );
+    let resultadoFinanceiro = {
+      vinculada:
+        false,
+
+      quantidade:
+        0
+    };
+
+
+    if (
+      comunicadoAtual.tipo === "enquete" &&
+      comunicadoAtual.financeiro_obrigacao_id
+    ) {
+
+      try {
+
+        resultadoFinanceiro =
+          await prepararRevisaoFinanceiraEnquete();
+
+
+      } catch (erroFinanceiro) {
+
+        console.error(
+          "A enquete foi encerrada, mas houve erro ao preparar a revisão financeira:",
+          erroFinanceiro
+        );
+
+
+        mostrarMensagem(
+          "A enquete foi encerrada, mas não foi possível preparar a revisão financeira. Nenhuma cobrança foi gerada."
+        );
+
+
+        statusComunicado.textContent =
+          "Encerrado";
+
+
+        tituloComunicado.disabled =
+          true;
+
+
+        mensagemComunicado.disabled =
+          true;
+
+
+        dataInicio.disabled =
+          true;
+
+
+        dataFim.disabled =
+          true;
+
+
+        botaoSalvarAlteracoes.hidden =
+          true;
+
+
+        botaoEncerrarComunicado.hidden =
+          true;
+
+
+        return;
+
+      }
+
+    }
+
+
+    if (
+      resultadoFinanceiro.vinculada
+    ) {
+
+      const quantidade =
+        resultadoFinanceiro.quantidade;
+
+
+      mostrarMensagem(
+        quantidade === 1
+          ? "Enquete encerrada com sucesso. 1 pessoa respondeu que irá participar e ficou disponível para revisão no Financeiro. Nenhuma cobrança foi gerada."
+          : `Enquete encerrada com sucesso. ${quantidade} pessoas responderam que irão participar e ficaram disponíveis para revisão no Financeiro. Nenhuma cobrança foi gerada.`
+      );
+
+    } else {
+
+      mostrarMensagem(
+        comunicadoAtual.tipo === "enquete"
+          ? "Enquete encerrada com sucesso."
+          : "Comunicado encerrado com sucesso."
+      );
+
+    }
 
 
     statusComunicado.textContent =
@@ -1535,7 +1685,9 @@ async function encerrarComunicado() {
           "adm-comunicados.html";
 
       },
-      900
+      resultadoFinanceiro.vinculada
+        ? 2200
+        : 900
     );
 
 
