@@ -163,6 +163,95 @@
 
 
       <!-- =====================================
+           RESPOSTAS DA ENQUETE
+      ====================================== -->
+
+      <section
+        id="cardCandidatosEnqueteObrigacao"
+        class="cartao-app"
+        hidden
+      >
+
+        <h2>
+          Responderam que irão participar
+        </h2>
+
+        <p
+          id="tituloEnqueteObrigacao"
+        >
+        </p>
+
+        <p
+          id="mensagemCandidatosEnqueteObrigacao"
+        >
+          Verificando enquete...
+        </p>
+
+
+        <div
+          id="acoesCandidatosEnqueteObrigacao"
+          style="
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+            margin-bottom: 14px;
+          "
+          hidden
+        >
+
+          <button
+            id="botaoSelecionarTodosCandidatos"
+            type="button"
+            class="botao-secundario"
+          >
+            Selecionar todos
+          </button>
+
+
+          <button
+            id="botaoTirarSelecaoTodosCandidatos"
+            type="button"
+            class="botao-secundario"
+          >
+            Tirar seleção de todos
+          </button>
+
+        </div>
+
+
+        <div
+          id="listaCandidatosEnqueteObrigacao"
+        >
+        </div>
+
+
+        <button
+          id="botaoValidarCandidatosEnquete"
+          type="button"
+          class="botao-principal"
+          style="
+            width: 100%;
+            margin-top: 18px;
+          "
+          hidden
+        >
+          Validar selecionados
+        </button>
+
+
+        <p
+          id="mensagemValidarCandidatosEnquete"
+          style="
+            margin-top: 12px;
+          "
+        >
+        </p>
+
+      </section>
+
+
+      <!-- =====================================
            ADICIONAR MANUALMENTE
       ====================================== -->
 
@@ -359,11 +448,6 @@
       </a>
 
 
-      <!-- =================================
-           ADM
-           SÓ APARECE PARA QUEM TEM ACESSO
-      ================================== -->
-
       <a
         id="itemMenuAdm"
         class="item-menu ativo"
@@ -421,7 +505,7 @@
   ></script>
 
   <script
-    src="financeiro-obrigacao-participantes.js?v=1"
+    src="financeiro-obrigacao-participantes.js?v=2"
   ></script>
 
   <script
