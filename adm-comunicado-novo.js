@@ -60,6 +60,31 @@ const areaEnquete =
     "areaEnquete"
   );
 
+const enqueteObrigacao =
+  document.getElementById(
+    "enqueteObrigacao"
+  );
+
+const areaSelecionarObrigacao =
+  document.getElementById(
+    "areaSelecionarObrigacao"
+  );
+
+const financeiroObrigacaoId =
+  document.getElementById(
+    "financeiroObrigacaoId"
+  );
+
+const mensagemObrigacoes =
+  document.getElementById(
+    "mensagemObrigacoes"
+  );
+
+const descricaoOpcoesEnquete =
+  document.getElementById(
+    "descricaoOpcoesEnquete"
+  );
+
 const listaOpcoesEnquete =
   document.getElementById(
     "listaOpcoesEnquete"
@@ -111,6 +136,9 @@ if (
 ========================================== */
 
 let funcoesCarregadas =
+  false;
+
+let obrigacoesCarregadas =
   false;
 
 let contadorOpcoes =
@@ -195,6 +223,45 @@ function formatarDataParaInput(
 
 
 /* ==========================================
+   FORMATAR DATA
+========================================== */
+
+function formatarDataBrasileira(
+  dataIso
+) {
+
+  if (
+    !dataIso
+  ) {
+
+    return "";
+
+  }
+
+
+  const partes =
+    String(
+      dataIso
+    ).split(
+      "-"
+    );
+
+
+  if (
+    partes.length !== 3
+  ) {
+
+    return dataIso;
+
+  }
+
+
+  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+
+}
+
+
+/* ==========================================
    DATAS INICIAIS
 ========================================== */
 
@@ -246,6 +313,174 @@ function preencherDatasIniciais() {
 
 
 /* ==========================================
+   LIMPAR OPÇÕES
+========================================== */
+
+function limparOpcoesEnquete() {
+
+  listaOpcoesEnquete.innerHTML =
+    "";
+
+  contadorOpcoes =
+    0;
+
+}
+
+
+/* ==========================================
+   OPÇÕES DA ENQUETE
+========================================== */
+
+function adicionarOpcaoEnquete(
+  valorInicial = "",
+  somenteLeitura = false,
+  codigoSistema = null
+) {
+
+  contadorOpcoes +=
+    1;
+
+
+  const bloco =
+    document.createElement(
+      "div"
+    );
+
+
+  bloco.className =
+    "campo-formulario opcao-enquete-item";
+
+
+  const label =
+    document.createElement(
+      "label"
+    );
+
+
+  label.textContent =
+    `Opção ${contadorOpcoes}`;
+
+
+  const input =
+    document.createElement(
+      "input"
+    );
+
+
+  input.type =
+    "text";
+
+
+  input.maxLength =
+    120;
+
+
+  input.placeholder =
+    "Digite uma opção de resposta";
+
+
+  input.value =
+    valorInicial;
+
+
+  input.className =
+    "input-opcao-enquete";
+
+
+  input.readOnly =
+    somenteLeitura;
+
+
+  if (
+    codigoSistema
+  ) {
+
+    input.dataset.codigoSistema =
+      codigoSistema;
+
+  }
+
+
+  bloco.appendChild(
+    label
+  );
+
+
+  bloco.appendChild(
+    input
+  );
+
+
+  listaOpcoesEnquete.appendChild(
+    bloco
+  );
+
+}
+
+
+/* ==========================================
+   OPÇÕES NORMAIS
+========================================== */
+
+function configurarOpcoesEnqueteNormal() {
+
+  limparOpcoesEnquete();
+
+
+  adicionarOpcaoEnquete(
+    "Sim"
+  );
+
+
+  adicionarOpcaoEnquete(
+    "Não"
+  );
+
+
+  botaoAdicionarOpcao.hidden =
+    false;
+
+
+  descricaoOpcoesEnquete.textContent =
+    "Adicione as respostas que ficarão disponíveis para votação.";
+
+}
+
+
+/* ==========================================
+   OPÇÕES DE OBRIGAÇÃO
+========================================== */
+
+function configurarOpcoesEnqueteObrigacao() {
+
+  limparOpcoesEnquete();
+
+
+  adicionarOpcaoEnquete(
+    "✅️ Irei participar",
+    true,
+    "participa"
+  );
+
+
+  adicionarOpcaoEnquete(
+    "⛔️ Não irei participar",
+    true,
+    "nao_participa"
+  );
+
+
+  botaoAdicionarOpcao.hidden =
+    true;
+
+
+  descricaoOpcoesEnquete.textContent =
+    "As respostas da enquete de obrigação são definidas automaticamente e não podem ser alteradas.";
+
+}
+
+
+/* ==========================================
    CONFIGURAR TELA
 ========================================== */
 
@@ -271,14 +506,7 @@ function configurarTela() {
       false;
 
 
-    adicionarOpcaoEnquete(
-      "Sim"
-    );
-
-
-    adicionarOpcaoEnquete(
-      "Não"
-    );
+    configurarOpcoesEnqueteNormal();
 
 
     return;
@@ -507,76 +735,301 @@ async function alterarPublico() {
 
 
 /* ==========================================
-   OPÇÕES DA ENQUETE
+   CARREGAR OBRIGAÇÕES FINANCEIRAS
 ========================================== */
 
-function adicionarOpcaoEnquete(
-  valorInicial = ""
-) {
+async function carregarObrigacoesFinanceiras() {
 
-  contadorOpcoes +=
-    1;
+  if (
+    obrigacoesCarregadas
+  ) {
+
+    return;
+
+  }
 
 
-  const bloco =
-    document.createElement(
-      "div"
+  financeiroObrigacaoId.innerHTML =
+    '<option value="">Carregando obrigações...</option>';
+
+
+  mensagemObrigacoes.hidden =
+    true;
+
+  mensagemObrigacoes.textContent =
+    "";
+
+
+  try {
+
+    const resultadoObrigacoes =
+      await window.supabaseClient
+        .from(
+          "financeiro_obrigacoes"
+        )
+        .select(`
+          id,
+          atividade_id,
+          valor,
+          ativo,
+          orixas
+        `)
+        .eq(
+          "ativo",
+          true
+        )
+        .order(
+          "id",
+          {
+            ascending:
+              true
+          }
+        );
+
+
+    if (
+      resultadoObrigacoes.error
+    ) {
+
+      throw resultadoObrigacoes.error;
+
+    }
+
+
+    const obrigacoes =
+      resultadoObrigacoes.data ||
+      [];
+
+
+    financeiroObrigacaoId.innerHTML =
+      '<option value="">Selecione a obrigação</option>';
+
+
+    if (
+      obrigacoes.length === 0
+    ) {
+
+      mensagemObrigacoes.textContent =
+        "Nenhuma obrigação financeira ativa foi encontrada.";
+
+      mensagemObrigacoes.hidden =
+        false;
+
+      return;
+
+    }
+
+
+    const idsAtividades =
+      obrigacoes
+        .map(
+          (obrigacao) =>
+            obrigacao.atividade_id
+        )
+        .filter(
+          Boolean
+        );
+
+
+    let atividades =
+      [];
+
+
+    if (
+      idsAtividades.length > 0
+    ) {
+
+      const resultadoAtividades =
+        await window.supabaseClient
+          .from(
+            "atividades"
+          )
+          .select(`
+            id,
+            titulo,
+            data
+          `)
+          .in(
+            "id",
+            idsAtividades
+          );
+
+
+      if (
+        resultadoAtividades.error
+      ) {
+
+        throw resultadoAtividades.error;
+
+      }
+
+
+      atividades =
+        resultadoAtividades.data ||
+        [];
+
+    }
+
+
+    const atividadesPorId =
+      new Map();
+
+
+    atividades.forEach(
+      (atividade) => {
+
+        atividadesPorId.set(
+          atividade.id,
+          atividade
+        );
+
+      }
     );
 
 
-  bloco.className =
-    "campo-formulario opcao-enquete-item";
+    const obrigacoesComAtividade =
+      obrigacoes
+        .map(
+          (obrigacao) => {
+
+            return {
+              ...obrigacao,
+              atividade:
+                atividadesPorId.get(
+                  obrigacao.atividade_id
+                ) ||
+                null
+            };
+
+          }
+        )
+        .sort(
+          (a, b) => {
+
+            const dataA =
+              a.atividade?.data ||
+              "";
+
+            const dataB =
+              b.atividade?.data ||
+              "";
 
 
-  const label =
-    document.createElement(
-      "label"
+            return dataA.localeCompare(
+              dataB
+            );
+
+          }
+        );
+
+
+    obrigacoesComAtividade.forEach(
+      (obrigacao) => {
+
+        const opcao =
+          document.createElement(
+            "option"
+          );
+
+
+        opcao.value =
+          obrigacao.id;
+
+
+        const nomesOrixas =
+          Array.isArray(
+            obrigacao.orixas
+          ) &&
+          obrigacao.orixas.length > 0
+            ? obrigacao.orixas.join(
+                " e "
+              )
+            : "Obrigação";
+
+
+        const dataObrigacao =
+          obrigacao.atividade?.data
+            ? formatarDataBrasileira(
+                obrigacao.atividade.data
+              )
+            : "";
+
+
+        opcao.textContent =
+          dataObrigacao
+            ? `${dataObrigacao} - ${nomesOrixas}`
+            : nomesOrixas;
+
+
+        financeiroObrigacaoId.appendChild(
+          opcao
+        );
+
+      }
     );
 
 
-  label.textContent =
-    `Opção ${contadorOpcoes}`;
+    obrigacoesCarregadas =
+      true;
 
 
-  const input =
-    document.createElement(
-      "input"
+  } catch (erro) {
+
+    console.error(
+      "Erro ao carregar obrigações financeiras:",
+      erro
     );
 
 
-  input.type =
-    "text";
+    financeiroObrigacaoId.innerHTML =
+      '<option value="">Não foi possível carregar</option>';
 
 
-  input.maxLength =
-    120;
+    mensagemObrigacoes.textContent =
+      "Não foi possível carregar as obrigações financeiras.";
+
+    mensagemObrigacoes.hidden =
+      false;
+
+  }
+
+}
 
 
-  input.placeholder =
-    "Digite uma opção de resposta";
+/* ==========================================
+   ALTERAR TIPO DA ENQUETE
+========================================== */
+
+async function alterarEnqueteObrigacao() {
+
+  const vinculadaObrigacao =
+    enqueteObrigacao.checked;
 
 
-  input.value =
-    valorInicial;
+  areaSelecionarObrigacao.hidden =
+    !vinculadaObrigacao;
 
 
-  input.className =
-    "input-opcao-enquete";
+  if (
+    vinculadaObrigacao
+  ) {
+
+    configurarOpcoesEnqueteObrigacao();
 
 
-  bloco.appendChild(
-    label
-  );
+    await carregarObrigacoesFinanceiras();
 
 
-  bloco.appendChild(
-    input
-  );
+    return;
+
+  }
 
 
-  listaOpcoesEnquete.appendChild(
-    bloco
-  );
+  financeiroObrigacaoId.value =
+    "";
+
+
+  configurarOpcoesEnqueteNormal();
 
 }
 
@@ -618,11 +1071,20 @@ function obterOpcoesEnquete() {
     )
   )
     .map(
-      (input) =>
-        input.value.trim()
+      (input) => ({
+        texto:
+          input.value.trim(),
+
+        codigoSistema:
+          input.dataset.codigoSistema ||
+          null
+      })
     )
     .filter(
-      Boolean
+      (opcao) =>
+        Boolean(
+          opcao.texto
+        )
     );
 
 }
@@ -837,6 +1299,22 @@ function validarFormulario() {
       "enquete"
   ) {
 
+    if (
+      enqueteObrigacao.checked &&
+      !financeiroObrigacaoId.value
+    ) {
+
+      mostrarMensagem(
+        "Selecione a obrigação financeira desta enquete."
+      );
+
+      financeiroObrigacaoId.focus();
+
+      return false;
+
+    }
+
+
     const opcoes =
       obterOpcoesEnquete();
 
@@ -850,6 +1328,38 @@ function validarFormulario() {
       );
 
       return false;
+
+    }
+
+
+    if (
+      enqueteObrigacao.checked
+    ) {
+
+      const codigos =
+        opcoes.map(
+          (opcao) =>
+            opcao.codigoSistema
+        );
+
+
+      if (
+        opcoes.length !== 2 ||
+        !codigos.includes(
+          "participa"
+        ) ||
+        !codigos.includes(
+          "nao_participa"
+        )
+      ) {
+
+        mostrarMensagem(
+          "As opções da enquete de obrigação estão inválidas."
+        );
+
+        return false;
+
+      }
 
     }
 
@@ -904,6 +1414,11 @@ async function salvarComunicado(
         : [];
 
 
+    const ehEnqueteObrigacao =
+      tipoComunicado === "enquete" &&
+      enqueteObrigacao.checked;
+
+
     const dadosComunicado = {
 
       tipo:
@@ -940,7 +1455,14 @@ async function salvarComunicado(
           : null,
 
       criado_por:
-        usuarioId
+        usuarioId,
+
+      financeiro_obrigacao_id:
+        ehEnqueteObrigacao
+          ? Number(
+              financeiroObrigacaoId.value
+            )
+          : null
 
     };
 
@@ -974,7 +1496,7 @@ async function salvarComunicado(
 
     if (
       tipoComunicado ===
-      "enquete"
+        "enquete"
     ) {
 
       const opcoes =
@@ -984,7 +1506,7 @@ async function salvarComunicado(
       const registrosOpcoes =
         opcoes.map(
           (
-            texto,
+            opcao,
             indice
           ) => ({
 
@@ -992,10 +1514,15 @@ async function salvarComunicado(
               resultadoComunicado.data.id,
 
             texto:
-              texto,
+              opcao.texto,
 
             ordem:
-              indice + 1
+              indice + 1,
+
+            codigo_sistema:
+              ehEnqueteObrigacao
+                ? opcao.codigoSistema
+                : null
 
           })
         );
@@ -1083,9 +1610,24 @@ publicoTipo.addEventListener(
 );
 
 
+enqueteObrigacao.addEventListener(
+  "change",
+  alterarEnqueteObrigacao
+);
+
+
 botaoAdicionarOpcao.addEventListener(
   "click",
   () => {
+
+    if (
+      enqueteObrigacao.checked
+    ) {
+
+      return;
+
+    }
+
 
     adicionarOpcaoEnquete();
 
