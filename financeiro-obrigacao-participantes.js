@@ -20,6 +20,11 @@ const cardParticipantesIncluidos =
     "cardParticipantesIncluidos"
   );
 
+const cardCandidatosEnqueteObrigacao =
+  document.getElementById(
+    "cardCandidatosEnqueteObrigacao"
+  );
+
 const cardAdicionarParticipantes =
   document.getElementById(
     "cardAdicionarParticipantes"
@@ -65,6 +70,47 @@ const mensagemParticipantesIncluidos =
 const listaParticipantesIncluidos =
   document.getElementById(
     "listaParticipantesIncluidos"
+  );
+
+
+const tituloEnqueteObrigacao =
+  document.getElementById(
+    "tituloEnqueteObrigacao"
+  );
+
+const mensagemCandidatosEnqueteObrigacao =
+  document.getElementById(
+    "mensagemCandidatosEnqueteObrigacao"
+  );
+
+const acoesCandidatosEnqueteObrigacao =
+  document.getElementById(
+    "acoesCandidatosEnqueteObrigacao"
+  );
+
+const listaCandidatosEnqueteObrigacao =
+  document.getElementById(
+    "listaCandidatosEnqueteObrigacao"
+  );
+
+const botaoSelecionarTodosCandidatos =
+  document.getElementById(
+    "botaoSelecionarTodosCandidatos"
+  );
+
+const botaoTirarSelecaoTodosCandidatos =
+  document.getElementById(
+    "botaoTirarSelecaoTodosCandidatos"
+  );
+
+const botaoValidarCandidatosEnquete =
+  document.getElementById(
+    "botaoValidarCandidatosEnquete"
+  );
+
+const mensagemValidarCandidatosEnquete =
+  document.getElementById(
+    "mensagemValidarCandidatosEnquete"
   );
 
 
@@ -116,6 +162,12 @@ let participantesIncluidosAtuais =
 let usuariosDisponiveisAtuais =
   [];
 
+let enqueteObrigacaoAtual =
+  null;
+
+let candidatosEnqueteAtuais =
+  [];
+
 
 /* ==========================================
    UTILIDADES
@@ -163,14 +215,19 @@ function formatarValorBrasil(
 ) {
 
   const numero =
-    Number(valor || 0);
+    Number(
+      valor || 0
+    );
 
 
   return numero.toLocaleString(
     "pt-BR",
     {
-      style: "currency",
-      currency: "BRL"
+      style:
+        "currency",
+
+      currency:
+        "BRL"
     }
   );
 
@@ -283,11 +340,15 @@ function carregarObrigacaoIdUrl() {
 
 
   const numero =
-    Number(id);
+    Number(
+      id
+    );
 
 
   if (
-    !Number.isInteger(numero) ||
+    !Number.isInteger(
+      numero
+    ) ||
     numero <= 0
   ) {
 
@@ -456,6 +517,8 @@ async function removerParticipanteObrigacao(
     await carregarParticipantesIncluidos();
 
     atualizarResumoParticipantes();
+
+    await carregarCandidatosEnqueteObrigacao();
 
     await carregarUsuariosDisponiveis();
 
@@ -816,6 +879,625 @@ async function carregarParticipantesIncluidos() {
 
 
 /* ==========================================
+   CARREGAR ENQUETE DA OBRIGAÇÃO
+========================================== */
+
+async function carregarCandidatosEnqueteObrigacao() {
+
+  enqueteObrigacaoAtual =
+    null;
+
+  candidatosEnqueteAtuais =
+    [];
+
+
+  tituloEnqueteObrigacao.textContent =
+    "";
+
+  listaCandidatosEnqueteObrigacao.innerHTML =
+    "";
+
+  mensagemValidarCandidatosEnquete.textContent =
+    "";
+
+  acoesCandidatosEnqueteObrigacao.hidden =
+    true;
+
+  botaoValidarCandidatosEnquete.hidden =
+    true;
+
+
+  const resultadoEnquetes =
+    await window.supabaseClient
+      .from(
+        "comunicados"
+      )
+      .select(`
+        id,
+        titulo,
+        tipo,
+        status,
+        data_inicio,
+        data_fim,
+        encerrado_em,
+        criado_em,
+        financeiro_obrigacao_id
+      `)
+      .eq(
+        "tipo",
+        "enquete"
+      )
+      .eq(
+        "financeiro_obrigacao_id",
+        obrigacaoIdAtual
+      )
+      .order(
+        "criado_em",
+        {
+          ascending:
+            false
+        }
+      );
+
+
+  if (
+    resultadoEnquetes.error
+  ) {
+
+    throw resultadoEnquetes.error;
+
+  }
+
+
+  const enquetes =
+    resultadoEnquetes.data ||
+    [];
+
+
+  cardCandidatosEnqueteObrigacao.hidden =
+    false;
+
+
+  if (
+    enquetes.length === 0
+  ) {
+
+    mensagemCandidatosEnqueteObrigacao.textContent =
+      "Nenhuma enquete está vinculada a esta obrigação.";
+
+    return;
+
+  }
+
+
+  enqueteObrigacaoAtual =
+    enquetes[0];
+
+
+  tituloEnqueteObrigacao.textContent =
+    enqueteObrigacaoAtual.titulo
+      ? "Enquete: " +
+        enqueteObrigacaoAtual.titulo
+      : "Enquete vinculada";
+
+
+  if (
+    enqueteObrigacaoAtual.status !==
+    "encerrado"
+  ) {
+
+    mensagemCandidatosEnqueteObrigacao.textContent =
+      "A enquete vinculada ainda está aberta. As confirmações ficarão disponíveis para validação depois que ela for encerrada.";
+
+    return;
+
+  }
+
+
+  mensagemCandidatosEnqueteObrigacao.textContent =
+    "Carregando respostas confirmadas...";
+
+
+  const resultadoCandidatos =
+    await window.supabaseClient
+      .rpc(
+        "financeiro_candidatos_enquete_obrigacao",
+        {
+          p_comunicado_id:
+            enqueteObrigacaoAtual.id
+        }
+      );
+
+
+  if (
+    resultadoCandidatos.error
+  ) {
+
+    throw resultadoCandidatos.error;
+
+  }
+
+
+  candidatosEnqueteAtuais =
+    resultadoCandidatos.data ||
+    [];
+
+
+  renderizarCandidatosEnqueteObrigacao();
+
+}
+
+
+/* ==========================================
+   RENDERIZAR CANDIDATOS DA ENQUETE
+========================================== */
+
+function renderizarCandidatosEnqueteObrigacao() {
+
+  listaCandidatosEnqueteObrigacao.innerHTML =
+    "";
+
+
+  if (
+    candidatosEnqueteAtuais.length === 0
+  ) {
+
+    mensagemCandidatosEnqueteObrigacao.textContent =
+      "Ninguém respondeu que irá participar.";
+
+    acoesCandidatosEnqueteObrigacao.hidden =
+      true;
+
+    botaoValidarCandidatosEnquete.hidden =
+      true;
+
+    return;
+
+  }
+
+
+  const pendentes =
+    candidatosEnqueteAtuais.filter(
+      (candidato) =>
+        !candidato.ja_participante
+    );
+
+
+  const jaIncluidos =
+    candidatosEnqueteAtuais.filter(
+      (candidato) =>
+        candidato.ja_participante
+    );
+
+
+  let texto =
+    candidatosEnqueteAtuais.length === 1
+      ? "1 pessoa respondeu que irá participar."
+      : candidatosEnqueteAtuais.length +
+        " pessoas responderam que irão participar.";
+
+
+  if (
+    pendentes.length > 0
+  ) {
+
+    texto +=
+      " " +
+      pendentes.length +
+      (
+        pendentes.length === 1
+          ? " aguarda validação."
+          : " aguardam validação."
+      );
+
+  }
+
+
+  if (
+    jaIncluidos.length > 0
+  ) {
+
+    texto +=
+      " " +
+      jaIncluidos.length +
+      (
+        jaIncluidos.length === 1
+          ? " já está incluída pela regra da obrigação."
+          : " já estão incluídas pela regra da obrigação."
+      );
+
+  }
+
+
+  mensagemCandidatosEnqueteObrigacao.textContent =
+    texto;
+
+
+  const candidatosOrdenados =
+    [...candidatosEnqueteAtuais]
+      .sort(
+        (a, b) =>
+          String(
+            a.nome_completo || ""
+          ).localeCompare(
+            String(
+              b.nome_completo || ""
+            ),
+            "pt-BR"
+          )
+      );
+
+
+  candidatosOrdenados.forEach(
+    (candidato) => {
+
+      const linha =
+        document.createElement(
+          "div"
+        );
+
+
+      linha.style.display =
+        "flex";
+
+      linha.style.alignItems =
+        "center";
+
+      linha.style.gap =
+        "10px";
+
+      linha.style.padding =
+        "11px 0";
+
+      linha.style.borderBottom =
+        "1px solid #e5dddd";
+
+
+      if (
+        !candidato.ja_participante
+      ) {
+
+        const checkbox =
+          document.createElement(
+            "input"
+          );
+
+
+        checkbox.type =
+          "checkbox";
+
+        checkbox.className =
+          "checkbox-candidato-enquete";
+
+        checkbox.value =
+          candidato.usuario_id;
+
+
+        linha.appendChild(
+          checkbox
+        );
+
+      } else {
+
+        const marcador =
+          document.createElement(
+            "span"
+          );
+
+
+        marcador.textContent =
+          "✓";
+
+        marcador.style.fontWeight =
+          "700";
+
+        linha.appendChild(
+          marcador
+        );
+
+      }
+
+
+      const conteudo =
+        document.createElement(
+          "div"
+        );
+
+
+      const nome =
+        document.createElement(
+          "div"
+        );
+
+
+      nome.style.fontWeight =
+        "700";
+
+      nome.textContent =
+        candidato.nome_completo ||
+        "Usuário";
+
+
+      conteudo.appendChild(
+        nome
+      );
+
+
+      const detalhes =
+        document.createElement(
+          "div"
+        );
+
+
+      detalhes.style.marginTop =
+        "3px";
+
+      detalhes.style.fontSize =
+        "14px";
+
+
+      if (
+        candidato.ja_participante
+      ) {
+
+        detalhes.textContent =
+          "Já incluído • " +
+          traduzirSituacao(
+            candidato.situacao_atual
+          );
+
+      } else {
+
+        detalhes.textContent =
+          "Aguardando validação";
+
+      }
+
+
+      conteudo.appendChild(
+        detalhes
+      );
+
+
+      linha.appendChild(
+        conteudo
+      );
+
+
+      listaCandidatosEnqueteObrigacao.appendChild(
+        linha
+      );
+
+    }
+  );
+
+
+  const possuiPendentes =
+    pendentes.length > 0;
+
+
+  acoesCandidatosEnqueteObrigacao.hidden =
+    !possuiPendentes;
+
+  botaoValidarCandidatosEnquete.hidden =
+    !possuiPendentes;
+
+
+  botaoSelecionarTodosCandidatos.disabled =
+    !possuiPendentes;
+
+  botaoTirarSelecaoTodosCandidatos.disabled =
+    !possuiPendentes;
+
+  botaoValidarCandidatosEnquete.disabled =
+    !possuiPendentes;
+
+}
+
+
+/* ==========================================
+   SELECIONAR CANDIDATOS
+========================================== */
+
+function selecionarTodosCandidatos() {
+
+  document
+    .querySelectorAll(
+      ".checkbox-candidato-enquete"
+    )
+    .forEach(
+      (checkbox) => {
+
+        checkbox.checked =
+          true;
+
+      }
+    );
+
+}
+
+
+function tirarSelecaoTodosCandidatos() {
+
+  document
+    .querySelectorAll(
+      ".checkbox-candidato-enquete"
+    )
+    .forEach(
+      (checkbox) => {
+
+        checkbox.checked =
+          false;
+
+      }
+    );
+
+}
+
+
+/* ==========================================
+   VALIDAR CANDIDATOS DA ENQUETE
+========================================== */
+
+async function validarCandidatosEnquete() {
+
+  const selecionados =
+    Array.from(
+      document.querySelectorAll(
+        ".checkbox-candidato-enquete:checked"
+      )
+    )
+      .map(
+        (checkbox) =>
+          checkbox.value
+      );
+
+
+  if (
+    selecionados.length === 0
+  ) {
+
+    mensagemValidarCandidatosEnquete.textContent =
+      "Selecione pelo menos uma pessoa para validar.";
+
+    mensagemValidarCandidatosEnquete.style.color =
+      "#9a2929";
+
+    return;
+
+  }
+
+
+  const confirmar =
+    window.confirm(
+      selecionados.length === 1
+        ? "Confirmar esta pessoa como participante opcional desta obrigação?"
+        : "Confirmar estas " +
+          selecionados.length +
+          " pessoas como participantes opcionais desta obrigação?"
+    );
+
+
+  if (
+    !confirmar
+  ) {
+
+    return;
+
+  }
+
+
+  botaoValidarCandidatosEnquete.disabled =
+    true;
+
+
+  mensagemValidarCandidatosEnquete.textContent =
+    "Validando participantes...";
+
+  mensagemValidarCandidatosEnquete.style.color =
+    "#6b5d5d";
+
+
+  try {
+
+    const agora =
+      new Date()
+        .toISOString();
+
+
+    const registros =
+      selecionados.map(
+        (usuarioId) => ({
+
+          obrigacao_id:
+            obrigacaoIdAtual,
+
+          usuario_id:
+            usuarioId,
+
+          situacao:
+            "opcional_confirmado",
+
+          origem:
+            "adesao",
+
+          ajustado_por:
+            usuarioLogadoId,
+
+          ajustado_em:
+            agora,
+
+          atualizado_em:
+            agora
+
+        })
+      );
+
+
+    const resultado =
+      await window.supabaseClient
+        .from(
+          "financeiro_obrigacao_participantes"
+        )
+        .insert(
+          registros
+        );
+
+
+    if (
+      resultado.error
+    ) {
+
+      throw resultado.error;
+
+    }
+
+
+    mensagemValidarCandidatosEnquete.textContent =
+      selecionados.length === 1
+        ? "Participante validado com sucesso."
+        : selecionados.length +
+          " participantes validados com sucesso.";
+
+    mensagemValidarCandidatosEnquete.style.color =
+      "#267341";
+
+
+    await carregarParticipantesIncluidos();
+
+    atualizarResumoParticipantes();
+
+    await carregarCandidatosEnqueteObrigacao();
+
+    await carregarUsuariosDisponiveis();
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao validar participantes da enquete:",
+      erro
+    );
+
+
+    mensagemValidarCandidatosEnquete.textContent =
+      "Não foi possível validar os participantes selecionados.";
+
+    mensagemValidarCandidatosEnquete.style.color =
+      "#9a2929";
+
+
+  } finally {
+
+    botaoValidarCandidatosEnquete.disabled =
+      false;
+
+  }
+
+}
+
+
+/* ==========================================
    CARREGAR USUÁRIOS DISPONÍVEIS
 ========================================== */
 
@@ -1050,7 +1732,7 @@ function atualizarResumoParticipantes() {
 
 
 /* ==========================================
-   SELECIONAR TODOS
+   SELECIONAR TODOS MANUAIS
 ========================================== */
 
 function selecionarTodosParticipantes() {
@@ -1072,7 +1754,7 @@ function selecionarTodosParticipantes() {
 
 
 /* ==========================================
-   TIRAR SELEÇÃO DE TODOS
+   TIRAR SELEÇÃO DE TODOS MANUAIS
 ========================================== */
 
 function tirarSelecaoTodosParticipantes() {
@@ -1147,6 +1829,7 @@ async function salvarParticipantesManuais() {
     const registros =
       selecionados.map(
         (usuarioId) => ({
+
           obrigacao_id:
             obrigacaoIdAtual,
 
@@ -1167,6 +1850,7 @@ async function salvarParticipantesManuais() {
 
           atualizado_em:
             agora
+
         })
       );
 
@@ -1200,6 +1884,8 @@ async function salvarParticipantesManuais() {
     await carregarParticipantesIncluidos();
 
     atualizarResumoParticipantes();
+
+    await carregarCandidatosEnqueteObrigacao();
 
     await carregarUsuariosDisponiveis();
 
@@ -1320,6 +2006,8 @@ async function gerarCobrancasObrigacao() {
 
     atualizarResumoParticipantes();
 
+    await carregarCandidatosEnqueteObrigacao();
+
     await carregarUsuariosDisponiveis();
 
 
@@ -1362,6 +2050,8 @@ async function carregarTelaParticipantesObrigacao() {
     await carregarParticipantesIncluidos();
 
     atualizarResumoParticipantes();
+
+    await carregarCandidatosEnqueteObrigacao();
 
     await carregarUsuariosDisponiveis();
 
@@ -1565,6 +2255,45 @@ async function validarAcessoParticipantesObrigacao() {
 /* ==========================================
    EVENTOS
 ========================================== */
+
+if (
+  botaoSelecionarTodosCandidatos
+) {
+
+  botaoSelecionarTodosCandidatos
+    .addEventListener(
+      "click",
+      selecionarTodosCandidatos
+    );
+
+}
+
+
+if (
+  botaoTirarSelecaoTodosCandidatos
+) {
+
+  botaoTirarSelecaoTodosCandidatos
+    .addEventListener(
+      "click",
+      tirarSelecaoTodosCandidatos
+    );
+
+}
+
+
+if (
+  botaoValidarCandidatosEnquete
+) {
+
+  botaoValidarCandidatosEnquete
+    .addEventListener(
+      "click",
+      validarCandidatosEnquete
+    );
+
+}
+
 
 if (
   botaoSelecionarTodosParticipantes
