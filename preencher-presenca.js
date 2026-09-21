@@ -577,45 +577,14 @@ function associadoParticipavaNaData(
 
 async function carregarAssociados() {
 
-  const funcoesNecessarias =
-    nomesFuncoesDaLista(
-      tipoListaNome
-    );
-
-
-  if (
-    funcoesNecessarias.length ===
-    0
-  ) {
-
-    associadosDaLista =
-      [];
-
-    return;
-
-  }
-
-
   const resultado =
     await window.supabaseClient
-      .from(
-        "usuarios"
-      )
-      .select(`
-        id,
-        nome_completo,
-        status,
-        data_entrada_tufra,
-
-        usuario_funcoes!usuario_funcoes_usuario_id_fkey (
-          funcoes (
-            nome
-          )
-        )
-      `)
-      .eq(
-        "status",
-        "ativo"
+      .rpc(
+        "listar_associados_lista_presenca",
+        {
+          p_tipo_lista_id:
+            tipoListaId
+        }
       );
 
 
@@ -633,30 +602,6 @@ async function carregarAssociados() {
       resultado.data ||
       []
     )
-      .filter(
-        (usuario) => {
-
-          const nomes =
-            (
-              usuario.usuario_funcoes ||
-              []
-            )
-              .map(
-                (item) =>
-                  item.funcoes?.nome
-              )
-              .filter(Boolean);
-
-
-          return funcoesNecessarias.some(
-            (funcao) =>
-              nomes.includes(
-                funcao
-              )
-          );
-
-        }
-      )
       .filter(
         (usuario) =>
           associadoParticipavaNaData(
