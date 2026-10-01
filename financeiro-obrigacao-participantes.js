@@ -1,3 +1,4 @@
+
 "use strict";
 
 
@@ -10,30 +11,36 @@ const conteudoParticipantesObrigacao =
     "conteudoParticipantesObrigacao"
   );
 
+
 const resumoParticipantesObrigacao =
   document.getElementById(
     "resumoParticipantesObrigacao"
   );
+
 
 const cardParticipantesIncluidos =
   document.getElementById(
     "cardParticipantesIncluidos"
   );
 
+
 const cardCandidatosEnqueteObrigacao =
   document.getElementById(
     "cardCandidatosEnqueteObrigacao"
   );
+
 
 const cardAdicionarParticipantes =
   document.getElementById(
     "cardAdicionarParticipantes"
   );
 
+
 const cardGerarCobrancasObrigacao =
   document.getElementById(
     "cardGerarCobrancasObrigacao"
   );
+
 
 const botaoGerarCobrancasObrigacao =
   document.getElementById(
@@ -46,15 +53,18 @@ const tituloObrigacaoParticipantes =
     "tituloObrigacaoParticipantes"
   );
 
+
 const dataObrigacaoParticipantes =
   document.getElementById(
     "dataObrigacaoParticipantes"
   );
 
+
 const valorObrigacaoParticipantes =
   document.getElementById(
     "valorObrigacaoParticipantes"
   );
+
 
 const textoResumoParticipantesObrigacao =
   document.getElementById(
@@ -67,6 +77,7 @@ const mensagemParticipantesIncluidos =
     "mensagemParticipantesIncluidos"
   );
 
+
 const listaParticipantesIncluidos =
   document.getElementById(
     "listaParticipantesIncluidos"
@@ -78,35 +89,42 @@ const tituloEnqueteObrigacao =
     "tituloEnqueteObrigacao"
   );
 
+
 const mensagemCandidatosEnqueteObrigacao =
   document.getElementById(
     "mensagemCandidatosEnqueteObrigacao"
   );
+
 
 const acoesCandidatosEnqueteObrigacao =
   document.getElementById(
     "acoesCandidatosEnqueteObrigacao"
   );
 
+
 const listaCandidatosEnqueteObrigacao =
   document.getElementById(
     "listaCandidatosEnqueteObrigacao"
   );
+
 
 const botaoSelecionarTodosCandidatos =
   document.getElementById(
     "botaoSelecionarTodosCandidatos"
   );
 
+
 const botaoTirarSelecaoTodosCandidatos =
   document.getElementById(
     "botaoTirarSelecaoTodosCandidatos"
   );
 
+
 const botaoValidarCandidatosEnquete =
   document.getElementById(
     "botaoValidarCandidatosEnquete"
   );
+
 
 const mensagemValidarCandidatosEnquete =
   document.getElementById(
@@ -119,6 +137,7 @@ const mensagemParticipantesDisponiveis =
     "mensagemParticipantesDisponiveis"
   );
 
+
 const listaParticipantesDisponiveis =
   document.getElementById(
     "listaParticipantesDisponiveis"
@@ -130,15 +149,18 @@ const botaoSelecionarTodosParticipantes =
     "botaoSelecionarTodosParticipantes"
   );
 
+
 const botaoTirarSelecaoTodosParticipantes =
   document.getElementById(
     "botaoTirarSelecaoTodosParticipantes"
   );
 
+
 const botaoSalvarParticipantesManuais =
   document.getElementById(
     "botaoSalvarParticipantesManuais"
   );
+
 
 const mensagemSalvarParticipantesManuais =
   document.getElementById(
@@ -153,17 +175,22 @@ const mensagemSalvarParticipantesManuais =
 let obrigacaoIdAtual =
   null;
 
+
 let usuarioLogadoId =
   null;
+
 
 let participantesIncluidosAtuais =
   [];
 
+
 let usuariosDisponiveisAtuais =
   [];
 
+
 let enqueteObrigacaoAtual =
   null;
+
 
 let candidatosEnqueteAtuais =
   [];
@@ -1368,6 +1395,22 @@ async function validarCandidatosEnquete() {
   }
 
 
+  if (
+    !enqueteObrigacaoAtual ||
+    enqueteObrigacaoAtual.status !== "encerrado"
+  ) {
+
+    mensagemValidarCandidatosEnquete.textContent =
+      "A enquete precisa estar encerrada para validar participantes.";
+
+    mensagemValidarCandidatosEnquete.style.color =
+      "#9a2929";
+
+    return;
+
+  }
+
+
   const confirmar =
     window.confirm(
       selecionados.length === 1
@@ -1400,47 +1443,17 @@ async function validarCandidatosEnquete() {
 
   try {
 
-    const agora =
-      new Date()
-        .toISOString();
-
-
-    const registros =
-      selecionados.map(
-        (usuarioId) => ({
-
-          obrigacao_id:
-            obrigacaoIdAtual,
-
-          usuario_id:
-            usuarioId,
-
-          situacao:
-            "opcional_confirmado",
-
-          origem:
-            "adesao",
-
-          ajustado_por:
-            usuarioLogadoId,
-
-          ajustado_em:
-            agora,
-
-          atualizado_em:
-            agora
-
-        })
-      );
-
-
     const resultado =
       await window.supabaseClient
-        .from(
-          "financeiro_obrigacao_participantes"
-        )
-        .insert(
-          registros
+        .rpc(
+          "financeiro_validar_candidatos_enquete",
+          {
+            p_comunicado_id:
+              enqueteObrigacaoAtual.id,
+
+            p_usuarios_ids:
+              selecionados
+          }
         );
 
 
@@ -1453,14 +1466,10 @@ async function validarCandidatosEnquete() {
     }
 
 
-    mensagemValidarCandidatosEnquete.textContent =
-      selecionados.length === 1
-        ? "Participante validado com sucesso."
-        : selecionados.length +
-          " participantes validados com sucesso.";
-
-    mensagemValidarCandidatosEnquete.style.color =
-      "#267341";
+    const quantidade =
+      Number(
+        resultado.data || 0
+      );
 
 
     await carregarParticipantesIncluidos();
@@ -1472,6 +1481,33 @@ async function validarCandidatosEnquete() {
     await carregarUsuariosDisponiveis();
 
 
+    if (
+      quantidade === 0
+    ) {
+
+      mensagemValidarCandidatosEnquete.textContent =
+        "Nenhuma nova inclusão foi necessária. Os participantes selecionados já estavam cadastrados.";
+
+    } else if (
+      quantidade === 1
+    ) {
+
+      mensagemValidarCandidatosEnquete.textContent =
+        "1 participante validado com sucesso.";
+
+    } else {
+
+      mensagemValidarCandidatosEnquete.textContent =
+        quantidade +
+        " participantes validados com sucesso.";
+
+    }
+
+
+    mensagemValidarCandidatosEnquete.style.color =
+      "#267341";
+
+
   } catch (erro) {
 
     console.error(
@@ -1481,6 +1517,7 @@ async function validarCandidatosEnquete() {
 
 
     mensagemValidarCandidatosEnquete.textContent =
+      erro?.message ||
       "Não foi possível validar os participantes selecionados.";
 
     mensagemValidarCandidatosEnquete.style.color =
@@ -1489,8 +1526,15 @@ async function validarCandidatosEnquete() {
 
   } finally {
 
+    const possuiPendentes =
+      candidatosEnqueteAtuais.some(
+        (candidato) =>
+          !candidato.ja_participante
+      );
+
+
     botaoValidarCandidatosEnquete.disabled =
-      false;
+      !possuiPendentes;
 
   }
 
