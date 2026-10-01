@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -12,10 +13,7 @@
 
   <title>Login | Gestão TUFRA</title>
 
-  <!-- PWA -->
   <link rel="manifest" href="manifest.webmanifest">
-
-  <!-- Ícone para iPhone/iPad -->
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
   <link rel="stylesheet" href="style.css">
@@ -40,7 +38,62 @@
         </p>
       </header>
 
-      <form id="formularioLogin" class="formulario-login">
+      <section
+        id="areaConfirmacaoEmail"
+        hidden
+        aria-live="polite"
+      >
+        <h2 id="tituloConfirmacaoEmail">
+          Confirme seu e-mail
+        </h2>
+
+        <p id="textoConfirmacaoEmail">
+          Você pode solicitar um novo link
+          de confirmação.
+        </p>
+
+        <div
+          id="areaEmailReenvio"
+          class="grupo-campo"
+          hidden
+        >
+          <label for="emailReenvio">
+            E-mail do cadastro
+          </label>
+
+          <input
+            id="emailReenvio"
+            type="email"
+            placeholder="Digite seu e-mail"
+            autocomplete="email"
+          >
+        </div>
+
+        <div
+          id="mensagemReenvio"
+          class="mensagem-login"
+          role="status"
+          aria-live="polite"
+        ></div>
+
+        <button
+          id="botaoReenviarConfirmacao"
+          class="botao-entrar"
+          type="button"
+        >
+          Reenviar e-mail de confirmação
+        </button>
+
+        <p>
+          Confirme seu e-mail em até
+          30 minutos após receber o novo link.
+        </p>
+      </section>
+
+      <form
+        id="formularioLogin"
+        class="formulario-login"
+      >
 
         <div class="grupo-campo">
           <label for="login">E-mail</label>
@@ -48,7 +101,7 @@
           <input
             id="login"
             name="login"
-            type="text"
+            type="email"
             placeholder="Digite seu e-mail"
             autocomplete="email"
             required
@@ -118,12 +171,10 @@
 
   </main>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js?v=2"></script>
-<script src="script.js?v=3"></script>
-
-<!-- PWA -->
-<script src="pwa.js?v=1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js?v=2"></script>
+  <script src="script.js?v=4"></script>
+  <script src="pwa.js?v=1"></script>
 
 </body>
 </html>
