@@ -209,11 +209,20 @@ function formatarNome(
     nomeCompleto || ""
   )
     .trim()
-    .toLowerCase()
+    .toLocaleLowerCase(
+      "pt-BR"
+    )
     .replace(
-      /\b\p{L}/gu,
-      (letra) =>
-        letra.toUpperCase()
+      /(^|[\s'-])(\p{L})/gu,
+      (
+        texto,
+        separador,
+        letra
+      ) =>
+        separador +
+        letra.toLocaleUpperCase(
+          "pt-BR"
+        )
     );
 
 }
