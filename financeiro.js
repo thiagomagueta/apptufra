@@ -28,6 +28,7 @@ function carregarQuadroMensalidades(cobrancas, ano) {
     cartao.style.textAlign = "center";
     cartao.style.fontSize = "11px";
     cartao.style.fontWeight = "700";
+    cartao.style.cursor = cobranca ? "pointer" : "default";
 
     let simbolo = "—";
     let situacao = "Sem cobrança";
@@ -59,11 +60,100 @@ function carregarQuadroMensalidades(cobrancas, ano) {
       <div style="font-size:9px; margin-top:4px; font-weight:600;">${situacao}</div>
     `;
 
+    if (cobranca) {
+      cartao.addEventListener("click", () => {
+        abrirDetalheMensalidade(cobranca);
+      });
+    }
+
     listaMensalidades.appendChild(cartao);
   }
 
   textoMensalidades.textContent = `Mensalidades de ${ano}`;
   listaMensalidades.hidden = false;
+}
+
+function formatarMoeda(valor) {
+  return Number(valor || 0).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL"
+  });
+}
+
+function formatarData(dataISO) {
+  if (!dataISO) return "—";
+  const partes = String(dataISO).split("-");
+  if (partes.length !== 3) return dataISO;
+  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+async function abrirDetalheMensalidade(cobranca) {
+  try {
+    const resultadoAplicacoes = await window.supabaseClient
+      .from("financeiro_pagamento_aplicacoes")
+      .select("valor_aplicado, recebimento_id")
+      .eq("cobranca_id", cobranca.id);
+
+    if (resultadoAplicacoes.error) throw resultadoAplicacoes.error;
+
+    const aplicacoes = resultadoAplicacoes.data || [];
+    const totalPago = aplicacoes.reduce(
+      (total, item) => total + Number(item.valor_aplicado || 0),
+      0
+    );
+
+    let dataPagamento = "—";
+    let formaPagamento = "—";
+
+    if (aplicacoes.length > 0) {
+      const ids = [...new Set(aplicacoes.map(item => item.recebimento_id).filter(Boolean))];
+
+      if (ids.length > 0) {
+        const resultadoRecebimentos = await window.supabaseClient
+          .from("financeiro_recebimentos")
+          .select("id, data_pagamento, forma_pagamento")
+          .in("id", ids)
+          .order("data_pagamento", { ascending: false });
+
+        if (resultadoRecebimentos.error) throw resultadoRecebimentos.error;
+
+        const recebimentos = resultadoRecebimentos.data || [];
+        if (recebimentos.length > 0) {
+          dataPagamento = formatarData(recebimentos[0].data_pagamento);
+          formaPagamento = recebimentos
+            .map(item => item.forma_pagamento)
+            .filter(Boolean)
+            .filter((item, indice, lista) => lista.indexOf(item) === indice)
+            .join(", ") || "—";
+        }
+      }
+    }
+
+    const partes = String(cobranca.competencia || "").split("-");
+    const mes = Number(partes[1]);
+    const ano = partes[0] || "";
+    const nomeMes = nomesMeses[mes - 1] || "Mensalidade";
+
+    const status =
+      cobranca.status === "paga" ? "Pago" :
+      cobranca.status === "parcial" ? "Parcial" :
+      cobranca.status === "aberta" ? "Em aberto" :
+      (cobranca.status || "—");
+
+    const mensagem =
+      `${nomeMes}/${ano}\n\n` +
+      `Situação: ${status}\n` +
+      `Valor devido: ${formatarMoeda(cobranca.valor_original)}\n` +
+      `Valor pago: ${formatarMoeda(totalPago)}\n` +
+      `Data do pagamento: ${dataPagamento}\n` +
+      `Forma de pagamento: ${formaPagamento}`;
+
+    window.alert(mensagem);
+
+  } catch (erro) {
+    console.error("Erro ao carregar detalhes da mensalidade:", erro);
+    window.alert("Não foi possível carregar os detalhes desta mensalidade.");
+  }
 }
 
 async function carregarFinanceiroAssociado() {
