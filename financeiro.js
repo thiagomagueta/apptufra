@@ -1,6 +1,70 @@
 "use strict";
 
 const textoSituacaoFinanceira = document.getElementById("textoSituacaoFinanceira");
+const textoMensalidades = document.getElementById("textoMensalidades");
+const listaMensalidades = document.getElementById("listaMensalidades");
+
+const nomesMeses = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
+
+function carregarQuadroMensalidades(cobrancas, ano) {
+  if (!listaMensalidades || !textoMensalidades) return;
+
+  listaMensalidades.innerHTML = "";
+  listaMensalidades.style.display = "grid";
+  listaMensalidades.style.gridTemplateColumns = "repeat(6, minmax(0, 1fr))";
+  listaMensalidades.style.gap = "8px";
+
+  for (let mes = 1; mes <= 12; mes++) {
+    const cobranca = cobrancas.find(item => {
+      if (!item.competencia) return false;
+      const partes = String(item.competencia).split("-");
+      return Number(partes[0]) === ano && Number(partes[1]) === mes;
+    });
+
+    const cartao = document.createElement("div");
+    cartao.style.padding = "9px 4px";
+    cartao.style.border = "1px solid #d8d8d8";
+    cartao.style.borderRadius = "8px";
+    cartao.style.textAlign = "center";
+    cartao.style.fontSize = "11px";
+    cartao.style.fontWeight = "700";
+
+    let simbolo = "—";
+    let situacao = "Sem cobrança";
+
+    if (cobranca) {
+      if (cobranca.status === "paga") {
+        simbolo = "✓";
+        situacao = "Pago";
+        cartao.style.background = "#e4f3e8";
+        cartao.style.borderColor = "#70ad7d";
+        cartao.style.color = "#246b35";
+      } else if (cobranca.status === "aberta" || cobranca.status === "parcial") {
+        simbolo = "!";
+        situacao = cobranca.status === "parcial" ? "Parcial" : "Em aberto";
+        cartao.style.background = "#f7dddd";
+        cartao.style.borderColor = "#c97575";
+        cartao.style.color = "#9a2929";
+      } else {
+        situacao = cobranca.status || "Sem cobrança";
+        cartao.style.background = "#f5f5f5";
+      }
+    } else {
+      cartao.style.background = "#f5f5f5";
+    }
+
+    cartao.innerHTML = `
+      <div style="font-size:12px; margin-bottom:3px;">${nomesMeses[mes - 1]}</div>
+      <div style="font-size:16px; line-height:1;">${simbolo}</div>
+      <div style="font-size:9px; margin-top:4px; font-weight:600;">${situacao}</div>
+    `;
+
+    listaMensalidades.appendChild(cartao);
+  }
+
+  textoMensalidades.textContent = `Mensalidades de ${ano}`;
+  listaMensalidades.hidden = false;
+}
 
 async function carregarFinanceiroAssociado() {
   if (!window.supabaseClient) {
@@ -64,6 +128,8 @@ async function carregarFinanceiroAssociado() {
     const abertas = cobrancas.filter(c => c.status === "aberta" || c.status === "parcial");
     const totalAberto = abertas.reduce((total, c) => total + Number(c.valor_original || 0), 0);
 
+    carregarQuadroMensalidades(cobrancas, anoAtual);
+
     if (!textoSituacaoFinanceira) return;
 
     if (abertas.length === 0) {
@@ -87,6 +153,15 @@ async function carregarFinanceiroAssociado() {
     if (textoSituacaoFinanceira) {
       textoSituacaoFinanceira.textContent =
         "Não foi possível carregar sua situação financeira.";
+    }
+
+    if (textoMensalidades) {
+      textoMensalidades.textContent =
+        "Não foi possível carregar suas mensalidades.";
+    }
+
+    if (listaMensalidades) {
+      listaMensalidades.hidden = true;
     }
   }
 }
