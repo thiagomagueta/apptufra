@@ -3,6 +3,26 @@
 const textoSituacaoFinanceira = document.getElementById("textoSituacaoFinanceira");
 const textoMensalidades = document.getElementById("textoMensalidades");
 const listaMensalidades = document.getElementById("listaMensalidades");
+const modalMensalidade = document.getElementById("modalMensalidade");
+const tituloModalMensalidade = document.getElementById("tituloModalMensalidade");
+const conteudoModalMensalidade = document.getElementById("conteudoModalMensalidade");
+const botaoFecharModalMensalidade = document.getElementById("botaoFecharModalMensalidade");
+
+function fecharModalMensalidade() {
+  if (!modalMensalidade) return;
+  modalMensalidade.hidden = true;
+  modalMensalidade.style.display = "none";
+}
+
+if (botaoFecharModalMensalidade) {
+  botaoFecharModalMensalidade.addEventListener("click", fecharModalMensalidade);
+}
+
+if (modalMensalidade) {
+  modalMensalidade.addEventListener("click", event => {
+    if (event.target === modalMensalidade) fecharModalMensalidade();
+  });
+}
 
 const nomesMeses = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
 
@@ -140,15 +160,22 @@ async function abrirDetalheMensalidade(cobranca) {
       cobranca.status === "aberta" ? "Em aberto" :
       (cobranca.status || "—");
 
-    const mensagem =
-      `${nomeMes}/${ano}\n\n` +
-      `Situação: ${status}\n` +
-      `Valor devido: ${formatarMoeda(cobranca.valor_original)}\n` +
-      `Valor pago: ${formatarMoeda(totalPago)}\n` +
-      `Data do pagamento: ${dataPagamento}\n` +
-      `Forma de pagamento: ${formaPagamento}`;
+    if (!modalMensalidade || !tituloModalMensalidade || !conteudoModalMensalidade) return;
 
-    window.alert(mensagem);
+    tituloModalMensalidade.textContent = `${nomeMes}/${ano}`;
+
+    conteudoModalMensalidade.innerHTML = `
+      <div style="display:grid; gap:10px;">
+        <div><strong>Situação:</strong> ${status}</div>
+        <div><strong>Valor devido:</strong> ${formatarMoeda(cobranca.valor_original)}</div>
+        <div><strong>Valor pago:</strong> ${formatarMoeda(totalPago)}</div>
+        <div><strong>Data do pagamento:</strong> ${dataPagamento}</div>
+        <div><strong>Forma de pagamento:</strong> ${formaPagamento}</div>
+      </div>
+    `;
+
+    modalMensalidade.hidden = false;
+    modalMensalidade.style.display = "flex";
 
   } catch (erro) {
     console.error("Erro ao carregar detalhes da mensalidade:", erro);
