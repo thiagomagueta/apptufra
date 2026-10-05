@@ -3,6 +3,8 @@
 const textoSituacaoFinanceira = document.getElementById("textoSituacaoFinanceira");
 const textoMensalidades = document.getElementById("textoMensalidades");
 const listaMensalidades = document.getElementById("listaMensalidades");
+const textoObrigacoes = document.getElementById("textoObrigacoes");
+const listaObrigacoes = document.getElementById("listaObrigacoes");
 const modalMensalidade = document.getElementById("modalMensalidade");
 const tituloModalMensalidade = document.getElementById("tituloModalMensalidade");
 const conteudoModalMensalidade = document.getElementById("conteudoModalMensalidade");
@@ -183,6 +185,115 @@ async function abrirDetalheMensalidade(cobranca) {
   }
 }
 
+
+function formatarSituacaoObrigacao(item) {
+  if (item.situacao === "isento") return "Isento";
+  if (item.cobranca_status === "paga") return "Pago";
+  if (item.cobranca_status === "parcial") return "Parcial";
+  if (item.cobranca_status === "aberta") return "Em aberto";
+  if (item.situacao === "opcional_confirmado") return "Confirmado";
+  return item.situacao || "—";
+}
+
+async function carregarObrigacoes(usuarioId) {
+  if (!textoObrigacoes || !listaObrigacoes) return;
+
+  const resultadoParticipacoes = await window.supabaseClient
+    .from("financeiro_obrigacao_participantes")
+    .select("id, obrigacao_id, situacao, origem, cobranca_id")
+    .eq("usuario_id", usuarioId)
+    .order("id", { ascending: false });
+
+  if (resultadoParticipacoes.error) throw resultadoParticipacoes.error;
+
+  const participacoes = resultadoParticipacoes.data || [];
+
+  if (participacoes.length === 0) {
+    textoObrigacoes.textContent = "Você não possui outras obrigações financeiras.";
+    listaObrigacoes.hidden = true;
+    return;
+  }
+
+  const obrigacaoIds = [...new Set(participacoes.map(item => item.obrigacao_id).filter(Boolean))];
+  const cobrancaIds = [...new Set(participacoes.map(item => item.cobranca_id).filter(Boolean))];
+
+  let obrigacoes = [];
+  let cobrancas = [];
+
+  if (obrigacaoIds.length > 0) {
+    const resultadoObrigacoes = await window.supabaseClient
+      .from("financeiro_obrigacoes")
+      .select("id, valor, orixas")
+      .in("id", obrigacaoIds);
+
+    if (resultadoObrigacoes.error) throw resultadoObrigacoes.error;
+    obrigacoes = resultadoObrigacoes.data || [];
+  }
+
+  if (cobrancaIds.length > 0) {
+    const resultadoCobrancas = await window.supabaseClient
+      .from("financeiro_cobrancas")
+      .select("id, valor_original, descricao, status")
+      .in("id", cobrancaIds);
+
+    if (resultadoCobrancas.error) throw resultadoCobrancas.error;
+    cobrancas = resultadoCobrancas.data || [];
+  }
+
+  const itens = participacoes.map(participacao => {
+    const obrigacao = obrigacoes.find(item => item.id === participacao.obrigacao_id) || {};
+    const cobranca = cobrancas.find(item => item.id === participacao.cobranca_id) || {};
+
+    return {
+      ...participacao,
+      valor: cobranca.valor_original ?? obrigacao.valor ?? 0,
+      descricao: cobranca.descricao || (
+        Array.isArray(obrigacao.orixas) && obrigacao.orixas.length
+          ? `Obrigação: ${obrigacao.orixas.join(", ")}`
+          : "Obrigação financeira"
+      ),
+      cobranca_status: cobranca.status || null
+    };
+  });
+
+  listaObrigacoes.innerHTML = "";
+  listaObrigacoes.style.display = "grid";
+  listaObrigacoes.style.gap = "10px";
+
+  itens.forEach(item => {
+    const situacao = formatarSituacaoObrigacao(item);
+    const cartao = document.createElement("div");
+
+    cartao.style.padding = "12px";
+    cartao.style.border = "1px solid #d8d8d8";
+    cartao.style.borderRadius = "8px";
+    cartao.style.background = "#f8f8f8";
+
+    if (situacao === "Pago" || situacao === "Isento") {
+      cartao.style.borderColor = "#70ad7d";
+      cartao.style.background = "#e4f3e8";
+    } else if (situacao === "Em aberto" || situacao === "Parcial") {
+      cartao.style.borderColor = "#c97575";
+      cartao.style.background = "#f7dddd";
+    }
+
+    cartao.innerHTML = `
+      <div style="font-weight:700; margin-bottom:7px;">${item.descricao}</div>
+      <div style="font-size:13px;"><strong>Valor:</strong> ${formatarMoeda(item.valor)}</div>
+      <div style="font-size:13px; margin-top:4px;"><strong>Situação:</strong> ${situacao}</div>
+    `;
+
+    listaObrigacoes.appendChild(cartao);
+  });
+
+  textoObrigacoes.textContent =
+    itens.length === 1
+      ? "Você possui 1 outra obrigação registrada."
+      : `Você possui ${itens.length} outras obrigações registradas.`;
+
+  listaObrigacoes.hidden = false;
+}
+
 async function carregarFinanceiroAssociado() {
   if (!window.supabaseClient) {
     window.location.href = "dashboard.html";
@@ -246,6 +357,7 @@ async function carregarFinanceiroAssociado() {
     const totalAberto = abertas.reduce((total, c) => total + Number(c.valor_original || 0), 0);
 
     carregarQuadroMensalidades(cobrancas, anoAtual);
+    await carregarObrigacoes(usuarioId);
 
     if (!textoSituacaoFinanceira) return;
 
