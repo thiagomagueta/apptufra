@@ -5,6 +5,8 @@ const textoMensalidades = document.getElementById("textoMensalidades");
 const listaMensalidades = document.getElementById("listaMensalidades");
 const textoObrigacoes = document.getElementById("textoObrigacoes");
 const listaObrigacoes = document.getElementById("listaObrigacoes");
+const secaoAcordos = document.getElementById("secaoAcordos");
+const listaAcordos = document.getElementById("listaAcordos");
 const modalMensalidade = document.getElementById("modalMensalidade");
 const tituloModalMensalidade = document.getElementById("tituloModalMensalidade");
 const conteudoModalMensalidade = document.getElementById("conteudoModalMensalidade");
@@ -383,6 +385,92 @@ async function carregarObrigacoes(usuarioId) {
   listaObrigacoes.hidden = false;
 }
 
+
+async function carregarAcordosEAjustes(usuarioId) {
+  if (!secaoAcordos || !listaAcordos) return;
+
+  secaoAcordos.hidden = true;
+  listaAcordos.innerHTML = "";
+
+  const [resultadoAcordos, resultadoAjustes] = await Promise.all([
+    window.supabaseClient
+      .from("financeiro_acordos")
+      .select("id, valor_divida_original, valor_acordado, quantidade_parcelas, data_acordo, primeira_parcela, status")
+      .eq("usuario_id", usuarioId)
+      .neq("status", "cancelado")
+      .order("data_acordo", { ascending: false }),
+
+    window.supabaseClient
+      .from("financeiro_ajustes_mensalidade")
+      .select("id, valor_temporario, inicio_vigencia, fim_vigencia, ativo")
+      .eq("usuario_id", usuarioId)
+      .eq("ativo", true)
+      .order("inicio_vigencia", { ascending: false })
+  ]);
+
+  if (resultadoAcordos.error) throw resultadoAcordos.error;
+  if (resultadoAjustes.error) throw resultadoAjustes.error;
+
+  const acordos = resultadoAcordos.data || [];
+  const ajustes = resultadoAjustes.data || [];
+
+  if (acordos.length === 0 && ajustes.length === 0) return;
+
+  listaAcordos.style.display = "grid";
+  listaAcordos.style.gap = "10px";
+
+  for (const acordo of acordos) {
+    const resultadoParcelas = await window.supabaseClient
+      .from("financeiro_acordo_parcelas")
+      .select("numero_parcela, data_vencimento, valor, status")
+      .eq("acordo_id", acordo.id)
+      .order("numero_parcela", { ascending: true });
+
+    if (resultadoParcelas.error) throw resultadoParcelas.error;
+
+    const parcelas = resultadoParcelas.data || [];
+    const pagas = parcelas.filter(parcela => parcela.status === "paga").length;
+    const saldo = parcelas
+      .filter(parcela => parcela.status !== "paga" && parcela.status !== "cancelada")
+      .reduce((total, parcela) => total + Number(parcela.valor || 0), 0);
+
+    const cartao = document.createElement("div");
+    cartao.style.padding = "12px";
+    cartao.style.border = "1px solid #d8d8d8";
+    cartao.style.borderRadius = "8px";
+    cartao.style.background = acordo.status === "quitado" ? "#e4f3e8" : "#f8f8f8";
+
+    cartao.innerHTML = `
+      <div style="font-weight:700;margin-bottom:7px;">Acordo de dívida</div>
+      <div style="font-size:13px;"><strong>Valor acordado:</strong> ${formatarMoeda(acordo.valor_acordado)}</div>
+      <div style="font-size:13px;margin-top:4px;"><strong>Parcelas:</strong> ${pagas} de ${acordo.quantidade_parcelas} pagas</div>
+      <div style="font-size:13px;margin-top:4px;"><strong>Saldo restante:</strong> ${formatarMoeda(saldo)}</div>
+      <div style="font-size:13px;margin-top:4px;"><strong>Situação:</strong> ${acordo.status === "quitado" ? "Quitado" : "Ativo"}</div>
+    `;
+
+    listaAcordos.appendChild(cartao);
+  }
+
+  ajustes.forEach(ajuste => {
+    const cartao = document.createElement("div");
+    cartao.style.padding = "12px";
+    cartao.style.border = "1px solid #d8d8d8";
+    cartao.style.borderRadius = "8px";
+    cartao.style.background = "#f8f8f8";
+
+    cartao.innerHTML = `
+      <div style="font-weight:700;margin-bottom:7px;">Ajuste temporário de mensalidade</div>
+      <div style="font-size:13px;"><strong>Valor temporário:</strong> ${formatarMoeda(ajuste.valor_temporario)}</div>
+      <div style="font-size:13px;margin-top:4px;"><strong>Vigência:</strong> ${formatarData(ajuste.inicio_vigencia)} a ${formatarData(ajuste.fim_vigencia)}</div>
+      <div style="font-size:13px;margin-top:4px;">Após esse período, a mensalidade retorna ao valor normal.</div>
+    `;
+
+    listaAcordos.appendChild(cartao);
+  });
+
+  secaoAcordos.hidden = false;
+}
+
 async function carregarFinanceiroAssociado() {
   if (!window.supabaseClient) {
     window.location.href = "dashboard.html";
@@ -447,6 +535,7 @@ async function carregarFinanceiroAssociado() {
 
     carregarQuadroMensalidades(cobrancas, anoAtual);
     await carregarObrigacoes(usuarioId);
+    await carregarAcordosEAjustes(usuarioId);
 
     if (!textoSituacaoFinanceira) return;
 
