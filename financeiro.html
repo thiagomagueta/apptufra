@@ -217,6 +217,66 @@
 
 
   <!-- =====================================
+       DETALHE DA MENSALIDADE
+  ====================================== -->
+
+  <div
+    id="modalMensalidade"
+    hidden
+    style="
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.45);
+      padding: 20px;
+      box-sizing: border-box;
+      align-items: center;
+      justify-content: center;
+    "
+  >
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="tituloModalMensalidade"
+      style="
+        width: 100%;
+        max-width: 420px;
+        background: #fff;
+        border-radius: 14px;
+        padding: 22px;
+        box-sizing: border-box;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.22);
+      "
+    >
+      <h2 id="tituloModalMensalidade" style="margin-top: 0;">
+        Detalhes da mensalidade
+      </h2>
+
+      <div id="conteudoModalMensalidade"></div>
+
+      <button
+        id="botaoFecharModalMensalidade"
+        type="button"
+        style="
+          width: 100%;
+          margin-top: 20px;
+          padding: 12px;
+          border: 0;
+          border-radius: 8px;
+          background: #651b1d;
+          color: #fff;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+        "
+      >
+        Fechar
+      </button>
+    </div>
+  </div>
+
+
+  <!-- =====================================
        MENU GLOBAL
   ====================================== -->
 
