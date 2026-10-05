@@ -9,6 +9,26 @@ const modalMensalidade = document.getElementById("modalMensalidade");
 const tituloModalMensalidade = document.getElementById("tituloModalMensalidade");
 const conteudoModalMensalidade = document.getElementById("conteudoModalMensalidade");
 const botaoFecharModalMensalidade = document.getElementById("botaoFecharModalMensalidade");
+const modalObrigacao = document.getElementById("modalObrigacao");
+const tituloModalObrigacao = document.getElementById("tituloModalObrigacao");
+const conteudoModalObrigacao = document.getElementById("conteudoModalObrigacao");
+const botaoFecharModalObrigacao = document.getElementById("botaoFecharModalObrigacao");
+
+function fecharModalObrigacao() {
+  if (!modalObrigacao) return;
+  modalObrigacao.hidden = true;
+  modalObrigacao.style.display = "none";
+}
+
+if (botaoFecharModalObrigacao) {
+  botaoFecharModalObrigacao.addEventListener("click", fecharModalObrigacao);
+}
+
+if (modalObrigacao) {
+  modalObrigacao.addEventListener("click", event => {
+    if (event.target === modalObrigacao) fecharModalObrigacao();
+  });
+}
 
 function fecharModalMensalidade() {
   if (!modalMensalidade) return;
@@ -186,6 +206,72 @@ async function abrirDetalheMensalidade(cobranca) {
 }
 
 
+async function abrirDetalheObrigacao(item) {
+  try {
+    let totalPago = 0;
+    let dataPagamento = "—";
+    let formaPagamento = "—";
+
+    if (item.cobranca_id) {
+      const resultadoAplicacoes = await window.supabaseClient
+        .from("financeiro_pagamento_aplicacoes")
+        .select("valor_aplicado, recebimento_id")
+        .eq("cobranca_id", item.cobranca_id);
+
+      if (resultadoAplicacoes.error) throw resultadoAplicacoes.error;
+
+      const aplicacoes = resultadoAplicacoes.data || [];
+      totalPago = aplicacoes.reduce(
+        (total, aplicacao) => total + Number(aplicacao.valor_aplicado || 0),
+        0
+      );
+
+      const ids = [...new Set(aplicacoes.map(aplicacao => aplicacao.recebimento_id).filter(Boolean))];
+
+      if (ids.length > 0) {
+        const resultadoRecebimentos = await window.supabaseClient
+          .from("financeiro_recebimentos")
+          .select("id, data_pagamento, forma_pagamento")
+          .in("id", ids)
+          .order("data_pagamento", { ascending: false });
+
+        if (resultadoRecebimentos.error) throw resultadoRecebimentos.error;
+
+        const recebimentos = resultadoRecebimentos.data || [];
+        if (recebimentos.length > 0) {
+          dataPagamento = formatarData(recebimentos[0].data_pagamento);
+          formaPagamento = recebimentos
+            .map(recebimento => recebimento.forma_pagamento)
+            .filter(Boolean)
+            .filter((valor, indice, lista) => lista.indexOf(valor) === indice)
+            .join(", ") || "—";
+        }
+      }
+    }
+
+    const situacao = formatarSituacaoObrigacao(item);
+
+    tituloModalObrigacao.textContent = "Detalhes da obrigação";
+    conteudoModalObrigacao.innerHTML = `
+      <div style="display:grid;gap:10px;">
+        <div style="font-weight:700;">${item.descricao}</div>
+        <div><strong>Situação:</strong> ${situacao}</div>
+        <div><strong>Valor:</strong> ${formatarMoeda(item.valor)}</div>
+        <div><strong>Valor pago:</strong> ${formatarMoeda(totalPago)}</div>
+        <div><strong>Data do pagamento:</strong> ${dataPagamento}</div>
+        <div><strong>Forma de pagamento:</strong> ${formaPagamento}</div>
+      </div>
+    `;
+
+    modalObrigacao.hidden = false;
+    modalObrigacao.style.display = "flex";
+  } catch (erro) {
+    console.error("Erro ao carregar detalhes da obrigação:", erro);
+    window.alert("Não foi possível carregar os detalhes desta obrigação.");
+  }
+}
+
+
 function formatarSituacaoObrigacao(item) {
   if (item.situacao === "isento") return "Isento";
   if (item.cobranca_status === "paga") return "Pago";
@@ -268,6 +354,7 @@ async function carregarObrigacoes(usuarioId) {
     cartao.style.border = "1px solid #d8d8d8";
     cartao.style.borderRadius = "8px";
     cartao.style.background = "#f8f8f8";
+    cartao.style.cursor = "pointer";
 
     if (situacao === "Pago" || situacao === "Isento") {
       cartao.style.borderColor = "#70ad7d";
@@ -282,6 +369,8 @@ async function carregarObrigacoes(usuarioId) {
       <div style="font-size:13px;"><strong>Valor:</strong> ${formatarMoeda(item.valor)}</div>
       <div style="font-size:13px; margin-top:4px;"><strong>Situação:</strong> ${situacao}</div>
     `;
+
+    cartao.addEventListener("click", () => abrirDetalheObrigacao(item));
 
     listaObrigacoes.appendChild(cartao);
   });
