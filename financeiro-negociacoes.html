@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#651b1d">
+  <title>Exceções e acordos | TUFRA</title>
+  <link rel="stylesheet" href="layout.css?v=40">
+  <style>
+    [hidden] { display:none !important; }
+    .campo-negociacao { display:block; width:100%; box-sizing:border-box; padding:10px; margin:6px 0 14px; border:1px solid #ccc; border-radius:8px; font:inherit; }
+    .linha-negociacao { display:flex; gap:12px; flex-wrap:wrap; }
+    .linha-negociacao > div { flex:1; min-width:140px; }
+    .botao-negociacao { padding:10px 14px; border:1px solid #ccc; border-radius:8px; background:#f5f5f5; font:inherit; cursor:pointer; }
+    .divida-negociacao,.registro-negociacao { padding:12px; margin:10px 0; border:1px solid #ddd; border-radius:8px; overflow-wrap:anywhere; }
+    .divida-negociacao input { margin-right:8px; }
+    summary { cursor:pointer; font-weight:600; }
+    #mensagemNegociacoes { overflow-wrap:anywhere; }
+  </style>
+</head>
+<body><main class="app"><div class="conteudo-app">
+<header class="cabecalho-app"><img class="logo-app" src="logo-tufra.png" alt="Logo da TUFRA"><div class="identidade-app"><strong>TUFRA</strong><span>Tenda de Umbanda Francisco de Assis</span></div></header>
+<h1 class="titulo-pagina">Exceções e acordos</h1><p class="subtitulo-pagina">Reduções temporárias e parcelamento de dívidas.</p>
+<p id="mensagemNegociacoes" role="status" aria-live="polite">Verificando acesso...</p>
+<section id="conteudoNegociacoes" hidden>
+<div class="cartao-app"><label for="buscarAssociado">Buscar associado</label><input id="buscarAssociado" class="campo-negociacao" type="search" placeholder="Digite o nome"><label for="associadoNegociacao">Associado</label><select id="associadoNegociacao" class="campo-negociacao"><option value="">Selecione</option></select></div>
+<div id="dadosAssociado" hidden>
+<div class="cartao-app"><details><summary>Mensalidade temporariamente reduzida</summary>
+<form id="formReducao"><label for="valorReducao">Valor mensal reduzido (R$)</label><input id="valorReducao" class="campo-negociacao" type="number" min="0" max="99999999.99" step="0.01" required>
+<div class="linha-negociacao"><div><label for="inicioReducao">Primeiro mês</label><input id="inicioReducao" class="campo-negociacao" type="month" required></div><div><label for="fimReducao">Último mês</label><input id="fimReducao" class="campo-negociacao" type="month" required></div></div>
+<label for="motivoReducao">Motivo</label><textarea id="motivoReducao" class="campo-negociacao" maxlength="1000" required></textarea>
+<p>O valor reduzido quita a mensalidade do período. Depois, volta a regra normal vigente.</p><button class="botao-negociacao" type="submit">Revisar redução</button></form></details></div>
+<div class="cartao-app"><details><summary>Acordo de dívida</summary><form id="formAcordo"><p>Selecione as mensalidades e obrigações que entrarão no acordo.</p><div id="dividasNegociacao"></div><p id="totalNegociacao"></p>
+<div class="linha-negociacao"><div><label for="parcelasNegociacao">Quantidade de parcelas</label><input id="parcelasNegociacao" class="campo-negociacao" type="number" min="1" max="120" step="1" value="1" required></div><div><label for="inicioAcordo">Vencimento da primeira parcela</label><input id="inicioAcordo" class="campo-negociacao" type="date" required></div></div>
+<p id="previsaoParcelas"></p><label for="motivoAcordo">Motivo / observação</label><textarea id="motivoAcordo" class="campo-negociacao" maxlength="1000" required></textarea><p>As parcelas somam à mensalidade normal. As dívidas de origem permanecem no histórico como negociadas.</p><button class="botao-negociacao" type="submit">Revisar acordo</button></form></details></div>
+<div class="cartao-app"><h2>Reduções e acordos registrados</h2><div id="historicoNegociacoes"></div></div>
+</div></section><a class="link-administrativo" href="adm-financeiro.html">Voltar ao Financeiro</a>
+</div></main><dialog id="revisaoNegociacao"><h2>Conferir negociação</h2><div id="resumoNegociacao"></div><p id="erroRevisao" role="alert"></p><button id="salvarNegociacao" class="botao-negociacao" type="button">Confirmar cadastro</button> <button id="cancelarNegociacao" class="botao-negociacao" type="button">Voltar</button></dialog>
+<div id="menuGlobalTufra"></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase.js?v=2"></script><script src="menu-global.js?v=1"></script><script src="app.js?v=2"></script><script src="financeiro-negociacoes.js?v=1"></script><script src="menu-adm.js?v=1"></script><script src="menu-financeiro.js?v=1"></script></body></html>

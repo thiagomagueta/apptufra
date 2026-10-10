@@ -91,7 +91,7 @@ function carregarQuadroMensalidades(cobrancas, ano) {
         cartao.style.borderColor = "#c97575";
         cartao.style.color = "#9a2929";
       } else {
-        situacao = cobranca.status || "Sem cobrança";
+        situacao = cobranca.status === "renegociada" ? "Em acordo" : cobranca.status || "Sem cobrança";
         cartao.style.background = "#f5f5f5";
       }
     } else {
@@ -182,7 +182,7 @@ async function abrirDetalheMensalidade(cobranca) {
       cobranca.status === "paga" ? "Pago" :
       cobranca.status === "parcial" ? "Parcial" :
       cobranca.status === "aberta" ? "Em aberto" :
-      (cobranca.status || "—");
+      (cobranca.status === "renegociada" ? "Incluída em acordo" : cobranca.status || "—");
 
     if (!modalMensalidade || !tituloModalMensalidade || !conteudoModalMensalidade) return;
 
@@ -277,6 +277,7 @@ async function abrirDetalheObrigacao(item) {
 function formatarSituacaoObrigacao(item) {
   if (item.situacao === "isento") return "Isento";
   if (item.situacao === "nao_obrigatorio") return "Não obrigatório";
+  if (item.cobranca_status === "renegociada") return "Incluída em acordo";
   if (item.cobranca_status === "cancelada") return "Cobrança cancelada";
   if (item.cobranca_status === "paga") return "Pago";
   if (item.cobranca_status === "parcial") return "Parcial";
@@ -424,7 +425,7 @@ async function carregarAcordosEAjustes(usuarioId) {
   for (const acordo of acordos) {
     const resultadoParcelas = await window.supabaseClient
       .from("financeiro_acordo_parcelas")
-      .select("numero_parcela, data_vencimento, valor, status")
+      .select("numero_parcela, data_vencimento, valor, status, cobranca_id")
       .eq("acordo_id", acordo.id)
       .order("numero_parcela", { ascending: true });
 
@@ -432,9 +433,14 @@ async function carregarAcordosEAjustes(usuarioId) {
 
     const parcelas = resultadoParcelas.data || [];
     const pagas = parcelas.filter(parcela => parcela.status === "paga").length;
-    const saldo = parcelas
-      .filter(parcela => parcela.status !== "paga" && parcela.status !== "cancelada")
-      .reduce((total, parcela) => total + Number(parcela.valor || 0), 0);
+    const idsParcelas = parcelas.map(p => p.cobranca_id).filter(Boolean);
+    const resultadoPagamentos = idsParcelas.length ? await window.supabaseClient
+      .from("financeiro_pagamento_aplicacoes").select("cobranca_id, valor_aplicado")
+      .in("cobranca_id", idsParcelas) : { data: [] };
+    if (resultadoPagamentos.error) throw resultadoPagamentos.error;
+    const saldo = parcelas.filter(p => p.status !== "cancelada").reduce((total,p) =>
+      total + Math.max(0, Number(p.valor) - resultadoPagamentos.data.filter(a => a.cobranca_id === p.cobranca_id)
+        .reduce((t,a) => t + Number(a.valor_aplicado),0)),0);
 
     const cartao = document.createElement("div");
     cartao.style.padding = "12px";
@@ -450,6 +456,32 @@ async function carregarAcordosEAjustes(usuarioId) {
       <div style="font-size:13px;margin-top:4px;"><strong>Situação:</strong> ${acordo.status === "quitado" ? "Quitado" : "Ativo"}</div>
     `;
 
+    const detalhes = document.createElement("details");
+    const resumo = document.createElement("summary");
+    resumo.textContent = "Ver origem e parcelas";
+    detalhes.appendChild(resumo);
+    const origens = await window.supabaseClient.from("financeiro_acordo_origens")
+      .select("cobranca_id, valor_incorporado").eq("acordo_id", acordo.id);
+    if (origens.error) throw origens.error;
+    if (origens.data.length) {
+      const cobrancasOriginais = await window.supabaseClient.from("financeiro_cobrancas")
+        .select("id, descricao, competencia").in("id", origens.data.map(o => o.cobranca_id));
+      if (cobrancasOriginais.error) throw cobrancasOriginais.error;
+      origens.data.forEach(o => {
+        const c = cobrancasOriginais.data.find(c => c.id === o.cobranca_id);
+        const linha = document.createElement("p");
+        linha.textContent = `Origem: ${c?.descricao || "Cobrança"} · ${formatarData(c?.competencia)} · ${formatarMoeda(o.valor_incorporado)}`;
+        detalhes.appendChild(linha);
+      });
+    }
+    parcelas.forEach(p => {
+      const linha = document.createElement("p");
+      const pago = resultadoPagamentos.data.filter(a => a.cobranca_id === p.cobranca_id)
+        .reduce((t,a) => t + Number(a.valor_aplicado),0);
+      linha.textContent = `Parcela ${p.numero_parcela}/${acordo.quantidade_parcelas} · ${formatarData(p.data_vencimento)} · ${formatarMoeda(p.valor)} · ${p.status === "paga" ? "Paga" : p.status === "parcial" ? "Parcial" : "Em aberto"} · saldo ${formatarMoeda(Math.max(0, Number(p.valor)-pago))}`;
+      detalhes.appendChild(linha);
+    });
+    cartao.appendChild(detalhes);
     listaAcordos.appendChild(cartao);
   }
 
