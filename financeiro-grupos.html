@@ -16,7 +16,12 @@
     .lista-pessoas { display:grid; gap:8px; margin:12px 0; }
     .pessoa-grupo { display:flex; align-items:center; gap:12px; padding:12px; border:1px solid #ddd; border-radius:8px; overflow-wrap:anywhere; }
     .pessoa-grupo input { width:20px; height:20px; flex-shrink:0; }
-    .cartao-grupo { padding:14px; margin:12px 0; border:1px solid #ddd; border-radius:8px; }
+    .grupo-vinculado { margin:0 0 18px; }
+    .integrante-vinculado { display:flex; align-items:center; gap:8px; min-height:36px; }
+    .nome-vinculado { flex:1; min-width:0; overflow-wrap:anywhere; }
+    .retirar-vinculado { flex:0 0 32px; width:32px; height:32px; padding:0; border:1px solid #ccc; border-radius:4px; margin-left:auto; }
+    .acoes-vinculo { display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
+    .acoes-vinculo .botao-grupo { width:auto; padding:5px 8px; font-size:12px; font-weight:400; }
     .modal-grupo { position:fixed; inset:0; z-index:1100; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.45); padding:16px; box-sizing:border-box; }
     .dialogo-grupo { width:100%; max-width:480px; max-height:85vh; overflow:auto; background:white; border-radius:14px; padding:20px; box-sizing:border-box; }
     .dialogo-grupo h2 { margin-top:0; }
@@ -87,7 +92,7 @@
   <script src="supabase.js?v=2"></script>
   <script src="menu-global.js?v=1"></script>
   <script src="app.js?v=2"></script>
-  <script src="financeiro-grupos.js?v=1"></script>
+  <script src="financeiro-grupos.js?v=2"></script>
   <script src="menu-adm.js?v=1"></script>
   <script src="menu-financeiro.js?v=1"></script>
 </body>
