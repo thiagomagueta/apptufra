@@ -533,7 +533,27 @@ async function carregarFinanceiroAssociado() {
 
     const cobrancas = resultadoCobrancas.data || [];
     const abertas = cobrancas.filter(c => c.status === "aberta" || c.status === "parcial");
-    const totalAberto = abertas.reduce((total, c) => total + Number(c.valor_original || 0), 0);
+    let totalAberto = 0;
+    if (abertas.length > 0) {
+      const resultadoPagamentos = await window.supabaseClient
+        .from("financeiro_pagamento_aplicacoes")
+        .select("cobranca_id, valor_aplicado")
+        .in("cobranca_id", abertas.map(item => item.id));
+      if (resultadoPagamentos.error) throw resultadoPagamentos.error;
+
+      const pagamentosPorCobranca = new Map();
+      for (const item of resultadoPagamentos.data || []) {
+        pagamentosPorCobranca.set(
+          item.cobranca_id,
+          (pagamentosPorCobranca.get(item.cobranca_id) || 0) + Number(item.valor_aplicado || 0)
+        );
+      }
+
+      totalAberto = abertas.reduce((total, item) => {
+        const pago = pagamentosPorCobranca.get(item.id) || 0;
+        return total + Math.max(0, Number(item.valor_original || 0) - pago);
+      }, 0);
+    }
 
     carregarQuadroMensalidades(cobrancas, anoAtual);
     await carregarObrigacoes(usuarioId);
