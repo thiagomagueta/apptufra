@@ -55,9 +55,7 @@ function carregarQuadroMensalidades(cobrancas, ano) {
 
   listaMensalidades.innerHTML = "";
   listaMensalidades.style.display = "grid";
-  listaMensalidades.style.gridTemplateColumns = "repeat(12, minmax(46px, 1fr))";
-  listaMensalidades.style.overflowX = "auto";
-  listaMensalidades.style.paddingBottom = "6px";
+  listaMensalidades.style.gridTemplateColumns = "repeat(6, minmax(0, 1fr))";
   listaMensalidades.style.gap = "8px";
 
   for (let mes = 1; mes <= 12; mes++) {
