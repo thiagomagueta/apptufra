@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#651b1d">
+  <title>Grupos de pagamento | TUFRA</title>
+  <link rel="stylesheet" href="layout.css?v=40">
+  <style>
+    [hidden] { display: none !important; }
+    .acoes-grupos { display:grid; gap:12px; }
+    .botao-grupo { width:100%; box-sizing:border-box; padding:12px; border:0; border-radius:8px; background:#651b1d; color:white; font-size:16px; font-weight:600; cursor:pointer; }
+    .botao-grupo:disabled { opacity:.55; cursor:default; }
+    .botao-secundario { background:#eee; color:#651b1d; }
+    .campo-grupo { width:100%; box-sizing:border-box; padding:12px; border:1px solid #ccc; border-radius:8px; font-size:16px; }
+    .lista-pessoas { display:grid; gap:8px; margin:12px 0; }
+    .pessoa-grupo { display:flex; align-items:center; gap:12px; padding:12px; border:1px solid #ddd; border-radius:8px; overflow-wrap:anywhere; }
+    .pessoa-grupo input { width:20px; height:20px; flex-shrink:0; }
+    .cartao-grupo { padding:14px; margin:12px 0; border:1px solid #ddd; border-radius:8px; }
+    .modal-grupo { position:fixed; inset:0; z-index:1100; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.45); padding:16px; box-sizing:border-box; }
+    .dialogo-grupo { width:100%; max-width:480px; max-height:85vh; overflow:auto; background:white; border-radius:14px; padding:20px; box-sizing:border-box; }
+    .dialogo-grupo h2 { margin-top:0; }
+    #mensagemGrupos { overflow-wrap:anywhere; }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="conteudo-app">
+      <header class="cabecalho-app">
+        <img class="logo-app" src="logo-tufra.png" alt="Logo da TUFRA">
+        <div class="identidade-app"><strong>TUFRA</strong><span>Tenda de Umbanda Francisco de Assis</span></div>
+      </header>
+      <section>
+        <h1 class="titulo-pagina">Grupos de pagamento</h1>
+        <p class="subtitulo-pagina">Vincule pessoas para organizar os pagamentos em conjunto.</p>
+      </section>
+      <p id="mensagemGrupos" role="status" aria-live="polite">Verificando acesso...</p>
+      <section id="conteudoGrupos" class="cartao-app" hidden>
+        <div class="acoes-grupos">
+          <button id="abrirVincular" class="botao-grupo" type="button">Vincular grupos</button>
+          <button id="abrirVinculados" class="botao-grupo botao-secundario" type="button">Ver grupos vinculados</button>
+        </div>
+      </section>
+      <section id="secaoVincular" class="cartao-app" hidden>
+        <h2>Vincular grupos</h2>
+        <p>Selecione uma pessoa e clique em Vincular para escolher as demais.</p>
+        <label for="buscarPessoa">Buscar pessoa</label>
+        <input id="buscarPessoa" class="campo-grupo" type="search" placeholder="Digite o nome" autocomplete="off">
+        <div id="listaDisponiveis" class="lista-pessoas"></div>
+        <button id="iniciarVinculo" class="botao-grupo" type="button" disabled>Vincular</button>
+      </section>
+      <section id="secaoVinculados" class="cartao-app" hidden>
+        <h2>Ver grupos vinculados</h2>
+        <div id="listaGruposVinculados"></div>
+      </section>
+      <a class="link-administrativo" href="adm-financeiro.html">Voltar ao Financeiro</a>
+    </div>
+  </main>
+  <div id="modalSelecionarPessoas" class="modal-grupo" hidden>
+    <div class="dialogo-grupo" role="dialog" aria-modal="true" aria-labelledby="tituloSelecionarPessoas">
+      <h2 id="tituloSelecionarPessoas">Selecionar pessoas</h2>
+      <p id="resumoPessoaBase"></p>
+      <label for="buscarIntegrantes">Buscar pessoas disponíveis</label>
+      <input id="buscarIntegrantes" class="campo-grupo" type="search" placeholder="Digite o nome" autocomplete="off">
+      <div id="listaSelecionarPessoas" class="lista-pessoas"></div>
+      <p id="resumoSelecionados" role="status" aria-live="polite"></p>
+      <div class="acoes-grupos">
+        <button id="confirmarVinculo" class="botao-grupo" type="button" disabled>Confirmar vínculo</button>
+        <button id="cancelarVinculo" class="botao-grupo botao-secundario" type="button">Cancelar</button>
+      </div>
+    </div>
+  </div>
+  <div id="modalDesfazerVinculo" class="modal-grupo" hidden>
+    <div class="dialogo-grupo" role="dialog" aria-modal="true" aria-labelledby="tituloDesfazerVinculo">
+      <h2 id="tituloDesfazerVinculo">Desfazer vínculo</h2>
+      <p id="resumoDesfazerVinculo"></p>
+      <p>Os pagamentos e o histórico anteriores serão preservados.</p>
+      <div class="acoes-grupos">
+        <button id="confirmarDesfazer" class="botao-grupo" type="button">Confirmar</button>
+        <button id="cancelarDesfazer" class="botao-grupo botao-secundario" type="button">Cancelar</button>
+      </div>
+    </div>
+  </div>
+  <div id="menuGlobalTufra"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js?v=2"></script>
+  <script src="menu-global.js?v=1"></script>
+  <script src="app.js?v=2"></script>
+  <script src="financeiro-grupos.js?v=1"></script>
+  <script src="menu-adm.js?v=1"></script>
+  <script src="menu-financeiro.js?v=1"></script>
+</body>
+</html>
