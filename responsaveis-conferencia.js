@@ -1,0 +1,8 @@
+"use strict";
+(()=>{
+ const db=window.supabaseClient,panel=document.getElementById("painelConferencia"),list=document.getElementById("listaResponsaveisConferencia"),msg=document.getElementById("mensagemConferencia"),save=document.getElementById("salvarResponsaveisConferencia");let busy=false;
+ function draw(data){list.replaceChildren();for(const p of data.pessoas){const label=document.createElement("label"),check=document.createElement("input"),name=document.createElement("span");label.className="conferencia-responsavel";check.type="checkbox";check.value=p.id;check.checked=data.selecionados.includes(p.id);name.textContent=p.nome_completo;label.append(check,name);list.append(label);}}
+ function lock(v){busy=v;panel.querySelectorAll("input,button").forEach(e=>e.disabled=v);}
+ save.addEventListener("click",async()=>{if(busy)return;const users=[...list.querySelectorAll("input:checked")].map(e=>e.value);if(!users.length){msg.textContent="Selecione pelo menos um responsável.";return;}lock(true);msg.textContent="Salvando...";try{const r=await db.rpc("financeiro_conferencia_responsaveis",{p_usuarios:users});if(r.error)throw r.error;draw(r.data);msg.textContent="Responsáveis atualizados.";}catch(e){msg.textContent="Não foi possível salvar: "+e.message;}finally{lock(false);}});
+ (async()=>{try{const s=await db.auth.getSession();if(s.error)throw s.error;if(!s.data.session){location.href="index.html";return;}const r=await db.rpc("financeiro_conferencia_responsaveis");if(r.error)throw r.error;draw(r.data);panel.hidden=false;msg.textContent="";}catch(e){msg.textContent="Não foi possível carregar os responsáveis: "+e.message;}})();
+})();

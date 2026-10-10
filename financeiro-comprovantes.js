@@ -88,7 +88,7 @@
  }
  async function history(){
   const [es,ds]=await Promise.all([
-   db().from("financeiro_comprovantes_envios").select("id,enviado_por,nome_pagador,valor,data_pagamento,forma_pagamento,status,arquivo_path,enviado_em").order("enviado_em",{ascending:false}).limit(100),
+   db().from("financeiro_comprovantes_envios").select("id,enviado_por,nome_pagador,valor,data_pagamento,forma_pagamento,status,arquivo_path,enviado_em,conferido_em,motivo_recusa").order("enviado_em",{ascending:false}).limit(100),
    db().from("financeiro_comprovantes_destinacoes").select("envio_id,usuario_id,descricao,valor").limit(1000)
   ]);if(es.error)throw es.error;if(ds.error)throw ds.error;
   if(ds.data?.length===1000)throw Error("O histórico atingiu o limite de consulta.");
@@ -98,10 +98,12 @@
    const mine=e.enviado_por===user;
    const dest=ds.data.filter(d=>d.envio_id===e.id&&(mine||d.usuario_id===user));
    const card=node("div",undefined,"cp-envio");
-   card.append(node("strong",e.status==="aguardando_conferencia"?"Aguardando conferência":e.status==="aprovado"?"Aprovado":"Rejeitado"),
+   card.append(node("strong",e.status==="aguardando_conferencia"?"Aguardando conferência":e.status==="aprovado"?"Confirmado":"Recusado"),
     node("p","Pagamento realizado por "+e.nome_pagador),
     node("p",date(e.data_pagamento)+" · "+e.forma_pagamento.toUpperCase()+" · "+money(mine?e.valor:dest.reduce((s,d)=>s+Number(d.valor),0))));
    dest.forEach(d=>card.appendChild(node("p",d.descricao+" — "+money(d.valor))));
+   if(e.conferido_em)card.appendChild(node("p","Conferido em: "+new Date(e.conferido_em).toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"})));
+   if(e.motivo_recusa)card.appendChild(node("p","Motivo da recusa: "+e.motivo_recusa));
    const b=node("button","Ver comprovante");b.type="button";
    b.addEventListener("click",async()=>{
     const tab=window.open("about:blank","_blank");if(tab)tab.opener=null;

@@ -197,3 +197,5 @@ async function carregarAcessoFinanceiro() {
 ========================================== */
 
 carregarAcessoFinanceiro();
+
+(async()=>{try{const r=await window.supabaseClient.rpc("financeiro_pode_conferir");if(!r.error&&r.data===true)document.getElementById("linkConferenciaFinanceiro").hidden=false;}catch(e){console.error("Erro ao verificar conferência",e);}})();
