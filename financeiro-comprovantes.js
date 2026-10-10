@@ -7,7 +7,8 @@
  const date=v=>String(v).split("-").reverse().join("/");
  const node=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
  let user,authId,pessoas=[],cobrancas=[],busy=false,review=null,attempt=null;
- const selected=new Set(),amounts=new Map();
+ const selected=new Set(),amounts=new Map(),chargeLists=new Map();
+ const historyPage=location.pathname.includes("historico");
  const style=node("style");
  style.textContent=`
  .comprovantes [hidden]{display:none!important}
@@ -19,7 +20,8 @@
  .comprovantes .cp-pessoa{display:flex;align-items:center;gap:8px}
  .comprovantes .cp-cobranca{border-bottom:1px solid #eee;padding:8px 0}
  .comprovantes .cp-cobranca label{display:flex;align-items:center;gap:8px}
- .comprovantes .cp-valor{max-width:160px!important;margin:4px 0}
+ .comprovantes .cp-lista-cobrancas{margin-left:28px}
+ .comprovantes .cp-bloco-pessoa{margin-bottom:12px}
  .comprovantes .cp-acoes{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
  .comprovantes .cp-envio{padding:10px;border:1px solid #d5c6a6;border-radius:8px;margin:8px 0;overflow-wrap:anywhere}
  .comprovantes .cp-envio p{margin:5px 0;font-size:14px}
@@ -31,7 +33,7 @@
  <p>Um comprovante pode cobrir suas cobranças e as das pessoas vinculadas. O envio fica aguardando conferência.</p>
  <button id="cp-abrir" type="button">Enviar comprovante</button>
  <form id="cp-form" hidden>
- <h3>1. Pessoas e cobranças</h3><div id="cp-pessoas"></div><div id="cp-cobrancas"></div>
+ <h3>1. Pessoas e cobranças</h3><div id="cp-pessoas"></div>
  <p id="cp-total" role="status"></p>
  <h3>2. Dados do pagamento</h3>
  <label for="cp-valor">Valor total pago (R$)</label><input id="cp-valor" type="number" min="0.01" step="0.01" required>
@@ -43,7 +45,7 @@
  </form>
  <div id="cp-revisao" hidden><h3>3. Revisar e enviar</h3><div id="cp-resumo"></div><p>As cobranças continuam em aberto até a aprovação da tesouraria.</p><div class="cp-acoes"><button id="cp-enviar" type="button">Confirmar envio</button><button id="cp-editar" type="button">Voltar e editar</button></div></div>
  <p id="cp-mensagem" role="status" aria-live="polite"></p>
- <h3>Comprovantes enviados</h3><div id="cp-historico"></div>`;
+ <div id="cp-area-historico" hidden><h3>Comprovantes enviados</h3><div id="cp-historico"></div></div>`;
  const container=document.querySelector(".conteudo-app");if(!container)return;
  const back=container.querySelector('a[href="financeiro.html"]');if(back)container.insertBefore(section,back);else container.appendChild(section);
  const el=id=>section.querySelector("#cp-"+id);
@@ -52,22 +54,21 @@
  function sum(){return [...amounts.values()].reduce((s,v)=>s+cents(v),0);}
  function total(){el("total").textContent="Total distribuído: "+money(sum()/100);}
  function drawCharges(){
-  el("cobrancas").replaceChildren();
-  for(const p of pessoas.filter(p=>selected.has(p.usuario_id))){
-   el("cobrancas").appendChild(node("h4",p.nome));
+  for(const p of pessoas){
+   const list=chargeLists.get(p.usuario_id);list.replaceChildren();list.hidden=!selected.has(p.usuario_id);
+   if(list.hidden)continue;
    const cs=cobrancas.filter(c=>c.usuario_id===p.usuario_id);
-   if(!cs.length)el("cobrancas").appendChild(node("p","Nenhuma cobrança em aberto."));
+   if(!cs.length)list.appendChild(node("p","Nenhuma cobrança em aberto."));
    for(const c of cs){
     const available=Math.max(0,cents(c.saldo)-cents(c.pendente))/100;
     const row=node("div",undefined,"cp-cobranca"),label=node("label"),check=node("input");
-    check.type="checkbox";check.checked=amounts.has(c.id);check.disabled=available<=0;
-    label.append(check,node("span",c.descricao||c.tipo+" "+date(c.competencia||"")));
-    row.append(label,node("small","Saldo: "+money(c.saldo)+(Number(c.pendente)>0?" · Aguardando conferência: "+money(c.pendente):"")));
-    const value=node("input",undefined,"cp-valor");value.type="number";value.min="0.01";value.max=String(available);value.step="0.01";value.value=String(amounts.get(c.id)||available);value.hidden=!check.checked;
-    value.setAttribute("aria-label","Valor destinado a "+p.nome+" — "+(c.descricao||c.tipo));
-    check.addEventListener("change",()=>{if(check.checked)amounts.set(c.id,available);else amounts.delete(c.id);value.hidden=!check.checked;value.value=String(available);total();});
-    value.addEventListener("input",()=>{amounts.set(c.id,value.value);total();});
-    row.appendChild(value);el("cobrancas").appendChild(row);
+    check.type="checkbox";check.checked=amounts.has(c.id);check.disabled=busy||available<=0;
+    check.dataset.indisponivel=available<=0?"sim":"nao";
+    label.append(check,node("span",(c.descricao||c.tipo+" "+date(c.competencia||""))+" — "+money(available)));
+    row.appendChild(label);
+    if(Number(c.pendente)>0)row.appendChild(node("small","Aguardando conferência: "+money(c.pendente)));
+    check.addEventListener("change",()=>{if(check.checked)amounts.set(c.id,available);else amounts.delete(c.id);total();});
+    list.appendChild(row);
    }
   }
   total();
@@ -75,11 +76,13 @@
  async function options(){
   const r=await db().rpc("financeiro_comprovante_opcoes");if(r.error)throw r.error;
   pessoas=r.data.pessoas||[];cobrancas=r.data.cobrancas||[];selected.clear();selected.add(user);amounts.clear();
-  el("pessoas").replaceChildren();
+  el("pessoas").replaceChildren();chargeLists.clear();
   for(const p of pessoas){
    const label=node("label",undefined,"cp-pessoa"),check=node("input");check.type="checkbox";check.checked=p.usuario_id===user;
    check.addEventListener("change",()=>{if(check.checked)selected.add(p.usuario_id);else{selected.delete(p.usuario_id);cobrancas.filter(c=>c.usuario_id===p.usuario_id).forEach(c=>amounts.delete(c.id));}drawCharges();});
-   label.append(check,node("span",p.nome+(p.usuario_id===user?" (você)":"")));el("pessoas").appendChild(label);
+   const block=node("div",undefined,"cp-bloco-pessoa"),list=node("div",undefined,"cp-lista-cobrancas");
+   chargeLists.set(p.usuario_id,list);
+   label.append(check,node("span",p.nome+(p.usuario_id===user?" (você)":"")));block.append(label,list);el("pessoas").appendChild(block);
   }
   drawCharges();
  }
@@ -145,7 +148,7 @@
    if(result.error)throw result.error;
    el("form").hidden=true;el("revisao").hidden=true;attempt=null;review=null;
    message("Comprovante enviado. Aguardando conferência. As cobranças ainda não receberam baixa.");
-   try{await history();}catch(e){message("Envio registrado. Recarregue a página para atualizar o histórico.");}
+   if(historyPage)try{await history();}catch(e){message("Envio registrado. Recarregue a página para atualizar o histórico.");}
   }catch(e){message("Envio não confirmado: "+e.message+" Você pode tentar novamente sem duplicar o envio.");if(attempt){el("editar").hidden=true;}}
   finally{lock(false);}
  });
@@ -156,8 +159,7 @@
    const access=await db().rpc("usuario_pode_acessar_financeiro");if(access.error)throw access.error;if(access.data!==true)return;
    const u=await db().from("usuarios").select("id").eq("auth_id",authId).maybeSingle();if(u.error)throw u.error;if(!u.data)return;
    user=u.data.id;section.hidden=false;
-   if(location.pathname.includes("historico")){el("abrir").hidden=true;section.querySelector("h2").textContent="Histórico de comprovantes";}
-   await history();
+   if(historyPage){el("abrir").hidden=true;section.querySelector("h2").textContent="Histórico de comprovantes";section.querySelector("p").hidden=true;el("area-historico").hidden=false;await history();}
   }catch(e){message("Não foi possível carregar os comprovantes: "+e.message);}
  })();
 })();
