@@ -276,6 +276,8 @@ async function abrirDetalheObrigacao(item) {
 
 function formatarSituacaoObrigacao(item) {
   if (item.situacao === "isento") return "Isento";
+  if (item.situacao === "nao_obrigatorio") return "Não obrigatório";
+  if (item.cobranca_status === "cancelada") return "Cobrança cancelada";
   if (item.cobranca_status === "paga") return "Pago";
   if (item.cobranca_status === "parcial") return "Parcial";
   if (item.cobranca_status === "aberta") return "Em aberto";
