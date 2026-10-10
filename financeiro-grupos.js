@@ -88,21 +88,26 @@
   }
   function renderGrupos() {
     const lista = el("listaGruposVinculados"); lista.replaceChildren();
-    const grupos = estado.grupos.filter(g => g.ativo);
+    const comparar = (a, b) => a.localeCompare(b, "pt-BR", { sensitivity: "base" });
+    const grupos = estado.grupos.filter(g => g.ativo).map(g => ({
+      ...g, membros: estado.integrantes.filter(i => i.grupo_id === g.id && i.fim_vigencia === null)
+        .sort((a, b) => comparar(nome(a.usuario_id), nome(b.usuario_id)))
+    })).sort((a, b) => comparar(nome(a.membros[0]?.usuario_id), nome(b.membros[0]?.usuario_id)));
     if (!grupos.length) { const p = document.createElement("p"); p.textContent = "Nenhum grupo vinculado."; lista.appendChild(p); }
     grupos.forEach(g => {
-      const membros = estado.integrantes.filter(i => i.grupo_id === g.id && i.fim_vigencia === null);
-      const card = document.createElement("div"); card.className = "cartao-grupo";
-      const h = document.createElement("h3"); h.textContent = membros.map(i => nome(i.usuario_id)).join(" + ") || "Grupo sem integrantes ativos"; card.appendChild(h);
-      membros.forEach(i => {
-        const linha = document.createElement("div"); linha.className = "cartao-grupo";
-        const p = document.createElement("p"); p.textContent = nome(i.usuario_id); linha.appendChild(p);
-        if (i.inicio_vigencia > hoje()) { const data = document.createElement("p"); data.textContent = "Início do novo vínculo: " + i.inicio_vigencia.split("-").reverse().join("/"); linha.appendChild(data); }
-        linha.appendChild(criarBotao("Desfazer vínculo desta pessoa", () => prepararDesfazer(g.id, i.usuario_id), true));
-        card.appendChild(linha);
+      const card = document.createElement("div"); card.className = "grupo-vinculado";
+      g.membros.forEach(i => {
+        const linha = document.createElement("div"); linha.className = "integrante-vinculado";
+        const p = document.createElement("span"); p.className = "nome-vinculado"; p.textContent = nome(i.usuario_id);
+        if (i.inicio_vigencia > hoje()) p.title = "Início do novo vínculo: " + i.inicio_vigencia.split("-").reverse().join("/");
+        const retirar = criarBotao("X", () => prepararDesfazer(g.id, i.usuario_id), true);
+        retirar.className = "botao-grupo botao-secundario retirar-vinculado";
+        retirar.setAttribute("aria-label", "Retirar " + nome(i.usuario_id) + " do vínculo");
+        retirar.title = "Retirar do vínculo";
+        linha.append(p, retirar); card.appendChild(linha);
       });
-      const acoes = document.createElement("div"); acoes.className = "acoes-grupos";
-      acoes.append(criarBotao("Adicionar pessoas", () => selecionar("adicionar", g.id)),
+      const acoes = document.createElement("div"); acoes.className = "acoes-vinculo";
+      acoes.append(criarBotao("Adicionar pessoas", () => selecionar("adicionar", g.id), true),
         criarBotao("Desfazer todo o vínculo", () => prepararDesfazer(g.id), true));
       card.appendChild(acoes); lista.appendChild(card);
     });
