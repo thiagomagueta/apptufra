@@ -506,9 +506,9 @@ function formatarNome(
     .trim()
     .toLowerCase()
     .replace(
-      /\b\p{L}/gu,
-      (letra) =>
-        letra.toUpperCase()
+      /(^|[^\p{L}\p{M}])([\p{L}])/gu,
+      (trecho, separador, letra) =>
+        separador + letra.toUpperCase()
     );
 
 }
