@@ -12,13 +12,70 @@
  function limpar(){editando=null;el('formLancamento').reset();el('tipo').disabled=false;el('tituloForm').textContent='Novo lançamento';el('motivoBloco').hidden=true;el('motivo').required=false;el('cancelarEdicao').hidden=true;el('data').value=hoje();opcoes();}
  function editar(l){if(salvando)return;editando=l;el('tipo').value=l.tipo;el('tipo').disabled=true;opcoes();for(const [campo,chave] of Object.entries({data:'data_movimento',valor:'valor',descricao:'descricao',forma:'forma_pagamento',favorecido:'favorecido',observacao:'observacao'}))el(campo).value=l[chave];el('motivo').value='';el('motivo').required=true;el('motivoBloco').hidden=false;el('cancelarEdicao').hidden=false;el('tituloForm').textContent='Editar lançamento #'+l.id;el('cadastro').open=true;el('descricao').focus();}
  async function historico(l){el('historicoDados').replaceChildren();node('p','Carregando...',el('historicoDados'));el('historico').showModal();try{const rows=await rpc('financeiro_lancamento_historico',{p_id:l.id});el('historicoDados').replaceChildren();for(const h of rows){const box=node('div','',el('historicoDados'));box.className='registro';node('strong',h.responsavel+' · '+new Date(h.data).toLocaleString('pt-BR'),box);node('p',h.motivo,box);if(h.antes)node('p','Antes: '+h.antes.descricao+' · '+moeda(h.antes.valor)+' · '+h.antes.status,box);node('p','Depois: '+h.depois.descricao+' · '+moeda(h.depois.valor)+' · '+h.depois.status,box);const det=node('details','',box);node('summary','Ver dados completos',det);const pre=node('pre',JSON.stringify({antes:h.antes,depois:h.depois},null,2),det);pre.style.whiteSpace='pre-wrap';pre.style.overflowWrap='anywhere';}}catch(e){el('historicoDados').textContent=e.message;}}
- function render(rows){el('lista').replaceChildren();if(!rows.length)node('p','Nenhuma movimentação neste filtro.',el('lista'));for(const l of rows){const box=node('div','',el('lista'));box.className='registro';node('strong',(l.tipo==='receita'?'Receita':'Despesa')+' · '+moeda(l.valor)+(l.status==='cancelado'?' · Cancelado':''),box);node('p',data(l.data_movimento)+' · '+l.categoria,box);node('p',l.descricao,box);node('p',l.forma_pagamento+(l.favorecido?' · '+l.favorecido:''),box);if(l.observacao)node('p',l.observacao,box);node('p','Registrado por '+l.responsavel,box);const a=node('div','',box);a.className='acoes';const hist=node('button','Histórico',a);hist.type='button';hist.className='botao';hist.onclick=()=>historico(l);if(l.status==='ativo'){const b=node('button','Editar',a);b.type='button';b.className='botao';b.onclick=()=>editar(l);const c=node('button','Cancelar lançamento',a);c.type='button';c.className='botao';c.onclick=()=>cancelar(l);}}}
+
+ let lancamentoAnexos=null,enviandoAnexo=false;
+ async function abrirArquivo(bucket,path,parent,nome){
+  const r=await db.storage.from(bucket).createSignedUrl(path,300);
+  if(r.error)throw r.error;
+  const a=node('a',nome||'Abrir comprovante',parent);a.href=r.data.signedUrl;a.target='_blank';a.rel='noopener noreferrer';a.className='botao';
+ }
+ async function listarAnexos(){
+  const parent=el('listaAnexos');parent.replaceChildren();
+  const rows=await rpc('financeiro_lancamento_anexos',{p_id:lancamentoAnexos.id});
+  if(!rows.length)node('p','Nenhum comprovante anexado.',parent);
+  for(const f of rows){const box=node('div','',parent);box.className='registro';node('p',f.responsavel+' · '+new Date(f.data).toLocaleString('pt-BR'),box);await abrirArquivo('financeiro-caixa-anexos',f.path,box,f.nome);}
+ }
+ async function anexos(l){
+  lancamentoAnexos=l;el('arquivoAnexo').value='';el('erroAnexo').textContent='';el('uploadAnexo').hidden=l.status!=='ativo';el('listaAnexos').textContent='Carregando...';el('anexos').showModal();
+  try{await listarAnexos();}catch(e){el('erroAnexo').textContent=e.message||'Não foi possível carregar os anexos.';}
+ }
+ el('formAnexo').onsubmit=async e=>{
+  e.preventDefault();if(enviandoAnexo)return;const f=el('arquivoAnexo').files[0];if(!f)return;
+  const tipos={'application/pdf':'pdf','image/jpeg':'jpg','image/png':'png'};
+  if(!tipos[f.type]||f.size>10485760||f.size===0){el('erroAnexo').textContent='Selecione PDF, JPG ou PNG de até 10 MB.';return;}
+  enviandoAnexo=true;el('enviarAnexo').disabled=true;el('fecharAnexos').disabled=true;el('erroAnexo').textContent='Enviando...';
+  let enviado=false;
+  try{
+   const s=await db.auth.getSession();if(s.error)throw s.error;if(!s.data.session)throw Error('Entre novamente no aplicativo.');
+   const nome=f.name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]/g,'_').slice(-120);
+   const path=s.data.session.user.id+'/'+lancamentoAnexos.id+'/'+crypto.randomUUID()+'_'+(nome||'comprovante.'+tipos[f.type]);
+   const r=await db.storage.from('financeiro-caixa-anexos').upload(path,f,{contentType:f.type,upsert:false});
+   if(r.error)throw r.error;enviado=true;el('arquivoAnexo').value='';await listarAnexos();el('erroAnexo').textContent='Comprovante anexado.';
+  }catch(e){el('erroAnexo').textContent=enviado?'Comprovante anexado. Feche e abra novamente para atualizar a lista.':e.message||'Não foi possível enviar.';}
+  finally{enviandoAnexo=false;el('enviarAnexo').disabled=false;el('fecharAnexos').disabled=false;}
+ };
+ el('fecharAnexos').onclick=()=>{if(!enviandoAnexo)el('anexos').close();};el('anexos').addEventListener('cancel',e=>{if(enviandoAnexo)e.preventDefault();});
+ function render(rows){
+  el('lista').replaceChildren();if(!rows.length)node('p','Nenhuma movimentação neste filtro.',el('lista'));
+  for(const l of rows){
+   const box=node('div','',el('lista'));box.className='registro';
+   node('strong',(l.tipo==='receita'?'Receita':'Despesa')+' · '+moeda(l.valor)+(l.status==='cancelado'?' · Cancelado':''),box);
+   node('p',data(l.data_movimento)+' · '+l.categoria,box);node('p',l.descricao,box);
+   node('p',l.forma_pagamento+(l.favorecido?' · '+l.favorecido:''),box);if(l.observacao)node('p',l.observacao,box);
+   node('p',(l.origem==='confirmado'?'Conferido por ':'Registrado por ')+l.responsavel,box);
+   const a=node('div','',box);a.className='acoes';
+   if(l.origem==='confirmado'){
+    node('p','Entrada automática da conferência de pagamentos.',box);
+    if(Number(l.valor_total)!==Number(l.valor))node('p','Valor desta categoria: '+moeda(l.valor)+' · Total do pagamento: '+moeda(l.valor_total),box);
+    const det=node('details','',box);node('summary','Ver distribuição e origem',det);
+    for(const d of l.destinacoes||[]){
+     node('p',d.associado+' · '+d.descricao+' · '+moeda(d.valor_aplicado)+' · '+d.categoria,det);
+     if(d.acordo_id){const orig=node('details','',det);node('summary','Dívidas de origem do acordo #'+d.acordo_id,orig);for(const o of d.origens_acordo||[])node('p',o.descricao+' · '+data(o.competencia)+' · '+moeda(o.valor),orig);}
+    }
+    if(l.arquivo_path){const b=node('button','Ver comprovante',a);b.type='button';b.className='botao';b.onclick=async()=>{b.disabled=true;try{await abrirArquivo('financeiro-comprovantes',l.arquivo_path,a,l.arquivo_nome||'Abrir comprovante');b.remove();}catch(e){msg(e.message||'Não foi possível abrir.');b.disabled=false;}};}
+   }else{
+    const b=node('button','Comprovantes',a);b.type='button';b.className='botao';b.onclick=()=>anexos(l);
+    const hist=node('button','Histórico',a);hist.type='button';hist.className='botao';hist.onclick=()=>historico(l);
+    if(l.status==='ativo'){const ed=node('button','Editar',a);ed.type='button';ed.className='botao';ed.onclick=()=>editar(l);const c=node('button','Cancelar lançamento',a);c.type='button';c.className='botao';c.onclick=()=>cancelar(l);}
+   }
+  }
+ }
  async function carregar(){const v=++versao;msg('Carregando...');try{const r=await rpc('financeiro_lancamentos_listar',{...filtro,p_offset:offset});if(v!==versao)return;total=Number(r.total);render(r.lancamentos);el('totais').textContent='Receitas: '+moeda(r.receitas)+' · Despesas: '+moeda(r.despesas)+' · Resultado: '+moeda(Number(r.receitas)-Number(r.despesas));el('quantidade').textContent=total?(offset+1)+' a '+(offset+r.lancamentos.length)+' de '+total+' lançamentos':'0 lançamentos';el('anterior').disabled=offset===0;el('proxima').disabled=offset+30>=total;msg('');}catch(e){if(v===versao){el('lista').replaceChildren();el('totais').textContent='';el('quantidade').textContent='';el('anterior').disabled=true;el('proxima').disabled=true;msg(e.message||'Não foi possível carregar.');}}}
  function revisar(p){pedido=p;el('resumo').replaceChildren();node('p',p.p_status==='cancelado'?'Cancelar lançamento #'+p.p_id:(p.p_id?'Corrigir lançamento #'+p.p_id:'Novo lançamento'),el('resumo'));node('p',data(p.p_data)+' · '+categorias.find(c=>c.id===p.p_categoria)?.nome+' · '+moeda(p.p_valor),el('resumo'));node('p',p.p_descricao+' · '+p.p_forma,el('resumo'));if(p.p_motivo)node('p','Motivo: '+p.p_motivo,el('resumo'));el('erroRevisao').textContent='';el('revisao').showModal();}
  function cancelar(l){if(salvando)return;const motivo=window.prompt('Informe o motivo do cancelamento:');if(!motivo?.trim())return;revisar({p_requisicao:crypto.randomUUID(),p_id:l.id,p_categoria:l.categoria_id,p_data:l.data_movimento,p_descricao:l.descricao,p_valor:Number(l.valor),p_forma:l.forma_pagamento,p_favorecido:l.favorecido,p_observacao:l.observacao,p_status:'cancelado',p_motivo:motivo.trim(),p_versao:l.atualizado_em});}
  el('tipo').onchange=opcoes;el('filtroTipo').onchange=filtrosCategorias;el('cancelarEdicao').onclick=()=>{if(!salvando)limpar();};
  el('formLancamento').onsubmit=e=>{e.preventDefault();if(salvando)return;revisar({p_requisicao:crypto.randomUUID(),p_id:editando?.id??null,p_categoria:Number(el('categoria').value),p_data:el('data').value,p_descricao:el('descricao').value.trim(),p_valor:Number(el('valor').value),p_forma:el('forma').value,p_favorecido:el('favorecido').value.trim(),p_observacao:el('observacao').value.trim(),p_status:'ativo',p_motivo:el('motivo').value.trim(),p_versao:editando?.atualizado_em??null});};
- el('confirmar').onclick=async()=>{if(salvando||!pedido)return;salvando=true;el('confirmar').disabled=true;el('voltar').disabled=true;let gravado=false;try{await rpc('financeiro_lancamento_salvar',pedido);gravado=true;el('revisao').close();limpar();await carregar();msg('Lançamento salvo.');}catch(e){el('erroRevisao').textContent=e.message||'Não foi possível salvar. Tente novamente.';}finally{salvando=false;el('confirmar').disabled=false;el('voltar').disabled=false;if(gravado)pedido=null;}};
+ el('confirmar').onclick=async()=>{if(salvando||!pedido)return;salvando=true;el('confirmar').disabled=true;el('voltar').disabled=true;let gravado=false;try{await rpc('financeiro_lancamento_salvar',pedido);gravado=true;el('revisao').close();limpar();await carregar();msg('Lançamento salvo. Use Comprovantes no registro para anexar arquivos.');}catch(e){el('erroRevisao').textContent=e.message||'Não foi possível salvar. Tente novamente.';}finally{salvando=false;el('confirmar').disabled=false;el('voltar').disabled=false;if(gravado)pedido=null;}};
  el('voltar').onclick=()=>{if(!salvando)el('revisao').close();};el('revisao').addEventListener('cancel',e=>{if(salvando)e.preventDefault();});el('fecharHistorico').onclick=()=>el('historico').close();
  el('filtros').onsubmit=e=>{e.preventDefault();if(el('fim').value<el('inicio').value){msg('A data final deve ser igual ou posterior à inicial.');return;}filtro={p_inicio:el('inicio').value,p_fim:el('fim').value,p_tipo:el('filtroTipo').value||null,p_categoria:el('filtroCategoria').value?Number(el('filtroCategoria').value):null};offset=0;carregar();};
  el('anterior').onclick=()=>{offset=Math.max(0,offset-30);carregar();};el('proxima').onclick=()=>{if(offset+30<total){offset+=30;carregar();}};
