@@ -142,10 +142,10 @@ begin
     if exists(select 1 from public.financeiro_comprovantes_destinacoes d join public.financeiro_cobrancas c on c.id=d.cobranca_id where d.envio_id=eid and d.valor>c.valor_original-coalesce((select sum(valor_aplicado) from public.financeiro_pagamento_aplicacoes where cobranca_id=c.id),0)-coalesce((select sum(dd.valor) from public.financeiro_comprovantes_destinacoes dd join public.financeiro_comprovantes_envios ee on ee.id=dd.envio_id where dd.cobranca_id=c.id and ee.status='aguardando_conferencia' and ee.id<>eid),0)) then raise exception 'Cobrança reservada por comprovante ou saldo insuficiente. Confira o comprovante existente.';end if;
     v_resultado:=private.financeiro_conferir(eid,'aprovado','');rid:=(v_resultado->>'recebimento_id')::bigint;
    end if;
-   for x in select * from jsonb_to_recordset(p_dados->'partes') j(categoria_id bigint,valor numeric) where categoria_id is not null loop
+   for x in select * from jsonb_to_recordset(p_dados->'partes') j(categoria_id bigint,valor numeric,favorecido text) where categoria_id is not null loop
     select * into cat from public.financeiro_categorias where id=x.categoria_id for share;
     if not found or not cat.ativo or cat.tipo<>(case when i.valor>0 then 'receita' else 'despesa' end) then raise exception 'Escolha categoria ativa e compatível.';end if;
-    lid:=private.financeiro_lancamento_salvar(gen_random_uuid(),null,cat.id,i.data,i.descricao,x.valor,case p_dados->>'forma' when 'pix' then 'PIX' when 'debito' then 'Débito' when 'credito' then 'Crédito' else 'Outro' end,'','Conciliação do extrato #'||i.id,'ativo','',null);
+    lid:=private.financeiro_lancamento_salvar(gen_random_uuid(),null,cat.id,i.data,i.descricao,x.valor,case p_dados->>'forma' when 'pix' then 'PIX' when 'debito' then 'Débito' when 'credito' then 'Crédito' else 'Outro' end,coalesce(x.favorecido,''),'Conciliação do extrato #'||i.id,'ativo','',null);
     ids:=ids||jsonb_build_array(lid);
    end loop;
    v_resultado:=jsonb_build_object('recebimento_id',rid,'envio_id',eid,'lancamentos',ids,'partes',p_dados->'partes');
