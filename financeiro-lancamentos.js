@@ -62,7 +62,7 @@
      node('p',d.associado+' · '+d.descricao+' · '+moeda(d.valor_aplicado)+' · '+d.categoria,det);
      if(d.acordo_id){const orig=node('details','',det);node('summary','Dívidas de origem do acordo #'+d.acordo_id,orig);for(const o of d.origens_acordo||[])node('p',o.descricao+' · '+data(o.competencia)+' · '+moeda(o.valor),orig);}
     }
-    if(l.arquivo_path){const b=node('button','Ver comprovante',a);b.type='button';b.className='botao';b.onclick=async()=>{b.disabled=true;try{await abrirArquivo('financeiro-comprovantes',l.arquivo_path,a,l.arquivo_nome||'Abrir comprovante');b.remove();}catch(e){msg(e.message||'Não foi possível abrir.');b.disabled=false;}};}
+    if(l.arquivo_path && !l.arquivo_path.startsWith("extrato/")){const b=node('button','Ver comprovante',a);b.type='button';b.className='botao';b.onclick=async()=>{b.disabled=true;try{await abrirArquivo('financeiro-comprovantes',l.arquivo_path,a,l.arquivo_nome||'Abrir comprovante');b.remove();}catch(e){msg(e.message||'Não foi possível abrir.');b.disabled=false;}};}
    }else{
     const b=node('button','Comprovantes',a);b.type='button';b.className='botao';b.onclick=()=>anexos(l);
     const hist=node('button','Histórico',a);hist.type='button';hist.className='botao';hist.onclick=()=>historico(l);

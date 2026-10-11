@@ -32,7 +32,7 @@
   }
   if(e.observacao)box.appendChild(n("p","Observação: "+e.observacao));
   const actions=n("div");actions.className="conferencia-acoes";
-  const file=n("button","Ver comprovante");file.type="button";file.addEventListener("click",()=>openFile(e));actions.append(file);box.append(actions);
+  if(e.extrato_item_id){box.appendChild(n("p","Origem: movimentação bancária #"+e.extrato_item_id));const link=n("a","Ver conciliação do extrato");link.href="financeiro-extratos.html";actions.append(link);}else{const file=n("button","Ver comprovante");file.type="button";file.addEventListener("click",()=>openFile(e));actions.append(file);}box.append(actions);
   if(e.status!=="aguardando_conferencia"){
    box.appendChild(n("p","Conferido por: "+(e.nome_conferente||"—")+" · "+timestamp(e.conferido_em)));
    if(e.motivo_recusa)box.appendChild(n("p","Motivo da recusa: "+e.motivo_recusa));
