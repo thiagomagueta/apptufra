@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+ <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#651b1d">
+ <title>Caixa e Fundo de Reserva | TUFRA</title><link rel="stylesheet" href="layout.css?v=40"><link rel="stylesheet" href="financeiro-reserva.css?v=1">
+</head>
+<body>
+ <main class="app"><div class="conteudo-app">
+  <header class="cabecalho-app"><img class="logo-app" src="logo-tufra.png" alt="Logo da TUFRA"><div class="identidade-app"><strong>TUFRA</strong><span>Tenda de Umbanda Francisco de Assis</span></div></header>
+  <h1 class="titulo-pagina">Caixa e Fundo de Reserva</h1>
+  <p id="mensagem" role="status" aria-live="polite">Verificando acesso...</p>
+  <section id="conteudo" class="reserva" hidden>
+   <div class="cartao-app"><p>Informações restritas às pessoas autorizadas. Os saldos acumulados e a reserva não fazem parte do balancete geral.</p>
+    <form id="formConsulta"><label for="dataConsulta">Posição até a data</label><input id="dataConsulta" class="campo" type="date" required><button class="botao">Consultar posição</button></form>
+   </div>
+   <div id="posicao" class="cartao-app" hidden>
+    <h2>Posição financeira acumulada</h2><p id="periodo"></p>
+    <div class="saldos"><div><span>Caixa disponível</span><strong id="saldoCaixa"></strong></div><div><span>Fundo de Reserva</span><strong id="saldoReserva"></strong></div><div><span>Total acumulado</span><strong id="saldoTotal"></strong></div></div>
+    <p id="resultado"></p><p id="variacoes"></p>
+    <details><summary>Saldos iniciais e origem do controle</summary><p id="abertura"></p><p id="motivoAbertura"></p></details>
+    <p>O caixa disponível inclui os recebimentos confirmados e as receitas e despesas registradas no período. Contas ainda a receber não entram no saldo.</p>
+   </div>
+   <div id="painelInicial" class="cartao-app" hidden>
+    <h2>Iniciar o controle</h2>
+    <p>Informe os saldos existentes ao final do dia anterior ao início escolhido. A partir dessa data, o APP soma os lançamentos confirmados. Os valores da planilha não são importados automaticamente.</p>
+    <p>O caixa disponível deve excluir o valor que já está no Fundo de Reserva.</p>
+    <form id="formInicial">
+     <label for="inicio">Início do controle</label><input id="inicio" class="campo" type="date" min="2000-01-01" required>
+     <label for="caixaInicial">Caixa disponível inicial (R$)</label><input id="caixaInicial" class="campo" type="number" step="0.01" required>
+     <label for="reservaInicial">Fundo de Reserva inicial (R$)</label><input id="reservaInicial" class="campo" type="number" step="0.01" min="0" required>
+     <label for="motivoInicial">Origem e justificativa dos saldos</label><textarea id="motivoInicial" class="campo" maxlength="1000" required></textarea>
+     <button class="botao">Confirmar saldos iniciais</button>
+    </form>
+   </div>
+   <p id="avisoInicial" hidden>O controle ainda não possui saldos iniciais. Uma pessoa autorizada a movimentar deve cadastrá-los.</p>
+   <div id="painelMovimento" class="cartao-app" hidden>
+    <h2>Registrar movimentação</h2>
+    <form id="formMovimento">
+     <label for="tipo">Tipo</label><select id="tipo" class="campo"><option value="aporte">Aporte: Caixa → Reserva</option><option value="resgate">Resgate: Reserva → Caixa</option><option value="ajuste_caixa">Correção do saldo do Caixa</option><option value="ajuste_reserva">Correção do saldo da Reserva</option></select>
+     <label for="dataMovimento">Data</label><input id="dataMovimento" class="campo" type="date" required>
+     <label for="valor">Valor (R$)</label><input id="valor" class="campo" type="number" step="0.01" min="0.01" required>
+     <p id="dicaValor">Aporte e resgate transferem valores entre Caixa e Reserva, mantendo o total acumulado.</p>
+     <label for="motivo">Justificativa</label><textarea id="motivo" class="campo" maxlength="1000" required></textarea>
+     <button class="botao">Registrar movimentação</button>
+    </form>
+    <p>Correções ajustam somente o saldo e preservam o histórico. Para receitas e despesas reais, use a tela Receitas e despesas.</p>
+   </div>
+   <div id="painelHistorico" class="cartao-app" hidden><h2>Histórico de movimentações</h2><p>Aportes, resgates e correções até a data consultada.</p><div id="historico"></div><div class="acoes"><button id="anterior" class="botao" type="button">Anterior</button><span id="pagina"></span><button id="proxima" class="botao" type="button">Próxima</button></div></div>
+  </section>
+  <a class="link-administrativo" href="adm-financeiro.html">Voltar ao Financeiro</a>
+ </div></main><div id="menuGlobalTufra"></div>
+ <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase.js?v=2"></script><script src="menu-global.js?v=1"></script><script src="app.js?v=2"></script><script src="financeiro-reserva.js?v=1"></script><script src="menu-adm.js?v=1"></script><script src="menu-financeiro.js?v=1"></script>
+</body></html>
