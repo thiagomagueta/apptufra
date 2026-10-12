@@ -409,7 +409,10 @@ async function carregarModulosAdministrativos() {
        EXISTE ALGUM ACESSO ADMINISTRATIVO?
     ====================================== */
 
+    const cadastroAcesso = await window.supabaseClient.rpc('cadastro_administrativo', {p_acao:'acesso'});
+    const podeCadastrarAssociados = !cadastroAcesso.error && cadastroAcesso.data?.cadastrar === true;
     const possuiAlgumModulo =
+      podeCadastrarAssociados ||
       pertenceDiretoria ||
       ehTesoureiro ||
       ehResponsavelPresenca ||
@@ -446,7 +449,7 @@ async function carregarModulosAdministrativos() {
     ) {
 
       moduloPermissoes.hidden =
-        !ehTesoureiro;
+        !(ehTesoureiro || podeCadastrarAssociados);
 
     }
 

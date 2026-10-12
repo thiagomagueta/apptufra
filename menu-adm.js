@@ -330,7 +330,10 @@ async function configurarMenuAdm() {
        EXIBIR ADM
     ====================================== */
 
+    const cadastroAcesso = await window.supabaseClient.rpc('cadastro_administrativo', {p_acao:'acesso'});
+    const podeCadastrarAssociados = !cadastroAcesso.error && cadastroAcesso.data?.cadastrar === true;
     const possuiAcessoAdm =
+      podeCadastrarAssociados ||
       pertenceDiretoria ||
       ehResponsavelPresenca ||
       ehResponsavelComunicados ||

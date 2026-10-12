@@ -464,6 +464,13 @@ async function validarLogin(evento) {
     );
 
     if (!cadastro.ficha_concluida) {
+      const existente = await window.supabaseClient.from('fichas_associados')
+        .select('dados_pessoais,endereco_contato,historico_umbanda').eq('usuario_id',cadastro.id).maybeSingle();
+      if (existente.error) throw existente.error;
+      const ficha = existente.data;
+      sessionStorage.setItem('tufra_ficha_associado', JSON.stringify({
+        dadosPessoais:ficha?.dados_pessoais||{}, enderecoContato:ficha?.endereco_contato||{}, historicoUmbanda:ficha?.historico_umbanda||{}
+      }));
       window.location.href =
         "associado1.html";
       return;
