@@ -65,11 +65,12 @@
  window.validarDuplicidadeAntesDeAprovar=async()=>{
   if(carregando)await carregando;
   if(!liberado){alert("Confira primeiro os possíveis cadastros existentes.");return false;}
-  const confirmado=liberado;
+  const anteriores=candidatos.map(c=>c.id).sort().join(',');
   await verificar();
-  if(candidatos.length&&!confirmado)return false;
-  if(candidatos.length){liberado=confirmado;botao.disabled=false;}
-  return liberado;
+  const atuais=candidatos.map(c=>c.id).sort().join(',');
+  if(anteriores!==atuais){alert('Os possíveis cadastros existentes mudaram. Revise novamente antes de aprovar.');return false;}
+  liberado=true;botao.disabled=false;
+  return true;
  };
  carregando=iniciar();
 })();
