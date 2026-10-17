@@ -1311,6 +1311,8 @@ async function aprovarCadastro() {
   }
 
 
+  if (window.validarDuplicidadeAntesDeAprovar && !(await window.validarDuplicidadeAntesDeAprovar())) return;
+
   const funcoesMarcadas =
     obterFuncoesMarcadas();
 
