@@ -59,7 +59,7 @@
   if(dados.cpf&&numeros(dados.cpf).length!==11){mensagem('Informe um CPF com 11 números ou deixe vazio.');return;}
   $('salvarCadastro').disabled=true;try{await rpc('salvar',dados);await carregar();painel('Lista');mensagem('Associado salvo, sem conta de acesso. Já pode receber registros financeiros e de presença conforme suas funções e datas.');atual=null;}catch(err){mensagem(err.message||'Não foi possível salvar.');}finally{$('salvarCadastro').disabled=false;}
  });
- $('novoCadastro').onclick=()=>editar();$('verPrevios').onclick=()=>painel('Lista');$('verVinculos').onclick=()=>{conta=null;$('selecaoVinculo').hidden=true;painel('Vinculos');};$('verResponsaveis').onclick=async()=>{try{responsaveis=await rpc('responsaveis');listarResponsaveis();painel('Responsaveis');}catch(e){mensagem(e.message);}};
+ $('novoCadastro').onclick=()=>editar();$('verPrevios').onclick=()=>painel('Lista');$('verResponsaveis').onclick=async()=>{try{responsaveis=await rpc('responsaveis');listarResponsaveis();painel('Responsaveis');}catch(e){mensagem(e.message);}};
  $('buscarCadastro').oninput=listarPrevios;$('buscarVinculo').oninput=listarVinculos;$('buscarResponsavel').oninput=listarResponsaveis;
  (async()=>{try{acesso=await rpc('acesso');if(!acesso.cadastrar){mensagem('Você não tem autorização para cadastrar associados.');return;}montarFicha();await carregar();$('conteudoCadastro').hidden=false;$('verResponsaveis').hidden=!acesso.gerenciar;const modo=new URLSearchParams(location.search).get('modo');if(modo==='novo')editar();else if(modo==='responsaveis')$('verResponsaveis').click();else mensagem('');}catch(e){mensagem(e.message||'Não foi possível carregar o cadastro administrativo.');}})();
 })();
