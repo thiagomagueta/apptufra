@@ -66,7 +66,7 @@
   if(carregando)await carregando;
   if(!liberado){alert("Confira primeiro os possíveis cadastros existentes.");return false;}
   const anteriores=candidatos.map(c=>c.id).sort().join(',');
-  await verificar();
+  try { await verificar(); } catch(e) { liberado=false;botao.disabled=true;estado.textContent='Falha na reconferência: '+(e.message||e);return false; }
   const atuais=candidatos.map(c=>c.id).sort().join(',');
   if(anteriores!==atuais){alert('Os possíveis cadastros existentes mudaram. Revise novamente antes de aprovar.');return false;}
   liberado=true;botao.disabled=false;
