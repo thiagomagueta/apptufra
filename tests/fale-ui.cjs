@@ -35,7 +35,8 @@ const root = path.resolve(__dirname,'..');
   await p.route('**/*',async route=>{
    const u=new URL(route.request().url());
    if(u.hostname==='cdn.jsdelivr.net')return route.fulfill({contentType:'text/javascript',body:''});
-   const file=u.pathname.split('/').pop()||'dashboard.html';
+   let file=u.pathname.replace(/\/+$/, '').split('/').pop()||'dashboard.html';
+   if(!file.includes('.')) file += '.html';
    if(['menu-global.js','menu-adm.js','menu-financeiro.js','app.js','dashboard.js','dashboard-comunicados.js','financeiro-conferencia-alerta.js','administrativo.js','menu-reserva.js','cadastro-administrativo-menu.js','permissoes-conferencia-menu.js'].includes(file)) return route.fulfill({contentType:'text/javascript',body:''});
    const local=path.join(root,file);
    if(fs.existsSync(local))return route.fulfill({path:local});
@@ -51,6 +52,14 @@ const root = path.resolve(__dirname,'..');
  await normal.getByText('Módulo indisponível para seu perfil.').waitFor();
  assert.equal(await normal.locator('#faleConteudo').isVisible(),false);
  const p=await page();
+ for (const suffix of ['dashboard','dashboard/','dashboard.html']) {
+  await p.goto('http://127.0.0.1:8765/'+suffix);
+  await p.getByRole('link',{name:'Escrever uma mensagem'}).waitFor();
+ }
+ for (const suffix of ['administrativo','administrativo.html','adm-permissoes','adm-permissoes.html']) {
+  await p.goto('http://127.0.0.1:8765/'+suffix);
+  await p.getByRole('link',{name:suffix.startsWith('administrativo')?'Atendimentos — Fale com a gente':'Responsáveis — Fale com a gente'}).waitFor();
+ }
  await p.goto('http://127.0.0.1:8765/dashboard.html');
  await p.getByRole('link',{name:'Escrever uma mensagem'}).waitFor();
  assert(await p.evaluate(()=>document.getElementById('proximaAtividadeDashboard').closest('section').nextElementSibling.textContent.includes('Fale com a gente')));
