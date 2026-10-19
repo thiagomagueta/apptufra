@@ -126,12 +126,9 @@ begin
    v_tipo:=case when v_admin then case when coalesce((p_dados->>'interna')::boolean,false) then 'interna' else 'resposta' end else 'associado' end;
    insert into public.fale_mensagens(atendimento_id,autor_id,autor_nome,tipo,texto) values(v_id,v_usuario.id,v_usuario.nome_completo,v_tipo,v_texto);
    update public.fale_atendimentos set atualizado_em=clock_timestamp(),
-     situacao=case when situacao='aguardando_confirmacao' and v_tipo<>'interna' then 'em_acompanhamento' else situacao end,
+     situacao=case when v_tipo='resposta' or (situacao='aguardando_confirmacao' and v_tipo='associado') then 'em_acompanhamento' else situacao end,
      encerramento_solicitado_por=case when v_tipo='interna' then encerramento_solicitado_por else null end,
      encerramento_solicitado_em=case when v_tipo='interna' then encerramento_solicitado_em else null end where id=v_id;
- elsif p_acao='acompanhar' and v_admin then
-   update public.fale_atendimentos set situacao='em_acompanhamento',atualizado_em=clock_timestamp(),encerramento_solicitado_por=null,encerramento_solicitado_em=null where id=v_id;
-   insert into public.fale_mensagens(atendimento_id,autor_id,autor_nome,tipo,texto) values(v_id,v_usuario.id,v_usuario.nome_completo,'evento','Atendimento em acompanhamento.');
  elsif p_acao='encerrar' and v_admin then
    v_texto:=trim(p_dados->>'texto');
    if v_texto is null or length(v_texto) not between 1 and 10000 then raise exception 'Informe o parecer final.'; end if;

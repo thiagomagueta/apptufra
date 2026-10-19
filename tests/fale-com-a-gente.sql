@@ -34,10 +34,10 @@ begin
  perform public.fale_com_a_gente('mensagem',jsonb_build_object('id',atendimento,'equipe',true,'interna',true,'texto','Nota interna sigilosa'));
  r:=public.fale_com_a_gente('detalhe',jsonb_build_object('id',atendimento));
  assert not (r->'mensagens' @> '[{"tipo":"interna"}]'::jsonb),'Nota interna exposta ao associado';
- perform public.fale_com_a_gente('acompanhar',jsonb_build_object('id',atendimento,'equipe',true));
+ assert r->'atendimento'->>'situacao'='lido','Anotação interna alterou a situação';
  perform public.fale_com_a_gente('mensagem',jsonb_build_object('id',atendimento,'equipe',true,'texto','Resposta da equipe'));
  r:=public.fale_com_a_gente('detalhe',jsonb_build_object('id',atendimento));
- assert r->'atendimento'->>'situacao'='em_acompanhamento','Resposta encerrou acompanhamento';
+ assert r->'atendimento'->>'situacao'='em_acompanhamento','Resposta não iniciou acompanhamento automaticamente';
  perform public.fale_com_a_gente('mensagem',jsonb_build_object('id',atendimento,'texto','Complemento do associado'));
  bloqueou:=false;
  begin perform public.fale_com_a_gente('avaliar',jsonb_build_object('id',atendimento,'avaliacao','satisfeito')); exception when others then bloqueou:=true; end;
