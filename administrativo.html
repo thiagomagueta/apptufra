@@ -25,6 +25,22 @@
   >
 
   <link rel="stylesheet" href="fale-com-a-gente.css?v=1">
+  <style>
+    .cartao-modulos-adm .grupo-modulos-adm {
+      display: none;
+    }
+
+    .cartao-modulos-adm .grupo-modulos-adm:has(> .item-acao-administrativa:not([hidden])) {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cartao-modulos-adm .grupo-modulos-adm:has(> .item-acao-administrativa:not([hidden])) ~ .grupo-modulos-adm:has(> .item-acao-administrativa:not([hidden])) {
+      margin-top: 24px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(101, 27, 29, 0.18);
+    }
+  </style>
 </head>
 
 
@@ -87,11 +103,7 @@
 
         <div class="lista-acoes-administrativas">
 
-
-          <!-- =================================
-               PERMISSÕES
-          ================================== -->
-
+          <div class="grupo-modulos-adm">
           <a
             id="moduloPermissoes"
             class="item-acao-administrativa"
@@ -117,11 +129,33 @@
 
           </a>
 
+          <a
+            id="moduloFinanceiro"
+            class="item-acao-administrativa"
+            href="adm-financeiro.html"
+            hidden
+          >
 
-          <!-- =================================
-               CALENDÁRIO
-          ================================== -->
+            <div class="conteudo-item-adm">
 
+              <strong class="titulo-item-adm">
+                Financeiro
+              </strong>
+
+              <span class="descricao-item-adm">
+                Caixa, mensalidades e controles financeiros.
+              </span>
+
+            </div>
+
+            <span class="seta-permissao-lista">
+              ›
+            </span>
+
+          </a>
+          </div>
+
+          <div class="grupo-modulos-adm">
           <a
             id="moduloCalendario"
             class="item-acao-administrativa"
@@ -146,11 +180,6 @@
             </span>
 
           </a>
-
-
-          <!-- =================================
-               ASSOCIADOS
-          ================================== -->
 
           <a
             id="moduloAssociados"
@@ -177,11 +206,6 @@
 
           </a>
 
-
-          <!-- =================================
-               ASSOCIADOS INATIVOS
-          ================================== -->
-
           <a
             id="moduloBaixasAssociados"
             class="item-acao-administrativa"
@@ -192,7 +216,7 @@
             <div class="conteudo-item-adm">
 
               <strong class="titulo-item-adm">
-                Associados inativos
+                Associados Inativos
               </strong>
 
               <span class="descricao-item-adm">
@@ -206,42 +230,9 @@
             </span>
 
           </a>
+          </div>
 
-
-          <!-- =================================
-               PRESENÇA
-          ================================== -->
-
-          <a
-            id="moduloPresenca"
-            class="item-acao-administrativa"
-            href="adm-presenca.html"
-            hidden
-          >
-
-            <div class="conteudo-item-adm">
-
-              <strong class="titulo-item-adm">
-                Presença
-              </strong>
-
-              <span class="descricao-item-adm">
-                Preenchimento e consulta das listas.
-              </span>
-
-            </div>
-
-            <span class="seta-permissao-lista">
-              ›
-            </span>
-
-          </a>
-
-
-          <!-- =================================
-               ATENDIMENTOS
-          ================================== -->
-
+          <div class="grupo-modulos-adm">
           <a
             id="moduloAtendimentos"
             class="item-acao-administrativa"
@@ -252,7 +243,7 @@
             <div class="conteudo-item-adm">
 
               <strong class="titulo-item-adm">
-                Atendimentos
+                Atendimentos - Prontuário
               </strong>
 
               <span class="descricao-item-adm">
@@ -266,11 +257,6 @@
             </span>
 
           </a>
-
-
-          <!-- =================================
-               RECADOS E ENQUETES
-          ================================== -->
 
           <a
             id="moduloComunicados"
@@ -296,27 +282,24 @@
             </span>
 
           </a>
+          </div>
 
-
-          <!-- =================================
-               FINANCEIRO
-          ================================== -->
-
+          <div class="grupo-modulos-adm">
           <a
-            id="moduloFinanceiro"
+            id="moduloPresenca"
             class="item-acao-administrativa"
-            href="adm-financeiro.html"
+            href="adm-presenca.html"
             hidden
           >
 
             <div class="conteudo-item-adm">
 
               <strong class="titulo-item-adm">
-                Financeiro
+                Lista de Presenças
               </strong>
 
               <span class="descricao-item-adm">
-                Caixa, mensalidades e controles financeiros.
+                Preenchimento e consulta das listas.
               </span>
 
             </div>
@@ -326,12 +309,9 @@
             </span>
 
           </a>
+          </div>
 
-
-          <!-- =================================
-               RELATÓRIOS
-          ================================== -->
-
+          <div class="grupo-modulos-adm">
           <a
             id="moduloRelatorios"
             class="item-acao-administrativa"
@@ -356,7 +336,7 @@
             </span>
 
           </a>
-
+          </div>
 
         </div>
 
@@ -411,7 +391,7 @@
   <script src="menu-financeiro.js?v=1"></script>
 
 
-<script src="fale-com-a-gente-menu.js?v=2"></script></body>
+<script src="fale-com-a-gente-menu.js?v=3"></script></body>
 
 </html>
 
