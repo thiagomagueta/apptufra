@@ -26,19 +26,17 @@
 
   <link rel="stylesheet" href="fale-com-a-gente.css?v=1">
   <style>
-    .cartao-modulos-adm .grupo-modulos-adm {
+    .modulos-adm .grupo-modulos-adm {
       display: none;
     }
 
-    .cartao-modulos-adm .grupo-modulos-adm:has(> .item-acao-administrativa:not([hidden])) {
+    .modulos-adm .grupo-modulos-adm:has(> .item-acao-administrativa:not([hidden])) {
       display: flex;
       flex-direction: column;
     }
 
-    .cartao-modulos-adm .grupo-modulos-adm:has(> .item-acao-administrativa:not([hidden])) ~ .grupo-modulos-adm:has(> .item-acao-administrativa:not([hidden])) {
-      margin-top: 24px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(101, 27, 29, 0.18);
+    .modulos-adm .item-acao-administrativa:not([hidden]):not(:has(~ .item-acao-administrativa:not([hidden]))) {
+      border-bottom: none;
     }
   </style>
 </head>
@@ -99,11 +97,11 @@
            MÓDULOS ADMINISTRATIVOS
       ====================================== -->
 
-      <section class="cartao-app cartao-modulos-adm">
+      <section class="modulos-adm">
 
         <div class="lista-acoes-administrativas">
 
-          <div class="grupo-modulos-adm">
+          <div class="cartao-app cartao-modulos-adm grupo-modulos-adm">
           <a
             id="moduloPermissoes"
             class="item-acao-administrativa"
@@ -155,7 +153,7 @@
           </a>
           </div>
 
-          <div class="grupo-modulos-adm">
+          <div class="cartao-app cartao-modulos-adm grupo-modulos-adm">
           <a
             id="moduloCalendario"
             class="item-acao-administrativa"
@@ -232,7 +230,7 @@
           </a>
           </div>
 
-          <div class="grupo-modulos-adm">
+          <div class="cartao-app cartao-modulos-adm grupo-modulos-adm">
           <a
             id="moduloAtendimentos"
             class="item-acao-administrativa"
@@ -284,7 +282,7 @@
           </a>
           </div>
 
-          <div class="grupo-modulos-adm">
+          <div class="cartao-app cartao-modulos-adm grupo-modulos-adm">
           <a
             id="moduloPresenca"
             class="item-acao-administrativa"
@@ -311,7 +309,7 @@
           </a>
           </div>
 
-          <div class="grupo-modulos-adm">
+          <div class="cartao-app cartao-modulos-adm grupo-modulos-adm">
           <a
             id="moduloRelatorios"
             class="item-acao-administrativa"
