@@ -77,7 +77,7 @@ const root = path.resolve(__dirname,'..');
  await p.getByLabel('Escrever resposta').fill('Resposta ao associado');
  await p.getByRole('button',{name:'Enviar registro'}).click();
  await p.getByText('Em acompanhamento',{exact:true}).waitFor();
- await p.getByLabel('Parecer final').fill('Conversa concluída.');
+ assert.equal(await p.getByLabel('Parecer final').count(),0);
  p.on('dialog',d=>d.accept());await p.getByRole('button',{name:'Solicitar encerramento'}).click();
  await p.getByText('Aguardando o associado confirmar o encerramento.',{exact:true}).waitFor();
  // Trocar apenas a visão conservando a fixture: navegação reinicia o estado mock.

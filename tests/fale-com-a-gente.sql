@@ -42,7 +42,7 @@ begin
  bloqueou:=false;
  begin perform public.fale_com_a_gente('avaliar',jsonb_build_object('id',atendimento,'avaliacao','satisfeito')); exception when others then bloqueou:=true; end;
  assert bloqueou,'Avaliação antes de encerrar permitida';
- perform public.fale_com_a_gente('encerrar',jsonb_build_object('id',atendimento,'equipe',true,'texto','Parecer final'));
+ perform public.fale_com_a_gente('encerrar',jsonb_build_object('id',atendimento,'equipe',true));
  r:=public.fale_com_a_gente('detalhe',jsonb_build_object('id',atendimento));
  assert r->'atendimento'->>'situacao'='aguardando_confirmacao','Não aguardou confirmação';
  perform public.fale_com_a_gente('confirmar',jsonb_build_object('id',atendimento));

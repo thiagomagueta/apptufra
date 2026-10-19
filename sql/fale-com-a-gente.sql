@@ -130,8 +130,7 @@ begin
      encerramento_solicitado_por=case when v_tipo='interna' then encerramento_solicitado_por else null end,
      encerramento_solicitado_em=case when v_tipo='interna' then encerramento_solicitado_em else null end where id=v_id;
  elsif p_acao='encerrar' and v_admin then
-   v_texto:=trim(p_dados->>'texto');
-   if v_texto is null or length(v_texto) not between 1 and 10000 then raise exception 'Informe o parecer final.'; end if;
+   v_texto:='A equipe solicitou o encerramento deste atendimento. Aguarda confirmação do associado.';
    if v_t.situacao='aguardando_confirmacao' then raise exception 'O encerramento já aguarda confirmação.'; end if;
    insert into public.fale_mensagens(atendimento_id,autor_id,autor_nome,tipo,texto) values(v_id,v_usuario.id,v_usuario.nome_completo,'encerramento',v_texto);
    update public.fale_atendimentos set situacao='aguardando_confirmacao',encerramento_solicitado_por=v_usuario.id,encerramento_solicitado_em=clock_timestamp(),atualizado_em=clock_timestamp() where id=v_id;

@@ -83,13 +83,13 @@
     const encerrado = a.situacao === 'finalizado';
     conteudo.innerHTML = `<section class="cartao-app"><p>${badge(a.situacao)}</p><p class="fale-meta">${equipe?esc(a.nome)+'<br>':''}${esc(a.categoria)} · Enviado em ${data(a.criado_em)}${a.finalizado_em?'<br>Finalizado em '+data(a.finalizado_em):''}</p>
       ${equipe?`<a class="fale-historico" href="fale-com-a-gente.html?equipe=1&usuario_id=${encodeURIComponent(a.usuario_id)}">Histórico deste associado</a>`:''}</section>
-      <section class="cartao-app" aria-label="Conversa">${r.mensagens.map(m=>`<article class="fale-mensagem ${esc(m.tipo)}"><strong>${esc(m.autor_nome)}${m.tipo==='interna'?' · Anotação interna':m.tipo==='encerramento'?' · Parecer final':''}</strong><small>${data(m.criado_em)}</small><p>${esc(m.texto)}</p></article>`).join('')}</section>
+      <section class="cartao-app" aria-label="Conversa">${r.mensagens.map(m=>`<article class="fale-mensagem ${esc(m.tipo)}"><strong>${esc(m.autor_nome)}${m.tipo==='interna'?' · Anotação interna':m.tipo==='encerramento'?' · Encerramento':''}</strong><small>${data(m.criado_em)}</small><p>${esc(m.texto)}</p></article>`).join('')}</section>
       ${equipe && r.leituras.length?`<details class="cartao-app"><summary>Leituras da equipe</summary>${r.leituras.map(l=>`<p class="fale-meta">${esc(l.nome)} — ${data(l.lido_em)}</p>`).join('')}</details>`:''}
       ${!encerrado?`<section class="cartao-app"><form id="formMensagem"><label class="fale-campo">${equipe?'Escrever resposta':'Escrever complemento'}<textarea name="texto" required maxlength="10000"></textarea></label>
       ${equipe?'<label class="fale-responsavel"><input type="checkbox" name="interna">Anotação interna — somente equipe</label>':''}
       <button class="fale-botao" type="submit">${equipe?'Enviar registro':'Enviar complemento'}</button></form></section>`:''}
-      ${!equipe && a.situacao==='aguardando_confirmacao'?'<section class="cartao-app"><h2>Confirmar encerramento</h2><p>A equipe concluiu o acompanhamento. Leia o parecer acima e confirme para encerrar este atendimento.</p><button id="confirmarFale" class="fale-botao">Confirmar encerramento</button></section>':''}
-      ${equipe && !encerrado?`<section class="cartao-app"><h2>Acompanhamento</h2>${a.situacao!=='aguardando_confirmacao'?'<form id="formEncerrar"><label class="fale-campo">Parecer final<textarea name="texto" required maxlength="10000"></textarea></label><button class="fale-botao" type="submit">Solicitar encerramento</button></form>':'<p>Aguardando o associado confirmar o encerramento.</p>'}</section>`:''}
+      ${!equipe && a.situacao==='aguardando_confirmacao'?'<section class="cartao-app"><h2>Confirmar encerramento</h2><p>A equipe solicitou o encerramento. Confirme para encerrar este atendimento.</p><button id="confirmarFale" class="fale-botao">Confirmar encerramento</button></section>':''}
+      ${equipe && !encerrado?`<section class="cartao-app"><h2>Acompanhamento</h2>${a.situacao!=='aguardando_confirmacao'?'<form id="formEncerrar"><button class="fale-botao" type="submit">Solicitar encerramento</button></form>':'<p>Aguardando o associado confirmar o encerramento.</p>'}</section>`:''}
       ${encerrado?`<section class="cartao-app"><h2>Atendimento finalizado</h2><p>Para conversar novamente, abra outro atendimento.</p>${!equipe?'<a class="fale-botao secundario" href="fale-com-a-gente.html?novo=1">Abrir outro atendimento</a>':''}</section>`:''}
       ${encerrado && !equipe && !a.avaliacao?`<section class="cartao-app"><h2>Como você avalia este atendimento?</h2><form id="formAvaliacao"><label class="fale-campo">Sua avaliação<select name="avaliacao" required><option value="">Selecione</option>${Object.entries(avaliacoes).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select></label><label class="fale-campo">Comentário (opcional)<textarea name="comentario" maxlength="4000"></textarea></label><button class="fale-botao" type="submit">Enviar avaliação</button></form></section>`:''}
       ${a.avaliacao?`<section class="cartao-app"><h2>Avaliação do atendimento</h2><p>${esc(avaliacoes[a.avaliacao])}</p>${a.comentario_avaliacao?`<p style="white-space:pre-wrap">${esc(a.comentario_avaliacao)}</p>`:''}<p class="fale-meta">${data(a.avaliado_em)}</p></section>`:''}
@@ -97,9 +97,9 @@
     voltar.href = 'fale-com-a-gente.html'+(equipe?'?equipe=1':'');
     voltar.textContent = equipe?'Voltar aos atendimentos':'Voltar às minhas mensagens';
     if (!encerrado) formSubmit('formMensagem',async f=>{await rpc('mensagem',{id,texto:f.get('texto'),interna:f.has('interna')});await detalhe(id);informar('Registro enviado.');});
-    if (document.getElementById('formEncerrar')) formSubmit('formEncerrar',async f=>{
+    if (document.getElementById('formEncerrar')) formSubmit('formEncerrar',async ()=>{
       if (!confirm('Solicitar a confirmação de encerramento ao associado?')) return;
-      await rpc('encerrar',{id,texto:f.get('texto')});await detalhe(id);
+      await rpc('encerrar',{id});await detalhe(id);
     });
     document.getElementById('confirmarFale')?.addEventListener('click',e=>executar(e.currentTarget,async()=>{
       if (!confirm('Confirma o encerramento? Este atendimento não poderá ser reaberto.')) return;
