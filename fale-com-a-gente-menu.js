@@ -18,8 +18,10 @@
       const a = document.createElement('a');
       a.className = 'item-acao-administrativa';
       a.href = 'fale-com-a-gente.html?equipe=1';
-      a.innerHTML = '<div class="conteudo-item-adm"><strong class="titulo-item-adm">Atendimentos — Fale com a gente <span id="faleAvisosEquipe"></span></strong><span class="descricao-item-adm">Relatos, respostas e histórico dos associados.</span></div><span class="seta-permissao-lista">›</span>';
-      lista.append(a);
+      a.innerHTML = '<div class="conteudo-item-adm"><strong class="titulo-item-adm">Atendimentos - Fale com a gente <span id="faleAvisosEquipe"></span></strong><span class="descricao-item-adm">Relatos, respostas e histórico dos associados.</span></div><span class="seta-permissao-lista">›</span>';
+      const recados = document.getElementById('moduloComunicados');
+      if (recados) recados.before(a);
+      else lista.append(a);
     } else if (pagina === 'adm-permissoes' && lista) {
       const a = document.createElement('a');
       a.className = 'item-acao-administrativa';
