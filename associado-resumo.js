@@ -4070,10 +4070,6 @@ async function buscarUltimasAtividadesResumo(
         "data",
         String(obterDataAtualISOResumoPresenca()).slice(0, 4) + "-01-01"
       )
-      .lte(
-        "data",
-        obterDataAtualISOResumoPresenca()
-      )
       .order(
         "data",
         {
@@ -4433,7 +4429,7 @@ function criarBlocoResumoPresenca(
       "mensagem-sem-atividades";
 
     mensagem.textContent =
-      "Nenhuma atividade realizada.";
+      "Nenhuma atividade cadastrada para este ano.";
 
     bloco.appendChild(
       mensagem
