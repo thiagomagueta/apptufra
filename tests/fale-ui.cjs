@@ -5,16 +5,16 @@ const path = require('node:path');
 const root = path.resolve(__dirname,'..');
 (async()=>{
  const browser = await chromium.launch({headless:true,...(process.env.FALE_CHROMIUM_PATH?{executablePath:process.env.FALE_CHROMIUM_PATH}:{}),args:['--no-sandbox','--disable-dev-shm-usage','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
- async function page(permitido=true,viewport={width:390,height:844}) {
+ async function page(permitido=true,viewport={width:390,height:844},staff=permitido,gestor=permitido) {
   const context=await browser.newContext({viewport});
   const p=await context.newPage();
-  await p.addInitScript(({permitido})=>{
+  await p.addInitScript(({permitido,staff,gestor})=>{
    window.fake = {
     state:'nao_lido',rating:null,mensagens:[{id:1,autor_nome:'Associado de teste',tipo:'associado',texto:'Gostaria de conversar sobre minha participação nas atividades.',criado_em:'2026-10-18T23:00:00Z'}],
     async rpc(name,{p_acao:a,p_dados:d={}}={}) {
      if(name!=='fale_com_a_gente') return {data:false,error:null};
      const self=window.fake;
-     if(a==='acesso') return {data:{permitido,equipe:permitido,piloto:true}};
+     if(a==='acesso') return {data:{permitido,equipe:staff,gerenciar:gestor,piloto:false}};
      if(!permitido) return {error:{message:'Módulo indisponível'}};
      let data={salvo:true};
      if(a==='avisos') data={meus:1,equipe:2};
@@ -31,7 +31,7 @@ const root = path.resolve(__dirname,'..');
     },auth:{getSession:async()=>({data:{session:{user:{id:'x'}}}})}
    };
    window.supabase={createClient:()=>window.fake};
-  },{permitido});
+  },{permitido,staff,gestor});
   await p.route('**/*',async route=>{
    const u=new URL(route.request().url());
    if(u.hostname==='cdn.jsdelivr.net')return route.fulfill({contentType:'text/javascript',body:''});
@@ -51,6 +51,25 @@ const root = path.resolve(__dirname,'..');
  await normal.goto('http://127.0.0.1:8765/fale-com-a-gente.html?equipe=1');
  await normal.getByText('Módulo indisponível para seu perfil.').waitFor();
  assert.equal(await normal.locator('#faleConteudo').isVisible(),false);
+ const publico=await page(true,{width:390,height:844},false,false);
+ await publico.goto('http://127.0.0.1:8765/dashboard');
+ await publico.getByRole('link',{name:'Escrever uma mensagem'}).waitFor();
+ await publico.goto('http://127.0.0.1:8765/fale-com-a-gente.html?equipe=1');
+ await publico.getByText('Módulo indisponível para seu perfil.').waitFor();
+ await publico.goto('http://127.0.0.1:8765/fale-com-a-gente.html?responsaveis=1');
+ await publico.getByText('Módulo indisponível para seu perfil.').waitFor();
+ await publico.goto('http://127.0.0.1:8765/administrativo');
+ assert.equal(await publico.getByRole('link',{name:/Atendimentos [-—] Fale com a gente/}).count(),0);
+ const staff=await page(true,{width:390,height:844},true,false);
+ await staff.goto('http://127.0.0.1:8765/administrativo');
+ await staff.getByRole('link',{name:/Atendimentos [-—] Fale com a gente/}).waitFor();
+ await staff.goto('http://127.0.0.1:8765/adm-permissoes');
+ assert.equal(await staff.getByRole('link',{name:'Responsáveis — Fale com a gente'}).count(),0);
+ const gestor=await page(true,{width:390,height:844},false,true);
+ await gestor.goto('http://127.0.0.1:8765/adm-permissoes');
+ await gestor.getByRole('link',{name:'Responsáveis — Fale com a gente'}).waitFor();
+ await gestor.goto('http://127.0.0.1:8765/administrativo');
+ assert.equal(await gestor.getByRole('link',{name:/Atendimentos [-—] Fale com a gente/}).count(),0);
  const p=await page();
  for (const suffix of ['dashboard','dashboard/','dashboard.html']) {
   await p.goto('http://127.0.0.1:8765/'+suffix);
@@ -58,7 +77,7 @@ const root = path.resolve(__dirname,'..');
  }
  for (const suffix of ['administrativo','administrativo.html','adm-permissoes','adm-permissoes.html']) {
   await p.goto('http://127.0.0.1:8765/'+suffix);
-  await p.getByRole('link',{name:suffix.startsWith('administrativo')?'Atendimentos — Fale com a gente':'Responsáveis — Fale com a gente'}).waitFor();
+  await p.getByRole('link',{name:suffix.startsWith('administrativo')?/Atendimentos [-—] Fale com a gente/:'Responsáveis — Fale com a gente'}).waitFor();
  }
  await p.goto('http://127.0.0.1:8765/dashboard.html');
  await p.getByRole('link',{name:'Escrever uma mensagem'}).waitFor();
@@ -94,9 +113,10 @@ const root = path.resolve(__dirname,'..');
  assert(await semOverflow(user));await user.screenshot({path:'/tmp/fale-finalizado.png',fullPage:true});
  await p.goto('http://127.0.0.1:8765/fale-com-a-gente.html?responsaveis=1');
  await p.getByLabel('Buscar pessoa').fill('Outra');assert.equal(await p.locator('.fale-responsavel:visible').count(),1);
- await p.getByRole('button',{name:'Salvar responsáveis'}).click();await p.getByText('Responsáveis salvos. O acesso permanece exclusivo para Tesoureiro.').waitFor();
+ await p.getByRole('button',{name:'Salvar responsáveis'}).click();await p.getByText('Responsáveis salvos. As autorizações já estão em vigor.').waitFor();
  await p.goto('http://127.0.0.1:8765/fale-com-a-gente.html?equipe=1');await p.getByText('Histórico deste associado').waitFor();assert(await semOverflow(p));
  const desktop=await page(true,{width:1280,height:900});await desktop.goto('http://127.0.0.1:8765/fale-com-a-gente.html?id=t1&equipe=1');await desktop.getByLabel('Escrever resposta').waitFor();assert(await semOverflow(desktop));
  await desktop.screenshot({path:'/tmp/fale-desktop.png',fullPage:true});
  await browser.close();console.log('UI OK: acesso negado, posição do cartão, formulários, notas internas, encerramento, avaliação, responsáveis, lista e layouts móvel/desktop.');
 })().catch(e=>{console.error(e);process.exit(1)});
+

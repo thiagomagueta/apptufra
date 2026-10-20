@@ -332,8 +332,11 @@ async function configurarMenuAdm() {
 
     const cadastroAcesso = await window.supabaseClient.rpc('cadastro_administrativo', {p_acao:'acesso'});
     const podeCadastrarAssociados = !cadastroAcesso.error && cadastroAcesso.data?.cadastrar === true;
+    const faleAcesso = await window.supabaseClient.rpc('fale_com_a_gente', {p_acao:'acesso'});
+    const ehResponsavelFale = !faleAcesso.error && faleAcesso.data?.equipe === true;
     const possuiAcessoAdm =
       podeCadastrarAssociados ||
+      ehResponsavelFale ||
       pertenceDiretoria ||
       ehResponsavelPresenca ||
       ehResponsavelComunicados ||
@@ -370,3 +373,4 @@ async function configurarMenuAdm() {
 ========================================== */
 
 configurarMenuAdm();
+

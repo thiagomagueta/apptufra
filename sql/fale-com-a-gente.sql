@@ -42,7 +42,7 @@ create or replace function private.fale_com_a_gente(p_acao text,p_dados jsonb de
 returns jsonb language plpgsql security definer set search_path='' as $$
 declare
  v_usuario public.usuarios%rowtype; v_t public.fale_atendimentos%rowtype;
- v_tesoureiro boolean; v_admin boolean:=coalesce((p_dados->>'equipe')::boolean,false);
+ v_tesoureiro boolean; v_equipe boolean; v_admin boolean:=coalesce((p_dados->>'equipe')::boolean,false);
  v_id uuid; v_tipo text; v_texto text; v_result jsonb; v_max bigint;
  v_ids uuid[]; v_situacao text; v_offset integer;
 begin
@@ -51,9 +51,14 @@ begin
  if v_usuario.id is null then raise exception 'Usuário sem acesso.' using errcode='42501'; end if;
  select exists(select 1 from public.usuario_funcoes uf join public.funcoes f on f.id=uf.funcao_id
    where uf.usuario_id=v_usuario.id and f.nome='Tesoureiro' and f.ativo) into v_tesoureiro;
- -- Regra temporária intencionalmente centralizada. Não consultar fale_responsaveis para conceder acesso ainda.
- if p_acao='acesso' then return jsonb_build_object('permitido',v_tesoureiro,'equipe',v_tesoureiro,'gerenciar',v_tesoureiro,'piloto',true,'usuario_id',v_usuario.id); end if;
- if not v_tesoureiro then raise exception 'Módulo disponível somente para Tesoureiro nesta fase.' using errcode='42501'; end if;
+ select exists(select 1 from public.fale_responsaveis where usuario_id=v_usuario.id) into v_equipe;
+ if p_acao='acesso' then return jsonb_build_object('permitido',true,'equipe',v_equipe,'gerenciar',v_tesoureiro,'piloto',false,'usuario_id',v_usuario.id); end if;
+ if p_acao in ('responsaveis','salvar_responsaveis') and not v_tesoureiro then
+   raise exception 'Somente a Gestão APP pode autorizar responsáveis.' using errcode='42501';
+ end if;
+ if v_admin and not v_equipe then
+   raise exception 'Sem autorização para acompanhar os atendimentos da equipe.' using errcode='42501';
+ end if;
 
  if p_acao='responsaveis' then
    return jsonb_build_object('usuarios',(select coalesce(jsonb_agg(jsonb_build_object('id',u.id,'nome',u.nome_completo,'selecionado',r.usuario_id is not null) order by u.nome_completo),'[]'::jsonb)
@@ -74,8 +79,8 @@ begin
    return jsonb_build_object('id',v_id);
  elsif p_acao='avisos' then
    return jsonb_build_object(
-    'equipe',(select count(*) from public.fale_atendimentos a where a.situacao<>'finalizado' and exists(select 1 from public.fale_mensagens m
-      where m.atendimento_id=a.id and m.tipo='associado' and m.id>coalesce((select ultima_mensagem from public.fale_leituras l where l.atendimento_id=a.id and l.usuario_id=v_usuario.id and l.equipe),0))),
+    'equipe',case when v_equipe then (select count(*) from public.fale_atendimentos a where a.situacao<>'finalizado' and exists(select 1 from public.fale_mensagens m
+      where m.atendimento_id=a.id and m.tipo='associado' and m.id>coalesce((select ultima_mensagem from public.fale_leituras l where l.atendimento_id=a.id and l.usuario_id=v_usuario.id and l.equipe),0))) else 0 end,
     'meus',(select count(*) from public.fale_atendimentos a where a.usuario_id=v_usuario.id and (a.situacao='aguardando_confirmacao' or exists(select 1 from public.fale_mensagens m
       where m.atendimento_id=a.id and m.tipo in ('resposta','encerramento') and m.id>coalesce((select ultima_mensagem from public.fale_leituras l where l.atendimento_id=a.id and l.usuario_id=v_usuario.id and not l.equipe),0)))));
  elsif p_acao='listar' then
@@ -150,3 +155,4 @@ create or replace function public.fale_com_a_gente(p_acao text,p_dados jsonb def
 returns jsonb language sql security invoker set search_path='' as $$ select private.fale_com_a_gente(p_acao,p_dados); $$;
 revoke all on function public.fale_com_a_gente(text,jsonb) from public,anon;
 grant execute on function public.fale_com_a_gente(text,jsonb) to authenticated;
+

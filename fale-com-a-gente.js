@@ -112,19 +112,19 @@
     titulo.textContent = 'Responsáveis — Fale com a gente';
     voltar.href='adm-permissoes.html';voltar.textContent='Voltar à Gestão APP';
     const r = await rpc('responsaveis');
-    conteudo.innerHTML = `<section class="cartao-app"><p>Nesta fase, o módulo está disponível somente para Tesoureiro. A seleção abaixo fica preparada para a futura liberação e ainda não concede acesso.</p><label class="fale-campo">Buscar pessoa<input id="buscarResponsavel" type="search" placeholder="Digite um nome"></label><form id="formResponsaveis"><div id="listaResponsaveis">${r.usuarios.map(u=>`<label class="fale-responsavel" data-nome="${esc(u.nome?.toLocaleLowerCase('pt-BR'))}"><input name="usuarios" value="${esc(u.id)}" type="checkbox" ${u.selecionado?'checked':''}><span>${esc(u.nome)}</span></label>`).join('')}</div><button class="fale-botao" type="submit">Salvar responsáveis</button></form></section>`;
+    conteudo.innerHTML = `<section class="cartao-app"><p>Selecione as pessoas autorizadas a receber e acompanhar todos os atendimentos. Somente os selecionados terão acesso à área da equipe.</p><label class="fale-campo">Buscar pessoa<input id="buscarResponsavel" type="search" placeholder="Digite um nome"></label><form id="formResponsaveis"><div id="listaResponsaveis">${r.usuarios.map(u=>`<label class="fale-responsavel" data-nome="${esc(u.nome?.toLocaleLowerCase('pt-BR'))}"><input name="usuarios" value="${esc(u.id)}" type="checkbox" ${u.selecionado?'checked':''}><span>${esc(u.nome)}</span></label>`).join('')}</div><button class="fale-botao" type="submit">Salvar responsáveis</button></form></section>`;
     document.getElementById('buscarResponsavel').oninput=e=>{
       const busca=e.target.value.toLocaleLowerCase('pt-BR');
       document.querySelectorAll('[data-nome]').forEach(l=>l.hidden=!l.dataset.nome.includes(busca));
     };
-    formSubmit('formResponsaveis',async f=>{await rpc('salvar_responsaveis',{usuarios:f.getAll('usuarios')});informar('Responsáveis salvos. O acesso permanece exclusivo para Tesoureiro.');});
+    formSubmit('formResponsaveis',async f=>{await rpc('salvar_responsaveis',{usuarios:f.getAll('usuarios')});informar('Responsáveis salvos. As autorizações já estão em vigor.');});
   }
   (async()=>{
     try {
       const sessao = await window.supabaseClient.auth.getSession();
       if (!sessao.data?.session) { location.replace('index.html'); return; }
       const acesso = await rpc('acesso');
-      if (!acesso.permitido) { informar('Módulo indisponível para seu perfil.',true); return; }
+      if (!acesso.permitido || (equipe && !acesso.equipe) || (responsaveis && !acesso.gerenciar)) { informar('Módulo indisponível para seu perfil.',true); return; }
       informar();conteudo.hidden=false;
       if (equipe) {voltar.href='administrativo.html';voltar.textContent='Voltar ao ADM';}
       if (responsaveis) await gerenciar();
@@ -134,3 +134,4 @@
     } catch(e) { informar(e.message,true); }
   })();
 })();
+

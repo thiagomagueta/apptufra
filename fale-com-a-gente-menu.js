@@ -14,7 +14,7 @@
         card.innerHTML = '<h2>💬 Fale com a gente</h2><p>Precisa de ajuda, quer compartilhar uma dificuldade ou deixar uma sugestão? Este espaço é seu.</p><div class="fale-acoes"><a class="fale-botao" href="fale-com-a-gente.html?novo=1">Escrever uma mensagem</a><a class="fale-botao secundario" href="fale-com-a-gente.html">Acompanhar minhas mensagens <span id="faleAvisosMeus"></span></a></div>';
         atividade.after(card);
       }
-    } else if (pagina === 'administrativo' && lista) {
+    } else if (pagina === 'administrativo' && lista && r.data.equipe) {
       const a = document.createElement('a');
       a.className = 'item-acao-administrativa';
       a.href = 'fale-com-a-gente.html?equipe=1';
@@ -22,7 +22,7 @@
       const recados = document.getElementById('moduloComunicados');
       if (recados) recados.before(a);
       else lista.append(a);
-    } else if (pagina === 'adm-permissoes' && lista) {
+    } else if (pagina === 'adm-permissoes' && lista && r.data.gerenciar) {
       const a = document.createElement('a');
       a.className = 'item-acao-administrativa';
       a.href = 'fale-com-a-gente.html?responsaveis=1';
@@ -42,3 +42,4 @@
     setInterval(() => avisos().catch(console.error), 30000);
   } catch (e) { console.error('Erro ao carregar Fale com a gente:', e); }
 })();
+
