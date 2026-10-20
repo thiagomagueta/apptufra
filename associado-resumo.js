@@ -4066,6 +4066,10 @@ async function buscarUltimasAtividadesResumo(
         "tipo_atividade",
         tipoAtividade
       )
+      .gte(
+        "data",
+        String(obterDataAtualISOResumoPresenca()).slice(0, 4) + "-01-01"
+      )
       .lte(
         "data",
         obterDataAtualISOResumoPresenca()
@@ -4084,9 +4088,7 @@ async function buscarUltimasAtividadesResumo(
             false
         }
       )
-      .limit(
-        10
-      );
+      ;
 
 
   if (
