@@ -4,7 +4,12 @@
   try {
     const r = await window.supabaseClient.rpc('fale_com_a_gente', {p_acao:'acesso'});
     if (r.error || !r.data?.permitido) return;
-    const lista = document.querySelector('.lista-acoes-administrativas');
+    const lista = paginaLista();
+    function paginaLista() {
+      return location.pathname.includes('adm-permissoes')
+        ? document.getElementById('listaGestaoResponsaveis')
+        : document.querySelector('.lista-acoes-administrativas');
+    }
     const pagina = location.pathname.replace(/\/+$/, '').split('/').pop().replace(/\.html$/, '');
     if (pagina === 'dashboard') {
       const atividade = document.getElementById('proximaAtividadeDashboard')?.closest('section');
