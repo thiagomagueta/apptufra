@@ -3899,6 +3899,10 @@ async function buscarUltimasAtividadesDashboard(
         "tipo_atividade",
         tipoAtividade
       )
+      .gte(
+        "data",
+        String(hojeISO).slice(0, 4) + "-01-01"
+      )
       .lte(
         "data",
         hojeISO
@@ -3917,9 +3921,7 @@ async function buscarUltimasAtividadesDashboard(
             false
         }
       )
-      .limit(
-        10
-      );
+      ;
 
 
   if (
