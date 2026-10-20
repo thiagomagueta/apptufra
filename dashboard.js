@@ -3903,10 +3903,6 @@ async function buscarUltimasAtividadesDashboard(
         "data",
         String(hojeISO).slice(0, 4) + "-01-01"
       )
-      .lte(
-        "data",
-        hojeISO
-      )
       .order(
         "data",
         {
@@ -4274,7 +4270,7 @@ function criarBlocoPresencaDashboard(
 
 
     mensagem.textContent =
-      "Nenhuma atividade realizada.";
+      "Nenhuma atividade cadastrada para este ano.";
 
 
     bloco.appendChild(
