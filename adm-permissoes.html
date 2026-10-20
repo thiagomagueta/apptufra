@@ -16,7 +16,7 @@
   >
 
   <title>
-    Permissões | TUFRA
+    Gestão APP | TUFRA
   </title>
 
   <link
@@ -69,7 +69,7 @@
       <section>
 
         <h1 class="titulo-pagina">
-          Permissões
+          Gestão APP
         </h1>
 
         <p class="subtitulo-pagina">
@@ -83,146 +83,42 @@
            OPÇÕES
       ====================================== -->
 
-      <section class="cartao-app">
-
-        <div class="lista-acoes-administrativas"><a id="linkCadastroAdministrativo" data-cadastro class="item-acao-administrativa" href="cadastro-administrativo.html?modo=novo" hidden><span>Cadastrar associado</span><span class="seta-permissao-lista">›</span></a>
-<a id="linkAssociadosSemConta" data-cadastro class="item-acao-administrativa" href="cadastro-administrativo.html?modo=lista" hidden><span>Associados sem conta</span><span class="seta-permissao-lista">›</span></a>
-<a id="linkVincularCadastro" data-cadastro class="item-acao-administrativa" href="cadastro-administrativo.html?modo=vinculos" hidden><span>Vincular cadastro à conta</span><span class="seta-permissao-lista">›</span></a>
-<a id="linkResponsaveisCadastro" data-cadastro class="item-acao-administrativa" href="cadastro-administrativo.html?modo=responsaveis" hidden><span>Responsáveis pelo cadastro de associados</span><span class="seta-permissao-lista">›</span></a>
-<a id="linkResponsaveisConferencia" class="item-acao-administrativa" href="responsaveis-conferencia.html" hidden><span>Responsáveis pela conferência de pagamentos</span><span class="seta-permissao-lista">›</span></a>
-          <a id="linkResponsaveisReserva" class="item-acao-administrativa" href="responsaveis-reserva.html" hidden><span>Permissões de Caixa e Reserva</span><span class="seta-permissao-lista">›</span></a>
-
-
-          <!-- CADASTROS PENDENTES -->
-
-          <a
-            class="item-acao-administrativa"
-            href="permissoes.html?secao=pendentes"
-          >
-
-            <span>
-              Cadastros aguardando aprovação
-            </span>
-
-            <span class="seta-permissao-lista">
-              ›
-            </span>
-
-          </a>
-
-
-          <!-- ATRIBUIR FUNÇÕES -->
-
-          <a
-            class="item-acao-administrativa"
-            href="permissoes.html?secao=funcoes"
-          >
-
-            <span>
-              Atribuir Funções
-            </span>
-
-            <span class="seta-permissao-lista">
-              ›
-            </span>
-
-          </a>
-
-
-          <!-- MIGRAÇÃO HISTÓRICA -->
-
-          <a
-            class="item-acao-administrativa"
-            href="permissoes.html?secao=migracao"
-          >
-
-            <span>
-              Migração Histórica
-            </span>
-
-            <span class="seta-permissao-lista">
-              ›
-            </span>
-
-          </a>
-
-
-          <!-- CONFIGURAR RESPONSÁVEIS PELAS PRESENÇAS -->
-
-          <a
-            class="item-acao-administrativa"
-            href="responsaveis-presenca.html"
-          >
-
-            <span>
-              Configurar responsáveis pelas presenças
-            </span>
-
-            <span class="seta-permissao-lista">
-              ›
-            </span>
-
-          </a>
-
-
-          <!-- RESPONSÁVEIS POR RECADOS E ENQUETES -->
-
-          <a
-            class="item-acao-administrativa"
-            href="responsaveis-comunicados.html"
-          >
-
-            <span>
-              Responsáveis por Recados e Enquetes
-            </span>
-
-            <span class="seta-permissao-lista">
-              ›
-            </span>
-
-          </a>
-
-
-          <!-- RESPONSÁVEL POR BAIXAS -->
-
-          <a
-            class="item-acao-administrativa"
-            href="responsaveis-baixas.html"
-          >
-
-            <span>
-              Responsável por Baixas
-            </span>
-
-            <span class="seta-permissao-lista">
-              ›
-            </span>
-
-          </a>
-
-
-          <!-- REGRAS DAS OBRIGAÇÕES -->
-
-          <a
-            class="item-acao-administrativa"
-            href="regras-obrigacoes.html"
-          >
-
-            <span>
-              Regras das Obrigações
-            </span>
-
-            <span class="seta-permissao-lista">
-              ›
-            </span>
-
-          </a>
-
-
+      <section class="cartao-app" style="margin-bottom: 18px;">
+        <h2 style="margin: 0 0 12px; font-size: 1.08rem;">Cadastro e associados</h2>
+        <div class="lista-acoes-administrativas">
+          <a id="linkCadastroAdministrativo" data-cadastro class="item-acao-administrativa" href="cadastro-administrativo.html?modo=novo" hidden><span>Cadastrar associado</span><span class="seta-permissao-lista">›</span></a>
+          <a id="linkAssociadosSemConta" data-cadastro class="item-acao-administrativa" href="cadastro-administrativo.html?modo=lista" hidden><span>Associados sem conta</span><span class="seta-permissao-lista">›</span></a>
+          <a id="linkVincularCadastro" data-cadastro class="item-acao-administrativa" href="cadastro-administrativo.html?modo=vinculos" hidden><span>Vincular cadastro à conta</span><span class="seta-permissao-lista">›</span></a>
+          <a id="linkResponsaveisCadastro" data-cadastro class="item-acao-administrativa" href="cadastro-administrativo.html?modo=responsaveis" hidden><span>Responsáveis pelo cadastro de associados</span><span class="seta-permissao-lista">›</span></a>
+          <a class="item-acao-administrativa" href="permissoes.html?secao=pendentes"><span>Cadastros aguardando aprovação</span><span class="seta-permissao-lista">›</span></a>
         </div>
-
       </section>
 
+      <section class="cartao-app" style="margin-bottom: 18px;">
+        <h2 style="margin: 0 0 12px; font-size: 1.08rem;">Funções e permissões</h2>
+        <div class="lista-acoes-administrativas" id="listaGestaoResponsaveis">
+          <a class="item-acao-administrativa" href="permissoes.html?secao=funcoes"><span>Atribuir Funções</span><span class="seta-permissao-lista">›</span></a>
+          <a class="item-acao-administrativa" href="responsaveis-presenca.html"><span>Configurar responsáveis pelas presenças</span><span class="seta-permissao-lista">›</span></a>
+          <a class="item-acao-administrativa" href="responsaveis-comunicados.html"><span>Responsáveis por Recados e Enquetes</span><span class="seta-permissao-lista">›</span></a>
+          <a class="item-acao-administrativa" href="responsaveis-baixas.html"><span>Responsável por Baixas</span><span class="seta-permissao-lista">›</span></a>
+        </div>
+      </section>
+
+      <section class="cartao-app" style="margin-bottom: 18px;">
+        <h2 style="margin: 0 0 12px; font-size: 1.08rem;">Permissões financeiras</h2>
+        <div class="lista-acoes-administrativas">
+          <a id="linkResponsaveisConferencia" class="item-acao-administrativa" href="responsaveis-conferencia.html" hidden><span>Responsáveis pela conferência de pagamentos</span><span class="seta-permissao-lista">›</span></a>
+          <a id="linkResponsaveisReserva" class="item-acao-administrativa" href="responsaveis-reserva.html" hidden><span>Permissões de Caixa e Reserva</span><span class="seta-permissao-lista">›</span></a>
+          <a class="item-acao-administrativa" href="regras-obrigacoes.html"><span>Regras das Obrigações</span><span class="seta-permissao-lista">›</span></a>
+        </div>
+      </section>
+
+      <section class="cartao-app" style="margin-bottom: 18px;">
+        <h2 style="margin: 0 0 12px; font-size: 1.08rem;">Administração de dados</h2>
+        <div class="lista-acoes-administrativas">
+          <a class="item-acao-administrativa" href="permissoes.html?secao=migracao"><span>Migração Histórica</span><span class="seta-permissao-lista">›</span></a>
+        </div>
+      </section>
 
       <!-- =====================================
            VOLTAR
