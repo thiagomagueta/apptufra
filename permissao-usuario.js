@@ -341,6 +341,8 @@ function criarCheckboxFuncao(
       funcao.id
     );
 
+  checkbox.disabled = !funcao.ativo;
+
 
   const texto =
     document.createElement(
@@ -349,7 +351,7 @@ function criarCheckboxFuncao(
 
 
   texto.textContent =
-    funcao.nome;
+    funcao.nome + (funcao.ativo ? "" : " (desativada)");
 
 
   linha.appendChild(
@@ -469,11 +471,7 @@ async function carregarFuncoes(
         ordem,
         ativo,
         funcao_pai_id
-      `)
-      .eq(
-        "ativo",
-        true
-      );
+      `);
 
 
   if (
