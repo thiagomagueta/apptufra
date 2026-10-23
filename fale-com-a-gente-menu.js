@@ -17,6 +17,13 @@
         const card = document.createElement('section');
         card.className = 'cartao-app';
         card.innerHTML = '<h2>💬 Fale com a gente</h2><p>Precisa de ajuda, quer compartilhar uma dificuldade ou deixar uma sugestão? Este espaço é seu.</p><div class="fale-acoes"><a class="fale-botao" href="fale-com-a-gente.html?novo=1">Escrever uma mensagem</a><a class="fale-botao secundario" href="fale-com-a-gente.html">Acompanhar minhas mensagens <span id="faleAvisosMeus"></span></a></div>';
+        if (r.data.equipe === true) {
+          const atalhoEquipe = document.createElement('a');
+          atalhoEquipe.className = 'fale-botao secundario';
+          atalhoEquipe.href = 'fale-com-a-gente.html?equipe=1';
+          atalhoEquipe.innerHTML = 'Atendimentos - Fale com a gente <span id="faleAvisosEquipe"></span>';
+          card.querySelector('.fale-acoes').append(atalhoEquipe);
+        }
         atividade.after(card);
       }
     } else if (pagina === 'administrativo' && lista && r.data.equipe) {
