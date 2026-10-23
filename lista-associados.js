@@ -284,10 +284,35 @@ function normalizarBuscaAssociado(valor) {
   return String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('pt-BR').trim();
 }
 
+// Mantém os rótulos resumidos, mas considera todas as funções atribuídas.
+function obterCategoriasFiltroAssociado(associado) {
+  const nomes = (associado.usuario_funcoes || []).map(item => item.funcoes?.nome).filter(Boolean);
+  const rotulos = {
+    'Sacerdote': 'Sacerdote',
+    'Pai/Mãe Pequeno (a)': 'Pai/Mãe Pequeno(a)',
+    'Médium Corrente Principal': 'Médium Principal',
+    'Médium Principal': 'Médium Principal',
+    'Banco do Desenvolvimento': 'Desenv. Banco',
+    'Corrente do Desenvolvimento': 'Desenv. Corrente',
+    'Cambone': 'Cambone',
+    'Ogam': 'Ogam',
+    'Cantina': 'Cantina',
+    'Assistência': 'Assistência'
+  };
+  const categorias = new Set(nomes.map(nome => rotulos[nome]).filter(Boolean));
+  if (nomes.includes('Médium em Desenvolvimento') &&
+      !nomes.includes('Banco do Desenvolvimento') &&
+      !nomes.includes('Corrente do Desenvolvimento')) {
+    categorias.add('Desenvolvimento');
+  }
+  if (!categorias.size) categorias.add('—');
+  return [...categorias];
+}
+
 function preencherFuncoesFiltro() {
   const select = document.getElementById('filtroFuncaoAssociado');
   select.replaceChildren(new Option('Todas as funções', ''));
-  const categorias = [...new Set(associadosParaFiltrar.map(a => obterFuncaoPrioritaria(a.usuario_funcoes || [])))];
+  const categorias = [...new Set(associadosParaFiltrar.flatMap(obterCategoriasFiltroAssociado))];
   categorias.sort((a, b) => a.localeCompare(b, 'pt-BR'));
   for (const categoria of categorias) {
     select.add(new Option(categoria, categoria));
@@ -299,9 +324,9 @@ function aplicarFiltrosAssociados() {
   const funcao = document.getElementById('filtroFuncaoAssociado').value;
   const filtrados = associadosParaFiltrar.filter(associado => {
     const nome = normalizarBuscaAssociado(associado.nome_completo);
-    const categoria = obterFuncaoPrioritaria(associado.usuario_funcoes || []);
+    const categorias = obterCategoriasFiltroAssociado(associado);
     return termos.every(termo => nome.includes(termo)) &&
-      (!funcao || categoria === funcao);
+      (!funcao || categorias.includes(funcao));
   });
   listaAssociados.replaceChildren(...filtrados.map(criarItemAssociado));
   mensagemSemAssociados.hidden = filtrados.length > 0;
