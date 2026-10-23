@@ -21,8 +21,15 @@
           const atalhoEquipe = document.createElement('a');
           atalhoEquipe.className = 'fale-botao secundario';
           atalhoEquipe.href = 'fale-com-a-gente.html?equipe=1';
-          atalhoEquipe.innerHTML = 'Atendimentos - Fale com a gente <span id="faleAvisosEquipe"></span>';
-          card.querySelector('.fale-acoes').append(atalhoEquipe);
+          atalhoEquipe.id = 'faleAtalhoEquipeDashboard';
+          atalhoEquipe.textContent = 'Carregando mensagens...';
+          const areaEquipe = document.createElement('div');
+          areaEquipe.style.marginTop = '12px';
+          const tituloEquipe = document.createElement('p');
+          tituloEquipe.textContent = 'Pais e mães pequenos:';
+          tituloEquipe.style.cssText = 'margin:0 0 10px;font-weight:700';
+          areaEquipe.append(tituloEquipe, atalhoEquipe);
+          card.querySelector('.fale-acoes').append(areaEquipe);
         }
         atividade.after(card);
       }
@@ -48,6 +55,11 @@
       for (const [id, campo] of [['faleAvisosMeus','meus'],['faleAvisosEquipe','equipe']]) {
         const el = document.getElementById(id);
         if (el) el.textContent = avisos.data[campo] ? `(${avisos.data[campo]})` : '';
+      }
+      const atalhoEquipe = document.getElementById('faleAtalhoEquipeDashboard');
+      if (atalhoEquipe) {
+        const novas = Number(avisos.data.equipe) || 0;
+        atalhoEquipe.textContent = novas > 0 ? `Novas mensagens (${novas})` : 'Sem novas mensagens';
       }
     }
     await avisos();
