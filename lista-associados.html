@@ -24,6 +24,15 @@
     href="layout.css?v=39"
   >
 
+  <style>
+    .filtros-associados label { display:block; font-weight:700; margin:0 0 8px; }
+    .filtros-associados input, .filtros-associados select {
+      display:block; width:100%; min-width:0; padding:12px; margin:0 0 16px;
+      border:1px solid var(--cor-borda); border-radius:12px; background:#fff; color:var(--cor-texto); font:inherit;
+    }
+    .filtros-associados button { padding:10px 16px; border:1px solid var(--cor-principal); border-radius:12px; background:transparent; color:var(--cor-principal); font:inherit; cursor:pointer; }
+    #resultadoFiltrosAssociados { margin:14px 0 0; color:var(--cor-texto-suave); font-size:14px; }
+  </style>
 </head>
 
 
@@ -69,6 +78,15 @@
 
       </section>
 
+
+      <section id="filtrosListaAssociados" class="cartao-app filtros-associados" hidden>
+        <label for="buscaNomeAssociado">Buscar por nome</label>
+        <input id="buscaNomeAssociado" type="search" placeholder="Digite o nome do associado" autocomplete="off">
+        <label for="filtroFuncaoAssociado">Função</label>
+        <select id="filtroFuncaoAssociado"><option value="">Todas as funções</option></select>
+        <button id="limparFiltrosAssociados" type="button">Limpar filtros</button>
+        <p id="resultadoFiltrosAssociados" role="status" aria-live="polite"></p>
+      </section>
 
       <section class="cartao-app">
 
@@ -116,7 +134,7 @@
 
   <script src="app.js?v=2"></script>
 
-  <script src="lista-associados.js?v=4"></script>
+  <script src="lista-associados.js?v=5"></script>
 
   <script src="menu-adm.js?v=3"></script>
 

@@ -277,6 +277,59 @@ function ordenarAssociados(
    CARREGAR ASSOCIADOS
 ========================================== */
 
+
+let associadosParaFiltrar = [];
+
+function normalizarBuscaAssociado(valor) {
+  return String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('pt-BR').trim();
+}
+
+function funcoesDoAssociado(associado) {
+  return (associado.usuario_funcoes || []).map(item => item.funcoes).filter(Boolean);
+}
+
+function preencherFuncoesFiltro() {
+  const select = document.getElementById('filtroFuncaoAssociado');
+  select.replaceChildren(new Option('Todas as funções', ''));
+  const funcoes = new Map();
+  for (const associado of associadosParaFiltrar) {
+    for (const funcao of funcoesDoAssociado(associado)) {
+      funcoes.set(String(funcao.id || funcao.nome), funcao.nome);
+    }
+  }
+  for (const [id, nome] of [...funcoes].sort((a,b) => a[1].localeCompare(b[1], 'pt-BR'))) {
+    select.add(new Option(nome, id));
+  }
+  if (associadosParaFiltrar.some(a => !funcoesDoAssociado(a).length)) {
+    select.add(new Option('Sem função cadastrada', '__sem_funcao__'));
+  }
+}
+
+function aplicarFiltrosAssociados() {
+  const termos = normalizarBuscaAssociado(document.getElementById('buscaNomeAssociado').value).split(/\s+/).filter(Boolean);
+  const funcao = document.getElementById('filtroFuncaoAssociado').value;
+  const filtrados = associadosParaFiltrar.filter(associado => {
+    const nome = normalizarBuscaAssociado(associado.nome_completo);
+    const funcoes = funcoesDoAssociado(associado);
+    return termos.every(termo => nome.includes(termo)) &&
+      (!funcao || (funcao === '__sem_funcao__' ? !funcoes.length : funcoes.some(f => String(f.id || f.nome) === funcao)));
+  });
+  listaAssociados.replaceChildren(...filtrados.map(criarItemAssociado));
+  mensagemSemAssociados.hidden = filtrados.length > 0;
+  mensagemSemAssociados.textContent = associadosParaFiltrar.length ? 'Nenhum associado corresponde aos filtros selecionados.' : 'Nenhum associado encontrado.';
+  document.getElementById('resultadoFiltrosAssociados').textContent =
+    `Exibindo ${filtrados.length} de ${associadosParaFiltrar.length} associados ativos.`;
+}
+
+document.getElementById('buscaNomeAssociado').addEventListener('input', aplicarFiltrosAssociados);
+document.getElementById('filtroFuncaoAssociado').addEventListener('change', aplicarFiltrosAssociados);
+document.getElementById('limparFiltrosAssociados').addEventListener('click', () => {
+  document.getElementById('buscaNomeAssociado').value = '';
+  document.getElementById('filtroFuncaoAssociado').value = '';
+  aplicarFiltrosAssociados();
+  document.getElementById('buscaNomeAssociado').focus();
+});
+
 async function carregarAssociados() {
 
   if (
@@ -325,25 +378,10 @@ async function carregarAssociados() {
       );
 
 
-    listaAssociados.innerHTML =
-      "";
-
-
-    mensagemSemAssociados.hidden =
-      associados.length > 0;
-
-
-    associados.forEach(
-      (associado) => {
-
-        listaAssociados.appendChild(
-          criarItemAssociado(
-            associado
-          )
-        );
-
-      }
-    );
+    associadosParaFiltrar = associados;
+    preencherFuncoesFiltro();
+    document.getElementById('filtrosListaAssociados').hidden = false;
+    aplicarFiltrosAssociados();
 
 
   } catch (erro) {
