@@ -284,24 +284,13 @@ function normalizarBuscaAssociado(valor) {
   return String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('pt-BR').trim();
 }
 
-function funcoesDoAssociado(associado) {
-  return (associado.usuario_funcoes || []).map(item => item.funcoes).filter(Boolean);
-}
-
 function preencherFuncoesFiltro() {
   const select = document.getElementById('filtroFuncaoAssociado');
   select.replaceChildren(new Option('Todas as funções', ''));
-  const funcoes = new Map();
-  for (const associado of associadosParaFiltrar) {
-    for (const funcao of funcoesDoAssociado(associado)) {
-      funcoes.set(String(funcao.id || funcao.nome), funcao.nome);
-    }
-  }
-  for (const [id, nome] of [...funcoes].sort((a,b) => a[1].localeCompare(b[1], 'pt-BR'))) {
-    select.add(new Option(nome, id));
-  }
-  if (associadosParaFiltrar.some(a => !funcoesDoAssociado(a).length)) {
-    select.add(new Option('Sem função cadastrada', '__sem_funcao__'));
+  const categorias = [...new Set(associadosParaFiltrar.map(a => obterFuncaoPrioritaria(a.usuario_funcoes || [])))];
+  categorias.sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  for (const categoria of categorias) {
+    select.add(new Option(categoria, categoria));
   }
 }
 
@@ -310,9 +299,9 @@ function aplicarFiltrosAssociados() {
   const funcao = document.getElementById('filtroFuncaoAssociado').value;
   const filtrados = associadosParaFiltrar.filter(associado => {
     const nome = normalizarBuscaAssociado(associado.nome_completo);
-    const funcoes = funcoesDoAssociado(associado);
+    const categoria = obterFuncaoPrioritaria(associado.usuario_funcoes || []);
     return termos.every(termo => nome.includes(termo)) &&
-      (!funcao || (funcao === '__sem_funcao__' ? !funcoes.length : funcoes.some(f => String(f.id || f.nome) === funcao)));
+      (!funcao || categoria === funcao);
   });
   listaAssociados.replaceChildren(...filtrados.map(criarItemAssociado));
   mensagemSemAssociados.hidden = filtrados.length > 0;
