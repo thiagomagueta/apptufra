@@ -3906,7 +3906,7 @@ function obterNomesListasAtuaisAssociado() {
 
   }
 
-  return listas;
+  return TufraPeriodos.listas(associadoAtual.id, listas);
 
 }
 
@@ -3914,6 +3914,7 @@ function obterNomesListasAtuaisAssociado() {
 function obterDataEntradaListaResumo(
   nomeLista
 ) {
+  if(TufraPeriodos.gerenciada(nomeLista) && TufraPeriodos.daPessoa(associadoAtual.id).length) return null;
 
   if (
     !associadoAtual
@@ -4716,6 +4717,7 @@ function criarBlocoResumoPresenca(
 ========================================== */
 
 async function carregarResumoPresencaAssociado() {
+  await TufraPeriodos.carregar();
 
   if (
     !associadoAtual
@@ -4775,10 +4777,9 @@ async function carregarResumoPresencaAssociado() {
     }
 
 
-    const atividades =
-      await buscarUltimasAtividadesResumo(
-        tipoLista.tipo_atividade
-      );
+    const atividadesOriginais = await buscarUltimasAtividadesResumo(tipoLista.tipo_atividade);
+    const atividades = TufraPeriodos.filtrar(associadoAtual.id,nomeLista,atividadesOriginais);
+    if(!atividades.length) continue;
 
 
     const presencas =
