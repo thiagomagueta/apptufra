@@ -580,6 +580,11 @@ function obterTiposAtividadeDoMedium() {
 function atividadePertenceAoMedium(
   atividade
 ) {
+  if(associadoAtualJustificativas && TufraPeriodos.daPessoa(associadoAtualJustificativas.id).length) {
+    if(atividade.tipo_atividade==='gira_desenvolvimento') return TufraPeriodos.participa(associadoAtualJustificativas.id,'Desenvolvimento',atividade.data);
+    if(atividade.tipo_atividade==='gira_principal' && TufraPeriodos.participa(associadoAtualJustificativas.id,'Banco sábado',atividade.data)) return true;
+  }
+
 
   const tiposPermitidos =
     obterTiposAtividadeDoMedium();
@@ -596,6 +601,7 @@ function atividadePertenceAoMedium(
 ========================================== */
 
 async function carregarAtividadesJustificativas() {
+  await TufraPeriodos.carregar();
 
   const resultado =
     await window.supabaseClient
