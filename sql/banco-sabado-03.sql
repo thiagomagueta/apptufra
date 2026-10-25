@@ -67,5 +67,5 @@ coalesce( v_justificativa,
 ) <> '' then 'justificada'
 else 'falta' end,
 'confirmacao_previa' );
-end; $function$
+end; $function$;
 commit;
