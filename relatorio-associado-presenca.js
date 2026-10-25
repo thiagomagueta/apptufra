@@ -296,6 +296,7 @@ async function validarDiretoria() {
 function nomesFuncoesDaLista(
   nomeLista
 ) {
+  if(nomeLista === 'Banco sábado') return ['Banco sábado'];
 
   if (
     nomeLista ===
@@ -409,6 +410,7 @@ function obterNomeFuncaoHistorica() {
 function obterDataEntradaNaLista(
   associado
 ) {
+  if(TufraPeriodos.gerenciada(tipoListaAtual?.nome) && TufraPeriodos.daPessoa(associado.id).length) return null;
 
   if (
     !tipoListaAtual
@@ -793,6 +795,7 @@ function carregarAnosDisponiveis() {
 ========================================== */
 
 async function carregarAssociados() {
+  await TufraPeriodos.carregar();
 
   associadosDaLista =
     [];
@@ -877,6 +880,8 @@ async function carregarAssociados() {
               .filter(Boolean);
 
 
+          const historico = TufraPeriodos.participa(usuario.id, tipoListaAtual.nome, null);
+          if(historico !== null) return historico;
           return funcoesNecessarias.some(
             (funcao) =>
               nomes.includes(
@@ -1075,6 +1080,7 @@ function obterSituacao(
   associado,
   atividade
 ) {
+  if(TufraPeriodos.participa(associado.id,tipoListaAtual.nome,atividade.data)===false) return 'nao_participava';
 
   const dataEntrada =
     obterDataEntradaNaLista(
