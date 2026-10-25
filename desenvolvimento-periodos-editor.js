@@ -17,7 +17,7 @@ window.montarHistoricoPeriodosResumo = async function(usuarioId,podeEditar) {
     if(podeEditar){
       const campo=document.createElement('div');campo.className='campo-data-administrativa';
       const texto=document.createElement('label');texto.textContent=titulo;texto.htmlFor='dataMudancaFuncao'+i;
-      const input=document.createElement('input');input.id=texto.htmlFor;input.type='text';input.inputMode='numeric';input.maxLength=10;input.placeholder='dd/mm/aaaa';input.autocomplete='off';input.value=data.textContent;input.dataset.periodoIndice=i;
+      const input=document.createElement('input');input.id=texto.htmlFor;input.type='text';input.inputMode='numeric';input.maxLength=10;input.placeholder='dd/mm/aaaa';input.autocomplete='off';input.value=data.textContent;input.dataset.periodoIndice=i;input.addEventListener('input',()=>aplicarMascaraData(input));
       campo.append(texto,input);e.append(campo);
     }
   });
