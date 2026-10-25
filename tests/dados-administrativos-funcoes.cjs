@@ -3,6 +3,7 @@ const nodes=new Map();
 class Element {
  constructor(tag){this.tag=tag;this.children=[];this.dataset={}}
  set id(v){this._id=v;nodes.set(v,this)}get id(){return this._id}
+ addEventListener(nome,fn){this[nome]=fn}
  append(...ns){ns.forEach(n=>{n.parent=this;this.children.push(n)})}
  insertBefore(n,antes){n.parent=this;this.children.splice(this.children.indexOf(antes),0,n)}
  remove(){nodes.delete(this.id);if(this.parent)this.parent.children=this.parent.children.filter(n=>n!==this)}
