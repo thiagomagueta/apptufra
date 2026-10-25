@@ -564,116 +564,12 @@ function associadoParticipavaNaData(
 ========================================== */
 
 async function carregarAssociados() {
-
-  const funcoesNecessarias =
-    nomesFuncoesDaLista(
-      tipoListaNome
-    );
-
-
-  if (
-    funcoesNecessarias.length ===
-    0
-  ) {
-
-    associadosDaLista =
-      [];
-
-    return;
-
-  }
-
-
-  const resultado =
-    await window.supabaseClient
-      .from(
-        "usuarios"
-      )
-      .select(`
-        id,
-        nome_completo,
-        status,
-        data_entrada_tufra,
-
-        usuario_funcoes!usuario_funcoes_usuario_id_fkey (
-          funcoes (
-            nome
-          )
-        )
-      `)
-      .eq(
-        "status",
-        "ativo"
-      );
-
-
-  if (
-    resultado.error
-  ) {
-
-    throw resultado.error;
-
-  }
-
-
-  associadosDaLista =
-    (
-      resultado.data ||
-      []
-    )
-      .filter(
-        (usuario) => {
-
-          const nomes =
-            (
-              usuario.usuario_funcoes ||
-              []
-            )
-              .map(
-                (item) =>
-                  item.funcoes?.nome
-              )
-              .filter(Boolean);
-
-
-          return funcoesNecessarias.some(
-            (funcao) =>
-              nomes.includes(
-                funcao
-              )
-          );
-
-        }
-      )
-      .filter(
-        (usuario) =>
-          associadoParticipavaNaData(
-            usuario
-          )
-      )
-      .sort(
-        (a, b) =>
-          String(
-            a.nome_completo ||
-            ""
-          ).localeCompare(
-            String(
-              b.nome_completo ||
-              ""
-            ),
-            "pt-BR",
-            {
-              sensitivity:
-                "base"
-            }
-          )
-      );
+  const r = await window.supabaseClient.rpc('listar_associados_presenca_periodo', {
+    p_tipo_lista_id: tipoListaId, p_data: dataAtividade
+  });
+  if(r.error) throw r.error;
+  associadosDaLista = r.data || [];
 }
-
-
-/* ==========================================
-   CARREGAR PRESENÇAS
-========================================== */
 
 async function carregarPresencas() {
 
