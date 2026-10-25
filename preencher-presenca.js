@@ -580,10 +580,11 @@ async function carregarAssociados() {
   const resultado =
     await window.supabaseClient
       .rpc(
-        "listar_associados_lista_presenca",
+        "listar_associados_presenca_periodo",
         {
           p_tipo_lista_id:
-            tipoListaId
+            tipoListaId,
+          p_data: dataAtividade
         }
       );
 
