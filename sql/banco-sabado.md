@@ -1,6 +1,6 @@
 # Banco sábado e histórico do Desenvolvimento
 
-Estado: implementação preparada na branch `banco-sabado-periodos`; **não ativada em produção**. A instalação automática no Supabase retornou `Invalid or expired requestState` tanto em execute_sql quanto em apply_migration. A consulta posterior confirmou que a tabela nova não existe. A branch main permanece intacta.
+Estado: os três blocos SQL foram instalados no projeto apptufra em 25/10/2026. O teste transacional de ida/volta, fronteiras, sobreposição, autorização e preservação de presenças passou com ROLLBACK. Implementação validada para integração em main.
 
 ## Instalação
 
@@ -43,4 +43,4 @@ Executado localmente:
 - `node tests/desenvolvimento-periodos.cjs`: limites inclusivo/exclusivo, ida e retorno, listas históricas, ausência de histórico, filtro de atividades, exibição do nome completo e exclusão de falta fora do período sem apagar o lançamento.
 - `node --check` em todos os arquivos JavaScript alterados.
 
-Pendente: execução do SQL e do teste `tests/desenvolvimento-periodos.sql`, validação de RLS e RPCs no banco e teste visual autenticado após a instalação. O endereço do aplicativo também retornou erro de conexão no navegador desta sessão.
+Executado no banco após instalação: `tests/desenvolvimento-periodos.sql`, com sucesso e ROLLBACK. Teste visual autenticado continua dependente de acesso ao aplicativo pelo navegador.
