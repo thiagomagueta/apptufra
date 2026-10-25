@@ -2235,6 +2235,7 @@ function renderizarHistoricoEdicao() {
 ========================================== */
 
 function abrirEdicaoDatas() {
+  if(associadoAtual) window.montarHistoricoPeriodosResumo(associadoAtual.id,podeEditarAssociado);
 
   if (
     !podeEditarAssociado ||
@@ -2762,7 +2763,7 @@ async function salvarDatasAdministrativas() {
     const resultado =
       await window.supabaseClient
         .rpc(
-          "editar_dados_administrativos_associado",
+          "editar_dados_administrativos_com_funcoes",
           {
 
             p_usuario_id:
@@ -2778,7 +2779,9 @@ async function salvarDatasAdministrativas() {
               principal,
 
             p_historico_funcoes:
-              historicoParaSalvar
+              historicoParaSalvar,
+
+            p_periodos: window.obterPeriodosDadosAdministrativos(associadoAtual.id)
 
           }
         );
@@ -2807,6 +2810,12 @@ async function salvarDatasAdministrativas() {
       historicoParaSalvar
     );
 
+    await TufraPeriodos.carregar(true);
+    const primeiraPrincipal = TufraPeriodos.daPessoa(associadoAtual.id).find(p=>p.grupo==='principal');
+    if(primeiraPrincipal) associadoAtual.data_corrente_principal=primeiraPrincipal.data_inicio;
+    await window.montarHistoricoPeriodosResumo(associadoAtual.id,podeEditarAssociado);
+    await carregarResumoPresencaAssociado();
+
 
     atualizarVisualizacaoDatas();
 
@@ -2830,7 +2839,7 @@ async function salvarDatasAdministrativas() {
     );
 
     mensagemDatasAdministrativas.textContent =
-      "Não foi possível salvar os dados administrativos.";
+      erro.message || "Não foi possível salvar os dados administrativos.";
 
     mensagemDatasAdministrativas.hidden =
       false;
