@@ -11,14 +11,14 @@ begin
  select id into v_terca from public.tipos_lista_presenca where nome='Desenvolvimento';
  select id into v_sabado from public.tipos_lista_presenca where nome='Banco sábado';
  select count(*) into v_presencas from public.presencas;
- perform public.salvar_periodos_desenvolvimento(v_usuario,replace('[{"grupo":"banco_terca","data_inicio":"2020-01-01","data_fim":"2026-06-01"},{"grupo":"banco_sabado","data_inicio":"2026-06-01","data_fim":"2026-09-01"},{"grupo":"corrente_terca","data_inicio":"2026-09-01","data_fim":null}]','2020-01-01',v_inicio::text)::jsonb);
+ perform private.salvar_periodos_desenvolvimento(v_usuario,replace('[{"grupo":"banco_terca","data_inicio":"2020-01-01","data_fim":"2026-06-01"},{"grupo":"banco_sabado","data_inicio":"2026-06-01","data_fim":"2026-09-01"},{"grupo":"corrente_terca","data_inicio":"2026-09-01","data_fim":null}]','2020-01-01',v_inicio::text)::jsonb);
  if not exists(select 1 from public.listar_associados_presenca_periodo(v_terca,'2026-05-31') where id=v_usuario) then raise exception 'Teste terça antes falhou'; end if;
  if exists(select 1 from public.listar_associados_presenca_periodo(v_terca,'2026-06-01') where id=v_usuario) then raise exception 'Teste terça durante sábado falhou'; end if;
  if not exists(select 1 from public.listar_associados_presenca_periodo(v_sabado,'2026-06-01') where id=v_usuario) then raise exception 'Teste sábado falhou'; end if;
  if not exists(select 1 from public.listar_associados_presenca_periodo(v_terca,'2026-09-01') where id=v_usuario) then raise exception 'Teste retorno falhou'; end if;
  if (select count(*) from public.presencas)<>v_presencas then raise exception 'Presenças alteradas'; end if;
  begin
-  perform public.salvar_periodos_desenvolvimento(v_usuario,'[{"grupo":"banco_sabado","data_inicio":"2026-06-01","data_fim":"2026-09-01"},{"grupo":"banco_terca","data_inicio":"2026-08-01","data_fim":null}]'::jsonb);
+  perform private.salvar_periodos_desenvolvimento(v_usuario,'[{"grupo":"banco_sabado","data_inicio":"2026-06-01","data_fim":"2026-09-01"},{"grupo":"banco_terca","data_inicio":"2026-08-01","data_fim":null}]'::jsonb);
  exception when others then v_err:=true; end;
  if not v_err then raise exception 'Aceitou sobreposição'; end if;
  perform set_config('request.jwt.claim.sub','',true);
