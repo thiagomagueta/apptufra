@@ -23,5 +23,16 @@ vm.createContext(ctx);vm.runInContext(fs.readFileSync(__dirname+'/../desenvolvim
  nodes.get('dataMudancaFuncao1').value='24/10/2026';
  const editados=ctx.window.obterPeriodosDadosAdministrativos('pessoa');
  assert.equal(editados[0].data_fim,'2026-10-24');assert.equal(editados[1].data_inicio,'2026-10-24');
+ // A entrada na Principal usa o campo existente, sem outra linha ou outro input.
+ ps.splice(0,ps.length,{grupo:'principal',data_inicio:'2026-01-01',data_fim:null});
+ ctx.TufraPeriodos.grupos.principal='Médium Corrente Principal';
+ nodes.delete('dataMudancaFuncao0');nodes.delete('dataMudancaFuncao1');
+ const item=new Element('div');item.id='itemDataCorrentePrincipal';item.hidden=false;
+ const campo=new Element('input');campo.id='dataCorrentePrincipal';campo.value='01/01/2026';
+ await ctx.window.montarHistoricoPeriodosResumo('pessoa',true);
+ assert.equal(nodes.get('funcoesDatasVisualizacao').children.length,0);
+ assert.equal(nodes.get('funcoesDatasEdicao').children.length,0);
+ campo.value='02/01/2026';
+ assert.equal(ctx.window.obterPeriodosDadosAdministrativos('pessoa')[0].data_inicio,'2026-01-02');
  console.log('Dados administrativos: visualização e edição integradas; fronteiras corrigidas pelo mesmo formulário.');
 })().catch(e=>{console.error(e);process.exitCode=1});
