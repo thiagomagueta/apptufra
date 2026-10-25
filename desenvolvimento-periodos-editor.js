@@ -1,14 +1,23 @@
 "use strict";
 // As alterações de função e suas datas integram os dados administrativos.
+const camposPeriodosUnificados = new Map();
 window.montarHistoricoPeriodosResumo = async function(usuarioId,podeEditar) {
   document.getElementById('historicoPeriodosMediunicos')?.remove();
   const ps=TufraPeriodos.daPessoa(usuarioId);
+  camposPeriodosUnificados.clear();
   const visual=document.getElementById('visualizacaoDatasAdministrativas');
   const edicao=document.getElementById('edicaoDatasAdministrativas');
   for(const id of ['funcoesDatasVisualizacao','funcoesDatasEdicao'])document.getElementById(id)?.remove();
   const v=document.createElement('div');v.id='funcoesDatasVisualizacao';
   const e=document.createElement('div');e.id='funcoesDatasEdicao';
   ps.forEach((p,i)=>{
+    const campoExistente = p.grupo==='principal' ? ['itemDataCorrentePrincipal','dataCorrentePrincipal'] : p.grupo==='corrente_terca' ? ['itemDataCorrenteDesenvolvimento','dataCorrenteDesenvolvimento'] : null;
+    // A primeira entrada na corrente já possui um campo administrativo próprio.
+    if(campoExistente && ps.findIndex(x=>x.grupo===p.grupo)===i){
+      const item=document.getElementById(campoExistente[0]);
+      if(item && !item.hidden){camposPeriodosUnificados.set(i,campoExistente[1]);return;}
+    }
+
     const nome=TufraPeriodos.grupos[p.grupo];
     const titulo=i===0?'Início como '+nome:'Alteração de função: '+TufraPeriodos.grupos[ps[i-1].grupo]+' → '+nome;
     const linha=document.createElement('div');linha.className='item-resumo-associado';
@@ -26,7 +35,7 @@ window.montarHistoricoPeriodosResumo = async function(usuarioId,podeEditar) {
 window.obterPeriodosDadosAdministrativos=function(usuarioId){
   const ps=TufraPeriodos.daPessoa(usuarioId).map(({grupo,data_inicio,data_fim})=>({grupo,data_inicio,data_fim}));
   for(let i=0;i<ps.length;i++){
-    const campo=document.getElementById('dataMudancaFuncao'+i);
+    const campo=document.getElementById('dataMudancaFuncao'+i) || document.getElementById(camposPeriodosUnificados.get(i));
     if(!campo)continue;
     const data=converterDataParaISO(campo.value);
     if(!data)throw Error('Informe uma data válida para a alteração de função.');
