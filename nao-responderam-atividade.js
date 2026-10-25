@@ -513,7 +513,8 @@ function obterNomesFuncoesEsperadasNaoResponderam() {
 
     return [
       "Médium Corrente Principal",
-      "Médium Principal"
+      "Médium Principal",
+      "Médium em Desenvolvimento"
     ];
 
   }
@@ -795,6 +796,7 @@ async function buscarIdsUsuariosQueResponderamNaoResponderam() {
 ========================================== */
 
 async function buscarNaoResponderamAtividade() {
+  await TufraPeriodos.carregar();
 
   const funcoes =
     await buscarFuncoesEsperadasNaoResponderam();
@@ -812,6 +814,11 @@ async function buscarNaoResponderamAtividade() {
     );
 
 
+  const principais = new Set(await buscarIdsUsuariosEsperadosNaoResponderam(funcoes.filter(f=>['Médium Corrente Principal','Médium Principal'].includes(f.nome))));
+  const esperadosNoPeriodo = usuariosEsperados.filter(u=> atividadeNaoResponderamAtual.tipo_atividade==='gira_principal'
+    ? principais.has(u.id) || TufraPeriodos.participa(u.id,'Banco sábado',atividadeNaoResponderamAtual.data)
+    : TufraPeriodos.participa(u.id,'Desenvolvimento',atividadeNaoResponderamAtual.data)!==false);
+
   const idsQueResponderam =
     await buscarIdsUsuariosQueResponderamNaoResponderam();
 
@@ -822,7 +829,7 @@ async function buscarNaoResponderamAtividade() {
     );
 
 
-  return usuariosEsperados
+  return esperadosNoPeriodo
     .filter(
       (usuario) =>
         !conjuntoResponderam.has(
