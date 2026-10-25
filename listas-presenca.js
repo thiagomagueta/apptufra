@@ -638,56 +638,33 @@ function carregarAnosDisponiveis(
    ATIVIDADES PREENCHIDAS
 ========================================== */
 
+let situacoesAtividades = new Map();
+
+function calcularSituacaoAtividade(atividade, associados, registros, nomeLista) {
+  const esperados = associados.filter(u => (!u.data_entrada_tufra || u.data_entrada_tufra<=atividade.data) && TufraPeriodos.participa(u.id,nomeLista,atividade.data)!==false);
+  if(!esperados.length) return 'Sem participantes';
+  const ids=new Set(esperados.map(u=>u.id));
+  const preenchidos=new Set(registros.filter(p=>p.atividade_id===atividade.id && ids.has(p.usuario_id) && ['presente','falta','justificada'].includes(p.status)).map(p=>p.usuario_id));
+  return preenchidos.size===ids.size ? '✓ Preenchida' : 'Pendente';
+}
+
 async function carregarAtividadesPreenchidas() {
-
-  atividadesPreenchidas =
-    new Set();
-
-
-  if (
-    !tipoListaAtual
-  ) {
-
-    return;
-
+  atividadesPreenchidas=new Set();situacoesAtividades=new Map();
+  if(!tipoListaAtual)return;
+  await TufraPeriodos.carregar();
+  const membros=await window.supabaseClient.rpc('listar_associados_presenca_periodo',{p_tipo_lista_id:tipoListaAtual.id,p_data:null});
+  if(membros.error)throw membros.error;
+  const registros=[];
+  for(let inicio=0;;inicio+=500){
+    const r=await window.supabaseClient.from('presencas').select('atividade_id,usuario_id,status,id').eq('tipo_lista_id',tipoListaAtual.id).order('id').range(inicio,inicio+499);
+    if(r.error)throw r.error;
+    registros.push(...(r.data||[]));if((r.data||[]).length<500)break;
   }
-
-
-  const resultado =
-    await window.supabaseClient
-      .from(
-        "presencas"
-      )
-      .select(
-        "atividade_id"
-      )
-      .eq(
-        "tipo_lista_id",
-        tipoListaAtual.id
-      );
-
-
-  if (
-    resultado.error
-  ) {
-
-    throw resultado.error;
-
+  for(const atividade of todasAtividades){
+    const situacao=calcularSituacaoAtividade(atividade,membros.data||[],registros,tipoListaAtual.nome);
+    situacoesAtividades.set(atividade.id,situacao);
+    if(situacao==='✓ Preenchida')atividadesPreenchidas.add(atividade.id);
   }
-
-
-  atividadesPreenchidas =
-    new Set(
-      (
-        resultado.data ||
-        []
-      )
-        .map(
-          (item) =>
-            item.atividade_id
-        )
-        .filter(Boolean)
-    );
 }
 
 
@@ -805,9 +782,7 @@ function criarItemAtividade(
 
 
   status.textContent =
-    preenchida
-      ? "✓ Preenchida"
-      : "Pendente";
+    situacoesAtividades.get(atividade.id) || "Pendente";
 
 
   dados.appendChild(
