@@ -4718,6 +4718,7 @@ function criarBlocoResumoPresenca(
 
 async function carregarResumoPresencaAssociado() {
   await TufraPeriodos.carregar();
+  await window.montarHistoricoPeriodosResumo(associadoAtual.id,podeEditarAssociado);
 
   if (
     !associadoAtual
