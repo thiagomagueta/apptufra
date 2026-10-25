@@ -459,6 +459,7 @@ function montarListaFuncoes(
 async function carregarFuncoes(
   usuarioId
 ) {
+  if(!usuarioId) usuarioId=obterParametros().usuarioId;
 
   const resultadoFuncoes =
     await window.supabaseClient
@@ -522,6 +523,13 @@ async function carregarFuncoes(
       [],
     funcoesUsuario
   );
+  if(obterParametros().tipo==='ativo') {
+    const gerenciados = (resultadoFuncoes.data||[]).filter(f=>['Médium em Desenvolvimento','Banco do Desenvolvimento','Corrente do Desenvolvimento','Banco sábado'].includes(f.nome)).map(f=>f.id);
+    listaFuncoesPermissao.querySelectorAll('input[type=checkbox]').forEach(c=>{
+      if(gerenciados.includes(c.dataset.funcaoId)){c.disabled=true;c.title='Altere pelo Histórico do Desenvolvimento, informando a data.';}
+    });
+  }
+
 }
 
 
