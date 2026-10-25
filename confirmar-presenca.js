@@ -657,6 +657,7 @@ async function carregarAtividadeConfirmacao() {
 ========================================== */
 
 async function carregarTipoListaConfirmacao() {
+  await TufraPeriodos.carregar();
 
   if (
     !atividadeConfirmacaoAtual
@@ -709,6 +710,9 @@ async function carregarTipoListaConfirmacao() {
 
   }
 
+
+  if(atividadeConfirmacaoAtual.tipo_atividade==='gira_principal' &&
+    TufraPeriodos.participa(usuarioConfirmacaoAtual.id,'Banco sábado',atividadeConfirmacaoAtual.data)) nomeLista='Banco sábado';
 
   const resultado =
     await window.supabaseClient
