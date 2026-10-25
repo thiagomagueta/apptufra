@@ -342,6 +342,22 @@ function criarCheckboxFuncao(
     );
 
   checkbox.disabled = !funcao.ativo;
+  checkbox.addEventListener('change', () => {
+    const todos=Array.from(listaFuncoesPermissao.querySelectorAll('input[type=checkbox]'));
+    const dev=['Banco do Desenvolvimento','Corrente do Desenvolvimento','Banco sábado'];
+    const principal=['Médium Corrente Principal','Médium Principal'];
+    const nome=checkbox.dataset.funcaoNome;
+    if(checkbox.checked && principal.includes(nome)) todos.filter(c=>dev.includes(c.dataset.funcaoNome)||c.dataset.funcaoNome==='Médium em Desenvolvimento').forEach(c=>c.checked=false);
+    if(checkbox.checked && (dev.includes(nome)||nome==='Médium em Desenvolvimento')) {
+      todos.filter(c=>principal.includes(c.dataset.funcaoNome)).forEach(c=>c.checked=false);
+      if(dev.includes(nome)) {
+        todos.filter(c=>dev.includes(c.dataset.funcaoNome)&&c!==checkbox).forEach(c=>c.checked=false);
+        const pai=todos.find(c=>c.dataset.funcaoNome==='Médium em Desenvolvimento');if(pai)pai.checked=true;
+      }
+    }
+    if(!checkbox.checked && nome==='Médium em Desenvolvimento') todos.filter(c=>dev.includes(c.dataset.funcaoNome)).forEach(c=>c.checked=false);
+  });
+
 
 
   const texto =
@@ -523,12 +539,7 @@ async function carregarFuncoes(
       [],
     funcoesUsuario
   );
-  if(obterParametros().tipo==='ativo') {
-    const gerenciados = (resultadoFuncoes.data||[]).filter(f=>['Médium em Desenvolvimento','Banco do Desenvolvimento','Corrente do Desenvolvimento','Banco sábado'].includes(f.nome)).map(f=>f.id);
-    listaFuncoesPermissao.querySelectorAll('input[type=checkbox]').forEach(c=>{
-      if(gerenciados.includes(c.dataset.funcaoId)){c.disabled=true;c.title='Altere pelo Histórico do Desenvolvimento, informando a data.';}
-    });
-  }
+
 
 }
 
@@ -825,161 +836,9 @@ async function atualizarHistoricoFuncoes(
    SINCRONIZA FUNÇÕES DO USUÁRIO
 ========================================== */
 
-async function sincronizarFuncoesUsuario(
-  usuarioId,
-  atribuidoPor
-) {
-
-  const resultadoAtuais =
-    await window.supabaseClient
-      .from(
-        "usuario_funcoes"
-      )
-      .select(`
-        id,
-        funcao_id,
-        funcoes (
-          nome
-        )
-      `)
-      .eq(
-        "usuario_id",
-        usuarioId
-      );
-
-
-  if (
-    resultadoAtuais.error
-  ) {
-
-    throw resultadoAtuais.error;
-
-  }
-
-
-  const atuais =
-    resultadoAtuais.data ||
-    [];
-
-
-  const nomesAtuais =
-    atuais
-      .map(
-        (item) =>
-          item.funcoes?.nome
-      )
-      .filter(Boolean);
-
-
-  const marcadas =
-    obterFuncoesMarcadas();
-
-
-  const nomesMarcados =
-    obterNomesFuncoesMarcadas();
-
-
-  /*
-    Antes de alterar usuario_funcoes,
-    registramos as mudanças históricas
-    de Ogam, Cambone e Cantina.
-  */
-
-  await atualizarHistoricoFuncoes(
-    usuarioId,
-    nomesAtuais,
-    nomesMarcados
-  );
-
-
-  const adicionar =
-    marcadas.filter(
-      (funcaoId) =>
-        !atuais.some(
-          (item) =>
-            item.funcao_id ===
-            funcaoId
-        )
-    );
-
-
-  const remover =
-    atuais.filter(
-      (item) =>
-        !marcadas.includes(
-          item.funcao_id
-        )
-    );
-
-
-  for (
-    const item of remover
-  ) {
-
-    const resultadoRemocao =
-      await window.supabaseClient
-        .from(
-          "usuario_funcoes"
-        )
-        .delete()
-        .eq(
-          "id",
-          item.id
-        );
-
-
-    if (
-      resultadoRemocao.error
-    ) {
-
-      throw resultadoRemocao.error;
-
-    }
-
-  }
-
-
-  if (
-    adicionar.length >
-    0
-  ) {
-
-    const novosRegistros =
-      adicionar.map(
-        (funcaoId) => ({
-
-          usuario_id:
-            usuarioId,
-
-          funcao_id:
-            funcaoId,
-
-          atribuido_por:
-            atribuidoPor
-
-        })
-      );
-
-
-    const resultadoInsercao =
-      await window.supabaseClient
-        .from(
-          "usuario_funcoes"
-        )
-        .insert(
-          novosRegistros
-        );
-
-
-    if (
-      resultadoInsercao.error
-    ) {
-
-      throw resultadoInsercao.error;
-
-    }
-
-  }
+async function sincronizarFuncoesUsuario(usuarioId, atribuidoPor) {
+  const salvo = await window.supabaseClient.rpc('salvar_funcoes_com_periodo',{p_usuario_id:usuarioId,p_funcoes:obterFuncoesMarcadas()});
+  if(salvo.error) throw salvo.error;
 }
 
 
