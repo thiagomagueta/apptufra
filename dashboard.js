@@ -1900,6 +1900,8 @@ function obterNomeSecundariaDashboard(
     "Médium em Desenvolvimento"
   ) {
 
+    if (nome === "Banco sábado") return "Banco sábado";
+
     if (
       nome ===
       "Banco do Desenvolvimento"
@@ -1915,7 +1917,7 @@ function obterNomeSecundariaDashboard(
       "Corrente do Desenvolvimento"
     ) {
 
-      return "Corrente";
+      return "Corrente do Desenvolvimento";
 
     }
 
@@ -2022,6 +2024,7 @@ function criarNomesFuncoesExibicaoDashboard(
 ========================================== */
 
 async function carregarFuncoesUsuario() {
+  await TufraPeriodos.carregar();
 
   if (
     !window.supabaseClient ||
@@ -2540,6 +2543,14 @@ function formatarTipoAtividade(
 function usuarioPodeConfirmarAtividadeDashboard(
   atividade
 ) {
+  if(atividade && usuarioIdDashboard) {
+    if(atividade.tipo_atividade==='gira_desenvolvimento') {
+      const participa=TufraPeriodos.participa(usuarioIdDashboard,'Desenvolvimento',atividade.data);
+      if(participa!==null) return participa;
+    }
+    if(atividade.tipo_atividade==='gira_principal' && TufraPeriodos.participa(usuarioIdDashboard,'Banco sábado',atividade.data)) return true;
+  }
+
 
   if (
     !atividade
@@ -3691,7 +3702,7 @@ function obterListasAtuaisDashboard() {
   }
 
 
-  return listas;
+  return TufraPeriodos.listas(usuarioPresencaDashboard.id, listas);
 }
 
 
@@ -3702,6 +3713,7 @@ function obterListasAtuaisDashboard() {
 function obterDataEntradaListaDashboard(
   nomeLista
 ) {
+  if(TufraPeriodos.gerenciada(nomeLista) && TufraPeriodos.daPessoa(usuarioPresencaDashboard.id).length) return null;
 
   if (
     !usuarioPresencaDashboard
@@ -4761,6 +4773,7 @@ async function carregarDadosPresencaDashboard() {
 ========================================== */
 
 async function carregarResumoPresencaDashboard() {
+  await TufraPeriodos.carregar();
 
   listasPresencaDashboard.innerHTML =
     "";
@@ -4810,10 +4823,9 @@ async function carregarResumoPresencaDashboard() {
     }
 
 
-    const atividades =
-      await buscarUltimasAtividadesDashboard(
-        tipoLista.tipo_atividade
-      );
+    const atividadesOriginais = await buscarUltimasAtividadesDashboard(tipoLista.tipo_atividade);
+    const atividades = TufraPeriodos.filtrar(usuarioPresencaDashboard.id,nomeLista,atividadesOriginais);
+    if(!atividades.length) continue;
 
 
     const presencas =
