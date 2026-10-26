@@ -33,5 +33,10 @@ window.TufraPeriodos = (() => {
   function filtrar(id,nome,atividades) {
     return atividades.filter(a=>participa(id,nome,a.data)!==false);
   }
-  return {carregar,daPessoa,participa,listas,filtrar,gerenciada,grupos};
+  function associadoNaData(u,data) {
+    return (!u.data_entrada_tufra || u.data_entrada_tufra<=data) &&
+      (!u.data_saida_tufra || data<u.data_saida_tufra) &&
+      !(u.baixas||[]).some(b=>b.data_saida<=data && (!b.data_retorno || data<b.data_retorno));
+  }
+  return {associadoNaData,carregar,daPessoa,participa,listas,filtrar,gerenciada,grupos};
 })();
