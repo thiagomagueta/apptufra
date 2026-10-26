@@ -641,7 +641,7 @@ function carregarAnosDisponiveis(
 let situacoesAtividades = new Map();
 
 function calcularSituacaoAtividade(atividade, associados, registros, nomeLista) {
-  const esperados = associados.filter(u => (!u.data_entrada_tufra || u.data_entrada_tufra<=atividade.data) && TufraPeriodos.participa(u.id,nomeLista,atividade.data)!==false);
+  const esperados = associados.filter(u => TufraPeriodos.associadoNaData(u,atividade.data) && TufraPeriodos.participa(u.id,nomeLista,atividade.data)!==false);
   if(!esperados.length) return 'Sem participantes';
   const ids=new Set(esperados.map(u=>u.id));
   const preenchidos=new Set(registros.filter(p=>p.atividade_id===atividade.id && ids.has(p.usuario_id) && ['presente','falta','justificada'].includes(p.status)).map(p=>p.usuario_id));
@@ -652,7 +652,7 @@ async function carregarAtividadesPreenchidas() {
   atividadesPreenchidas=new Set();situacoesAtividades=new Map();
   if(!tipoListaAtual)return;
   await TufraPeriodos.carregar();
-  const membros=await window.supabaseClient.rpc('listar_associados_presenca_periodo',{p_tipo_lista_id:tipoListaAtual.id,p_data:null});
+  const membros=await window.supabaseClient.rpc('listar_associados_presenca_historico',{p_tipo_lista_id:tipoListaAtual.id,p_data:null});
   if(membros.error)throw membros.error;
   const registros=[];
   for(let inicio=0;;inicio+=500){
