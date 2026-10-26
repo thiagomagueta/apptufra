@@ -564,7 +564,7 @@ function associadoParticipavaNaData(
 ========================================== */
 
 async function carregarAssociados() {
-  const r = await window.supabaseClient.rpc('listar_associados_presenca_periodo', {
+  const r = await window.supabaseClient.rpc('listar_associados_presenca_historico', {
     p_tipo_lista_id: tipoListaId, p_data: dataAtividade
   });
   if(r.error) throw r.error;
