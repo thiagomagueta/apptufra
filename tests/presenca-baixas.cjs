@@ -1,0 +1,15 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const ctx={window:{}};vm.createContext(ctx);vm.runInContext(fs.readFileSync(__dirname+'/../desenvolvimento-periodos.js','utf8'),ctx);
+const participa=ctx.window.TufraPeriodos.associadoNaData;
+const u={data_entrada_tufra:'2024-01-01',data_saida_tufra:'2026-10-20',baixas:[{data_saida:'2026-10-20',data_retorno:null}]};
+assert.equal(participa(u,'2026-10-19'),true);
+assert.equal(participa(u,'2026-10-20'),false);
+assert.equal(participa(u,'2026-10-21'),false);
+u.data_saida_tufra=null;u.baixas[0].data_retorno='2026-10-25';
+assert.equal(participa(u,'2026-10-22'),false);
+assert.equal(participa(u,'2026-10-25'),true);
+assert.equal(participa(u,'2023-12-31'),false);
+u.baixas.push({data_saida:'2026-10-28',data_retorno:null});
+assert.equal(participa(u,'2026-10-27'),true);
+assert.equal(participa(u,'2026-10-28'),false);
+console.log('8 casos de baixa e retorno passaram.');
