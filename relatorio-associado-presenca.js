@@ -826,29 +826,7 @@ async function carregarAssociados() {
   }
 
 
-  const resultado =
-    await window.supabaseClient
-      .from(
-        "usuarios"
-      )
-      .select(`
-        id,
-        nome_completo,
-        status,
-        data_entrada_tufra,
-        data_corrente_desenvolvimento,
-        data_corrente_principal,
-
-        usuario_funcoes!usuario_funcoes_usuario_id_fkey (
-          funcoes (
-            nome
-          )
-        )
-      `)
-      .eq(
-        "status",
-        "ativo"
-      );
+  const resultado = await window.supabaseClient.rpc('listar_associados_presenca_historico', {p_tipo_lista_id:tipoListaAtual.id,p_data:null});
 
 
   if (
@@ -865,32 +843,6 @@ async function carregarAssociados() {
       resultado.data ||
       []
     )
-      .filter(
-        (usuario) => {
-
-          const nomes =
-            (
-              usuario.usuario_funcoes ||
-              []
-            )
-              .map(
-                (item) =>
-                  item.funcoes?.nome
-              )
-              .filter(Boolean);
-
-
-          const historico = TufraPeriodos.participa(usuario.id, tipoListaAtual.nome, null);
-          if(historico !== null) return historico;
-          return funcoesNecessarias.some(
-            (funcao) =>
-              nomes.includes(
-                funcao
-              )
-          );
-
-        }
-      )
       .sort(
         (a, b) =>
           String(
@@ -1080,7 +1032,7 @@ function obterSituacao(
   associado,
   atividade
 ) {
-  if(TufraPeriodos.participa(associado.id,tipoListaAtual.nome,atividade.data)===false) return 'nao_participava';
+  if(!TufraPeriodos.associadoNaData(associado,atividade.data) || TufraPeriodos.participa(associado.id,tipoListaAtual.nome,atividade.data)===false) return 'nao_participava';
 
   const dataEntrada =
     obterDataEntradaNaLista(
