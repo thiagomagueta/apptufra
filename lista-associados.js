@@ -138,8 +138,9 @@ function obterFuncaoPrioritaria(
 
 
   if (
-    nomes.includes(
-      "Assistência"
+    funcoes.some(item =>
+      item.funcoes?.nome === "Assistência" &&
+      item.funcoes.funcao_pai_id === null
     )
   ) {
     return "Assistência";
@@ -286,7 +287,11 @@ function normalizarBuscaAssociado(valor) {
 
 // Mantém os rótulos resumidos, mas considera todas as funções atribuídas.
 function obterCategoriasFiltroAssociado(associado) {
-  const nomes = (associado.usuario_funcoes || []).map(item => item.funcoes?.nome).filter(Boolean);
+  const nomes = (associado.usuario_funcoes || [])
+    .map(item => item.funcoes)
+    .filter(funcao => funcao &&
+      (funcao.nome !== 'Assistência' || funcao.funcao_pai_id === null))
+    .map(funcao => funcao.nome).filter(Boolean);
   const rotulos = {
     'Sacerdote': 'Sacerdote',
     'Pai/Mãe Pequeno (a)': 'Pai/Mãe Pequeno(a)',
@@ -369,7 +374,8 @@ async function carregarAssociados() {
 
             funcoes (
               id,
-              nome
+              nome,
+              funcao_pai_id
             )
           )
         `)
