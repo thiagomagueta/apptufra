@@ -1,0 +1,15 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const source=fs.readFileSync(require('path').join(__dirname,'../dashboard.js'),'utf8');
+const start=source.indexOf('function obterDataHojeProximaAtividadeDashboard');const end=source.indexOf('/*',source.indexOf('async function carregarProximaAtividade()',start));
+let now='2026-10-27T23:30:00-03:00';const NativeDate=Date;
+const eventos=[{id:'hoje',data:'2026-10-27',hora_inicio:'20:00:00',titulo:'Evento de hoje'},{id:'amanha',data:'2026-10-28',hora_inicio:'20:00:00',titulo:'Evento seguinte'}];
+let corte;
+const query={select(){return this},gte(c,v){corte=v;return this},order(){return this},then(resolve){resolve({data:eventos.filter(a=>a.data>=corte)})}};
+const ctx={Intl,Date:class extends Date{constructor(...args){super(...(args.length?args:[now]))}},console,window:{supabaseClient:{from:()=>query}},proximaAtividadeDashboard:{innerHTML:''},proximaAtividadeAtualDashboard:null,proximaAtividadeCarregadaDashboard:false,atualizarBotoesProximaAtividadeDashboard:async()=>{},criarDataLocal:s=>new NativeDate(s+'T12:00:00'),removerSegundos:s=>s.slice(0,5),formatarTipoAtividade:()=>'',formatarMesCurto:()=>'',formatarDiaSemana:()=>''};
+vm.createContext(ctx);vm.runInContext(source.slice(start,end),ctx);
+(async()=>{await ctx.carregarProximaAtividade();assert.equal(ctx.proximaAtividadeAtualDashboard.id,'hoje');
+now='2026-10-27T23:59:59-03:00';await ctx.carregarProximaAtividade();assert.equal(ctx.proximaAtividadeAtualDashboard.id,'hoje');
+now='2026-10-28T00:00:00-03:00';await ctx.carregarProximaAtividade();assert.equal(ctx.proximaAtividadeAtualDashboard.id,'amanha');
+assert.equal(ctx.obterDataHojeProximaAtividadeDashboard(new NativeDate('2026-10-28T02:59:59Z')),'2026-10-27');
+now='2026-10-29T00:00:00-03:00';await ctx.carregarProximaAtividade();assert.equal(ctx.proximaAtividadeAtualDashboard,null);
+console.log('OK: permanece após o horário e até 23:59:59; avança na data seguinte em São Paulo; trata agenda vazia.');})();

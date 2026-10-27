@@ -3247,6 +3247,14 @@ async function atualizarBotoesProximaAtividadeDashboard() {
    PRÓXIMA ATIVIDADE
 ========================================== */
 
+function obterDataHojeProximaAtividadeDashboard(agora = new Date()) {
+  const partes = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit"
+  }).formatToParts(agora);
+  const valor = tipo => partes.find(parte => parte.type === tipo).value;
+  return `${valor("year")}-${valor("month")}-${valor("day")}`;
+}
+
 async function carregarProximaAtividade() {
 
   if (
@@ -3268,34 +3276,7 @@ async function carregarProximaAtividade() {
       false;
 
 
-    const agora =
-      new Date();
-
-
-    const ano =
-      agora.getFullYear();
-
-
-    const mes =
-      String(
-        agora.getMonth() + 1
-      ).padStart(
-        2,
-        "0"
-      );
-
-
-    const dia =
-      String(
-        agora.getDate()
-      ).padStart(
-        2,
-        "0"
-      );
-
-
-    const hojeISO =
-      `${ano}-${mes}-${dia}`;
+    const hojeISO = obterDataHojeProximaAtividadeDashboard();
 
 
     const resultado =
@@ -3345,66 +3326,8 @@ async function carregarProximaAtividade() {
       [];
 
 
-    const agoraMinutos =
-      agora.getHours() *
-        60 +
-      agora.getMinutes();
-
-
-    const proxima =
-      atividades.find(
-        (atividade) => {
-
-          if (
-            atividade.data !==
-            hojeISO
-          ) {
-
-            return true;
-
-          }
-
-
-          const horario =
-            removerSegundos(
-              atividade.hora_inicio
-            );
-
-
-          if (
-            !horario
-          ) {
-
-            return true;
-
-          }
-
-
-          const [
-            hora,
-            minuto
-          ] =
-            horario
-              .split(
-                ":"
-              )
-              .map(
-                Number
-              );
-
-
-          const atividadeMinutos =
-            hora * 60 +
-            minuto;
-
-
-          return (
-            atividadeMinutos >=
-            agoraMinutos
-          );
-
-        }
-      );
+    // O horário de início não retira o evento do cartão durante o dia.
+    const proxima = atividades[0];
 
 
     if (
@@ -4899,3 +4822,17 @@ carregarFuncoesUsuario();
 carregarProximaAtividade();
 
 carregarDadosPresencaDashboard();
+
+// Atualiza também quando o aplicativo permanece aberto durante a virada do dia.
+let diaProximaAtividadeDashboard = obterDataHojeProximaAtividadeDashboard();
+function atualizarProximaAtividadeNaViradaDoDia() {
+  const hoje = obterDataHojeProximaAtividadeDashboard();
+  if (hoje !== diaProximaAtividadeDashboard) {
+    diaProximaAtividadeDashboard = hoje;
+    carregarProximaAtividade();
+  }
+}
+setInterval(atualizarProximaAtividadeNaViradaDoDia, 30 * 1000);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) atualizarProximaAtividadeNaViradaDoDia();
+});
