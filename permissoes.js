@@ -171,21 +171,10 @@ function configurarSecao() {
   }
 
 
-  if (
-    secao === "migracao"
-  ) {
-
-    tituloPermissoes.textContent =
-      "Migração Histórica";
-
-    subtituloPermissoes.textContent =
-      "Vincule cadastros ao histórico anterior ou marque usuários novos.";
-
-    secaoMigracaoHistorica.hidden =
-      false;
-
-    return "migracao";
-
+  // Migração encerrada: links antigos voltam à Gestão APP.
+  if (secao === "migracao") {
+    window.location.replace("adm-permissoes.html");
+    return null;
   }
 
 
