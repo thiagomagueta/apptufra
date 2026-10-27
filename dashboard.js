@@ -484,6 +484,20 @@ async function carregarResumoAssociadosDashboard() {
     }
 
 
+    // Conta associados ativos, uma vez por pessoa, vinculados ao Banco sábado.
+    const resultadoSabado = await window.supabaseClient
+      .from("usuarios")
+      .select(`id, usuario_funcoes!usuario_funcoes_usuario_id_fkey!inner (
+        funcoes!inner (nome)
+      )`, { count: "exact", head: true })
+      .eq("status", "ativo")
+      .eq("usuario_funcoes.funcoes.nome", "Banco sábado");
+    const totalSabado = document.getElementById("totalDesenvolvimentoSabadoDashboard");
+    if (totalSabado) {
+      totalSabado.textContent = resultadoSabado.error ? "—" : String(resultadoSabado.count ?? 0);
+    }
+    if (resultadoSabado.error) console.error("Erro ao contar desenvolvimento de sábado:", resultadoSabado.error);
+
     const resumo =
       Array.isArray(
         resultadoResumo.data
