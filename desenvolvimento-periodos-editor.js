@@ -11,6 +11,7 @@ window.montarHistoricoPeriodosResumo = async function(usuarioId,podeEditar) {
   const v=document.createElement('div');v.id='funcoesDatasVisualizacao';
   const e=document.createElement('div');e.id='funcoesDatasEdicao';
   ps.forEach((p,i)=>{
+    if(p.grupo==='fora')return;
     const campoExistente = p.grupo==='principal' ? ['itemDataCorrentePrincipal','dataCorrentePrincipal'] : p.grupo==='corrente_terca' ? ['itemDataCorrenteDesenvolvimento','dataCorrenteDesenvolvimento'] : null;
     // A primeira entrada na corrente já possui um campo administrativo próprio.
     if(campoExistente && ps.findIndex(x=>x.grupo===p.grupo)===i){
@@ -19,7 +20,10 @@ window.montarHistoricoPeriodosResumo = async function(usuarioId,podeEditar) {
     }
 
     const nome=TufraPeriodos.grupos[p.grupo];
-    const titulo=i===0?'Início como '+nome:'Alteração de função: '+TufraPeriodos.grupos[ps[i-1].grupo]+' → '+nome;
+    const anterior=ps[i-1];
+    const titulo=(!anterior || anterior.grupo==='fora')
+      ? (p.grupo==='principal'?'Início na Corrente Principal':'Início no Desenvolvimento')
+      : 'Alteração de função: '+TufraPeriodos.grupos[anterior.grupo]+' → '+nome;
     const linha=document.createElement('div');linha.className='item-resumo-associado';
     const label=document.createElement('span');label.textContent=titulo;
     const data=document.createElement('strong');data.textContent=p.data_inicio.split('-').reverse().join('/');linha.append(label,data);v.append(linha);
