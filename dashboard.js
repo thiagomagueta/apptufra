@@ -1979,6 +1979,12 @@ function criarNomesFuncoesExibicaoDashboard(
         );
 
 
+      if (funcaoPrincipal.nome === "Médium em Desenvolvimento" &&
+          secundarias.some(funcao => funcao.nome === "Banco sábado")) {
+        resultado.push("Desenv. Sábado");
+        return;
+      }
+
       if (
         secundarias.length ===
         0
@@ -4273,7 +4279,7 @@ function criarBlocoPresencaDashboard(
 
 
   titulo.textContent =
-    tipoLista.nome;
+    window.nomeExibicaoGrupoTufra(tipoLista.nome);
 
 
   bloco.appendChild(

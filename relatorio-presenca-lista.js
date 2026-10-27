@@ -617,7 +617,7 @@ async function carregarListas() {
         lista.id;
 
       opcao.textContent =
-        lista.nome;
+        window.nomeExibicaoGrupoTufra(lista.nome);
 
 
       listaRelatorioPresenca.appendChild(
@@ -1773,7 +1773,7 @@ function renderizarAnoSelecionado() {
 
 
   tituloListaRelatorioGeral.textContent =
-    tipoListaAtual.nome;
+    window.nomeExibicaoGrupoTufra(tipoListaAtual.nome);
 
 
   if (

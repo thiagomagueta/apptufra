@@ -429,7 +429,7 @@ async function carregarTipoLista() {
 
 
   tituloConsultaPresenca.textContent =
-    tipoListaNome;
+    window.nomeExibicaoGrupoTufra(tipoListaNome);
 }
 
 

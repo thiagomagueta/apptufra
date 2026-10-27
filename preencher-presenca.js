@@ -323,7 +323,7 @@ async function carregarTipoLista() {
 
 
   tituloPreencherPresenca.textContent =
-    tipoListaNome;
+    window.nomeExibicaoGrupoTufra(tipoListaNome);
 }
 
 

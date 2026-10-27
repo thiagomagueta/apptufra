@@ -143,3 +143,6 @@ function configurarBotaoSair() {
 
 
 configurarBotaoSair();
+
+// Nome de exibição; as chaves de funções e listas permanecem inalteradas.
+window.nomeExibicaoGrupoTufra = nome => nome === "Banco sábado" ? "Desenv. Sábado" : nome;

@@ -82,6 +82,10 @@ function obterFuncaoPrioritaria(
   }
 
 
+  if (nomes.includes("Banco sábado")) {
+    return "Desenv. Sábado";
+  }
+
   if (
     nomes.includes(
       "Médium em Desenvolvimento"
@@ -297,6 +301,7 @@ function obterCategoriasFiltroAssociado(associado) {
     'Pai/Mãe Pequeno (a)': 'Pai/Mãe Pequeno(a)',
     'Médium Corrente Principal': 'Médium Principal',
     'Médium Principal': 'Médium Principal',
+    'Banco sábado': 'Desenv. Sábado',
     'Banco do Desenvolvimento': 'Desenv. Banco',
     'Corrente do Desenvolvimento': 'Desenv. Corrente',
     'Cambone': 'Cambone',
@@ -306,6 +311,7 @@ function obterCategoriasFiltroAssociado(associado) {
   };
   const categorias = new Set(nomes.map(nome => rotulos[nome]).filter(Boolean));
   if (nomes.includes('Médium em Desenvolvimento') &&
+      !nomes.includes('Banco sábado') &&
       !nomes.includes('Banco do Desenvolvimento') &&
       !nomes.includes('Corrente do Desenvolvimento')) {
     categorias.add('Desenvolvimento');

@@ -389,7 +389,7 @@ async function carregarListasResponsavel(
 
 
       opcao.textContent =
-        lista.nome;
+        window.nomeExibicaoGrupoTufra(lista.nome);
 
 
       listaPreencherPresenca.appendChild(
@@ -876,7 +876,7 @@ function renderizarAtividades() {
 
 
   tituloListaPreencherPresenca.textContent =
-    tipoListaAtual.nome;
+    window.nomeExibicaoGrupoTufra(tipoListaAtual.nome);
 
 
   mensagemSemAtividadesPreencherPresenca.hidden =

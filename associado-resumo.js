@@ -1989,7 +1989,7 @@ function renderizarHistoricoFuncoes() {
         "titulo-historico-funcao";
 
       titulo.textContent =
-        funcaoNome;
+        window.nomeExibicaoGrupoTufra(funcaoNome);
 
       bloco.appendChild(
         titulo
@@ -2191,7 +2191,7 @@ function renderizarHistoricoEdicao() {
         "titulo-edicao-historico-funcao";
 
       titulo.textContent =
-        registro.funcao_nome;
+        window.nomeExibicaoGrupoTufra(registro.funcao_nome);
 
       bloco.appendChild(
         titulo
@@ -4419,7 +4419,7 @@ function criarBlocoResumoPresenca(
     "titulo-resumo-presenca-associado";
 
   titulo.textContent =
-    tipoLista.nome;
+    window.nomeExibicaoGrupoTufra(tipoLista.nome);
 
   bloco.appendChild(
     titulo

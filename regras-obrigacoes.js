@@ -366,7 +366,7 @@ function criarBlocoFuncao(
     "10px";
 
   titulo.textContent =
-    funcao.nome;
+    window.nomeExibicaoGrupoTufra(funcao.nome);
 
 
   bloco.appendChild(

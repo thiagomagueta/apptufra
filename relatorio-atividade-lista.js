@@ -482,7 +482,7 @@ async function carregarListas() {
 
 
       opcao.textContent =
-        lista.nome;
+        window.nomeExibicaoGrupoTufra(lista.nome);
 
 
       listaRelatorioAtividade.appendChild(
@@ -1106,7 +1106,7 @@ function renderizarRelatorio() {
 
 
   tituloListaRelatorioAtividade.textContent =
-    tipoListaAtual.nome;
+    window.nomeExibicaoGrupoTufra(tipoListaAtual.nome);
 
 
   const hojeISO =

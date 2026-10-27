@@ -667,7 +667,7 @@ async function carregarFuncoes() {
 
 
         nome.textContent =
-          funcao.nome;
+          window.nomeExibicaoGrupoTufra(funcao.nome);
 
 
         label.appendChild(

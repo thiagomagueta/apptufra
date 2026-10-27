@@ -309,7 +309,7 @@ async function carregarListas(
 
 
       opcao.textContent =
-        lista.nome;
+        window.nomeExibicaoGrupoTufra(lista.nome);
 
 
       listaConsultaPresenca.appendChild(
@@ -810,7 +810,7 @@ function renderizarAtividades() {
 
 
   tituloListaConsultaPresenca.textContent =
-    tipoListaAtual.nome;
+    window.nomeExibicaoGrupoTufra(tipoListaAtual.nome);
 
 
   const atividades =

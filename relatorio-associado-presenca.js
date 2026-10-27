@@ -575,7 +575,7 @@ async function carregarListas() {
 
 
       opcao.textContent =
-        lista.nome;
+        window.nomeExibicaoGrupoTufra(lista.nome);
 
 
       listaRelatorioAssociado.appendChild(
@@ -1244,7 +1244,7 @@ function renderizarRelatorio() {
 
 
   tituloListaRelatorioAssociado.textContent =
-    tipoListaAtual.nome;
+    window.nomeExibicaoGrupoTufra(tipoListaAtual.nome);
 
 
   if (
