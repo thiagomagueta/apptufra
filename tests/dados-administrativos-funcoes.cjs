@@ -34,5 +34,16 @@ vm.createContext(ctx);vm.runInContext(fs.readFileSync(__dirname+'/../desenvolvim
  assert.equal(nodes.get('funcoesDatasEdicao').children.length,0);
  campo.value='02/01/2026';
  assert.equal(ctx.window.obterPeriodosDadosAdministrativos('pessoa')[0].data_inicio,'2026-01-02');
+ ps.splice(0,ps.length,{grupo:'fora',data_inicio:'2026-01-01',data_fim:'2026-10-26'},{grupo:'banco_terca',data_inicio:'2026-10-26',data_fim:null});
+ nodes.delete('dataMudancaFuncao0');
+ await ctx.window.montarHistoricoPeriodosResumo('pessoa',true);
+ assert.equal(nodes.get('funcoesDatasVisualizacao').children.length,1);
+ assert.equal(nodes.get('funcoesDatasVisualizacao').children[0].children[0].textContent,'Início no Desenvolvimento');
+ assert.equal(nodes.has('dataMudancaFuncao0'),false);
+ nodes.get('dataMudancaFuncao1').value='25/10/2026';
+ const corrigidos=ctx.window.obterPeriodosDadosAdministrativos('pessoa');
+ assert.equal(corrigidos[0].data_inicio,'2026-01-01');
+ assert.equal(corrigidos[0].data_fim,'2026-10-25');
+ assert.equal(corrigidos[1].data_inicio,'2026-10-25');
  console.log('Dados administrativos: visualização e edição integradas; fronteiras corrigidas pelo mesmo formulário.');
 })().catch(e=>{console.error(e);process.exitCode=1});
