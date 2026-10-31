@@ -913,6 +913,30 @@ async function sincronizarPresencaOficial() {
 }
 
 
+
+// Validar a participação real antes de permitir gravação.
+async function validarParticipacaoConfirmacao() {
+  if (!atividadeConfirmacaoAtual || !usuarioConfirmacaoAtual) return false;
+  await TufraPeriodos.carregar();
+  const a = atividadeConfirmacaoAtual;
+  const id = usuarioConfirmacaoAtual.id;
+  if (a.tipo_atividade === "gira_desenvolvimento") {
+    return TufraPeriodos.participa(id, "Desenvolvimento", a.data) === true;
+  }
+  if (a.tipo_atividade === "gira_principal") {
+    if (TufraPeriodos.participa(id, "Banco sábado", a.data) === true ||
+        TufraPeriodos.participa(id, "Corrente Principal", a.data) === true) return true;
+    // Sem histórico de períodos, verificar função atual para cadastros legados.
+    if (TufraPeriodos.daPessoa(id).length) return false;
+    const r = await window.supabaseClient.from("usuario_funcoes")
+      .select("funcoes(nome)").eq("usuario_id", id);
+    if (r.error) throw r.error;
+    return (r.data || []).some(x =>
+      ["Médium Corrente Principal", "Médium Principal"].includes(x.funcoes?.nome));
+  }
+  return false;
+}
+
 /* ==========================================
    SALVAR CONFIRMAÇÃO
 ========================================== */
@@ -974,6 +998,11 @@ async function salvarConfirmacaoPresenca() {
 
 
   try {
+
+    if (!(await validarParticipacaoConfirmacao())) {
+      mostrarMensagemConfirmacao("Esta atividade não pertence ao seu grupo de presença.", "erro");
+      return;
+    }
 
     botaoSalvarConfirmacaoPresenca.disabled =
       true;
@@ -1190,6 +1219,11 @@ async function iniciarConfirmacaoPresenca() {
 
     }
 
+
+    if (!(await validarParticipacaoConfirmacao())) {
+      mostrarMensagemConfirmacao("Esta atividade não pertence ao seu grupo de presença.", "erro");
+      return;
+    }
 
     await carregarTipoListaConfirmacao();
 
