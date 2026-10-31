@@ -197,6 +197,8 @@ function formatarTipoAtividadePresencas(
 
 function obterHojeISOPresencas() {
 
+  const agora = new Date();
+
   const ano =
     agora.getFullYear();
 
