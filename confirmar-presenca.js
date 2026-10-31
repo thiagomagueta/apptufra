@@ -228,10 +228,6 @@ function formatarTipoAtividadeConfirmacao(
 
 function obterHojeISOConfirmacao() {
 
-  const agora =
-    new Date();
-
-
   const ano =
     agora.getFullYear();
 
@@ -494,67 +490,9 @@ async function carregarAtividadeConfirmacao() {
     [];
 
 
-  const agoraMinutos =
-    agora.getHours() *
-      60 +
-    agora.getMinutes();
-
-
-  const proxima =
-    atividades.find(
-      (atividade) => {
-
-        if (
-          atividade.data !==
-          hojeISO
-        ) {
-
-          return true;
-
-        }
-
-
-        const horario =
-          removerSegundosConfirmacao(
-            atividade.hora_inicio
-          );
-
-
-        if (
-          !horario
-        ) {
-
-          return true;
-
-        }
-
-
-        const [
-          hora,
-          minuto
-        ] =
-          horario
-            .split(
-              ":"
-            )
-            .map(
-              Number
-            );
-
-
-        const atividadeMinutos =
-          hora * 60 +
-          minuto;
-
-
-        return (
-          atividadeMinutos >=
-          agoraMinutos
-        );
-
-      }
-    );
-
+  // Manter a atividade do dia até a virada da data,
+  // em sincronia com o cartão da tela inicial.
+  const proxima = atividades[0];
 
   if (
     !proxima
