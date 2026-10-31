@@ -205,6 +205,8 @@ function formatarTipoAtividadeAusencias(
 
 function obterHojeISOAusencias() {
 
+  const agora = new Date();
+
   const ano =
     agora.getFullYear();
 
