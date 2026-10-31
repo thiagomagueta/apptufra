@@ -228,6 +228,8 @@ function formatarTipoAtividadeConfirmacao(
 
 function obterHojeISOConfirmacao() {
 
+  const agora = new Date();
+
   const ano =
     agora.getFullYear();
 
