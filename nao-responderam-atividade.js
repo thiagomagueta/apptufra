@@ -197,6 +197,8 @@ function formatarTipoAtividadeNaoResponderam(
 
 function obterHojeISONaoResponderam() {
 
+  const agora = new Date();
+
   const ano =
     agora.getFullYear();
 
