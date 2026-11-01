@@ -230,7 +230,7 @@ function criarItemAssociado(
   const entrada = document.createElement("small");
   entrada.className = "entrada-lista-associado";
   const dataEntrada = associado.data_entrada_tufra;
-  entrada.textContent = "Entrada: " + (dataEntrada && /^\\d{4}-\\d{2}-\\d{2}$/.test(dataEntrada) ? dataEntrada.split("-").reverse().join("/") : "Não informada");
+  entrada.textContent = "Entrada: " + (dataEntrada && /^\d{4}-\d{2}-\d{2}$/.test(dataEntrada) ? dataEntrada.split("-").reverse().join("/") : "Não informada");
   funcaoEEntrada.appendChild(entrada);
   link.appendChild(funcaoEEntrada);
 
