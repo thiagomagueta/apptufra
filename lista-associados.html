@@ -31,7 +31,7 @@
       border:1px solid var(--cor-borda); border-radius:12px; background:#fff; color:var(--cor-texto); font:inherit;
     }
     .filtros-associados button { padding:10px 16px; border:1px solid var(--cor-principal); border-radius:12px; background:transparent; color:var(--cor-principal); font:inherit; cursor:pointer; }
-    #resultadoFiltrosAssociados { margin:14px 0 0; color:var(--cor-texto-suave); font-size:14px; }
+    .funcao-entrada-lista-associado { display:flex; flex-direction:column; gap:5px; min-width:0; }\n    .entrada-lista-associado { font-size:12px; font-weight:400; color:var(--cor-texto-suave); line-height:1.3; }\n    #resultadoFiltrosAssociados { margin:14px 0 0; color:var(--cor-texto-suave); font-size:14px; }
   </style>
 </head>
 
@@ -84,7 +84,7 @@
         <input id="buscaNomeAssociado" type="search" placeholder="Digite o nome do associado" autocomplete="off">
         <label for="filtroFuncaoAssociado">Função</label>
         <select id="filtroFuncaoAssociado"><option value="">Todas as funções</option></select>
-        <button id="limparFiltrosAssociados" type="button">Limpar filtros</button>
+        <label for="ordenacaoAssociados">Ordenar por</label>\n        <select id="ordenacaoAssociados">\n          <option value="nome">Nome (A–Z)</option>\n          <option value="antigos">Data de entrada — mais antigos</option>\n          <option value="recentes">Data de entrada — mais recentes</option>\n        </select>\n        <button id="limparFiltrosAssociados" type="button">Limpar filtros</button>
         <p id="resultadoFiltrosAssociados" role="status" aria-live="polite"></p>
       </section>
 
@@ -134,7 +134,7 @@
 
   <script src="app.js?v=20261027sab"></script>
 
-  <script src="lista-associados.js?v=20261027sab"></script>
+  <script src="lista-associados.js?v=20261101entrada"></script>
 
   <script src="menu-adm.js?v=3"></script>
 
