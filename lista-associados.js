@@ -224,9 +224,15 @@ function criarItemAssociado(
     "›";
 
 
-  link.appendChild(
-    funcao
-  );
+  const funcaoEEntrada = document.createElement("span");
+  funcaoEEntrada.className = "funcao-entrada-lista-associado";
+  funcaoEEntrada.appendChild(funcao);
+  const entrada = document.createElement("small");
+  entrada.className = "entrada-lista-associado";
+  const dataEntrada = associado.data_entrada_tufra;
+  entrada.textContent = "Entrada: " + (dataEntrada && /^\\d{4}-\\d{2}-\\d{2}$/.test(dataEntrada) ? dataEntrada.split("-").reverse().join("/") : "Não informada");
+  funcaoEEntrada.appendChild(entrada);
+  link.appendChild(funcaoEEntrada);
 
 
   link.appendChild(
@@ -339,6 +345,18 @@ function aplicarFiltrosAssociados() {
     return termos.every(termo => nome.includes(termo)) &&
       (!funcao || categorias.includes(funcao));
   });
+  const ordem = document.getElementById("ordenacaoAssociados").value;
+  filtrados.sort((a, b) => {
+    if (ordem !== "nome") {
+      const dataA = a.data_entrada_tufra || "";
+      const dataB = b.data_entrada_tufra || "";
+      if (!dataA && dataB) return 1;
+      if (dataA && !dataB) return -1;
+      const diferenca = dataA.localeCompare(dataB) * (ordem === "recentes" ? -1 : 1);
+      if (diferenca) return diferenca;
+    }
+    return String(a.nome_completo || "").localeCompare(String(b.nome_completo || ""), "pt-BR", { sensitivity: "base" });
+  });
   listaAssociados.replaceChildren(...filtrados.map(criarItemAssociado));
   mensagemSemAssociados.hidden = filtrados.length > 0;
   mensagemSemAssociados.textContent = associadosParaFiltrar.length ? 'Nenhum associado corresponde aos filtros selecionados.' : 'Nenhum associado encontrado.';
@@ -348,9 +366,11 @@ function aplicarFiltrosAssociados() {
 
 document.getElementById('buscaNomeAssociado').addEventListener('input', aplicarFiltrosAssociados);
 document.getElementById('filtroFuncaoAssociado').addEventListener('change', aplicarFiltrosAssociados);
+document.getElementById('ordenacaoAssociados').addEventListener('change', aplicarFiltrosAssociados);
 document.getElementById('limparFiltrosAssociados').addEventListener('click', () => {
   document.getElementById('buscaNomeAssociado').value = '';
   document.getElementById('filtroFuncaoAssociado').value = '';
+  document.getElementById('ordenacaoAssociados').value = 'nome';
   aplicarFiltrosAssociados();
   document.getElementById('buscaNomeAssociado').focus();
 });
@@ -372,6 +392,7 @@ async function carregarAssociados() {
         .select(`
           id,
           nome_completo,
+          data_entrada_tufra,
           status,
           ficha_concluida,
 
