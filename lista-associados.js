@@ -239,6 +239,21 @@ function criarItemAssociado(
     nome
   );
 
+  const formatarDataTabela = valor =>
+    valor && /^\d{4}-\d{2}-\d{2}$/.test(valor)
+      ? valor.split("-").reverse().join("/")
+      : "—";
+
+  const dataDesenv = document.createElement("span");
+  dataDesenv.className = "data-horizontal-associado";
+  dataDesenv.textContent = formatarDataTabela(associado.data_corrente_desenvolvimento);
+  link.appendChild(dataDesenv);
+
+  const dataPrincipal = document.createElement("span");
+  dataPrincipal.className = "data-horizontal-associado";
+  dataPrincipal.textContent = formatarDataTabela(associado.data_corrente_principal);
+  link.appendChild(dataPrincipal);
+
 
   link.appendChild(
     seta
@@ -393,6 +408,8 @@ async function carregarAssociados() {
           id,
           nome_completo,
           data_entrada_tufra,
+          data_corrente_desenvolvimento,
+          data_corrente_principal,
           status,
           ficha_concluida,
 
