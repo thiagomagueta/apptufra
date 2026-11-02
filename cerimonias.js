@@ -48,7 +48,11 @@ function renderParticipantes(){
   if(acesso.pagamentos)botao('Registrar pagamento',actions,async()=>{
    const valor=prompt('Valor efetivamente recebido (R$):');if(valor===null)throw Error('Operação cancelada.');
    const n=Number(valor.trim().replace(',','.'));if(!Number.isFinite(n)||n<=0)throw Error('Informe um valor positivo.');
-   await rpc('confirmar_pagamento',{participante_id:p.id,valor:n});
+   const opcoes=['PIX','Dinheiro','Débito','Crédito','Transferência','Boleto','Outro'];
+   const escolha=prompt('Forma de pagamento:\n'+opcoes.map((f,i)=>(i+1)+' - '+f).join('\n')+'\nDigite o número da opção:','1');
+   if(escolha===null)throw Error('Operação cancelada.');
+   const forma=opcoes[Number(escolha)-1];if(!forma)throw Error('Selecione uma forma de pagamento válida.');
+   await rpc('confirmar_pagamento',{participante_id:p.id,valor:n,forma_pagamento:forma});
   });
   if(acesso.gerenciar && p.situacao!=='confirmado' && p.situacao!=='cancelado')
    botao('Confirmar vaga',actions,()=>rpc('confirmar_vaga',{participante_id:p.id}));
