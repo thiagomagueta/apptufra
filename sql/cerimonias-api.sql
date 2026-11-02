@@ -12,6 +12,7 @@ begin
  select exists(select 1 from public.responsaveis_financeiro rf where rf.usuario_id=v_usuario) into v_gestor;
  select coalesce(r.pode_gerenciar,false),coalesce(r.pode_confirmar_pagamento,false),coalesce(r.pode_configurar_valores,false)
  into v_admin,v_pagador,v_valores from public.cerimonias_responsaveis r where r.usuario_id=v_usuario;
+ if not v_gestor then raise exception 'Financeiro restrito: acesso não autorizado.' using errcode='42501'; end if;
  v_admin:=v_gestor or coalesce(v_admin,false);
  v_pagador:=v_gestor or coalesce(v_pagador,false);
  v_valores:=v_gestor or coalesce(v_valores,false);
