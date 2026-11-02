@@ -87,6 +87,8 @@ $('formInscricao').onsubmit=async e=>{
 try{
  acesso=await rpc('acesso');$('area').hidden=false;
  $('secConfiguracao').hidden=!acesso.valores;
+ $('secPermissoes').hidden=!acesso.gestao_app;
+ if(acesso.gestao_app){const rp=await rpc('responsaveis');const box=$('listaPermissoes');box.replaceChildren();for(const u of rp.usuarios){const linha=node('div',null,box);linha.className='cer-card';node('strong',u.nome,linha);const campos={gerenciar:'Gerenciar inscrições',pagamentos:'Confirmar pagamentos',valores:'Configurar preços'};const checks={};for(const [k,label] of Object.entries(campos)){const l=node('label',null,linha);const ch=document.createElement('input');ch.type='checkbox';ch.checked=!!u[k];l.append(ch,document.createTextNode(' '+label));checks[k]=ch;}botao('Salvar permissões',linha,()=>rpc('salvar_responsavel',{usuario_id:u.id,...Object.fromEntries(Object.entries(checks).map(([k,v])=>[k,v.checked]))}));}}
  $('secPeriodos').hidden=!acesso.gerenciar;
  $('secInscricao').hidden=!acesso.gerenciar;
  if(acesso.gerenciar){const r=await rpc('associados');associados=r.associados||[];$('associado').replaceChildren(new Option('Selecione',''));associados.forEach(a=>$('associado').add(new Option(a.nome,a.id)));}
