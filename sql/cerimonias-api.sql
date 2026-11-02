@@ -13,10 +13,10 @@ begin
  select coalesce(r.pode_gerenciar,false),coalesce(r.pode_confirmar_pagamento,false),coalesce(r.pode_configurar_valores,false)
  into v_admin,v_pagador,v_valores from public.cerimonias_responsaveis r where r.usuario_id=v_usuario;
 
- v_admin:=v_gestor or coalesce(v_admin,false);
- v_pagador:=v_gestor or coalesce(v_pagador,false);
+ v_admin:=coalesce(v_admin,false);
+ v_pagador:=coalesce(v_pagador,false);
  v_valores:=v_gestor or coalesce(v_valores,false);
- if not(v_admin or v_pagador or v_valores) then raise exception 'Sem permissão para cerimônias.' using errcode='42501'; end if;
+ if p_acao not in ('responsaveis','salvar_responsavel') and not(v_admin or v_pagador or v_valores) then raise exception 'Sem permissão para cerimônias.' using errcode='42501'; end if;
 
  if p_acao='acesso' then
   return jsonb_build_object('gerenciar',v_admin,'pagamentos',v_pagador,'valores',v_valores,'gestao_app',v_gestor);
