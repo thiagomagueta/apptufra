@@ -134,6 +134,17 @@ begin
    batismo_realizado_em=case when batismo then nullif(p_dados->>'batismo_realizado_em','')::date else batismo_realizado_em end
   where id=v_id and situacao='confirmado';
   if not found then raise exception 'Participante não confirmado.'; end if;
+  update public.fichas_associados f
+  set historico_umbanda=coalesce(f.historico_umbanda,'{}'::jsonb)
+    || case when p.leitura and p.leitura_realizada_em is not null and p.orixa_frente is not null and p.orixa_adjunto is not null
+       then jsonb_build_object('orixaFrente',p.orixa_frente,'orixaAdjunto',p.orixa_adjunto)
+       else '{}'::jsonb end
+    || case when p.batismo and p.batismo_realizado_em is not null
+       then jsonb_build_object('batizadoUmbanda',true,'dataBatismo',to_char(p.batismo_realizado_em,'YYYY-MM-DD'),
+         'terreiroBatismo','TUFRA','cidadeBatismo','Sorocaba','estadoBatismo','SP')
+       else '{}'::jsonb end
+  from public.cerimonias_participantes p
+  where p.id=v_id and p.associado_id=f.usuario_id;
   return jsonb_build_object('salvo',true);
  elsif p_acao='responsaveis' then
   if not v_gestor then raise exception 'Sem permissão.' using errcode='42501'; end if;
