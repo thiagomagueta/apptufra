@@ -25,8 +25,9 @@ async function selecionar(){
  node('p','Externos: leitura '+dinheiro(c.valor_leitura_externo)+' · batismo '+dinheiro(c.valor_batismo_externo),$('resumo'));
  const ps=$('periodo');ps.replaceChildren(new Option('Selecione',''));
  for(const p of detalhe.periodos){node('p',p.data_leitura+' — '+p.periodo+' ('+p.vagas+' vagas)',$('periodos'));ps.add(new Option(p.data_leitura+' — '+p.periodo,p.id));}
- renderParticipantes();
+ const existentes=$('inscricaoExistente');existentes.replaceChildren(new Option('Nova inscrição',''));detalhe.participantes.filter(p=>['interesse','espera'].includes(p.situacao)).forEach(p=>existentes.add(new Option(p.nome,p.id)));renderParticipantes();
 }
+$('inscricaoExistente').onchange=()=>{const p=detalhe?.participantes.find(x=>x.id===$('inscricaoExistente').value);if(!p)return;$('origem').value=p.associado_id?'associado':'externo';$('origem').onchange();$('associado').value=p.associado_id||'';$('formInscricao').elements.nome_externo.value=p.nome_externo||'';$('leitura').checked=p.leitura;$('batismo').checked=p.batismo;$('periodo').value=p.periodo_leitura_id||'';$('formInscricao').elements.padrinho.value=p.padrinho||'';$('formInscricao').elements.madrinha.value=p.madrinha||'';atualizarCampos();};
 function botao(label,container,callback){const b=node('button',label,container);b.type='button';b.onclick=async()=>{b.disabled=true;try{await callback();await selecionar();aviso('Operação concluída.');}catch(e){aviso(e.message||'Falha na operação.');}finally{b.disabled=false;}};return b;}
 function renderParticipantes(){
  const lista=$('participantes');lista.replaceChildren();
@@ -77,7 +78,7 @@ $('formInscricao').onsubmit=async e=>{
  try{
   if(!atual)throw Error('Selecione uma cerimônia.');
   const d=dadosForm(e.currentTarget),externo=$('origem').value==='externo';
-  await rpc('inscrever',{cerimonia_id:atual.id,associado_id:externo?null:d.associado_id,nome_externo:externo?d.nome_externo:null,
+  await rpc('inscrever',{id:$('inscricaoExistente').value||null,cerimonia_id:atual.id,associado_id:externo?null:d.associado_id,nome_externo:externo?d.nome_externo:null,
    leitura:$('leitura').checked,batismo:$('batismo').checked,
    periodo_leitura_id:$('leitura').checked?d.periodo_leitura_id:null,padrinho:d.padrinho||null,madrinha:d.madrinha||null});
   e.currentTarget.reset();$('origem').onchange();atualizarCampos();await selecionar();aviso('Interesse registrado.');
