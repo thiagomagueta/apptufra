@@ -12,7 +12,7 @@ begin
  select exists(select 1 from public.responsaveis_financeiro rf where rf.usuario_id=v_usuario) into v_gestor;
  select coalesce(r.pode_gerenciar,false),coalesce(r.pode_confirmar_pagamento,false),coalesce(r.pode_configurar_valores,false)
  into v_admin,v_pagador,v_valores from public.cerimonias_responsaveis r where r.usuario_id=v_usuario;
- if not v_gestor then raise exception 'Financeiro restrito: acesso não autorizado.' using errcode='42501'; end if;
+
  v_admin:=v_gestor or coalesce(v_admin,false);
  v_pagador:=v_gestor or coalesce(v_pagador,false);
  v_valores:=v_gestor or coalesce(v_valores,false);
@@ -27,7 +27,7 @@ begin
   return jsonb_build_object('associados',(select coalesce(jsonb_agg(jsonb_build_object('id',u.id,'nome',u.nome_completo) order by u.nome_completo),'[]'::jsonb)
    from public.usuarios u where u.status='ativo'));
  elsif p_acao='detalhe' then
-  if not(v_admin or v_pagador) then raise exception 'Sem permissão para consultar participantes.' using errcode='42501'; end if;
+  if not(v_admin or v_pagador or v_valores) then raise exception 'Sem permissão para consultar participantes.' using errcode='42501'; end if;
   v_cerimonia:=(p_dados->>'cerimonia_id')::uuid;
   return jsonb_build_object(
    'cerimonia',(select to_jsonb(c) from public.cerimonias_tufra c where c.id=v_cerimonia),
@@ -111,8 +111,8 @@ begin
   v_id:=(p_dados->>'participante_id')::uuid;
   v_valor:=(p_dados->>'valor')::numeric;
   if v_valor<=0 or v_valor>100000 then raise exception 'Valor inválido.'; end if;
-  perform 1 from public.cerimonias_participantes where id=v_id for update;
-  if not found then raise exception 'Participante não encontrado.'; end if;
+  perform 1 from public.cerimonias_participantes where id=v_id and situacao<>'cancelado' for update;
+  if not found then raise exception 'Inscrição inexistente ou cancelada.'; end if;
   insert into public.cerimonias_pagamentos(participante_id,valor,data_pagamento,confirmado_por)
    values(v_id,v_valor,coalesce(nullif(p_dados->>'data_pagamento','')::date,(now() at time zone 'America/Sao_Paulo')::date),v_usuario);
   return jsonb_build_object('registrado',true);
