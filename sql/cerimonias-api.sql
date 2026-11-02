@@ -9,8 +9,7 @@ declare
 begin
  select id into v_usuario from public.usuarios where auth_id=auth.uid() and status='ativo';
  if v_usuario is null then raise exception 'Acesso não autorizado.' using errcode='42501'; end if;
- select exists(select 1 from public.usuario_funcoes uf join public.funcoes f on f.id=uf.funcao_id
- where uf.usuario_id=v_usuario and f.nome='Tesoureiro' and f.ativo) into v_gestor;
+ select exists(select 1 from public.responsaveis_financeiro rf where rf.usuario_id=v_usuario) into v_gestor;
  select coalesce(r.pode_gerenciar,false),coalesce(r.pode_confirmar_pagamento,false),coalesce(r.pode_configurar_valores,false)
  into v_admin,v_pagador,v_valores from public.cerimonias_responsaveis r where r.usuario_id=v_usuario;
  v_admin:=v_gestor or coalesce(v_admin,false);
