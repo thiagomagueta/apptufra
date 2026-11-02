@@ -40,6 +40,11 @@ function renderParticipantes(){
   if(p.batismo)node('p','Padrinho: '+(p.padrinho||'—')+' · Madrinha: '+(p.madrinha||'—'),card);
   if(p.orixa_frente||p.orixa_adjunto)node('p','Orixás: '+(p.orixa_frente||'—')+' / '+(p.orixa_adjunto||'—'),card);
   const actions=node('div',null,card);actions.className='cer-actions';
+  if(acesso.gerenciar && p.situacao!=='cancelado')
+   botao('Excluir inscrição',actions,async()=>{
+    if(!confirm('Excluir a inscrição de '+p.nome+' e liberar a vaga? Esta ação não é permitida quando já existe pagamento registrado.'))throw Error('Operação cancelada.');
+    await rpc('excluir_inscricao',{participante_id:p.id});
+   });
   if(acesso.pagamentos)botao('Registrar pagamento',actions,async()=>{
    const valor=prompt('Valor efetivamente recebido (R$):');if(valor===null)throw Error('Operação cancelada.');
    const n=Number(valor.trim().replace(',','.'));if(!Number.isFinite(n)||n<=0)throw Error('Informe um valor positivo.');
