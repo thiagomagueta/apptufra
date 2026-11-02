@@ -27,6 +27,7 @@ begin
   return jsonb_build_object('associados',(select coalesce(jsonb_agg(jsonb_build_object('id',u.id,'nome',u.nome_completo) order by u.nome_completo),'[]'::jsonb)
    from public.usuarios u where u.status='ativo'));
  elsif p_acao='detalhe' then
+  if not(v_admin or v_pagador) then raise exception 'Sem permissão para consultar participantes.' using errcode='42501'; end if;
   v_cerimonia:=(p_dados->>'cerimonia_id')::uuid;
   return jsonb_build_object(
    'cerimonia',(select to_jsonb(c) from public.cerimonias_tufra c where c.id=v_cerimonia),
