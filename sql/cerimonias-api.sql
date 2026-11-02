@@ -5,7 +5,7 @@ declare
  v_usuario uuid; v_gestor boolean; v_admin boolean; v_pagador boolean; v_valores boolean;
  v_cerimonia uuid; v_id uuid; v_assoc uuid; v_externo text; v_leitura boolean; v_batismo boolean;
  v_periodo uuid; v_preco numeric; v_pago numeric; v_vagas integer; v_ocupadas integer;
- v_data date; v_valor numeric; v_status text; v_result jsonb;
+ v_data date; v_valor numeric; v_status text; v_result jsonb; v_tem_leitura boolean;
 begin
  select id into v_usuario from public.usuarios where auth_id=auth.uid() and status='ativo';
  if v_usuario is null then raise exception 'Acesso não autorizado.' using errcode='42501'; end if;
@@ -109,11 +109,12 @@ begin
  elsif p_acao='confirmar_vaga' then
   if not v_admin then raise exception 'Sem permissão.' using errcode='42501'; end if;
   v_id:=(p_dados->>'participante_id')::uuid;
-  select periodo_leitura_id,valor_previsto,situacao into v_periodo,v_preco,v_status
+  select periodo_leitura_id,valor_previsto,situacao,leitura into v_periodo,v_preco,v_status,v_tem_leitura
   from public.cerimonias_participantes where id=v_id for update;
   if not found or v_status='cancelado' then raise exception 'Inscrição inválida.'; end if;
   select coalesce(sum(valor),0) into v_pago from public.cerimonias_pagamentos where participante_id=v_id;
   if v_pago<v_preco then raise exception 'Pagamento insuficiente para garantir a vaga.'; end if;
+  if v_tem_leitura and v_periodo is null then raise exception 'Defina o período de leitura antes de confirmar a vaga.'; end if;
   if v_periodo is not null then
    perform pg_advisory_xact_lock(hashtext(v_periodo::text));
    select vagas into v_vagas from public.cerimonias_periodos_leitura where id=v_periodo;
