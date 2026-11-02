@@ -96,6 +96,16 @@ begin
    if not found then raise exception 'Inscrição não encontrada ou já confirmada.'; end if;
   end if;
   return jsonb_build_object('id',v_id);
+ elsif p_acao='excluir_inscricao' then
+  if not v_admin then raise exception 'Sem permissão.' using errcode='42501'; end if;
+  v_id:=(p_dados->>'participante_id')::uuid;
+  perform 1 from public.cerimonias_participantes where id=v_id for update;
+  if not found then raise exception 'Inscrição não encontrada.'; end if;
+  if exists(select 1 from public.cerimonias_pagamentos where participante_id=v_id) then
+   raise exception 'Inscrição com pagamento: não é possível excluir sem conciliação financeira.';
+  end if;
+  update public.cerimonias_participantes set situacao='cancelado',periodo_leitura_id=null where id=v_id;
+  return jsonb_build_object('excluido',true);
  elsif p_acao='confirmar_pagamento' then
   if not v_pagador then raise exception 'Sem permissão para confirmar pagamentos.' using errcode='42501'; end if;
   v_id:=(p_dados->>'participante_id')::uuid;
