@@ -110,6 +110,7 @@ begin
   if not v_pagador then raise exception 'Sem permissão para confirmar pagamentos.' using errcode='42501'; end if;
   v_id:=(p_dados->>'participante_id')::uuid;
   v_valor:=(p_dados->>'valor')::numeric;
+  if coalesce(p_dados->>'forma_pagamento','') not in ('PIX','Dinheiro','Débito','Crédito','Transferência','Boleto','Outro') then raise exception 'Forma de pagamento inválida.'; end if;
   if v_valor<=0 or v_valor>100000 then raise exception 'Valor inválido.'; end if;
   perform 1 from public.cerimonias_participantes where id=v_id and situacao<>'cancelado' for update;
   if not found then raise exception 'Inscrição inexistente ou cancelada.'; end if;
