@@ -80,6 +80,9 @@ begin
   v_periodo:=nullif(p_dados->>'periodo_leitura_id','')::uuid;
   if not(v_leitura or v_batismo) then raise exception 'Selecione uma atividade.'; end if;
   if v_assoc is not null and not exists(select 1 from public.usuarios where id=v_assoc and status='ativo') then raise exception 'Associado inválido.'; end if;
+  if v_assoc is null and (v_externo is null or length(v_externo)<3) then raise exception 'Informe o nome do participante externo.'; end if;
+  if v_assoc is not null and v_externo is not null then raise exception 'Selecione associado ou externo, não ambos.'; end if;
+  if v_periodo is not null and not v_leitura then raise exception 'Período informado sem leitura.'; end if;
   if v_periodo is not null and not exists(select 1 from public.cerimonias_periodos_leitura where id=v_periodo and cerimonia_id=v_cerimonia) then raise exception 'Período inválido.'; end if;
   if v_id is null then
    insert into public.cerimonias_participantes(cerimonia_id,associado_id,nome_externo,leitura,batismo,periodo_leitura_id,padrinho,madrinha)
