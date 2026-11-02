@@ -35,7 +35,7 @@ begin
    'participantes',(select coalesce(jsonb_agg(to_jsonb(t) order by t.criado_em),'[]'::jsonb) from (
     select p.*,coalesce(u.nome_completo,p.nome_externo) nome,
      coalesce((select sum(pg.valor) from public.cerimonias_pagamentos pg where pg.participante_id=p.id),0) valor_pago
-    from public.cerimonias_participantes p left join public.usuarios u on u.id=p.associado_id where p.cerimonia_id=v_cerimonia
+    from public.cerimonias_participantes p left join public.usuarios u on u.id=p.associado_id where p.cerimonia_id=v_cerimonia and p.situacao<>'cancelado'
    ) t));
  elsif p_acao='salvar_cerimonia' then
   if not v_valores then raise exception 'Sem permissão para configurar valores.' using errcode='42501'; end if;
