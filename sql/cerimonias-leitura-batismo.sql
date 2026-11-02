@@ -46,8 +46,7 @@ create table if not exists public.cerimonias_participantes (
   or (associado_id is null and length(trim(coalesce(nome_externo,'')))>0)
  ),
  constraint participante_atividade check (leitura or batismo),
- constraint participante_periodo check (leitura or periodo_leitura_id is null),
- unique(cerimonia_id,associado_id)
+ constraint participante_periodo check (leitura or periodo_leitura_id is null)
 );
 create table if not exists public.cerimonias_pagamentos (
  id uuid primary key default gen_random_uuid(),
@@ -63,6 +62,7 @@ create table if not exists public.cerimonias_responsaveis (
  pode_confirmar_pagamento boolean not null default false,
  pode_configurar_valores boolean not null default false
 );
+create unique index if not exists cerimonias_participantes_associado_ativo_idx on public.cerimonias_participantes(cerimonia_id,associado_id) where associado_id is not null and situacao<>'cancelado';
 create index if not exists cerimonias_participantes_cerimonia_idx on public.cerimonias_participantes(cerimonia_id,situacao);
 create index if not exists cerimonias_pagamentos_participante_idx on public.cerimonias_pagamentos(participante_id);
 alter table public.cerimonias_tufra enable row level security;
