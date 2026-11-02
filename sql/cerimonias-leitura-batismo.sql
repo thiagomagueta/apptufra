@@ -46,7 +46,7 @@ create table if not exists public.cerimonias_participantes (
   or (associado_id is null and length(trim(coalesce(nome_externo,'')))>0)
  ),
  constraint participante_atividade check (leitura or batismo),
- constraint participante_periodo check (not leitura or periodo_leitura_id is not null),
+ constraint participante_periodo check (leitura or periodo_leitura_id is null),
  unique(cerimonia_id,associado_id)
 );
 create table if not exists public.cerimonias_pagamentos (
