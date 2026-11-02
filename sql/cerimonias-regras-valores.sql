@@ -1,3 +1,4 @@
+create schema if not exists private;
 -- Regras de preço por edição. Não altera os valores históricos das outras cerimônias.
 create or replace function public.cerimonia_valor_previsto(
  p_cerimonia uuid, p_associado boolean, p_leitura boolean, p_batismo boolean
