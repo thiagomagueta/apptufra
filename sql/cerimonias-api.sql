@@ -114,8 +114,8 @@ begin
   if v_valor<=0 or v_valor>100000 then raise exception 'Valor inválido.'; end if;
   perform 1 from public.cerimonias_participantes where id=v_id and situacao<>'cancelado' for update;
   if not found then raise exception 'Inscrição inexistente ou cancelada.'; end if;
-  insert into public.cerimonias_pagamentos(participante_id,valor,data_pagamento,confirmado_por)
-   values(v_id,v_valor,coalesce(nullif(p_dados->>'data_pagamento','')::date,(now() at time zone 'America/Sao_Paulo')::date),v_usuario);
+  insert into public.cerimonias_pagamentos(participante_id,valor,data_pagamento,confirmado_por,forma_pagamento)
+   values(v_id,v_valor,coalesce(nullif(p_dados->>'data_pagamento','')::date,(now() at time zone 'America/Sao_Paulo')::date),v_usuario,p_dados->>'forma_pagamento');
   return jsonb_build_object('registrado',true);
  elsif p_acao='confirmar_vaga' then
   if not v_admin then raise exception 'Sem permissão.' using errcode='42501'; end if;
