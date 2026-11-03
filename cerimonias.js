@@ -25,7 +25,13 @@ async function selecionar(){
  node('p','Associados: leitura '+dinheiro(c.valor_leitura_associado)+' · batismo '+dinheiro(c.valor_batismo_associado)+' · pacote '+dinheiro(c.valor_conjunto_associado),$('resumo'));
  node('p','Externos: leitura '+dinheiro(c.valor_leitura_externo)+' · batismo '+dinheiro(c.valor_batismo_externo),$('resumo'));
  const ps=$('periodo');if(ps)ps.replaceChildren(new Option('Selecione',''));
- for(const p of detalhe.periodos){if($('periodos'))node('p',p.data_leitura+' — '+p.periodo+' ('+p.vagas+' vagas)',$('periodos'));if(ps)ps.add(new Option(p.data_leitura+' — '+p.periodo,p.id));}
+ for(const p of detalhe.periodos){
+  const inscritos=detalhe.participantes.filter(x=>x.leitura&&x.periodo_leitura_id===p.id&&x.situacao!=='cancelado').length;
+  const restantes=Math.max(0,Number(p.vagas)-inscritos);
+  const texto=p.data_leitura+' — '+p.periodo+' ('+p.vagas+' vagas) - '+inscritos+' '+(inscritos===1?'inscrição':'inscrições')+' ('+restantes+' restantes)';
+  if($('periodos'))node('p',texto,$('periodos'));
+  if(ps)ps.add(new Option(p.data_leitura+' — '+p.periodo+' ('+restantes+' restantes)',p.id));
+ }
  if(modoConfig)return;
  const existentes=$('inscricaoExistente');existentes.replaceChildren(new Option('Nova inscrição',''));detalhe.participantes.filter(p=>['interesse','espera'].includes(p.situacao)).forEach(p=>existentes.add(new Option(p.nome,p.id)));renderParticipantes();
 }
@@ -33,43 +39,44 @@ if($('inscricaoExistente'))$('inscricaoExistente').onchange=()=>{const p=detalhe
 function botao(label,container,callback){const b=node('button',label,container);b.type='button';b.onclick=async()=>{b.disabled=true;try{await callback();await selecionar();aviso('Operação concluída.');}catch(e){aviso(e.message||'Falha na operação.');}finally{b.disabled=false;}};return b;}
 function renderParticipantes(){
  const lista=$('participantes');lista.replaceChildren();
- if(!detalhe.participantes.length){node('p','Nenhuma inscrição nesta cerimônia.',lista);return;}
- for(const p of detalhe.participantes){
-  const card=node('article',null,lista);card.className='cer-card';
-  node('strong',p.nome,card);
-  node('p',(p.leitura?'Leitura ':'')+(p.batismo?'Batismo':'')+' · '+p.situacao,card);
-  node('p','Previsto '+dinheiro(p.valor_previsto)+' · Recebido '+dinheiro(p.valor_pago)+' · Saldo '+dinheiro(Number(p.valor_previsto)-Number(p.valor_pago)),card);
-  if(p.batismo)node('p','Padrinho: '+(p.padrinho||'—')+' · Madrinha: '+(p.madrinha||'—'),card);
-  if(p.orixa_frente||p.orixa_adjunto)node('p','Orixás: '+(p.orixa_frente||'—')+' / '+(p.orixa_adjunto||'—'),card);
-  const actions=node('div',null,card);actions.className='cer-actions';
-  if(acesso.gerenciar && p.situacao!=='cancelado')
-   botao('Excluir inscrição',actions,async()=>{
-    if(!confirm('Excluir a inscrição de '+p.nome+' e liberar a vaga? Esta ação não é permitida quando já existe pagamento registrado.'))throw Error('Operação cancelada.');
+ const participantes=detalhe.participantes.filter(p=>p.situacao!=='cancelado');
+ const grupos=detalhe.periodos.map((periodo,i)=>({
+  titulo:'Leitura período '+(i+1)+' — '+periodo.data_leitura+' · '+periodo.periodo,
+  pessoas:participantes.filter(p=>p.leitura&&p.periodo_leitura_id===periodo.id)
+ }));
+ const semPeriodo=participantes.filter(p=>p.leitura&&!detalhe.periodos.some(x=>x.id===p.periodo_leitura_id));
+ if(semPeriodo.length)grupos.push({titulo:'Leitura — período não definido',pessoas:semPeriodo});
+ grupos.push({titulo:'Batismo',pessoas:participantes.filter(p=>p.batismo)});
+ for(const grupo of grupos){
+  const sec=node('section',null,lista);sec.className='cer-grupo';
+  node('h3',grupo.titulo,sec);
+  const pessoas=[...grupo.pessoas].sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR',{sensitivity:'base'}));
+  if(!pessoas.length){node('p','Nenhuma inscrição.',sec);continue;}
+  for(const p of pessoas){
+   const linha=node('details',null,sec);linha.className='cer-pessoa';
+   const cab=node('summary',null,linha);
+   const nome=node('span',p.nome,cab);nome.className='cer-nome';
+   const pago=Number(p.valor_pago||0),previsto=Number(p.valor_previsto||0);
+   if(previsto>0&&pago>=previsto){const pg=node('strong','(PG)',cab);pg.className='cer-pg';}
+   const corpo=node('div',null,linha);corpo.className='cer-pessoa-acoes';
+   node('p','Previsto: '+dinheiro(previsto)+' · Recebido: '+dinheiro(pago)+' · Saldo: '+dinheiro(Math.max(0,previsto-pago)),corpo);
+   if(acesso.pagamentos&&pago<previsto)botao('Confirmar pagamento',corpo,async()=>{
+    const valor=prompt('Valor efetivamente recebido (R$):',String(Math.max(0,previsto-pago)).replace('.',','));
+    if(valor===null)return;
+    const n=Number(valor.trim().replace(',','.'));
+    if(!Number.isFinite(n)||n<=0)throw Error('Informe um valor positivo.');
+    const opcoes=['PIX','Dinheiro','Débito','Crédito','Transferência','Boleto','Outro'];
+    const escolha=prompt('Forma de pagamento:\\n'+opcoes.map((f,i)=>(i+1)+' - '+f).join('\\n')+'\\nDigite o número da opção:','1');
+    if(escolha===null)return;
+    const forma=opcoes[Number(escolha)-1];
+    if(!forma)throw Error('Selecione uma forma de pagamento válida.');
+    await rpc('confirmar_pagamento',{participante_id:p.id,valor:n,forma_pagamento:forma});
+   });
+   if(acesso.gerenciar&&pago===0)botao('Excluir inscrição',corpo,async()=>{
+    if(!confirm('Excluir a inscrição de '+p.nome+'?'))return;
     await rpc('excluir_inscricao',{participante_id:p.id});
    });
-  if(acesso.pagamentos)botao('Registrar pagamento',actions,async()=>{
-   const valor=prompt('Valor efetivamente recebido (R$):');if(valor===null)throw Error('Operação cancelada.');
-   const n=Number(valor.trim().replace(',','.'));if(!Number.isFinite(n)||n<=0)throw Error('Informe um valor positivo.');
-   const opcoes=['PIX','Dinheiro','Débito','Crédito','Transferência','Boleto','Outro'];
-   const escolha=prompt('Forma de pagamento:\n'+opcoes.map((f,i)=>(i+1)+' - '+f).join('\n')+'\nDigite o número da opção:','1');
-   if(escolha===null)throw Error('Operação cancelada.');
-   const forma=opcoes[Number(escolha)-1];if(!forma)throw Error('Selecione uma forma de pagamento válida.');
-   await rpc('confirmar_pagamento',{participante_id:p.id,valor:n,forma_pagamento:forma});
-  });
-  if(acesso.gerenciar && p.situacao!=='confirmado' && p.situacao!=='cancelado')
-   botao('Confirmar vaga',actions,()=>rpc('confirmar_vaga',{participante_id:p.id}));
-  if(acesso.gerenciar && p.situacao==='confirmado')
-   botao('Registrar realização',actions,async()=>{
-    const d={participante_id:p.id};
-    if(p.leitura){
-     const f=prompt('Orixá de Frente:',p.orixa_frente||'');if(f===null)throw Error('Operação cancelada.');
-     const a=prompt('Orixá Adjunto:',p.orixa_adjunto||'');if(a===null)throw Error('Operação cancelada.');
-     const dt=prompt('Data da leitura (AAAA-MM-DD):',p.leitura_realizada_em||atual.data_oficial);if(dt===null)throw Error('Operação cancelada.');
-     Object.assign(d,{orixa_frente:f,orixa_adjunto:a,leitura_realizada_em:dt});
-    }
-    if(p.batismo){const dt=prompt('Data do batismo (AAAA-MM-DD):',p.batismo_realizado_em||atual.data_oficial);if(dt===null)throw Error('Operação cancelada.');d.batismo_realizado_em=dt;}
-    await rpc('salvar_resultado',d);
-   });
+  }
  }
 }
 $('cerimonia').onchange=()=>selecionar().catch(e=>aviso(e.message));
