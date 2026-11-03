@@ -15,7 +15,7 @@ begin
 
  v_admin:=coalesce(v_admin,false);
  v_pagador:=coalesce(v_pagador,false);
- v_valores:=v_gestor or coalesce(v_valores,false);
+ v_valores:=v_gestor;
  if p_acao not in ('responsaveis','salvar_responsavel') and not(v_admin or v_pagador or v_valores) then raise exception 'Sem permissão para cerimônias.' using errcode='42501'; end if;
 
  if p_acao='acesso' then
@@ -26,8 +26,12 @@ begin
   if not v_admin then raise exception 'Sem permissão.' using errcode='42501'; end if;
   return jsonb_build_object('associados',(select coalesce(jsonb_agg(jsonb_build_object('id',u.id,'nome',u.nome_completo) order by u.nome_completo),'[]'::jsonb)
    from public.usuarios u where u.status='ativo'));
+ elsif p_acao='detalhe_config' then
+  if not v_valores then raise exception 'Sem permissão para configurar cerimônias.' using errcode='42501'; end if;
+  v_cerimonia:=(p_dados->>'cerimonia_id')::uuid;
+  return jsonb_build_object('cerimonia',(select to_jsonb(c) from public.cerimonias_tufra c where c.id=v_cerimonia),'periodos',(select coalesce(jsonb_agg(to_jsonb(x) order by x.data_leitura,x.periodo),'[]'::jsonb) from public.cerimonias_periodos_leitura x where x.cerimonia_id=v_cerimonia),'participantes','[]'::jsonb);
  elsif p_acao='detalhe' then
-  if not(v_admin or v_pagador or v_valores) then raise exception 'Sem permissão para consultar participantes.' using errcode='42501'; end if;
+  if not(v_admin or v_pagador) then raise exception 'Sem permissão para consultar participantes.' using errcode='42501'; end if;
   v_cerimonia:=(p_dados->>'cerimonia_id')::uuid;
   return jsonb_build_object(
    'cerimonia',(select to_jsonb(c) from public.cerimonias_tufra c where c.id=v_cerimonia),
@@ -64,7 +68,7 @@ begin
   end if;
   return jsonb_build_object('id',v_id);
  elsif p_acao='salvar_periodo' then
-  if not v_admin then raise exception 'Sem permissão.' using errcode='42501'; end if;
+  if not v_valores then raise exception 'Sem permissão para configurar períodos.' using errcode='42501'; end if;
   v_cerimonia:=(p_dados->>'cerimonia_id')::uuid;
   insert into public.cerimonias_periodos_leitura(cerimonia_id,data_leitura,periodo,vagas)
   values(v_cerimonia,(p_dados->>'data_leitura')::date,trim(p_dados->>'periodo'),(p_dados->>'vagas')::integer)
