@@ -60,7 +60,7 @@ function renderParticipantes(){
    if(previsto>0&&pago>=previsto){const pg=node('strong','(PG)',cab);pg.className='cer-pg';}
    const corpo=node('div',null,linha);corpo.className='cer-pessoa-acoes';
    node('p','Previsto: '+dinheiro(previsto)+' · Recebido: '+dinheiro(pago)+' · Saldo: '+dinheiro(Math.max(0,previsto-pago)),corpo);
-   if(acesso.gerenciar)botao('Editar inscrição',corpo,async()=>{
+   if(acesso.gerenciar){const editar=node('button','Editar inscrição',corpo);editar.type='button';editar.onclick=()=>{editar.disabled=true;
     const campos=node('form',null,corpo);campos.className='cer-editar';
     if(p.leitura){
      const label=node('label','Período da leitura ',campos);
@@ -88,7 +88,7 @@ function renderParticipantes(){
       await selecionar();aviso('Inscrição atualizada.');
      }catch(err){aviso(err.message||String(err));salvar.disabled=false;}
     };
-   });
+   };}
    if(acesso.pagamentos&&pago<previsto)botao('Confirmar pagamento',corpo,async()=>{
     const valor=prompt('Valor efetivamente recebido (R$):',String(Math.max(0,previsto-pago)).replace('.',','));
     if(valor===null)return;
