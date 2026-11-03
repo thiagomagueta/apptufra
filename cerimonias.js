@@ -2,6 +2,7 @@
 (async()=>{
 const $=id=>document.getElementById(id),db=window.supabaseClient;
 const dinheiro=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const modoConfig=document.body.dataset.cerimoniasModo==='config';
 let acesso={},cerimonias=[],atual=null,detalhe=null,associados=[];
 function aviso(t){$('mensagem').textContent=t||'';}
 function node(tag,text,p){const n=document.createElement(tag);if(text!==null)n.textContent=text;p.append(n);return n;}
@@ -14,19 +15,21 @@ async function carregar(){
  if(cerimonias.length){sel.value=cerimonias.some(c=>c.id===prev)?prev:cerimonias[0].id;await selecionar();}
  else {atual=null;detalhe=null;limparDetalhe();}
 }
-function limparDetalhe(){$('resumo').replaceChildren();$('periodos').replaceChildren();$('participantes').replaceChildren();}
+function limparDetalhe(){$('resumo').replaceChildren();$('periodos').replaceChildren();if($('participantes'))$('participantes').replaceChildren();}
 async function selecionar(){
  const id=$('cerimonia').value;atual=cerimonias.find(c=>c.id===id)||null;
  if(!atual){limparDetalhe();return;}
- detalhe=await rpc('detalhe',{cerimonia_id:id});limparDetalhe();
+ detalhe=await rpc(modoConfig?'detalhe_config':'detalhe',{cerimonia_id:id});limparDetalhe();
  const c=detalhe.cerimonia;
  node('p',c.data_oficial+' · '+c.status,$('resumo'));
  node('p','Associados: leitura '+dinheiro(c.valor_leitura_associado)+' · batismo '+dinheiro(c.valor_batismo_associado)+' · pacote '+dinheiro(c.valor_conjunto_associado),$('resumo'));
  node('p','Externos: leitura '+dinheiro(c.valor_leitura_externo)+' · batismo '+dinheiro(c.valor_batismo_externo),$('resumo'));
- const ps=$('periodo');ps.replaceChildren(new Option('Selecione',''));
- for(const p of detalhe.periodos){node('p',p.data_leitura+' — '+p.periodo+' ('+p.vagas+' vagas)',$('periodos'));ps.add(new Option(p.data_leitura+' — '+p.periodo,p.id));}
+ const ps=$('periodo');if(ps)ps.replaceChildren(new Option('Selecione',''));
+ for(const p of detalhe.periodos){node('p',p.data_leitura+' — '+p.periodo+' ('+p.vagas+' vagas)',$('periodos'));if(ps)ps.add(new Option(p.data_leitura+' — '+p.periodo,p.id));}
+ if(modoConfig)return;
  const existentes=$('inscricaoExistente');existentes.replaceChildren(new Option('Nova inscrição',''));detalhe.participantes.filter(p=>['interesse','espera'].includes(p.situacao)).forEach(p=>existentes.add(new Option(p.nome,p.id)));renderParticipantes();
 }
+if(!modoConfig){
 $('inscricaoExistente').onchange=()=>{const p=detalhe?.participantes.find(x=>x.id===$('inscricaoExistente').value);if(!p)return;$('origem').value=p.associado_id?'associado':'externo';$('origem').onchange();$('associado').value=p.associado_id||'';$('formInscricao').elements.nome_externo.value=p.nome_externo||'';$('leitura').checked=p.leitura;$('batismo').checked=p.batismo;$('periodo').value=p.periodo_leitura_id||'';$('formInscricao').elements.padrinho.value=p.padrinho||'';$('formInscricao').elements.madrinha.value=p.madrinha||'';atualizarCampos();};
 function botao(label,container,callback){const b=node('button',label,container);b.type='button';b.onclick=async()=>{b.disabled=true;try{await callback();await selecionar();aviso('Operação concluída.');}catch(e){aviso(e.message||'Falha na operação.');}finally{b.disabled=false;}};return b;}
 function renderParticipantes(){
@@ -93,12 +96,13 @@ $('formInscricao').onsubmit=async e=>{
   e.currentTarget.reset();$('origem').onchange();atualizarCampos();await selecionar();aviso('Interesse registrado.');
  }catch(err){aviso(err.message);}finally{b.disabled=false;}
 };
+
+}
 try{
- acesso=await rpc('acesso');$('area').hidden=false;
- $('secConfiguracao').hidden=!acesso.valores;
- $('secPeriodos').hidden=!acesso.gerenciar;
- $('secInscricao').hidden=!acesso.gerenciar;
- if(acesso.gerenciar){const r=await rpc('associados');associados=r.associados||[];$('associado').replaceChildren(new Option('Selecione',''));associados.forEach(a=>$('associado').add(new Option(a.nome,a.id)));}
+ acesso=await rpc('acesso');
+ if(modoConfig?!acesso.valores:!(acesso.gerenciar&&acesso.pagamentos))throw Error('Sem permissão para esta área.');
+ $('area').hidden=false;
+ if(!modoConfig && acesso.gerenciar){const r=await rpc('associados');associados=r.associados||[];$('associado').replaceChildren(new Option('Selecione',''));associados.forEach(a=>$('associado').add(new Option(a.nome,a.id)));}
  await carregar();aviso('');
 }catch(e){aviso(e.message||'Não foi possível abrir cerimônias.');}
 })();
