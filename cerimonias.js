@@ -60,6 +60,35 @@ function renderParticipantes(){
    if(previsto>0&&pago>=previsto){const pg=node('strong','(PG)',cab);pg.className='cer-pg';}
    const corpo=node('div',null,linha);corpo.className='cer-pessoa-acoes';
    node('p','Previsto: '+dinheiro(previsto)+' · Recebido: '+dinheiro(pago)+' · Saldo: '+dinheiro(Math.max(0,previsto-pago)),corpo);
+   if(acesso.gerenciar)botao('Editar inscrição',corpo,async()=>{
+    const campos=node('form',null,corpo);campos.className='cer-editar';
+    if(p.leitura){
+     const label=node('label','Período da leitura ',campos);
+     const sel=node('select',null,label);sel.name='periodo_leitura_id';
+     sel.add(new Option('Sem período definido',''));
+     for(const periodo of detalhe.periodos){
+      const inscritos=detalhe.participantes.filter(x=>x.leitura&&x.periodo_leitura_id===periodo.id&&x.situacao!=='cancelado'&&x.id!==p.id).length;
+      if(inscritos>=Number(periodo.vagas)&&periodo.id!==p.periodo_leitura_id)continue;
+      sel.add(new Option(periodo.data_leitura+' — '+periodo.periodo,periodo.id));
+     }
+     sel.value=p.periodo_leitura_id||'';
+    }
+    if(p.batismo){
+     for(const campo of ['padrinho','madrinha']){
+      const label=node('label',campo==='padrinho'?'Padrinho ':'Madrinha ',campos);
+      const input=node('input',null,label);input.name=campo;input.maxLength=200;input.value=p[campo]||'';
+     }
+    }
+    const salvar=node('button','Salvar alterações',campos);salvar.type='submit';
+    campos.onsubmit=async e=>{
+     e.preventDefault();salvar.disabled=true;
+     try{
+      const d=dadosForm(campos);
+      await rpc('editar_inscricao',{participante_id:p.id,periodo_leitura_id:p.leitura?(d.periodo_leitura_id||null):null,padrinho:d.padrinho||null,madrinha:d.madrinha||null});
+      await selecionar();aviso('Inscrição atualizada.');
+     }catch(err){aviso(err.message||String(err));salvar.disabled=false;}
+    };
+   });
    if(acesso.pagamentos&&pago<previsto)botao('Confirmar pagamento',corpo,async()=>{
     const valor=prompt('Valor efetivamente recebido (R$):',String(Math.max(0,previsto-pago)).replace('.',','));
     if(valor===null)return;
