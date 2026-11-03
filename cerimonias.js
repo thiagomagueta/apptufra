@@ -29,8 +29,7 @@ async function selecionar(){
  if(modoConfig)return;
  const existentes=$('inscricaoExistente');existentes.replaceChildren(new Option('Nova inscrição',''));detalhe.participantes.filter(p=>['interesse','espera'].includes(p.situacao)).forEach(p=>existentes.add(new Option(p.nome,p.id)));renderParticipantes();
 }
-if(!modoConfig){
-$('inscricaoExistente').onchange=()=>{const p=detalhe?.participantes.find(x=>x.id===$('inscricaoExistente').value);if(!p)return;$('origem').value=p.associado_id?'associado':'externo';$('origem').onchange();$('associado').value=p.associado_id||'';$('formInscricao').elements.nome_externo.value=p.nome_externo||'';$('leitura').checked=p.leitura;$('batismo').checked=p.batismo;$('periodo').value=p.periodo_leitura_id||'';$('formInscricao').elements.padrinho.value=p.padrinho||'';$('formInscricao').elements.madrinha.value=p.madrinha||'';atualizarCampos();};
+if($('inscricaoExistente'))$('inscricaoExistente').onchange=()=>{const p=detalhe?.participantes.find(x=>x.id===$('inscricaoExistente').value);if(!p)return;$('origem').value=p.associado_id?'associado':'externo';$('origem').onchange();$('associado').value=p.associado_id||'';$('formInscricao').elements.nome_externo.value=p.nome_externo||'';$('leitura').checked=p.leitura;$('batismo').checked=p.batismo;$('periodo').value=p.periodo_leitura_id||'';$('formInscricao').elements.padrinho.value=p.padrinho||'';$('formInscricao').elements.madrinha.value=p.madrinha||'';atualizarCampos();};
 function botao(label,container,callback){const b=node('button',label,container);b.type='button';b.onclick=async()=>{b.disabled=true;try{await callback();await selecionar();aviso('Operação concluída.');}catch(e){aviso(e.message||'Falha na operação.');}finally{b.disabled=false;}};return b;}
 function renderParticipantes(){
  const lista=$('participantes');lista.replaceChildren();
@@ -74,18 +73,18 @@ function renderParticipantes(){
  }
 }
 $('cerimonia').onchange=()=>selecionar().catch(e=>aviso(e.message));
-$('origem').onchange=()=>{$('campoAssociado').hidden=$('origem').value!=='associado';$('campoExterno').hidden=$('origem').value!=='externo';};
+if($('origem'))$('origem').onchange=()=>{$('campoAssociado').hidden=$('origem').value!=='associado';$('campoExterno').hidden=$('origem').value!=='externo';};
 function atualizarCampos(){$('campoPeriodo').hidden=!$('leitura').checked;$('camposPadrinhos').hidden=!$('batismo').checked;}
-$('leitura').onchange=atualizarCampos;$('batismo').onchange=atualizarCampos;
-$('formCerimonia').onsubmit=async e=>{
+if($('leitura'))$('leitura').onchange=atualizarCampos;if($('batismo'))$('batismo').onchange=atualizarCampos;
+if($('formCerimonia'))$('formCerimonia').onsubmit=async e=>{
  e.preventDefault();const b=e.submitter;b.disabled=true;
  try{await rpc('salvar_cerimonia',dadosForm(e.currentTarget));e.currentTarget.reset();await carregar();aviso('Cerimônia cadastrada.');}catch(err){aviso(err.message);}finally{b.disabled=false;}
 };
-$('formPeriodo').onsubmit=async e=>{
+if($('formPeriodo'))$('formPeriodo').onsubmit=async e=>{
  e.preventDefault();const b=e.submitter;b.disabled=true;
  try{if(!atual)throw Error('Selecione uma cerimônia.');await rpc('salvar_periodo',{...dadosForm(e.currentTarget),cerimonia_id:atual.id});e.currentTarget.reset();await selecionar();aviso('Período cadastrado.');}catch(err){aviso(err.message);}finally{b.disabled=false;}
 };
-$('formInscricao').onsubmit=async e=>{
+if($('formInscricao'))$('formInscricao').onsubmit=async e=>{
  e.preventDefault();const b=e.submitter;b.disabled=true;
  try{
   if(!atual)throw Error('Selecione uma cerimônia.');
@@ -97,7 +96,6 @@ $('formInscricao').onsubmit=async e=>{
  }catch(err){aviso(err.message);}finally{b.disabled=false;}
 };
 
-}
 try{
  acesso=await rpc('acesso');
  if(modoConfig?!acesso.valores:!(acesso.gerenciar&&acesso.pagamentos))throw Error('Sem permissão para esta área.');
