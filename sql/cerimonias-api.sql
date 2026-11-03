@@ -67,6 +67,16 @@ begin
    if not found then raise exception 'Cerimônia não encontrada.'; end if;
   end if;
   return jsonb_build_object('id',v_id);
+ elsif p_acao='excluir_cerimonia' then
+  if not v_valores then raise exception 'Sem permissão para excluir cerimônias.' using errcode='42501'; end if;
+  v_cerimonia:=nullif(p_dados->>'cerimonia_id','')::uuid;
+  if v_cerimonia is null then raise exception 'Selecione uma cerimônia.'; end if;
+  if exists(select 1 from public.cerimonias_participantes where cerimonia_id=v_cerimonia) then
+   raise exception 'Não é possível excluir uma cerimônia que já possui inscrições. Preserve o histórico financeiro.'; end if;
+  delete from public.cerimonias_periodos_leitura where cerimonia_id=v_cerimonia;
+  delete from public.cerimonias_tufra where id=v_cerimonia;
+  if not found then raise exception 'Cerimônia não encontrada.'; end if;
+  return jsonb_build_object('excluida',true);
  elsif p_acao='salvar_periodo' then
   if not v_valores then raise exception 'Sem permissão para configurar períodos.' using errcode='42501'; end if;
   v_cerimonia:=(p_dados->>'cerimonia_id')::uuid;
