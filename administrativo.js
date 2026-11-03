@@ -413,8 +413,15 @@ async function carregarModulosAdministrativos() {
     const podeCadastrarAssociados = !cadastroAcesso.error && cadastroAcesso.data?.cadastrar === true;
     const faleAcesso = await window.supabaseClient.rpc('fale_com_a_gente', {p_acao:'acesso'});
     const ehResponsavelFale = !faleAcesso.error && faleAcesso.data?.equipe === true;
+    const acessoCerimonias=await window.supabaseClient.rpc('cerimonias_gerenciar',{p_acao:'acesso',p_dados:{}});
+    const podeGerenciarCerimonias=!acessoCerimonias.error && acessoCerimonias.data?.gerenciar===true && acessoCerimonias.data?.pagamentos===true;
+    const moduloCerimonias=document.getElementById('moduloCerimonias');
+    const grupoCerimonias=document.getElementById('grupoCerimoniasAdm');
+    if(moduloCerimonias)moduloCerimonias.hidden=!podeGerenciarCerimonias;
+    if(grupoCerimonias)grupoCerimonias.hidden=!podeGerenciarCerimonias;
     const possuiAlgumModulo =
       podeCadastrarAssociados ||
+      podeGerenciarCerimonias ||
       ehResponsavelFale ||
       pertenceDiretoria ||
       ehTesoureiro ||
