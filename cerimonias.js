@@ -77,22 +77,22 @@ if($('origem'))$('origem').onchange=()=>{$('campoAssociado').hidden=$('origem').
 function atualizarCampos(){$('campoPeriodo').hidden=!$('leitura').checked;$('camposPadrinhos').hidden=!$('batismo').checked;}
 if($('leitura'))$('leitura').onchange=atualizarCampos;if($('batismo'))$('batismo').onchange=atualizarCampos;
 if($('formCerimonia'))$('formCerimonia').onsubmit=async e=>{
- e.preventDefault();const b=e.submitter;b.disabled=true;
- try{await rpc('salvar_cerimonia',dadosForm(e.currentTarget));e.currentTarget.reset();await carregar();aviso('Cerimônia cadastrada.');}catch(err){aviso(err.message);}finally{b.disabled=false;}
+ e.preventDefault();const form=e.currentTarget,b=e.submitter;b.disabled=true;
+ try{await rpc('salvar_cerimonia',dadosForm(form));form.reset();await carregar();aviso('Cerimônia cadastrada com sucesso.');}catch(err){aviso(err.message);}finally{b.disabled=false;}
 };
 if($('formPeriodo'))$('formPeriodo').onsubmit=async e=>{
- e.preventDefault();const b=e.submitter;b.disabled=true;
- try{if(!atual)throw Error('Selecione uma cerimônia.');await rpc('salvar_periodo',{...dadosForm(e.currentTarget),cerimonia_id:atual.id});e.currentTarget.reset();await selecionar();aviso('Período cadastrado.');}catch(err){aviso(err.message);}finally{b.disabled=false;}
+ e.preventDefault();const form=e.currentTarget,b=e.submitter;b.disabled=true;
+ try{if(!atual)throw Error('Selecione uma cerimônia.');await rpc('salvar_periodo',{...dadosForm(form),cerimonia_id:atual.id});form.reset();await selecionar();aviso('Período cadastrado.');}catch(err){aviso(err.message);}finally{b.disabled=false;}
 };
 if($('formInscricao'))$('formInscricao').onsubmit=async e=>{
- e.preventDefault();const b=e.submitter;b.disabled=true;
+ e.preventDefault();const form=e.currentTarget,b=e.submitter;b.disabled=true;
  try{
   if(!atual)throw Error('Selecione uma cerimônia.');
-  const d=dadosForm(e.currentTarget),externo=$('origem').value==='externo';
+  const d=dadosForm(form),externo=$('origem').value==='externo';
   await rpc('inscrever',{id:$('inscricaoExistente').value||null,cerimonia_id:atual.id,associado_id:externo?null:d.associado_id,nome_externo:externo?d.nome_externo:null,
    leitura:$('leitura').checked,batismo:$('batismo').checked,
    periodo_leitura_id:$('leitura').checked?d.periodo_leitura_id:null,padrinho:d.padrinho||null,madrinha:d.madrinha||null});
-  e.currentTarget.reset();$('origem').onchange();atualizarCampos();await selecionar();aviso('Interesse registrado.');
+  form.reset();$('origem').onchange();atualizarCampos();await selecionar();aviso('Interesse registrado.');
  }catch(err){aviso(err.message);}finally{b.disabled=false;}
 };
 
