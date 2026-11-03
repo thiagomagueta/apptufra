@@ -2,14 +2,60 @@
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#651b1d"><title>Cerimônias | TUFRA</title><link rel="stylesheet" href="layout.css?v=40">
 <style>
 .cer-form{display:grid;gap:10px}.cer-form label{display:grid;gap:4px;font-weight:600}.cer-form input,.cer-form select{width:100%;padding:10px;border:1px solid #aaa;border-radius:8px;background:var(--cor-fundo,#fff);color:inherit}.cer-actions{display:flex;flex-wrap:wrap;gap:8px}.cer-actions button,.cer-actions a{padding:10px;border-radius:8px}.cer-card{padding:14px;border:1px solid #bbb;border-radius:10px;margin:12px 0}.cer-card p{margin:5px 0}.cer-hidden{display:none!important}.cer-status{min-height:24px}.cer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
- .cer-grupo{margin:16px 0}.cer-grupo h3{font-size:15px;margin:0 0 8px}.cer-pessoa{border-bottom:1px solid #ddd}.cer-pessoa summary{cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px 4px;list-style:none}.cer-pessoa summary::-webkit-details-marker{display:none}.cer-pessoa summary:before{content:'›';font-size:20px}.cer-pessoa[open] summary:before{content:'⌄'}.cer-nome{flex:1}.cer-pg{margin-left:auto;color:#22643b}.cer-pessoa-acoes{padding:0 8px 12px}.cer-pessoa-acoes button{margin:5px 8px 0 0;padding:8px} .cer-painel-edicao{padding:12px 0}.cer-painel-edicao[hidden]{display:none}.cer-editar{display:grid;gap:12px}.cer-editar label{display:grid;gap:5px}.cer-editar input,.cer-editar select{width:100%;padding:10px;border:1px solid #aaa;border-radius:7px} </style></head><body data-cerimonias-modo="gestao"><main class="app"><div class="conteudo-app"><header class="cabecalho-app"><img class="logo-app" src="logo-tufra.png" alt="Logo TUFRA"><div class="identidade-app"><strong>TUFRA</strong><span>Tenda de Umbanda Francisco de Assis</span></div></header>
+ .cer-grupo{margin:16px 0}.cer-grupo h3{font-size:15px;margin:0 0 8px}.cer-pessoa{border-bottom:1px solid #ddd}.cer-pessoa summary{cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px 4px;list-style:none}.cer-pessoa summary::-webkit-details-marker{display:none}.cer-pessoa summary:before{content:'›';font-size:20px}.cer-pessoa[open] summary:before{content:'⌄'}.cer-nome{flex:1}.cer-pg{margin-left:auto;color:#22643b}.cer-pessoa-acoes{padding:0 8px 12px}.cer-pessoa-acoes button{margin:5px 8px 0 0;padding:8px} .cer-painel-edicao{padding:12px 0}.cer-painel-edicao[hidden]{display:none}.cer-editar{display:grid;gap:12px}.cer-editar label{display:grid;gap:5px}.cer-editar input,.cer-editar select{width:100%;padding:10px;border:1px solid #aaa;border-radius:7px} 
+/* Cerimônias: componentes visuais alinhados ao restante do APP TUFRA */
+#area .cer-form{gap:14px}
+#area .cer-form label:not(.cer-check),#area .cer-campo{display:grid;gap:7px;font-size:13px;font-weight:700;color:var(--cor-texto)}
+#area .cer-form input:not([type=checkbox]),#area .cer-form select,#area .cer-seletor-edicao select,
+#area .cer-editar input,#area .cer-editar select{
+  display:block;width:100%;min-width:0;min-height:45px;padding:11px 13px;
+  border:1px solid var(--cor-borda);border-radius:12px;
+  background:#f5eee8;color:var(--cor-texto);font-size:14px;line-height:1.3;
+  box-shadow:none;outline-offset:2px;
+}
+#area .cer-form input:focus,#area .cer-form select:focus,#area .cer-seletor-edicao select:focus,
+#area .cer-editar input:focus,#area .cer-editar select:focus{
+  border-color:var(--cor-principal-clara);outline:2px solid rgba(101,27,29,.12);
+}
+#area .cer-escolhas{display:grid;gap:9px;margin:2px 0}
+#area .cer-check{display:flex;align-items:center;gap:11px;min-height:46px;padding:11px 13px;
+  border:1px solid var(--cor-borda);border-radius:12px;background:#faf6f2;font-weight:600}
+#area .cer-check input{width:18px;height:18px;flex:0 0 18px;accent-color:var(--cor-principal);margin:0}
+#area .cer-pessoa{padding:2px 0}
+#area .cer-pessoa summary{min-height:46px;gap:10px;padding:10px 4px;font-size:14px}
+#area .cer-pessoa-acoes{display:flex;flex-wrap:wrap;align-items:center;gap:9px;padding:5px 0 15px}
+#area .cer-pessoa-acoes>p{flex-basis:100%;margin:0 0 3px;line-height:1.6}
+#area .cer-pessoa-acoes>button,#area .cer-editar button,#area .cer-form button[type=submit]{
+  display:inline-flex;align-items:center;justify-content:center;min-height:42px;
+  margin:0;padding:10px 15px;border:1px solid var(--cor-borda);border-radius:12px;
+  background:#fff;color:var(--cor-principal);font-size:13px;font-weight:700;
+  line-height:1.25;cursor:pointer;transition:background .15s,border-color .15s;
+}
+#area .cer-pessoa-acoes>button:hover,#area .cer-editar button:hover{background:#f6eae7;border-color:var(--cor-principal-clara)}
+#area .cer-pessoa-acoes>button:disabled,#area .cer-editar button:disabled{opacity:.55;cursor:wait}
+#area .cer-form button[type=submit],#area .cer-editar button[type=submit]{
+  border-color:transparent;background:var(--cor-principal);color:#fff;
+  box-shadow:0 5px 12px rgba(101,27,29,.14)
+}
+#area .cer-editar button[type=submit]:hover,#area .cer-form button[type=submit]:hover{background:var(--cor-principal-clara)}
+#area .cer-painel-edicao{flex-basis:100%;width:100%;padding:14px;margin:3px 0 4px;
+  border:1px solid var(--cor-borda);border-radius:15px;background:#faf6f2}
+#area .cer-painel-edicao[hidden]{display:none}
+#area .cer-editar{display:grid;grid-template-columns:1fr;gap:13px}
+#area .cer-editar label{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;
+  min-width:0;font-size:13px;font-weight:700;color:var(--cor-texto)}
+#area .cer-editar label input,#area .cer-editar label select{width:100%;min-width:0;margin:0}
+#area .cer-editar .cer-editar-botoes{display:flex;flex-wrap:wrap;gap:9px;margin-top:2px}
+#area .cer-editar .cer-editar-botoes button{flex:1 1 125px}
+@media(max-width:390px){#area .cer-pessoa-acoes>button{flex:1 1 130px}}
+</style></head><body data-cerimonias-modo="gestao"><main class="app"><div class="conteudo-app"><header class="cabecalho-app"><img class="logo-app" src="logo-tufra.png" alt="Logo TUFRA"><div class="identidade-app"><strong>TUFRA</strong><span>Tenda de Umbanda Francisco de Assis</span></div></header>
 <h1 class="titulo-pagina">Leitura de Búzios e Batismo</h1><p id="mensagem" class="cer-status" role="status">Carregando permissões...</p>
 <section id="area" hidden>
-<section class="cartao-app"><h2>Cerimônias</h2><label>Selecione a edição <select id="cerimonia"></select></label><div id="resumo"></div></section>
+<section class="cartao-app"><h2>Cerimônias</h2><label class="cer-campo cer-seletor-edicao"><span>Selecione a edição</span><select id="cerimonia"></select></label><div id="resumo"></div></section>
 
 
 
-<section id="secInscricao" class="cartao-app" hidden><h2>Inscrever participante</h2><form id="formInscricao" class="cer-form"><label>Inscrição existente (opcional, para adicionar a segunda atividade)<select id="inscricaoExistente"><option value="">Nova inscrição</option></select></label><label>Origem<select id="origem"><option value="associado">Associado TUFRA</option><option value="externo">Participante externo</option></select></label><label id="campoAssociado">Associado<select name="associado_id" id="associado"></select></label><label id="campoExterno" hidden>Nome completo<input name="nome_externo" maxlength="200"></label><label><input type="checkbox" name="leitura" id="leitura"> Leitura de Búzios</label><label><input type="checkbox" name="batismo" id="batismo"> Batismo</label><label id="campoPeriodo" hidden>Período da leitura<select name="periodo_leitura_id" id="periodo"></select></label><div id="camposPadrinhos" hidden><label>Padrinho<input name="padrinho" maxlength="200"></label><label>Madrinha<input name="madrinha" maxlength="200"></label></div><button type="submit">Registrar interesse</button></form></section>
+<section id="secInscricao" class="cartao-app" hidden><h2>Inscrever participante</h2><form id="formInscricao" class="cer-form"><label>Inscrição existente (opcional, para adicionar a segunda atividade)<select id="inscricaoExistente"><option value="">Nova inscrição</option></select></label><label>Origem<select id="origem"><option value="associado">Associado TUFRA</option><option value="externo">Participante externo</option></select></label><label id="campoAssociado">Associado<select name="associado_id" id="associado"></select></label><label id="campoExterno" hidden>Nome completo<input name="nome_externo" maxlength="200"></label><div class="cer-escolhas"><label class="cer-check"><input type="checkbox" name="leitura" id="leitura"><span>Leitura de Búzios</span></label><label class="cer-check"><input type="checkbox" name="batismo" id="batismo"><span>Batismo</span></label></div><label id="campoPeriodo" hidden>Período da leitura<select name="periodo_leitura_id" id="periodo"></select></label><div id="camposPadrinhos" hidden><label>Padrinho<input name="padrinho" maxlength="200"></label><label>Madrinha<input name="madrinha" maxlength="200"></label></div><button type="submit">Registrar interesse</button></form></section>
 <section class="cartao-app"><h2>Períodos de leitura</h2><div id="periodos"></div></section><section class="cartao-app"><h2>Participantes</h2><div id="participantes"></div></section></section>
 <a class="link-administrativo" href="administrativo.html">Voltar ao Administrativo</a></div></main><div id="menuGlobalTufra"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase.js?v=2"></script><script src="menu-global.js?v=1"></script><script src="app.js?v=2"></script><script src="menu-adm.js?v=4"></script><script src="menu-financeiro.js?v=1"></script><script src="cerimonias.js?v=10"></script></body></html>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase.js?v=2"></script><script src="menu-global.js?v=1"></script><script src="app.js?v=2"></script><script src="menu-adm.js?v=4"></script><script src="menu-financeiro.js?v=1"></script><script src="cerimonias.js?v=11"></script></body></html>
