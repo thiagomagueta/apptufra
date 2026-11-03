@@ -154,6 +154,24 @@ if($('formInscricao'))$('formInscricao').onsubmit=async e=>{
  }catch(err){aviso(err.message);}finally{b.disabled=false;}
 };
 
+function mensagemWhatsApp(){
+ if(!detalhe||!atual)throw Error('Selecione uma cerimônia.');
+ const participantes=detalhe.participantes.filter(p=>p.situacao!=='cancelado');
+ const ordenar=arr=>[...arr].sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR',{sensitivity:'base'}));
+ const linhas=['*'+atual.titulo+'*',''];
+ for(let i=0;i<detalhe.periodos.length;i++){
+  const periodo=detalhe.periodos[i];
+  const nomes=ordenar(participantes.filter(p=>p.leitura&&p.periodo_leitura_id===periodo.id));
+  linhas.push('*Leitura período '+(i+1)+' — '+periodo.data_leitura+' · '+periodo.periodo+'*');
+  linhas.push(...(nomes.length?nomes.map((p,n)=>(n+1)+'. '+p.nome):['Nenhum inscrito']));
+  linhas.push('');
+ }
+ const semPeriodo=ordenar(participantes.filter(p=>p.leitura&&!detalhe.periodos.some(x=>x.id===p.periodo_leitura_id)));
+ if(semPeriodo.length){linhas.push('*Leitura — período não definido*',...semPeriodo.map((p,n)=>(n+1)+'. '+p.nome),'');}
+ const batismo=ordenar(participantes.filter(p=>p.batismo));
+ linhas.push('*Batismo*',...(batismo.length?batismo.map((p,n)=>(n+1)+'. '+p.nome):['Nenhum inscrito']));
+ return linhas.join('\\n');
+}
 try{
  acesso=await rpc('acesso');
  if(modoConfig?!acesso.valores:!(acesso.gerenciar&&acesso.pagamentos))throw Error('Sem permissão para esta área.');
@@ -161,6 +179,6 @@ try{
  if(!modoConfig && $('secInscricao'))$('secInscricao').hidden=false;
  if(modoConfig){$('secConfiguracao').hidden=false;$('secPeriodos').hidden=false;}
  if(!modoConfig && acesso.gerenciar){const r=await rpc('associados');associados=r.associados||[];$('associado').replaceChildren(new Option('Selecione',''));associados.forEach(a=>$('associado').add(new Option(a.nome,a.id)));}
- await carregar();aviso('');
+ await carregar();if($('enviarListaWhatsapp'))$('enviarListaWhatsapp').onclick=()=>{try{const texto=mensagemWhatsApp();const url='https://wa.me/?text='+encodeURIComponent(texto);window.open(url,'_blank','noopener,noreferrer');}catch(err){aviso(err.message||String(err));}};aviso('');
 }catch(e){aviso(e.message||'Não foi possível abrir cerimônias.');}
 })();
