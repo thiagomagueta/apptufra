@@ -334,8 +334,11 @@ async function configurarMenuAdm() {
     const podeCadastrarAssociados = !cadastroAcesso.error && cadastroAcesso.data?.cadastrar === true;
     const faleAcesso = await window.supabaseClient.rpc('fale_com_a_gente', {p_acao:'acesso'});
     const ehResponsavelFale = !faleAcesso.error && faleAcesso.data?.equipe === true;
+    const cerimoniasAcesso=await window.supabaseClient.rpc('cerimonias_gerenciar',{p_acao:'acesso',p_dados:{}});
+    const podeGerenciarCerimonias=!cerimoniasAcesso.error && cerimoniasAcesso.data?.gerenciar===true && cerimoniasAcesso.data?.pagamentos===true;
     const possuiAcessoAdm =
       podeCadastrarAssociados ||
+      podeGerenciarCerimonias ||
       ehResponsavelFale ||
       pertenceDiretoria ||
       ehResponsavelPresenca ||
