@@ -159,18 +159,18 @@ function mensagemWhatsApp(){
  const participantes=detalhe.participantes.filter(p=>p.situacao!=='cancelado');
  const ordenar=arr=>[...arr].sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR',{sensitivity:'base'}));
  const linhas=['*'+atual.titulo+'*',''];
- for(let i=0;i<detalhe.periodos.length;i++){
-  const periodo=detalhe.periodos[i];
+ const dataBR=valor=>{const s=String(valor||'');return /^\\d{4}-\\d{2}-\\d{2}$/.test(s)?s.slice(8,10)+'/'+s.slice(5,7)+'/'+s.slice(2,4):s;};
+ for(const periodo of detalhe.periodos){
   const nomes=ordenar(participantes.filter(p=>p.leitura&&p.periodo_leitura_id===periodo.id));
-  linhas.push('*Leitura período '+(i+1)+' — '+periodo.data_leitura+' · '+periodo.periodo+'*');
-  linhas.push(...(nomes.length?nomes.map((p,n)=>(n+1)+'. '+p.nome):['Nenhum inscrito']));
+  linhas.push('*Leitura '+dataBR(periodo.data_leitura)+' · '+periodo.periodo+'*');
+  linhas.push(...(nomes.length?nomes.map(p=>'- '+p.nome):['Nenhum inscrito']));
   linhas.push('');
  }
  const semPeriodo=ordenar(participantes.filter(p=>p.leitura&&!detalhe.periodos.some(x=>x.id===p.periodo_leitura_id)));
- if(semPeriodo.length){linhas.push('*Leitura — período não definido*',...semPeriodo.map((p,n)=>(n+1)+'. '+p.nome),'');}
+ if(semPeriodo.length){linhas.push('*Leitura — período não definido*',...semPeriodo.map(p=>'- '+p.nome),'');}
  const batismo=ordenar(participantes.filter(p=>p.batismo));
- linhas.push('*Batismo*',...(batismo.length?batismo.map((p,n)=>(n+1)+'. '+p.nome):['Nenhum inscrito']));
- return linhas.join('\\n');
+ linhas.push('*Batismo*',...(batismo.length?batismo.map(p=>'- '+p.nome):['Nenhum inscrito']));
+ return linhas.join('\n');
 }
 try{
  acesso=await rpc('acesso');
