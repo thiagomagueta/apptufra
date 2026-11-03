@@ -15,7 +15,7 @@ async function carregar(){
  if(cerimonias.length){sel.value=cerimonias.some(c=>c.id===prev)?prev:cerimonias[0].id;await selecionar();}
  else {atual=null;detalhe=null;limparDetalhe();}
 }
-function limparDetalhe(){$('resumo').replaceChildren();$('periodos').replaceChildren();if($('participantes'))$('participantes').replaceChildren();}
+function limparDetalhe(){$('resumo').replaceChildren();if($('periodos'))$('periodos').replaceChildren();if($('participantes'))$('participantes').replaceChildren();}
 async function selecionar(){
  const id=$('cerimonia').value;atual=cerimonias.find(c=>c.id===id)||null;
  if(!atual){limparDetalhe();return;}
@@ -25,7 +25,7 @@ async function selecionar(){
  node('p','Associados: leitura '+dinheiro(c.valor_leitura_associado)+' · batismo '+dinheiro(c.valor_batismo_associado)+' · pacote '+dinheiro(c.valor_conjunto_associado),$('resumo'));
  node('p','Externos: leitura '+dinheiro(c.valor_leitura_externo)+' · batismo '+dinheiro(c.valor_batismo_externo),$('resumo'));
  const ps=$('periodo');if(ps)ps.replaceChildren(new Option('Selecione',''));
- for(const p of detalhe.periodos){node('p',p.data_leitura+' — '+p.periodo+' ('+p.vagas+' vagas)',$('periodos'));if(ps)ps.add(new Option(p.data_leitura+' — '+p.periodo,p.id));}
+ for(const p of detalhe.periodos){if($('periodos'))node('p',p.data_leitura+' — '+p.periodo+' ('+p.vagas+' vagas)',$('periodos'));if(ps)ps.add(new Option(p.data_leitura+' — '+p.periodo,p.id));}
  if(modoConfig)return;
  const existentes=$('inscricaoExistente');existentes.replaceChildren(new Option('Nova inscrição',''));detalhe.participantes.filter(p=>['interesse','espera'].includes(p.situacao)).forEach(p=>existentes.add(new Option(p.nome,p.id)));renderParticipantes();
 }
