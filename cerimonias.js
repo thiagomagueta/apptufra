@@ -60,35 +60,38 @@ function renderParticipantes(){
    if(previsto>0&&pago>=previsto){const pg=node('strong','(PG)',cab);pg.className='cer-pg';}
    const corpo=node('div',null,linha);corpo.className='cer-pessoa-acoes';
    node('p','Previsto: '+dinheiro(previsto)+' · Recebido: '+dinheiro(pago)+' · Saldo: '+dinheiro(Math.max(0,previsto-pago)),corpo);
-   if(acesso.gerenciar){const editar=node('button','Editar inscrição',corpo);editar.type='button';editar.onclick=()=>{editar.disabled=true;
-    const campos=node('form',null,corpo);campos.className='cer-editar';
+   if(acesso.gerenciar){
+    const editar=node('button','Editar inscrição',corpo);editar.type='button';
+    const painel=node('div',null,corpo);painel.className='cer-painel-edicao';painel.hidden=true;
+    const campos=node('form',null,painel);campos.className='cer-editar';
     if(p.leitura){
-     const label=node('label','Período da leitura ',campos);
+     const label=node('label','Período da leitura',campos);
      const sel=node('select',null,label);sel.name='periodo_leitura_id';
      sel.add(new Option('Sem período definido',''));
      for(const periodo of detalhe.periodos){
-      const inscritos=detalhe.participantes.filter(x=>x.leitura&&x.periodo_leitura_id===periodo.id&&x.situacao!=='cancelado'&&x.id!==p.id).length;
-      if(inscritos>=Number(periodo.vagas)&&periodo.id!==p.periodo_leitura_id)continue;
+      const ocupadas=detalhe.participantes.filter(x=>x.leitura&&x.periodo_leitura_id===periodo.id&&x.situacao!=='cancelado'&&x.id!==p.id).length;
+      if(ocupadas>=Number(periodo.vagas)&&periodo.id!==p.periodo_leitura_id)continue;
       sel.add(new Option(periodo.data_leitura+' — '+periodo.periodo,periodo.id));
      }
      sel.value=p.periodo_leitura_id||'';
     }
-    if(p.batismo){
-     for(const campo of ['padrinho','madrinha']){
-      const label=node('label',campo==='padrinho'?'Padrinho ':'Madrinha ',campos);
-      const input=node('input',null,label);input.name=campo;input.maxLength=200;input.value=p[campo]||'';
-     }
+    if(p.batismo)for(const campo of ['padrinho','madrinha']){
+     const label=node('label',campo==='padrinho'?'Padrinho':'Madrinha',campos);
+     const input=node('input',null,label);input.name=campo;input.maxLength=200;input.value=p[campo]||'';
     }
     const salvar=node('button','Salvar alterações',campos);salvar.type='submit';
+    const cancelar=node('button','Cancelar',campos);cancelar.type='button';
+    cancelar.onclick=()=>{painel.hidden=true;editar.textContent='Editar inscrição';};
+    editar.onclick=()=>{painel.hidden=!painel.hidden;editar.textContent=painel.hidden?'Editar inscrição':'Fechar edição';};
     campos.onsubmit=async e=>{
      e.preventDefault();salvar.disabled=true;
      try{
       const d=dadosForm(campos);
       await rpc('editar_inscricao',{participante_id:p.id,periodo_leitura_id:p.leitura?(d.periodo_leitura_id||null):null,padrinho:d.padrinho||null,madrinha:d.madrinha||null});
-      await selecionar();aviso('Inscrição atualizada.');
+      await selecionar();aviso('Inscrição atualizada com sucesso.');
      }catch(err){aviso(err.message||String(err));salvar.disabled=false;}
     };
-   };}
+   }
    if(acesso.pagamentos&&pago<previsto)botao('Confirmar pagamento',corpo,async()=>{
     const valor=prompt('Valor efetivamente recebido (R$):',String(Math.max(0,previsto-pago)).replace('.',','));
     if(valor===null)return;
