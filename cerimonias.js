@@ -100,6 +100,7 @@ try{
  acesso=await rpc('acesso');
  if(modoConfig?!acesso.valores:!(acesso.gerenciar&&acesso.pagamentos))throw Error('Sem permissão para esta área.');
  $('area').hidden=false;
+ if(!modoConfig && $('secInscricao'))$('secInscricao').hidden=false;
  if(modoConfig){$('secConfiguracao').hidden=false;$('secPeriodos').hidden=false;}
  if(!modoConfig && acesso.gerenciar){const r=await rpc('associados');associados=r.associados||[];$('associado').replaceChildren(new Option('Selecione',''));associados.forEach(a=>$('associado').add(new Option(a.nome,a.id)));}
  await carregar();aviso('');
