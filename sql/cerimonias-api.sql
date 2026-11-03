@@ -110,6 +110,30 @@ begin
    if not found then raise exception 'Inscrição não encontrada ou já confirmada.'; end if;
   end if;
   return jsonb_build_object('id',v_id);
+ elsif p_acao='editar_inscricao' then
+  if not v_admin then raise exception 'Sem permissão para editar inscrições.' using errcode='42501'; end if;
+  v_id:=nullif(p_dados->>'participante_id','')::uuid;
+  v_periodo:=nullif(p_dados->>'periodo_leitura_id','')::uuid;
+  if v_id is null then raise exception 'Inscrição não informada.'; end if;
+  perform 1 from public.cerimonias_participantes where id=v_id and situacao<>'cancelado' for update;
+  if not found then raise exception 'Inscrição não encontrada ou cancelada.'; end if;
+  if v_periodo is not null and not exists (
+    select 1 from public.cerimonias_periodos_leitura pl
+    join public.cerimonias_participantes cp on cp.cerimonia_id=pl.cerimonia_id
+    where cp.id=v_id and cp.leitura and pl.id=v_periodo
+  ) then raise exception 'Período de leitura inválido.'; end if;
+  if v_periodo is not null and (
+    select count(*) from public.cerimonias_participantes cp
+    where cp.periodo_leitura_id=v_periodo and cp.id<>v_id and cp.situacao<>'cancelado'
+  ) >= (select vagas from public.cerimonias_periodos_leitura where id=v_periodo) then
+    raise exception 'Não há vagas disponíveis neste período.';
+  end if;
+  update public.cerimonias_participantes set
+   periodo_leitura_id=case when leitura then v_periodo else null end,
+   padrinho=case when batismo then nullif(trim(p_dados->>'padrinho'),'') else padrinho end,
+   madrinha=case when batismo then nullif(trim(p_dados->>'madrinha'),'') else madrinha end
+  where id=v_id;
+  return jsonb_build_object('id',v_id);
  elsif p_acao='excluir_inscricao' then
   if not v_admin then raise exception 'Sem permissão.' using errcode='42501'; end if;
   v_id:=(p_dados->>'participante_id')::uuid;
