@@ -93,18 +93,36 @@ function renderParticipantes(){
      }catch(err){aviso(err.message||String(err));salvar.disabled=false;}
     };
    }
-   if(acesso.pagamentos&&pago<previsto)botao('Confirmar pagamento',corpo,async()=>{
-    const valor=prompt('Valor efetivamente recebido (R$):',String(Math.max(0,previsto-pago)).replace('.',','));
-    if(valor===null)return;
-    const n=Number(valor.trim().replace(',','.'));
-    if(!Number.isFinite(n)||n<=0)throw Error('Informe um valor positivo.');
-    const opcoes=['PIX','Dinheiro','Débito','Crédito','Transferência','Boleto','Outro'];
-    const escolha=prompt('Forma de pagamento:\\n'+opcoes.map((f,i)=>(i+1)+' - '+f).join('\\n')+'\\nDigite o número da opção:','1');
-    if(escolha===null)return;
-    const forma=opcoes[Number(escolha)-1];
-    if(!forma)throw Error('Selecione uma forma de pagamento válida.');
-    await rpc('confirmar_pagamento',{participante_id:p.id,valor:n,forma_pagamento:forma});
-   });
+   if(acesso.pagamentos&&pago<previsto){
+    const abrir=node('button','Confirmar pagamento',corpo);abrir.type='button';
+    const painel=node('div',null,corpo);painel.className='cer-painel-edicao cer-painel-pagamento';painel.hidden=true;
+    const form=node('form',null,painel);form.className='cer-editar';
+    const titulo=node('strong','Registrar recebimento',form);
+    const labelValor=node('label','Valor recebido (R$)',form);
+    const campoValor=node('input',null,labelValor);campoValor.type='number';campoValor.name='valor';campoValor.min='0.01';campoValor.step='0.01';campoValor.required=true;campoValor.value=Math.max(0,previsto-pago).toFixed(2);
+    const labelForma=node('label','Forma de pagamento',form);
+    const campoForma=node('select',null,labelForma);campoForma.name='forma_pagamento';campoForma.required=true;
+    campoForma.add(new Option('Selecione a forma de pagamento',''));
+    for(const forma of ['PIX','Dinheiro','Débito','Crédito','Transferência','Boleto','Outro'])campoForma.add(new Option(forma,forma));
+    const acoes=node('div',null,form);acoes.className='cer-editar-botoes';
+    const confirmar=node('button','Confirmar recebimento',acoes);confirmar.type='submit';
+    const cancelar=node('button','Cancelar',acoes);cancelar.type='button';
+    abrir.onclick=()=>{painel.hidden=!painel.hidden;abrir.textContent=painel.hidden?'Confirmar pagamento':'Fechar pagamento';};
+    cancelar.onclick=()=>{painel.hidden=true;abrir.textContent='Confirmar pagamento';};
+    form.onsubmit=async e=>{
+     e.preventDefault();
+     const valor=Number(campoValor.value);
+     if(!Number.isFinite(valor)||valor<=0||valor>Math.round((previsto-pago)*100)/100){
+      aviso('Informe um valor válido, até o saldo pendente.');return;
+     }
+     if(!campoForma.value){aviso('Selecione a forma de pagamento.');return;}
+     confirmar.disabled=true;
+     try{
+      await rpc('confirmar_pagamento',{participante_id:p.id,valor,forma_pagamento:campoForma.value});
+      await selecionar();aviso('Pagamento registrado com sucesso.');
+     }catch(err){aviso(err.message||String(err));confirmar.disabled=false;}
+    };
+   }
    if(acesso.gerenciar&&pago===0)botao('Excluir inscrição',corpo,async()=>{
     if(!confirm('Excluir a inscrição de '+p.nome+'?'))return;
     await rpc('excluir_inscricao',{participante_id:p.id});
