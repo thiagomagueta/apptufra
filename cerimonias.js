@@ -79,8 +79,9 @@ function renderParticipantes(){
      const label=node('label',campo==='padrinho'?'Padrinho':'Madrinha',campos);
      const input=node('input',null,label);input.name=campo;input.maxLength=200;input.value=p[campo]||'';
     }
-    const salvar=node('button','Salvar alterações',campos);salvar.type='submit';
-    const cancelar=node('button','Cancelar',campos);cancelar.type='button';
+    const acoes=node('div',null,campos);acoes.className='cer-editar-botoes';
+    const salvar=node('button','Salvar alterações',acoes);salvar.type='submit';
+    const cancelar=node('button','Cancelar',acoes);cancelar.type='button';
     cancelar.onclick=()=>{painel.hidden=true;editar.textContent='Editar inscrição';};
     editar.onclick=()=>{painel.hidden=!painel.hidden;editar.textContent=painel.hidden?'Editar inscrição':'Fechar edição';};
     campos.onsubmit=async e=>{
