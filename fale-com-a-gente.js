@@ -13,6 +13,7 @@
   let busy = false;
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const data = value => value ? new Date(value).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo',dateStyle:'short',timeStyle:'short'}) : '';
+  const prazoEncerramento = a => a.encerramento_solicitado_em ? data(new Date(new Date(a.encerramento_solicitado_em).getTime() + 5 * 24 * 60 * 60 * 1000)) : '';
   const badge = s => `<span class="fale-situacao">${esc(situacoes[s] || s)}</span>`;
   function informar(texto = '', erro = false) { aviso.textContent = texto; aviso.classList.toggle('erro', erro); }
   async function rpc(acao, dados = {}) {
@@ -63,7 +64,7 @@
       const lista = document.getElementById('listaFale');
       for (const a of r.atendimentos) {
         const card = document.createElement('article'); card.className='fale-item';
-        card.innerHTML = `<a href="fale-com-a-gente.html?id=${encodeURIComponent(a.id)}${equipe?'&equipe=1':''}" style="color:inherit;text-decoration:none"><strong>${esc(a.assunto)}</strong>${equipe?`<small>${esc(a.nome)}</small>`:''}<small>${esc(a.categoria)} · ${data(a.criado_em)}</small>${badge(a.situacao)}${a.novo?'<span class="fale-novo">Nova mensagem</span>':''}${a.avaliacao?`<small style="margin-top:8px">${esc(avaliacoes[a.avaliacao])}</small>`:''}</a>${equipe?`<br><a class="fale-historico" href="fale-com-a-gente.html?equipe=1&usuario_id=${encodeURIComponent(a.usuario_id)}">Histórico deste associado</a>`:''}`;
+        card.innerHTML = `<a href="fale-com-a-gente.html?id=${encodeURIComponent(a.id)}${equipe?'&equipe=1':''}" style="color:inherit;text-decoration:none"><strong>${esc(a.assunto)}</strong>${equipe?`<small>${esc(a.nome)}</small>`:''}<small>${esc(a.categoria)} · ${data(a.criado_em)}</small>${badge(a.situacao)}${a.novo?'<span class="fale-novo">Nova mensagem</span>':''}${a.encerrado_automaticamente?'<small>Encerrado automaticamente após 5 dias.</small>':''}${a.avaliacao?`<small style="margin-top:8px">${esc(avaliacoes[a.avaliacao])}</small>`:''}</a>${equipe?`<br><a class="fale-historico" href="fale-com-a-gente.html?equipe=1&usuario_id=${encodeURIComponent(a.usuario_id)}">Histórico deste associado</a>`:''}`;
         lista.append(card);
       }
       if (!mais && !r.atendimentos.length) lista.textContent='Nenhum atendimento encontrado.';
@@ -88,9 +89,10 @@
       ${!encerrado?`<section class="cartao-app"><form id="formMensagem"><label class="fale-campo">${equipe?'Escrever resposta':'Escrever complemento'}<textarea name="texto" required maxlength="10000"></textarea></label>
       ${equipe?'<label class="fale-responsavel"><input type="checkbox" name="interna">Anotação interna — somente equipe</label>':''}
       <button class="fale-botao" type="submit">${equipe?'Enviar registro':'Enviar complemento'}</button></form></section>`:''}
+      ${a.situacao==='aguardando_confirmacao'?`<section class="cartao-app"><p>Confirmação de encerramento até <strong>${prazoEncerramento(a)}</strong>. Após 5 dias sem confirmação, o atendimento será encerrado automaticamente, sem avaliação automática.</p></section>`:''}
       ${!equipe && a.situacao==='aguardando_confirmacao'?'<section class="cartao-app"><h2>Confirmar encerramento</h2><p>A equipe solicitou o encerramento. Confirme para encerrar este atendimento.</p><button id="confirmarFale" class="fale-botao">Confirmar encerramento</button></section>':''}
       ${equipe && !encerrado?`<section class="cartao-app"><h2>Acompanhamento</h2>${a.situacao!=='aguardando_confirmacao'?'<form id="formEncerrar"><button class="fale-botao" type="submit">Solicitar encerramento</button></form>':'<p>Aguardando o associado confirmar o encerramento.</p>'}</section>`:''}
-      ${encerrado?`<section class="cartao-app"><h2>Atendimento finalizado</h2><p>Para conversar novamente, abra outro atendimento.</p>${!equipe?'<a class="fale-botao secundario" href="fale-com-a-gente.html?novo=1">Abrir outro atendimento</a>':''}</section>`:''}
+      ${encerrado?`<section class="cartao-app"><h2>Atendimento finalizado</h2>${a.encerrado_automaticamente?'<p>Encerrado automaticamente após 5 dias sem confirmação.</p>':''}<p>Para conversar novamente, abra outro atendimento.</p>${!equipe?'<a class="fale-botao secundario" href="fale-com-a-gente.html?novo=1">Abrir outro atendimento</a>':''}</section>`:''}
       ${encerrado && !equipe && !a.avaliacao?`<section class="cartao-app"><h2>Como você avalia este atendimento?</h2><form id="formAvaliacao"><label class="fale-campo">Sua avaliação<select name="avaliacao" required><option value="">Selecione</option>${Object.entries(avaliacoes).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select></label><label class="fale-campo">Comentário (opcional)<textarea name="comentario" maxlength="4000"></textarea></label><button class="fale-botao" type="submit">Enviar avaliação</button></form></section>`:''}
       ${a.avaliacao?`<section class="cartao-app"><h2>Avaliação do atendimento</h2><p>${esc(avaliacoes[a.avaliacao])}</p>${a.comentario_avaliacao?`<p style="white-space:pre-wrap">${esc(a.comentario_avaliacao)}</p>`:''}<p class="fale-meta">${data(a.avaliado_em)}</p></section>`:''}
       <button id="atualizarConversa" class="fale-botao secundario">Atualizar conversa</button>`;
@@ -98,7 +100,7 @@
     voltar.textContent = equipe?'Voltar aos atendimentos':'Voltar às minhas mensagens';
     if (!encerrado) formSubmit('formMensagem',async f=>{await rpc('mensagem',{id,texto:f.get('texto'),interna:f.has('interna')});await detalhe(id);informar('Registro enviado.');});
     if (document.getElementById('formEncerrar')) formSubmit('formEncerrar',async ()=>{
-      if (!confirm('Solicitar a confirmação de encerramento ao associado?')) return;
+      if (!confirm('Solicitar o encerramento? O associado terá 5 dias para confirmar; após esse prazo, o atendimento será encerrado automaticamente.')) return;
       await rpc('encerrar',{id});await detalhe(id);
     });
     document.getElementById('confirmarFale')?.addEventListener('click',e=>executar(e.currentTarget,async()=>{
