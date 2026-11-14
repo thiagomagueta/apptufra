@@ -943,3 +943,25 @@ async function iniciarTelaNaoResponderam() {
 
 
 iniciarTelaNaoResponderam();
+
+/* Compartilhar a relação atual da atividade, sem envio automático. */
+document.getElementById('enviarWhatsappAtividade')?.addEventListener('click',async function(){
+ const botao=this,aviso=document.getElementById('avisoWhatsappAtividade');
+ botao.disabled=true;
+ try{
+  if(!atividadeNaoResponderamAtual)throw new Error('Não há atividade disponível.');
+  const itens=await buscarNaoResponderamAtividade();
+  const ordenados=[...itens].sort((a,b)=>String(a.nome_completo||'').localeCompare(String(b.nome_completo||''),'pt-BR',{sensitivity:'base'}));
+  const atividade=atividadeNaoResponderamAtual;
+  const data=String(atividade.data||'');
+  const dataBR=/^\d{4}-\d{2}-\d{2}$/.test(data)?data.slice(8,10)+'/'+data.slice(5,7)+'/'+data.slice(0,4):data;
+  const cabecalho='*'+(atividade.titulo||'Atividade')+' — '+dataBR+'*';
+  const linhas=ordenados.map(item=>'- '+(item.nome_completo||'Associado'));
+  const mensagem=[cabecalho,'','*Não responderam*','',...(linhas.length?linhas:['Nenhum nome nesta relação.'])].join('\n');
+  aviso.textContent='';
+  const url='https://wa.me/?text='+encodeURIComponent(mensagem);
+  const janela=window.open(url,'_blank','noopener,noreferrer');
+  if(!janela)window.location.href=url;
+ }catch(erro){aviso.textContent=erro.message||'Não foi possível preparar a relação.';}
+ finally{botao.disabled=false;}
+});
