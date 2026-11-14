@@ -822,7 +822,7 @@ document.getElementById('enviarWhatsappAtividade')?.addEventListener('click',asy
   const mensagem=[cabecalho,'','*Presenças*','',...(linhas.length?linhas:['Nenhum nome nesta relação.'])].join('\n');
   aviso.textContent='';
   const url='https://wa.me/?text='+encodeURIComponent(mensagem);
-  const janela=window.open(url,'_blank','noopener,noreferrer');
+  const janela=window.open(url,'_blank');
   if(!janela)window.location.href=url;
  }catch(erro){aviso.textContent=erro.message||'Não foi possível preparar a relação.';}
  finally{botao.disabled=false;}
