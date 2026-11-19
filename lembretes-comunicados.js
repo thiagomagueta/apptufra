@@ -8,8 +8,10 @@
   function datasDoTexto(texto) {
     const t = String(texto || "");
     const encontradas = [...t.matchAll(/\b\d{1,2}\/\d{1,2}(?:\/\d{4})?\b/g)].map(m => m[0]);
-    const prazo = t.match(/(?:confirma(?:ção|r)|responder|participa(?:ção|r))[^\n.!?]{0,120}?(?:até|prazo)\s*(?:o\s+dia\s*)?(\d{1,2}\/\d{1,2}(?:\/\d{4})?)/i);
-    const evento = t.match(/(?:acontecerá|teremos|ocorrerá|realizada|realizado)[^\n.!?]{0,120}?\b(?:dia|em)\s*(\d{1,2}\/\d{1,2}(?:\/\d{4})?)/i);
+    const prazo = t.match(/(?:confirma(?:ção|r)|responder|participa(?:ção|r))[^.!?\n]{0,130}?(?:até|prazo)\s*(?:o\s+dia\s*)?(\d{1,2}\/\d{1,2}(?:\/\d{4})?)/i)
+      || t.match(/(?:até|prazo)\s*(?:o\s+dia\s*)?(\d{1,2}\/\d{1,2}(?:\/\d{4})?)[^.!?\n]{0,100}?(?:confirma(?:ção|r)|responder|participa(?:ção|r))/i);
+    const evento = t.match(/(?:acontecerá|teremos|ocorrerá|realizada|realizado)[^.!?\n]{0,120}?\b(?:dia|em)\s*(\d{1,2}\/\d{1,2}(?:\/\d{4})?)/i)
+      || t.match(/\b(?:dia|em)\s*(\d{1,2}\/\d{1,2}(?:\/\d{4})?)[^.!?\n]{0,100}?(?:obriga(?:ção|ções)|teremos)/i);
     return {evento:evento?.[1] || (encontradas.length === 1 ? encontradas[0] : null), prazo:prazo?.[1] || null};
   }
 
