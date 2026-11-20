@@ -172,6 +172,19 @@ function mensagemWhatsApp(){
  linhas.push('*Batismo*',...(batismo.length?batismo.map(p=>'- '+p.nome):['Nenhum inscrito']));
  return linhas.join('\n');
 }
+function mensagemBatismoPadrinhos(){
+ if(!detalhe||!atual)throw Error('Selecione uma cerimônia.');
+ const inscritos=detalhe.participantes.filter(p=>p.batismo&&p.situacao!=='cancelado').sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR',{sensitivity:'base'}));
+ const data=String(atual.data_oficial||'');
+ const dataBR=/^\d{4}-\d{2}-\d{2}$/.test(data)?data.slice(8,10)+'/'+data.slice(5,7)+'/'+data.slice(0,4):data;
+ const linhas=['*'+atual.titulo+'*','','*Batismo com padrinhos*',''];
+ for(const p of inscritos){
+  linhas.push('*'+p.nome+'*','Padrinho: '+(String(p.padrinho||'').trim()||'Não informado'),'Madrinha: '+(String(p.madrinha||'').trim()||'Não informado'),'');
+ }
+ if(!inscritos.length)linhas.push('Nenhum inscrito.');
+ return linhas.join('\n').trimEnd();
+}
+
 try{
  acesso=await rpc('acesso');
  if(modoConfig?!acesso.valores:!(acesso.gerenciar&&acesso.pagamentos))throw Error('Sem permissão para esta área.');
@@ -179,6 +192,6 @@ try{
  if(!modoConfig && $('secInscricao'))$('secInscricao').hidden=false;
  if(modoConfig){$('secConfiguracao').hidden=false;$('secPeriodos').hidden=false;}
  if(!modoConfig && acesso.gerenciar){const r=await rpc('associados');associados=r.associados||[];$('associado').replaceChildren(new Option('Selecione',''));associados.forEach(a=>$('associado').add(new Option(a.nome,a.id)));}
- await carregar();if($('enviarListaWhatsapp'))$('enviarListaWhatsapp').onclick=()=>{try{const texto=mensagemWhatsApp();const url='https://wa.me/?text='+encodeURIComponent(texto);window.open(url,'_blank','noopener,noreferrer');}catch(err){aviso(err.message||String(err));}};aviso('');
+ await carregar();if($('enviarListaWhatsapp'))$('enviarListaWhatsapp').onclick=()=>{try{const texto=mensagemWhatsApp();const url='https://wa.me/?text='+encodeURIComponent(texto);window.open(url,'_blank','noopener,noreferrer');}catch(err){aviso(err.message||String(err));}};if($('enviarBatismoPadrinhosWhatsapp'))$('enviarBatismoPadrinhosWhatsapp').onclick=()=>{try{const texto=mensagemBatismoPadrinhos();window.open('https://wa.me/?text='+encodeURIComponent(texto),'_blank','noopener,noreferrer');}catch(err){aviso(err.message||String(err));}};aviso('');
 }catch(e){aviso(e.message||'Não foi possível abrir cerimônias.');}
 })();
