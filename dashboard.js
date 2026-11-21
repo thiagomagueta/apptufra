@@ -3481,34 +3481,7 @@ async function carregarProximaAtividade() {
 ========================================== */
 
 function obterDataAtualISOPresencaDashboard() {
-
-  const hoje =
-    new Date();
-
-
-  const ano =
-    hoje.getFullYear();
-
-
-  const mes =
-    String(
-      hoje.getMonth() + 1
-    ).padStart(
-      2,
-      "0"
-    );
-
-
-  const dia =
-    String(
-      hoje.getDate()
-    ).padStart(
-      2,
-      "0"
-    );
-
-
-  return `${ano}-${mes}-${dia}`;
+  return obterDataHojeProximaAtividadeDashboard();
 }
 
 
@@ -3827,67 +3800,28 @@ async function buscarTipoListaDashboard(
 
 
 /* ==========================================
-   ÚLTIMAS 10 ATIVIDADES
+   BUSCAR ATIVIDADES
 ========================================== */
 
-async function buscarUltimasAtividadesDashboard(
-  tipoAtividade
-) {
+async function buscarAtividadesPresencaDashboard(tipoAtividade) {
+  const atividades = [];
+  const tamanhoPagina = 500;
 
-  const hojeISO =
-    obterDataAtualISOPresencaDashboard();
+  for (let inicio = 0; ; inicio += tamanhoPagina) {
+    const { data, error } = await window.supabaseClient
+      .from("atividades")
+      .select("id,titulo,data,hora_inicio,tipo_atividade")
+      .eq("tipo_atividade", tipoAtividade)
+      .not("data", "is", null)
+      .order("data")
+      .order("hora_inicio")
+      .order("id")
+      .range(inicio, inicio + tamanhoPagina - 1);
 
-
-  const resultado =
-    await window.supabaseClient
-      .from(
-        "atividades"
-      )
-      .select(`
-        id,
-        titulo,
-        data,
-        hora_inicio,
-        tipo_atividade
-      `)
-      .eq(
-        "tipo_atividade",
-        tipoAtividade
-      )
-      .gte(
-        "data",
-        String(hojeISO).slice(0, 4) + "-01-01"
-      )
-      .order(
-        "data",
-        {
-          ascending:
-            false
-        }
-      )
-      .order(
-        "hora_inicio",
-        {
-          ascending:
-            false
-        }
-      )
-      ;
-
-
-  if (
-    resultado.error
-  ) {
-
-    throw resultado.error;
-
+    if (error) throw error;
+    atividades.push(...data);
+    if (data.length < tamanhoPagina) return atividades;
   }
-
-
-  return (
-    resultado.data ||
-    []
-  ).reverse();
 }
 
 
@@ -4718,90 +4652,75 @@ async function carregarDadosPresencaDashboard() {
 async function carregarResumoPresencaDashboard() {
   await TufraPeriodos.carregar();
 
-  listasPresencaDashboard.innerHTML =
-    "";
+  const nomesListas = obterListasAtuaisDashboard();
+  if (nomesListas.length === 0) return;
 
+  const filtroAno = document.getElementById("filtroAnoPresencaDashboard");
+  const seletorAno = document.getElementById("anoPresencaDashboard");
+  const atividadesPorTipo = new Map();
+  const listas = [];
+  const anoVigente = obterDataAtualISOPresencaDashboard().slice(0, 4);
+  const anos = new Set([anoVigente]);
 
-  const nomesListas =
-    obterListasAtuaisDashboard();
+  for (const nomeLista of nomesListas) {
+    const tipoLista = await buscarTipoListaDashboard(nomeLista);
+    if (!tipoLista) continue;
 
-
-  if (
-    nomesListas.length === 0
-  ) {
-
-    areaPresencaDashboard.hidden =
-      true;
-
-
-    return;
-
-  }
-
-
-  areaPresencaDashboard.hidden =
-    false;
-
-
-  mensagemSemPresencaDashboard.hidden =
-    true;
-
-
-  for (
-    const nomeLista of nomesListas
-  ) {
-
-    const tipoLista =
-      await buscarTipoListaDashboard(
-        nomeLista
+    const tipoAtividade = tipoLista.tipo_atividade;
+    if (!atividadesPorTipo.has(tipoAtividade)) {
+      atividadesPorTipo.set(
+        tipoAtividade,
+        await buscarAtividadesPresencaDashboard(tipoAtividade)
       );
-
-
-    if (
-      !tipoLista
-    ) {
-
-      continue;
-
     }
 
+    const atividades = atividadesPorTipo.get(tipoAtividade);
+    for (const atividade of atividades) anos.add(atividade.data.slice(0, 4));
 
-    const atividadesOriginais = await buscarUltimasAtividadesDashboard(tipoLista.tipo_atividade);
-    const atividades = TufraPeriodos.filtrar(usuarioPresencaDashboard.id,nomeLista,atividadesOriginais);
-    if(!atividades.length) continue;
-
-
-    const presencas =
-      await buscarPresencasDashboard(
-        tipoLista.id,
-        atividades
-      );
-
-
-    const bloco =
-      criarBlocoPresencaDashboard(
-        tipoLista,
-        atividades,
-        presencas
-      );
-
-
-    listasPresencaDashboard.appendChild(
-      bloco
-    );
-
+    listas.push({
+      tipoLista,
+      atividades: TufraPeriodos.filtrar(usuarioPresencaDashboard.id, nomeLista, atividades)
+    });
   }
 
-
-  if (
-    listasPresencaDashboard.children.length ===
-    0
-  ) {
-
-    mensagemSemPresencaDashboard.hidden =
-      false;
-
+  for (const ano of [...anos].sort().reverse()) {
+    const opcao = document.createElement("option");
+    opcao.value = ano;
+    opcao.textContent = ano;
+    seletorAno.appendChild(opcao);
   }
+
+  async function exibirAnoSelecionado() {
+    const ano = seletorAno.value;
+    seletorAno.disabled = true;
+    listasPresencaDashboard.replaceChildren();
+    mensagemSemPresencaDashboard.hidden = true;
+
+    try {
+      const blocos = document.createDocumentFragment();
+      for (const { tipoLista, atividades } of listas) {
+        const atividadesDoAno = atividades.filter(atividade => atividade.data.startsWith(ano + "-"));
+        if (!atividadesDoAno.length) continue;
+
+        const presencas = await buscarPresencasDashboard(tipoLista.id, atividadesDoAno);
+        blocos.appendChild(criarBlocoPresencaDashboard(tipoLista, atividadesDoAno, presencas));
+      }
+
+      listasPresencaDashboard.replaceChildren(blocos);
+      mensagemSemPresencaDashboard.hidden = listasPresencaDashboard.children.length > 0;
+    } catch (erro) {
+      console.error("Erro ao carregar presença do dashboard:", erro);
+      listasPresencaDashboard.textContent = "Não foi possível carregar suas presenças.";
+    } finally {
+      seletorAno.disabled = false;
+    }
+  }
+
+  seletorAno.value = anoVigente;
+  seletorAno.addEventListener("change", exibirAnoSelecionado);
+  filtroAno.hidden = false;
+  areaPresencaDashboard.hidden = false;
+  await exibirAnoSelecionado();
 }
 
 
