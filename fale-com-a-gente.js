@@ -46,36 +46,111 @@
     });
   }
   function filtroSituacao() { return '<option value="">Todas as situações</option>'+Object.entries(situacoes).map(([k,v])=>`<option value="${k}">${v}</option>`).join(''); }
+
+  const abasEquipe = {
+    nao_lidas: 'Não lidas',
+    nao_respondidas: 'Não respondidas',
+    respondidas: 'Respondidas',
+    finalizadas: 'Finalizadas'
+  };
+  function abaAtendimento(a) {
+    if (a.situacao === 'finalizado') return 'finalizadas';
+    if (a.novo) return 'nao_lidas';
+    return ['em_acompanhamento', 'aguardando_confirmacao'].includes(a.situacao)
+      ? 'respondidas' : 'nao_respondidas';
+  }
+  function linkAtendimento(a) {
+    const origem = equipe ? '&equipe=1&aba=' + abaAtendimento(a) : '';
+    const pessoa = equipe && params.has('usuario_id') ? '&usuario_id=' + encodeURIComponent(params.get('usuario_id')) : '';
+    return 'fale-com-a-gente.html?id=' + encodeURIComponent(a.id) + origem + pessoa;
+  }
+  function exibirFinalizados(lista, atendimentos) {
+    const grupos = new Map();
+    for (const a of atendimentos) {
+      if (!grupos.has(a.usuario_id)) grupos.set(a.usuario_id, []);
+      grupos.get(a.usuario_id).push(a);
+    }
+    const ordenados = [...grupos.values()].sort(([a], [b]) => a.nome.localeCompare(b.nome, 'pt-BR'));
+    for (const grupo of ordenados) {
+      const secao = document.createElement('section');
+      secao.className = 'fale-item fale-grupo-finalizado';
+      secao.innerHTML = `<h2>${esc(grupo[0].nome)}</h2><ul>${grupo.map(a =>
+        `<li><a href="${esc(linkAtendimento(a))}"><span>${esc(a.assunto)}</span><time>${data(a.finalizado_em || a.criado_em)}</time></a></li>`
+      ).join('')}</ul>`;
+      lista.append(secao);
+    }
+  }
+
   async function listar() {
     titulo.textContent = equipe ? 'Atendimentos — Fale com a gente' : 'Minhas mensagens';
     conteudo.innerHTML = `${!equipe ? '<a class="fale-botao" href="fale-com-a-gente.html?novo=1">Escrever uma mensagem</a>' : ''}
       <section class="cartao-app"><form id="formFiltros" class="fale-filtros">
       <label class="fale-campo largo">${equipe?'Nome ou assunto':'Assunto'}<input name="busca" maxlength="160"></label>
-      <label class="fale-campo largo">Situação<select name="situacao">${filtroSituacao()}</select></label>
+      ${equipe ? '' : `<label class="fale-campo largo">Situação<select name="situacao">${filtroSituacao()}</select></label>`}
       <label class="fale-campo">Desde<input type="date" name="inicio"></label><label class="fale-campo">Até<input type="date" name="fim"></label>
       <button type="submit" class="fale-botao largo">Filtrar</button></form>
-      <div id="filtroPessoa"></div></section><div class="fale-lista" id="listaFale"></div>
+      <div id="filtroPessoa"></div></section>${equipe ? `<div class="fale-abas" role="group" aria-label="Listas de atendimentos">${Object.entries(abasEquipe).map(([id, nome]) => `<button type="button" class="fale-botao secundario" data-aba="${id}">${nome}</button>`).join('')}</div>` : ''}<div class="fale-lista" id="listaFale"></div>
       <div class="fale-acoes"><button class="fale-botao secundario" id="maisFale" hidden>Carregar mais</button><button class="fale-botao secundario" id="atualizarFale">Atualizar lista</button></div>`;
-    async function carregar(mais = false) {
-      const filtros = Object.fromEntries(new FormData(document.getElementById('formFiltros')));
-      if (filtros.inicio && filtros.fim && filtros.inicio>filtros.fim) throw new Error('A data inicial deve ser anterior à final.');
-      if (!mais) {offset=0; document.getElementById('listaFale').replaceChildren();}
-      const r = await rpc('listar',{...filtros,usuario_id:params.get('usuario_id') || '',offset});
-      const lista = document.getElementById('listaFale');
-      for (const a of r.atendimentos) {
+    const lista = document.getElementById('listaFale');
+    const maisBotao = document.getElementById('maisFale');
+    const abas = [...conteudo.querySelectorAll('[data-aba]')];
+    let aba = Object.hasOwn(abasEquipe, params.get('aba')) ? params.get('aba') : 'nao_lidas';
+    let registros = [];
+    let maisPaginas = false;
+    let filtrosAplicados = {};
+    const visiveis = () => equipe ? registros.filter(a => abaAtendimento(a) === aba) : registros;
+
+    function renderizar() {
+      for (const botao of abas) botao.setAttribute('aria-pressed', String(botao.dataset.aba === aba));
+      lista.replaceChildren();
+      const atendimentos = visiveis();
+      maisBotao.hidden = !maisPaginas;
+      if (!atendimentos.length) {
+        lista.textContent = 'Nenhum atendimento encontrado.';
+        return;
+      }
+      if (equipe && aba === 'finalizadas') {
+        exibirFinalizados(lista, atendimentos);
+        return;
+      }
+      for (const a of atendimentos) {
         const card = document.createElement('article'); card.className='fale-item';
-        card.innerHTML = `<a href="fale-com-a-gente.html?id=${encodeURIComponent(a.id)}${equipe?'&equipe=1':''}" style="color:inherit;text-decoration:none"><strong>${esc(a.assunto)}</strong>${equipe?`<small>${esc(a.nome)}</small>`:''}<small>${esc(a.categoria)} · ${data(a.criado_em)}</small>${badge(a.situacao)}${a.novo?'<span class="fale-novo">Nova mensagem</span>':''}${a.encerrado_automaticamente?'<small>Encerrado automaticamente após 5 dias.</small>':''}${a.avaliacao?`<small style="margin-top:8px">${esc(avaliacoes[a.avaliacao])}</small>`:''}</a>${equipe?`<br><a class="fale-historico" href="fale-com-a-gente.html?equipe=1&usuario_id=${encodeURIComponent(a.usuario_id)}">Histórico deste associado</a>`:''}`;
+        card.innerHTML = `<a href="${esc(linkAtendimento(a))}" style="color:inherit;text-decoration:none"><strong>${esc(a.assunto)}</strong>${equipe?`<small>${esc(a.nome)}</small>`:''}<small>${esc(a.categoria)} · ${data(a.criado_em)}</small>${badge(a.situacao)}${a.novo?'<span class="fale-novo">Nova mensagem</span>':''}${a.encerrado_automaticamente?'<small>Encerrado automaticamente após 5 dias.</small>':''}${a.avaliacao?`<small style="margin-top:8px">${esc(avaliacoes[a.avaliacao])}</small>`:''}</a>${equipe?`<br><a class="fale-historico" href="fale-com-a-gente.html?equipe=1&usuario_id=${encodeURIComponent(a.usuario_id)}">Histórico deste associado</a>`:''}`;
         lista.append(card);
       }
-      if (!mais && !r.atendimentos.length) lista.textContent='Nenhum atendimento encontrado.';
-      offset += r.atendimentos.length;
-      document.getElementById('maisFale').hidden = r.atendimentos.length < 50;
+    }
+
+    async function carregar(mais = false) {
+      if (!mais) {
+        const filtros = Object.fromEntries(new FormData(document.getElementById('formFiltros')));
+        if (filtros.inicio && filtros.fim && filtros.inicio > filtros.fim) throw new Error('A data inicial deve ser anterior à final.');
+        filtrosAplicados = filtros;
+        offset = 0;
+        registros = [];
+        maisPaginas = true;
+      }
+      const quantidade = visiveis().length;
+      do {
+        const situacao = equipe && aba === 'finalizadas' ? 'finalizado' : filtrosAplicados.situacao;
+        const r = await rpc('listar', {...filtrosAplicados, situacao, usuario_id:params.get('usuario_id') || '',offset});
+        registros.push(...r.atendimentos);
+        offset += r.atendimentos.length;
+        maisPaginas = r.atendimentos.length === 50;
+      } while (equipe && maisPaginas && visiveis().length === quantidade);
+      renderizar();
+    }
+    for (const botao of abas) {
+      botao.onclick = () => executar(botao, async () => {
+        if (aba === botao.dataset.aba) return;
+        aba = botao.dataset.aba;
+        await carregar();
+      });
     }
     if (params.get('usuario_id')) document.getElementById('filtroPessoa').innerHTML='<p>Exibindo o histórico deste associado.</p><a href="fale-com-a-gente.html?equipe=1">Ver todos os associados</a>';
     formSubmit('formFiltros',()=>carregar());
     document.getElementById('maisFale').onclick=e=>executar(e.currentTarget,()=>carregar(true));
     document.getElementById('atualizarFale').onclick=e=>executar(e.currentTarget,()=>carregar());
-    await carregar();
+    await executar(null, () => carregar());
   }
   async function detalhe(id) {
     const r = await rpc('detalhe',{id});
@@ -96,7 +171,13 @@
       ${encerrado && !equipe && !a.avaliacao?`<section class="cartao-app"><h2>Como você avalia este atendimento?</h2><form id="formAvaliacao"><label class="fale-campo">Sua avaliação<select name="avaliacao" required><option value="">Selecione</option>${Object.entries(avaliacoes).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select></label><label class="fale-campo">Comentário (opcional)<textarea name="comentario" maxlength="4000"></textarea></label><button class="fale-botao" type="submit">Enviar avaliação</button></form></section>`:''}
       ${a.avaliacao?`<section class="cartao-app"><h2>Avaliação do atendimento</h2><p>${esc(avaliacoes[a.avaliacao])}</p>${a.comentario_avaliacao?`<p style="white-space:pre-wrap">${esc(a.comentario_avaliacao)}</p>`:''}<p class="fale-meta">${data(a.avaliado_em)}</p></section>`:''}
       <button id="atualizarConversa" class="fale-botao secundario">Atualizar conversa</button>`;
-    voltar.href = 'fale-com-a-gente.html'+(equipe?'?equipe=1':'');
+    const destino = new URLSearchParams();
+    if (equipe) {
+      destino.set('equipe', '1');
+      destino.set('aba', abaAtendimento({...a, novo:false}));
+      if (params.has('usuario_id')) destino.set('usuario_id', params.get('usuario_id'));
+    }
+    voltar.href = 'fale-com-a-gente.html' + (equipe ? '?' + destino : '');
     voltar.textContent = equipe?'Voltar aos atendimentos':'Voltar às minhas mensagens';
     if (!encerrado) formSubmit('formMensagem',async f=>{await rpc('mensagem',{id,texto:f.get('texto'),interna:f.has('interna')});await detalhe(id);informar('Registro enviado.');});
     if (document.getElementById('formEncerrar')) formSubmit('formEncerrar',async ()=>{
