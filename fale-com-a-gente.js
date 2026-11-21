@@ -171,13 +171,11 @@
       ${encerrado && !equipe && !a.avaliacao?`<section class="cartao-app"><h2>Como você avalia este atendimento?</h2><form id="formAvaliacao"><label class="fale-campo">Sua avaliação<select name="avaliacao" required><option value="">Selecione</option>${Object.entries(avaliacoes).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select></label><label class="fale-campo">Comentário (opcional)<textarea name="comentario" maxlength="4000"></textarea></label><button class="fale-botao" type="submit">Enviar avaliação</button></form></section>`:''}
       ${a.avaliacao?`<section class="cartao-app"><h2>Avaliação do atendimento</h2><p>${esc(avaliacoes[a.avaliacao])}</p>${a.comentario_avaliacao?`<p style="white-space:pre-wrap">${esc(a.comentario_avaliacao)}</p>`:''}<p class="fale-meta">${data(a.avaliado_em)}</p></section>`:''}
       <button id="atualizarConversa" class="fale-botao secundario">Atualizar conversa</button>`;
-    const destino = new URLSearchParams();
+    voltar.href = 'fale-com-a-gente.html';
     if (equipe) {
-      destino.set('equipe', '1');
-      destino.set('aba', abaAtendimento({...a, novo:false}));
-      if (params.has('usuario_id')) destino.set('usuario_id', params.get('usuario_id'));
+      voltar.href += '?equipe=1&aba=' + abaAtendimento({...a, novo:false});
+      if (params.has('usuario_id')) voltar.href += '&usuario_id=' + encodeURIComponent(params.get('usuario_id'));
     }
-    voltar.href = 'fale-com-a-gente.html' + (equipe ? '?' + destino : '');
     voltar.textContent = equipe?'Voltar aos atendimentos':'Voltar às minhas mensagens';
     if (!encerrado) formSubmit('formMensagem',async f=>{await rpc('mensagem',{id,texto:f.get('texto'),interna:f.has('interna')});await detalhe(id);informar('Registro enviado.');});
     if (document.getElementById('formEncerrar')) formSubmit('formEncerrar',async ()=>{
