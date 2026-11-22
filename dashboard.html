@@ -30,6 +30,23 @@
   >
 
   <link rel="stylesheet" href="fale-com-a-gente.css?v=1">
+  <style>
+    #mesesFinanceiroDashboard > div > div {
+      overflow-wrap: anywhere;
+    }
+    @media (max-width: 480px) {
+      #mesesFinanceiroDashboard {
+        gap: 4px !important;
+      }
+      #mesesFinanceiroDashboard > div {
+        padding: 8px 1px !important;
+      }
+      #mesesFinanceiroDashboard > div > div {
+        font-size: clamp(8px, 2.45vw, 11px);
+        line-height: 1.2;
+      }
+    }
+  </style>
 </head>
 
 
@@ -360,7 +377,7 @@
           id="mesesFinanceiroDashboard"
           style="
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
+            grid-template-columns: repeat(6, minmax(0, 1fr));
             gap: 8px;
             margin-top: 14px;
           "
