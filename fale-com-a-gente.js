@@ -114,6 +114,7 @@
     }
 
     function renderizar() {
+      const recolhidas = new Set([...lista.querySelectorAll('details:not([open])')].map(secao => secao.id));
       lista.replaceChildren();
       maisBotao.hidden = equipe || !maisPaginas;
       if (!equipe) {
@@ -123,10 +124,10 @@
       const grupos = Object.fromEntries(Object.keys(secoesEquipe).map(id => [id, []]));
       for (const atendimento of registros) grupos[secaoAtendimento(atendimento)].push(atendimento);
       for (const [id, nome] of Object.entries(secoesEquipe)) {
-        const secao = document.createElement('section');
+        const secao = document.createElement('details');
         secao.id = id;
-        secao.setAttribute('aria-labelledby', id + '-titulo');
-        secao.innerHTML = `<h2 id="${id}-titulo">${nome}</h2><div class="fale-lista"></div>`;
+        secao.open = !recolhidas.has(id);
+        secao.innerHTML = `<summary>${nome}</summary><div class="fale-lista"></div>`;
         exibirLista(secao.lastElementChild, grupos[id], id === 'finalizadas');
         lista.append(secao);
       }
