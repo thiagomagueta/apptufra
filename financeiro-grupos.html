@@ -90,12 +90,24 @@
       </div>
     </div>
   </div>
+  <div id="modalEditarGrupo" class="modal-grupo" hidden>
+    <div class="dialogo-grupo" role="dialog" aria-modal="true" aria-labelledby="tituloEditarGrupo">
+      <h2 id="tituloEditarGrupo">Editar data de início</h2>
+      <label for="mesEditarGrupo">Mês de início do valor compartilhado</label>
+      <input id="mesEditarGrupo" type="month" class="campo-grupo" min="2026-01" required>
+      <p id="erroEditarGrupo" role="alert"></p>
+      <div class="acoes-grupos">
+        <button id="salvarEditarGrupo" class="botao-grupo" type="button">Salvar data</button>
+        <button id="cancelarEditarGrupo" class="botao-grupo botao-secundario" type="button">Cancelar</button>
+      </div>
+    </div>
+  </div>
   <div id="menuGlobalTufra"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js?v=2"></script>
   <script src="menu-global.js?v=1"></script>
   <script src="app.js?v=2"></script>
-  <script src="financeiro-grupos.js?v=20261122vigencia"></script>
+  <script src="financeiro-grupos.js?v=20261122editar"></script>
   <script src="menu-adm.js?v=3"></script>
   <script src="menu-financeiro.js?v=1"></script>
 </body>

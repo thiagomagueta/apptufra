@@ -111,9 +111,46 @@
       const acoes = document.createElement("div"); acoes.className = "acoes-vinculo";
       acoes.append(criarBotao("Adicionar pessoas", () => selecionar("adicionar", g.id), true),
         criarBotao("Desfazer todo o vínculo", () => prepararDesfazer(g.id), true));
+      const inicio = g.membros.map(i => i.inicio_vigencia).sort()[0];
+      if (inicio) {
+        const data = document.createElement("span");
+        data.textContent = inicio.slice(5, 7) + "/" + inicio.slice(2, 4);
+        data.title = "Início do valor compartilhado";
+        acoes.append(criarBotao("Editar data", () => prepararEdicao(g.id, inicio), true), data);
+      }
       card.appendChild(acoes); lista.appendChild(card);
     });
   }
+  function prepararEdicao(grupo, inicio) {
+    estado.edicao = {grupo, inicio};
+    el("mesEditarGrupo").value = inicio.slice(0, 7);
+    el("erroEditarGrupo").textContent = "";
+    abrirModal("modalEditarGrupo");
+  }
+  el("cancelarEditarGrupo").addEventListener("click", () => fecharModal("modalEditarGrupo"));
+  el("salvarEditarGrupo").addEventListener("click", async () => {
+    const campo = el("mesEditarGrupo");
+    if (estado.ocupado || !estado.edicao || !campo.reportValidity()) return;
+    const {grupo, inicio} = estado.edicao;
+    el("erroEditarGrupo").textContent = "";
+    ocupar(true);
+    let salvo = false;
+    try {
+      const r = await cliente().rpc("financeiro_grupo_editar_inicio", {
+        p_grupo: grupo, p_inicio: campo.value + "-01", p_inicio_anterior: inicio
+      });
+      if (r.error) throw r.error;
+      salvo = true;
+      await carregarDados();
+      el("modalEditarGrupo").hidden = true;
+      mensagem("Data de início atualizada.");
+      el("abrirVinculados").focus();
+    } catch (erro) {
+      el("erroEditarGrupo").textContent = salvo ? "Data salva. Recarregue a página para atualizar a lista." : erro.message;
+    } finally {
+      ocupar(false);
+    }
+  });
   async function carregarDados() {
     const resultados = await Promise.all([
       cliente().from("usuarios").select("id,nome_completo,status").order("nome_completo").range(0,999),
@@ -172,9 +209,9 @@
   });
   [["cancelarVinculo","modalSelecionarPessoas"],["cancelarDesfazer","modalDesfazerVinculo"]].forEach(([b,m]) => el(b).addEventListener("click", () => fecharModal(m)));
   document.addEventListener("keydown", event => {
-    if (event.key === "Escape") { fecharModal("modalSelecionarPessoas"); fecharModal("modalDesfazerVinculo"); }
+    if (event.key === "Escape") { fecharModal("modalSelecionarPessoas"); fecharModal("modalDesfazerVinculo"); fecharModal("modalEditarGrupo"); }
     if (event.key === "Tab") {
-      const modal = ["modalSelecionarPessoas","modalDesfazerVinculo"].map(el).find(m => !m.hidden);
+      const modal = ["modalSelecionarPessoas","modalDesfazerVinculo","modalEditarGrupo"].map(el).find(m => !m.hidden);
       if (!modal) return;
       const itens = [...modal.querySelectorAll("input:not(:disabled),button:not(:disabled)")];
       if (!itens.length) return;
