@@ -645,7 +645,8 @@ async function carregarResumoAssociadosDashboard() {
 
 function definirEstadoMesFinanceiroDashboard(
   numeroMes,
-  status
+  status,
+  valor
 ) {
 
   const numero =
@@ -737,11 +738,20 @@ function definirEstadoMesFinanceiroDashboard(
   }
 
 
+  const valorFormatado = valor == null ? "—" : Number(valor).toLocaleString("pt-BR", {style:"currency", currency:"BRL"});
+  if (status === "futura") {
+    elemento.style.background = "#e8f2ff";
+    elemento.style.borderColor = "#8aadd9";
+    elemento.style.color = "#22568a";
+    if (areaStatus) areaStatus.textContent = valorFormatado;
+    return;
+  }
+
   if (status === "vigente") {
     elemento.style.background = "#fff3d6";
     elemento.style.borderColor = "#d9b65c";
     elemento.style.color = "#795400";
-    if (areaStatus) areaStatus.textContent = "•";
+    if (areaStatus) areaStatus.textContent = valorFormatado;
     return;
   }
 
@@ -761,8 +771,7 @@ function definirEstadoMesFinanceiroDashboard(
       areaStatus
     ) {
 
-      areaStatus.textContent =
-        "!";
+      areaStatus.textContent = valorFormatado;
 
     }
 
@@ -967,7 +976,29 @@ async function carregarMensalidadesFinanceiroDashboard() {
       timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit"
     });
 
-    cobrancas.forEach(
+    const previsao = await window.supabaseClient.rpc("financeiro_prever_minhas_mensalidades", {p_ano:2026});
+    if (previsao.error) console.error("Erro ao prever mensalidades:", previsao.error);
+    const mesesComValor = [...cobrancas, ...(previsao.data || []).map(item => ({...item, status:"aberta"}))];
+
+    const mensalidadesAbertas = cobrancas.filter(cobranca =>
+      (cobranca.status === "aberta" || cobranca.status === "parcial") &&
+      cobranca.competencia?.slice(0, 7) < mesVigente
+    );
+
+    const pagamentosPorCobranca = new Map();
+    const parciais = cobrancas.filter(item => item.status === "parcial");
+    if (parciais.length) {
+      const resultadoPagamentos = await window.supabaseClient
+        .from("financeiro_pagamento_aplicacoes")
+        .select("cobranca_id, valor_aplicado")
+        .in("cobranca_id", parciais.map(item => item.id));
+      if (resultadoPagamentos.error) throw resultadoPagamentos.error;
+      for (const pagamento of resultadoPagamentos.data || []) {
+        const pago = pagamentosPorCobranca.get(pagamento.cobranca_id) || 0;
+        pagamentosPorCobranca.set(pagamento.cobranca_id, pago + Number(pagamento.valor_aplicado || 0));
+      }
+    }
+    mesesComValor.forEach(
       (cobranca) => {
 
         if (
@@ -1015,33 +1046,16 @@ async function carregarMensalidadesFinanceiroDashboard() {
         const competencia = cobranca.competencia.slice(0, 7);
         let estado = cobranca.status;
         if (estado === "aberta" || estado === "parcial") {
-          if (competencia > mesVigente) estado = null;
+          if (competencia > mesVigente) estado = "futura";
           else if (competencia === mesVigente) estado = "vigente";
         }
-        definirEstadoMesFinanceiroDashboard(mes, estado);
+        const saldo = Math.max(0, Number(cobranca.valor_original || 0) - (pagamentosPorCobranca.get(cobranca.id) || 0));
+        definirEstadoMesFinanceiroDashboard(mes, estado, saldo);
 
       }
     );
 
 
-    const mensalidadesAbertas = cobrancas.filter(cobranca =>
-      (cobranca.status === "aberta" || cobranca.status === "parcial") &&
-      cobranca.competencia?.slice(0, 7) < mesVigente
-    );
-
-    const pagamentosPorCobranca = new Map();
-    const parciais = mensalidadesAbertas.filter(item => item.status === "parcial");
-    if (parciais.length) {
-      const resultadoPagamentos = await window.supabaseClient
-        .from("financeiro_pagamento_aplicacoes")
-        .select("cobranca_id, valor_aplicado")
-        .in("cobranca_id", parciais.map(item => item.id));
-      if (resultadoPagamentos.error) throw resultadoPagamentos.error;
-      for (const pagamento of resultadoPagamentos.data || []) {
-        const pago = pagamentosPorCobranca.get(pagamento.cobranca_id) || 0;
-        pagamentosPorCobranca.set(pagamento.cobranca_id, pago + Number(pagamento.valor_aplicado || 0));
-      }
-    }
     const quantidadeAbertas = mensalidadesAbertas.length;
     const valorTotalAberto = mensalidadesAbertas.reduce((total, cobranca) => {
       const pago = pagamentosPorCobranca.get(cobranca.id) || 0;

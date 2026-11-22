@@ -50,7 +50,7 @@ if (modalMensalidade) {
 
 const nomesMeses = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
 
-function carregarQuadroMensalidades(cobrancas, ano, mesVigente) {
+function carregarQuadroMensalidades(cobrancas, ano, mesVigente, pagamentosPorCobranca) {
   if (!listaMensalidades || !textoMensalidades) return;
 
   listaMensalidades.innerHTML = "";
@@ -72,7 +72,7 @@ function carregarQuadroMensalidades(cobrancas, ano, mesVigente) {
     cartao.style.textAlign = "center";
     cartao.style.fontSize = "11px";
     cartao.style.fontWeight = "700";
-    cartao.style.cursor = cobranca ? "pointer" : "default";
+    cartao.style.cursor = cobranca?.id ? "pointer" : "default";
 
     let simbolo = "—";
     let situacao = "Sem cobrança";
@@ -86,21 +86,23 @@ function carregarQuadroMensalidades(cobrancas, ano, mesVigente) {
         cartao.style.color = "#246b35";
       } else if (cobranca.status === "aberta" || cobranca.status === "parcial") {
         const competencia = cobranca.competencia.slice(0, 7);
+        const saldo = Math.max(0, Number(cobranca.valor_original || 0) - (pagamentosPorCobranca.get(cobranca.id) || 0));
+        simbolo = formatarMoeda(saldo);
         if (competencia < mesVigente) {
-          simbolo = "!";
           situacao = "Em atraso";
           cartao.style.background = "#f7dddd";
           cartao.style.borderColor = "#c97575";
           cartao.style.color = "#9a2929";
         } else if (competencia === mesVigente) {
-          simbolo = "•";
           situacao = cobranca.status === "parcial" ? "Parcial" : "Em aberto";
           cartao.style.background = "#fff3d6";
           cartao.style.borderColor = "#d9b65c";
           cartao.style.color = "#795400";
         } else {
           situacao = "Futura";
-          cartao.style.background = "#f5f5f5";
+          cartao.style.background = "#e8f2ff";
+          cartao.style.borderColor = "#8aadd9";
+          cartao.style.color = "#22568a";
         }
       } else {
         situacao = cobranca.status === "renegociada" ? "Em acordo" : cobranca.status || "Sem cobrança";
@@ -112,11 +114,11 @@ function carregarQuadroMensalidades(cobrancas, ano, mesVigente) {
 
     cartao.innerHTML = `
       <div style="font-size:12px; margin-bottom:3px;">${nomesMeses[mes - 1]}</div>
-      <div style="font-size:16px; line-height:1;">${simbolo}</div>
+      <div style="font-size:clamp(9px, 2.6vw, 14px); line-height:1.2;">${simbolo}</div>
       <div style="font-size:9px; margin-top:4px; font-weight:600;">${situacao}</div>
     `;
 
-    if (cobranca) {
+    if (cobranca?.id) {
       cartao.addEventListener("click", () => {
         abrirDetalheMensalidade(cobranca);
       });
@@ -583,14 +585,15 @@ async function carregarFinanceiroAssociado() {
       (c.status === "aberta" || c.status === "parcial") && c.competencia?.slice(0, 7) < mesVigente
     );
     let totalAberto = 0;
-    if (abertas.length > 0) {
+    const pagamentosPorCobranca = new Map();
+    const parciais = cobrancas.filter(item => item.status === "parcial");
+    if (parciais.length > 0) {
       const resultadoPagamentos = await window.supabaseClient
         .from("financeiro_pagamento_aplicacoes")
         .select("cobranca_id, valor_aplicado")
-        .in("cobranca_id", abertas.map(item => item.id));
+        .in("cobranca_id", parciais.map(item => item.id));
       if (resultadoPagamentos.error) throw resultadoPagamentos.error;
 
-      const pagamentosPorCobranca = new Map();
       for (const item of resultadoPagamentos.data || []) {
         pagamentosPorCobranca.set(
           item.cobranca_id,
@@ -598,13 +601,16 @@ async function carregarFinanceiroAssociado() {
         );
       }
 
-      totalAberto = abertas.reduce((total, item) => {
-        const pago = pagamentosPorCobranca.get(item.id) || 0;
-        return total + Math.max(0, Number(item.valor_original || 0) - pago);
-      }, 0);
     }
+    totalAberto = abertas.reduce((total, item) => {
+      const pago = pagamentosPorCobranca.get(item.id) || 0;
+      return total + Math.max(0, Number(item.valor_original || 0) - pago);
+    }, 0);
 
-    carregarQuadroMensalidades(cobrancas, anoAtual, mesVigente);
+    const previsao = await window.supabaseClient.rpc("financeiro_prever_minhas_mensalidades", {p_ano:anoAtual});
+    if (previsao.error) console.error("Erro ao prever mensalidades:", previsao.error);
+    const mesesComValor = [...cobrancas, ...(previsao.data || []).map(item => ({...item, status:"aberta"}))];
+    carregarQuadroMensalidades(mesesComValor, anoAtual, mesVigente, pagamentosPorCobranca);
     await carregarObrigacoes(usuarioId);
     await carregarAcordosEAjustes(usuarioId);
 
