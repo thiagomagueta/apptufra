@@ -58,7 +58,7 @@
   function atualizarResumo() {
     const ids = [...estado.selecionados];
     el("resumoSelecionados").textContent = ids.length ? "Selecionados: " + ids.map(nome).join(", ") : "Marque pelo menos uma pessoa.";
-    el("confirmarVinculo").disabled = estado.ocupado || !ids.length;
+    el("confirmarVinculo").disabled = estado.ocupado || !ids.length || !el("inicioCompartilhado").validity.valid;
   }
   function abrirModal(id) {
     estado.retornoFoco = document.activeElement;
@@ -75,6 +75,8 @@
     if (acao === "adicionar") estado.base = null;
     el("tituloSelecionarPessoas").textContent = acao === "criar" ? "Vincular pessoas" : "Adicionar pessoas";
     el("resumoPessoaBase").textContent = acao === "criar" ? "Pessoa selecionada: " + nome(estado.base) : "Marque as pessoas que deseja adicionar a este vínculo.";
+    el("inicioCompartilhado").value = "";
+    el("erroVinculo").textContent = "";
     el("buscarIntegrantes").value = ""; renderSelecionar(); abrirModal("modalSelecionarPessoas");
   }
   function prepararDesfazer(grupo, usuario = null) {
@@ -127,23 +129,26 @@
     document.querySelectorAll("#conteudoGrupos button, #secaoVincular button, #secaoVincular input, #secaoVinculados button, .modal-grupo button, .modal-grupo input").forEach(b => { b.disabled = ocupado; });
     if (!ocupado) { el("iniciarVinculo").disabled = !estado.base; atualizarResumo(); }
   }
-  async function operar(acao, grupo, ids) {
+  async function operar(acao, grupo, ids, inicio = null) {
     if (estado.ocupado) return;
     ocupar(true); mensagem("Salvando vínculo...");
     let salvo = false;
     let atualizado = false;
     try {
-      const r = await cliente().rpc("financeiro_grupo_operar", { p_acao: acao, p_grupo_id: grupo, p_usuarios: ids });
+      const dados = { p_acao: acao, p_grupo_id: grupo, p_usuarios: ids };
+      if (inicio) dados.p_inicio_compartilhado = inicio;
+      const r = await cliente().rpc("financeiro_grupo_operar", dados);
       if (r.error) throw r.error;
       salvo = true;
       el("modalSelecionarPessoas").hidden = true; el("modalDesfazerVinculo").hidden = true;
       estado.base = null; estado.selecionados.clear();
       await carregarDados();
       atualizado = true;
-      mensagem("Vínculo atualizado. As cobranças já emitidas foram preservadas.");
+      mensagem(inicio ? "Vínculo salvo. Mensalidades em aberto elegíveis foram atualizadas." : "Vínculo atualizado.");
       estado.retornoFoco?.focus();
     } catch (erro) {
       console.error("Erro ao administrar grupos:", erro);
+      if (!salvo && inicio) el("erroVinculo").textContent = erro.message || "Não foi possível salvar o vínculo.";
       mensagem(salvo ? "O vínculo foi salvo, mas a lista não atualizou. Recarregue a página antes de continuar." : "Não foi possível salvar: " + (erro.message || "tente novamente."));
     } finally {
       if (!salvo || atualizado) ocupar(false);
@@ -153,11 +158,13 @@
   el("abrirVinculados").addEventListener("click", () => { el("secaoVincular").hidden = true; el("secaoVinculados").hidden = false; renderGrupos(); });
   el("buscarPessoa").addEventListener("input", renderDisponiveis);
   el("buscarIntegrantes").addEventListener("input", renderSelecionar);
+  el("inicioCompartilhado").addEventListener("input", atualizarResumo);
   el("iniciarVinculo").addEventListener("click", () => selecionar("criar"));
   el("confirmarVinculo").addEventListener("click", () => {
-    if (!estado.selecionados.size) return;
+    if (!estado.selecionados.size || !el("inicioCompartilhado").reportValidity()) return;
+    el("erroVinculo").textContent = "";
     const ids = [...estado.selecionados]; if (estado.acao === "criar") ids.unshift(estado.base);
-    operar(estado.acao, estado.grupo, ids);
+    operar(estado.acao, estado.grupo, ids, el("inicioCompartilhado").value + "-01");
   });
   el("confirmarDesfazer").addEventListener("click", () => {
     const d = estado.desfazer; if (!d) return;

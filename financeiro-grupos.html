@@ -68,7 +68,10 @@
       <label for="buscarIntegrantes">Buscar pessoas disponíveis</label>
       <input id="buscarIntegrantes" class="campo-grupo" type="search" placeholder="Digite o nome" autocomplete="off">
       <div id="listaSelecionarPessoas" class="lista-pessoas"></div>
-      <p>O valor compartilhado valerá para as próximas competências, respeitando as datas de início já cadastradas. Cobranças emitidas não serão alteradas.</p>
+      <label for="inicioCompartilhado">Mês de início do valor compartilhado</label>
+      <input id="inicioCompartilhado" class="campo-grupo" type="month" min="2026-01" required>
+      <p>O valor compartilhado será aplicado a partir desse mês às mensalidades em aberto sem pagamento ou redução vigente.</p>
+      <p id="erroVinculo" role="alert"></p>
       <p id="resumoSelecionados" role="status" aria-live="polite"></p>
       <div class="acoes-grupos">
         <button id="confirmarVinculo" class="botao-grupo" type="button" disabled>Confirmar vínculo</button>
@@ -92,7 +95,7 @@
   <script src="supabase.js?v=2"></script>
   <script src="menu-global.js?v=1"></script>
   <script src="app.js?v=2"></script>
-  <script src="financeiro-grupos.js?v=2"></script>
+  <script src="financeiro-grupos.js?v=20261122vigencia"></script>
   <script src="menu-adm.js?v=3"></script>
   <script src="menu-financeiro.js?v=1"></script>
 </body>
