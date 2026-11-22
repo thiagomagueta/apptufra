@@ -4053,68 +4053,6 @@ async function buscarTipoListaResumo(
 
 
 /* ==========================================
-   ÚLTIMAS ATIVIDADES
-========================================== */
-
-async function buscarUltimasAtividadesResumo(
-  tipoAtividade
-) {
-
-  const resultado =
-    await window.supabaseClient
-      .from(
-        "atividades"
-      )
-      .select(`
-        id,
-        titulo,
-        data,
-        hora_inicio,
-        tipo_atividade
-      `)
-      .eq(
-        "tipo_atividade",
-        tipoAtividade
-      )
-      .gte(
-        "data",
-        String(obterDataAtualISOResumoPresenca()).slice(0, 4) + "-01-01"
-      )
-      .order(
-        "data",
-        {
-          ascending:
-            false
-        }
-      )
-      .order(
-        "hora_inicio",
-        {
-          ascending:
-            false
-        }
-      )
-      ;
-
-
-  if (
-    resultado.error
-  ) {
-
-    throw resultado.error;
-
-  }
-
-
-  return (
-    resultado.data ||
-    []
-  ).reverse();
-
-}
-
-
-/* ==========================================
    BUSCAR PRESENÇAS
 ========================================== */
 
@@ -4726,107 +4664,61 @@ function criarBlocoResumoPresenca(
 ========================================== */
 
 async function carregarResumoPresencaAssociado() {
+  if (!associadoAtual) return;
+
   await TufraPeriodos.carregar();
-  await window.montarHistoricoPeriodosResumo(associadoAtual.id,podeEditarAssociado);
+  await window.montarHistoricoPeriodosResumo(associadoAtual.id, podeEditarAssociado);
 
-  if (
-    !associadoAtual
-  ) {
+  const nomesListas = obterNomesListasAtuaisAssociado();
+  if (!nomesListas.length) return;
 
-    return;
+  const atividadesPorTipo = new Map();
+  const listas = [];
 
-  }
+  for (const nomeLista of nomesListas) {
+    const tipoLista = await buscarTipoListaResumo(nomeLista);
+    if (!tipoLista) continue;
 
-
-  listasResumoPresencaAssociado.innerHTML =
-    "";
-
-
-  const nomesListas =
-    obterNomesListasAtuaisAssociado();
-
-
-  if (
-    nomesListas.length === 0
-  ) {
-
-    areaResumoPresencaAssociado.hidden =
-      true;
-
-    mensagemSemPresencaAssociado.hidden =
-      false;
-
-    return;
-
-  }
-
-
-  areaResumoPresencaAssociado.hidden =
-    false;
-
-  mensagemSemPresencaAssociado.hidden =
-    true;
-
-
-  for (
-    const nomeLista of nomesListas
-  ) {
-
-    const tipoLista =
-      await buscarTipoListaResumo(
-        nomeLista
-      );
-
-
-    if (
-      !tipoLista
-    ) {
-
-      continue;
-
+    const tipoAtividade = tipoLista.tipo_atividade;
+    if (!atividadesPorTipo.has(tipoAtividade)) {
+      atividadesPorTipo.set(tipoAtividade, await TufraAtividadesPorAno.buscar(
+        "id,titulo,data,hora_inicio,tipo_atividade",
+        tipoAtividade
+      ));
     }
 
-
-    const atividadesOriginais = await buscarUltimasAtividadesResumo(tipoLista.tipo_atividade);
-    const atividades = TufraPeriodos.filtrar(associadoAtual.id,nomeLista,atividadesOriginais);
-    if(!atividades.length) continue;
-
-
-    const presencas =
-      await buscarPresencasResumo(
-        tipoLista.id,
-        atividades
-      );
-
-
-    const bloco =
-      criarBlocoResumoPresenca(
-        tipoLista,
-        atividades,
-        presencas
-      );
-
-
-    listasResumoPresencaAssociado.appendChild(
-      bloco
-    );
-
+    listas.push({
+      tipoLista,
+      atividades: TufraPeriodos.filtrar(associadoAtual.id, nomeLista, atividadesPorTipo.get(tipoAtividade))
+    });
   }
 
+  areaResumoPresencaAssociado.hidden = false;
+  await TufraAtividadesPorAno.montar(
+    document.getElementById("filtroAnoResumoPresenca"),
+    [...atividadesPorTipo.values()].flat(),
+    async ano => {
+      listasResumoPresencaAssociado.replaceChildren();
+      mensagemSemPresencaAssociado.hidden = true;
 
-  if (
-    listasResumoPresencaAssociado.children.length ===
-    0
-  ) {
+      try {
+        const blocos = document.createDocumentFragment();
+        for (const { tipoLista, atividades } of listas) {
+          const atividadesDoAno = TufraAtividadesPorAno.filtrar(atividades, ano);
+          if (!atividadesDoAno.length) continue;
 
-    areaResumoPresencaAssociado.hidden =
-      true;
+          const presencas = await buscarPresencasResumo(tipoLista.id, atividadesDoAno);
+          blocos.appendChild(criarBlocoResumoPresenca(tipoLista, atividadesDoAno, presencas));
+        }
 
-    mensagemSemPresencaAssociado.hidden =
-      false;
-
-  }
-
+        listasResumoPresencaAssociado.replaceChildren(blocos);
+        mensagemSemPresencaAssociado.hidden = listasResumoPresencaAssociado.children.length > 0;
+      } catch (erro) {
+        console.error("Erro ao carregar resumo de presença do associado:", erro);
+        listasResumoPresencaAssociado.textContent = "Não foi possível carregar as presenças deste associado.";
+      }
+    }
+  );
 }
 
 

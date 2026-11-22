@@ -3800,32 +3800,6 @@ async function buscarTipoListaDashboard(
 
 
 /* ==========================================
-   BUSCAR ATIVIDADES
-========================================== */
-
-async function buscarAtividadesPresencaDashboard(tipoAtividade) {
-  const atividades = [];
-  const tamanhoPagina = 500;
-
-  for (let inicio = 0; ; inicio += tamanhoPagina) {
-    const { data, error } = await window.supabaseClient
-      .from("atividades")
-      .select("id,titulo,data,hora_inicio,tipo_atividade")
-      .eq("tipo_atividade", tipoAtividade)
-      .not("data", "is", null)
-      .order("data")
-      .order("hora_inicio")
-      .order("id")
-      .range(inicio, inicio + tamanhoPagina - 1);
-
-    if (error) throw error;
-    atividades.push(...data);
-    if (data.length < tamanhoPagina) return atividades;
-  }
-}
-
-
-/* ==========================================
    BUSCAR PRESENÇAS
 ========================================== */
 
@@ -4656,11 +4630,8 @@ async function carregarResumoPresencaDashboard() {
   if (nomesListas.length === 0) return;
 
   const filtroAno = document.getElementById("filtroAnoPresencaDashboard");
-  const seletorAno = document.getElementById("anoPresencaDashboard");
   const atividadesPorTipo = new Map();
   const listas = [];
-  const anoVigente = obterDataAtualISOPresencaDashboard().slice(0, 4);
-  const anos = new Set([anoVigente]);
 
   for (const nomeLista of nomesListas) {
     const tipoLista = await buscarTipoListaDashboard(nomeLista);
@@ -4670,12 +4641,11 @@ async function carregarResumoPresencaDashboard() {
     if (!atividadesPorTipo.has(tipoAtividade)) {
       atividadesPorTipo.set(
         tipoAtividade,
-        await buscarAtividadesPresencaDashboard(tipoAtividade)
+        await TufraAtividadesPorAno.buscar("id,titulo,data,hora_inicio,tipo_atividade", tipoAtividade)
       );
     }
 
     const atividades = atividadesPorTipo.get(tipoAtividade);
-    for (const atividade of atividades) anos.add(atividade.data.slice(0, 4));
 
     listas.push({
       tipoLista,
@@ -4683,23 +4653,14 @@ async function carregarResumoPresencaDashboard() {
     });
   }
 
-  for (const ano of [...anos].sort().reverse()) {
-    const opcao = document.createElement("option");
-    opcao.value = ano;
-    opcao.textContent = ano;
-    seletorAno.appendChild(opcao);
-  }
-
-  async function exibirAnoSelecionado() {
-    const ano = seletorAno.value;
-    seletorAno.disabled = true;
+  async function exibirAnoSelecionado(ano) {
     listasPresencaDashboard.replaceChildren();
     mensagemSemPresencaDashboard.hidden = true;
 
     try {
       const blocos = document.createDocumentFragment();
       for (const { tipoLista, atividades } of listas) {
-        const atividadesDoAno = atividades.filter(atividade => atividade.data.startsWith(ano + "-"));
+        const atividadesDoAno = TufraAtividadesPorAno.filtrar(atividades, ano);
         if (!atividadesDoAno.length) continue;
 
         const presencas = await buscarPresencasDashboard(tipoLista.id, atividadesDoAno);
@@ -4711,16 +4672,15 @@ async function carregarResumoPresencaDashboard() {
     } catch (erro) {
       console.error("Erro ao carregar presença do dashboard:", erro);
       listasPresencaDashboard.textContent = "Não foi possível carregar suas presenças.";
-    } finally {
-      seletorAno.disabled = false;
     }
   }
 
-  seletorAno.value = anoVigente;
-  seletorAno.addEventListener("change", exibirAnoSelecionado);
-  filtroAno.hidden = false;
   areaPresencaDashboard.hidden = false;
-  await exibirAnoSelecionado();
+  await TufraAtividadesPorAno.montar(
+    filtroAno,
+    [...atividadesPorTipo.values()].flat(),
+    exibirAnoSelecionado
+  );
 }
 
 

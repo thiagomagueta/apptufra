@@ -537,68 +537,14 @@ async function carregarAtividadesPreenchidas() {
 ========================================== */
 
 async function carregarAtividades() {
-
-  const resultado =
-    await window.supabaseClient
-      .from(
-        "atividades"
-      )
-      .select(`
-        id,
-        titulo,
-        data,
-        hora_inicio,
-        hora_fim,
-        tipo_atividade
-      `)
-      .eq(
-        "tipo_atividade",
-        tipoAtividadeLista
-      )
-      .order(
-        "data",
-        {
-          ascending: true
-        }
-      )
-      .order(
-        "hora_inicio",
-        {
-          ascending: true
-        }
-      );
-
-
-  if (
-    resultado.error
-  ) {
-
-    throw resultado.error;
-
-  }
-
-
-  const atividades =
-    resultado.data || [];
-
-
-  listaAtividadesPresenca.innerHTML =
-    "";
-
-
-  mensagemSemAtividadesPresenca.hidden =
-    atividades.length > 0;
-
-
-  atividades.forEach(
-    (atividade) => {
-
-      listaAtividadesPresenca.appendChild(
-        criarItemAtividade(
-          atividade
-        )
-      );
-
+  const atividades = await TufraAtividadesPorAno.buscar("id,titulo,data,hora_inicio,tipo_atividade,hora_fim", tipoAtividadeLista);
+  await TufraAtividadesPorAno.montar(
+    document.getElementById("filtroAnoAtividades"),
+    atividades,
+    ano => {
+      const atividadesDoAno = TufraAtividadesPorAno.filtrar(atividades, ano);
+      mensagemSemAtividadesPresenca.hidden = atividadesDoAno.length > 0;
+      listaAtividadesPresenca.replaceChildren(...atividadesDoAno.map(criarItemAtividade));
     }
   );
 }

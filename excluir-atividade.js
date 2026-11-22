@@ -186,57 +186,14 @@ async function carregarAtividades() {
 
   try {
 
-    const resultado =
-      await window.supabaseClient
-        .from("atividades")
-        .select(`
-          id,
-          titulo,
-          data,
-          hora_inicio,
-          tipo_atividade,
-          tipo_outro
-        `)
-        .order(
-          "data",
-          {
-            ascending: true
-          }
-        )
-        .order(
-          "hora_inicio",
-          {
-            ascending: true
-          }
-        );
-
-
-    if (resultado.error) {
-      throw resultado.error;
-    }
-
-
-    const atividades =
-      resultado.data || [];
-
-
-    listaAtividadesExcluir.innerHTML =
-      "";
-
-
-    mensagemSemAtividadesExcluir.hidden =
-      atividades.length > 0;
-
-
-    atividades.forEach(
-      (atividade) => {
-
-        listaAtividadesExcluir.appendChild(
-          criarItemAtividade(
-            atividade
-          )
-        );
-
+    const atividades = await TufraAtividadesPorAno.buscar("id,titulo,data,hora_inicio,tipo_atividade,tipo_outro");
+    await TufraAtividadesPorAno.montar(
+      document.getElementById("filtroAnoAtividades"),
+      atividades,
+      ano => {
+        const atividadesDoAno = TufraAtividadesPorAno.filtrar(atividades, ano);
+        mensagemSemAtividadesExcluir.hidden = atividadesDoAno.length > 0;
+        listaAtividadesExcluir.replaceChildren(...atividadesDoAno.map(criarItemAtividade));
       }
     );
 
