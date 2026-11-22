@@ -47,20 +47,20 @@
   }
   function filtroSituacao() { return '<option value="">Todas as situações</option>'+Object.entries(situacoes).map(([k,v])=>`<option value="${k}">${v}</option>`).join(''); }
 
-  const abasEquipe = {
+  const secoesEquipe = {
     nao_lidas: 'Não lidas',
     nao_respondidas: 'Não respondidas',
     respondidas: 'Respondidas',
     finalizadas: 'Finalizadas'
   };
-  function abaAtendimento(a) {
+  function secaoAtendimento(a) {
     if (a.situacao === 'finalizado') return 'finalizadas';
     if (a.novo) return 'nao_lidas';
     return ['em_acompanhamento', 'aguardando_confirmacao'].includes(a.situacao)
       ? 'respondidas' : 'nao_respondidas';
   }
   function linkAtendimento(a) {
-    const origem = equipe ? '&equipe=1&aba=' + abaAtendimento(a) : '';
+    const origem = equipe ? '&equipe=1' : '';
     const pessoa = equipe && params.has('usuario_id') ? '&usuario_id=' + encodeURIComponent(params.get('usuario_id')) : '';
     return 'fale-com-a-gente.html?id=' + encodeURIComponent(a.id) + origem + pessoa;
   }
@@ -74,7 +74,7 @@
     for (const grupo of ordenados) {
       const secao = document.createElement('section');
       secao.className = 'fale-item fale-grupo-finalizado';
-      secao.innerHTML = `<h2>${esc(grupo[0].nome)}</h2><ul>${grupo.map(a =>
+      secao.innerHTML = `<h3>${esc(grupo[0].nome)}</h3><ul>${grupo.map(a =>
         `<li><a href="${esc(linkAtendimento(a))}"><span>${esc(a.assunto)}</span><time>${data(a.finalizado_em || a.criado_em)}</time></a></li>`
       ).join('')}</ul>`;
       lista.append(secao);
@@ -89,68 +89,75 @@
       ${equipe ? '' : `<label class="fale-campo largo">Situação<select name="situacao">${filtroSituacao()}</select></label>`}
       <label class="fale-campo">Desde<input type="date" name="inicio"></label><label class="fale-campo">Até<input type="date" name="fim"></label>
       <button type="submit" class="fale-botao largo">Filtrar</button></form>
-      <div id="filtroPessoa"></div></section>${equipe ? `<div class="fale-abas" role="group" aria-label="Listas de atendimentos">${Object.entries(abasEquipe).map(([id, nome]) => `<button type="button" class="fale-botao secundario" data-aba="${id}">${nome}</button>`).join('')}</div>` : ''}<div class="fale-lista" id="listaFale"></div>
+      <div id="filtroPessoa"></div></section><div class="${equipe ? 'fale-secoes' : 'fale-lista'}" id="listaFale"></div>
       <div class="fale-acoes"><button class="fale-botao secundario" id="maisFale" hidden>Carregar mais</button><button class="fale-botao secundario" id="atualizarFale">Atualizar lista</button></div>`;
     const lista = document.getElementById('listaFale');
     const maisBotao = document.getElementById('maisFale');
-    const abas = [...conteudo.querySelectorAll('[data-aba]')];
-    let aba = Object.hasOwn(abasEquipe, params.get('aba')) ? params.get('aba') : 'nao_lidas';
     let registros = [];
     let maisPaginas = false;
     let filtrosAplicados = {};
-    const visiveis = () => equipe ? registros.filter(a => abaAtendimento(a) === aba) : registros;
 
-    function renderizar() {
-      for (const botao of abas) botao.setAttribute('aria-pressed', String(botao.dataset.aba === aba));
-      lista.replaceChildren();
-      const atendimentos = visiveis();
-      maisBotao.hidden = !maisPaginas;
+    function exibirLista(destino, atendimentos, finalizadas = false) {
       if (!atendimentos.length) {
-        lista.textContent = 'Nenhum atendimento encontrado.';
+        destino.textContent = 'Nenhum atendimento encontrado.';
         return;
       }
-      if (equipe && aba === 'finalizadas') {
-        exibirFinalizados(lista, atendimentos);
+      if (finalizadas) {
+        exibirFinalizados(destino, atendimentos);
         return;
       }
       for (const a of atendimentos) {
         const card = document.createElement('article'); card.className='fale-item';
         card.innerHTML = `<a href="${esc(linkAtendimento(a))}" style="color:inherit;text-decoration:none"><strong>${esc(a.assunto)}</strong>${equipe?`<small>${esc(a.nome)}</small>`:''}<small>${esc(a.categoria)} · ${data(a.criado_em)}</small>${badge(a.situacao)}${a.novo?'<span class="fale-novo">Nova mensagem</span>':''}${a.encerrado_automaticamente?'<small>Encerrado automaticamente após 5 dias.</small>':''}${a.avaliacao?`<small style="margin-top:8px">${esc(avaliacoes[a.avaliacao])}</small>`:''}</a>${equipe?`<br><a class="fale-historico" href="fale-com-a-gente.html?equipe=1&usuario_id=${encodeURIComponent(a.usuario_id)}">Histórico deste associado</a>`:''}`;
-        lista.append(card);
+        destino.append(card);
+      }
+    }
+
+    function renderizar() {
+      lista.replaceChildren();
+      maisBotao.hidden = equipe || !maisPaginas;
+      if (!equipe) {
+        exibirLista(lista, registros);
+        return;
+      }
+      const grupos = Object.fromEntries(Object.keys(secoesEquipe).map(id => [id, []]));
+      for (const atendimento of registros) grupos[secaoAtendimento(atendimento)].push(atendimento);
+      for (const [id, nome] of Object.entries(secoesEquipe)) {
+        const secao = document.createElement('section');
+        secao.id = id;
+        secao.setAttribute('aria-labelledby', id + '-titulo');
+        secao.innerHTML = `<h2 id="${id}-titulo">${nome}</h2><div class="fale-lista"></div>`;
+        exibirLista(secao.lastElementChild, grupos[id], id === 'finalizadas');
+        lista.append(secao);
       }
     }
 
     async function carregar(mais = false) {
-      if (!mais) {
-        const filtros = Object.fromEntries(new FormData(document.getElementById('formFiltros')));
-        if (filtros.inicio && filtros.fim && filtros.inicio > filtros.fim) throw new Error('A data inicial deve ser anterior à final.');
-        filtrosAplicados = filtros;
-        offset = 0;
-        registros = [];
-        maisPaginas = true;
-      }
-      const quantidade = visiveis().length;
+      const filtros = mais ? filtrosAplicados : Object.fromEntries(new FormData(document.getElementById('formFiltros')));
+      if (filtros.inicio && filtros.fim && filtros.inicio > filtros.fim) throw new Error('A data inicial deve ser anterior à final.');
+      const encontrados = mais ? [...registros] : [];
+      let proximoOffset = mais ? offset : 0;
+      let pagina;
       do {
-        const situacao = equipe && aba === 'finalizadas' ? 'finalizado' : filtrosAplicados.situacao;
-        const r = await rpc('listar', {...filtrosAplicados, situacao, usuario_id:params.get('usuario_id') || '',offset});
-        registros.push(...r.atendimentos);
-        offset += r.atendimentos.length;
-        maisPaginas = r.atendimentos.length === 50;
-      } while (equipe && maisPaginas && visiveis().length === quantidade);
+        const r = await rpc('listar', {...filtros, usuario_id:params.get('usuario_id') || '',offset:proximoOffset});
+        pagina = r.atendimentos;
+        encontrados.push(...pagina);
+        proximoOffset += pagina.length;
+      } while (equipe && pagina.length === 50);
+      registros = encontrados;
+      offset = proximoOffset;
+      maisPaginas = pagina.length === 50;
+      filtrosAplicados = filtros;
       renderizar();
-    }
-    for (const botao of abas) {
-      botao.onclick = () => executar(botao, async () => {
-        if (aba === botao.dataset.aba) return;
-        aba = botao.dataset.aba;
-        await carregar();
-      });
     }
     if (params.get('usuario_id')) document.getElementById('filtroPessoa').innerHTML='<p>Exibindo o histórico deste associado.</p><a href="fale-com-a-gente.html?equipe=1">Ver todos os associados</a>';
     formSubmit('formFiltros',()=>carregar());
     document.getElementById('maisFale').onclick=e=>executar(e.currentTarget,()=>carregar(true));
     document.getElementById('atualizarFale').onclick=e=>executar(e.currentTarget,()=>carregar());
-    await executar(null, () => carregar());
+    await executar(null, async () => {
+      await carregar();
+      if (equipe) document.getElementById(location.hash.slice(1))?.scrollIntoView();
+    });
   }
   async function detalhe(id) {
     const r = await rpc('detalhe',{id});
@@ -173,8 +180,9 @@
       <button id="atualizarConversa" class="fale-botao secundario">Atualizar conversa</button>`;
     voltar.href = 'fale-com-a-gente.html';
     if (equipe) {
-      voltar.href += '?equipe=1&aba=' + abaAtendimento({...a, novo:false});
+      voltar.href += '?equipe=1';
       if (params.has('usuario_id')) voltar.href += '&usuario_id=' + encodeURIComponent(params.get('usuario_id'));
+      voltar.href += '#' + secaoAtendimento({...a, novo:false});
     }
     voltar.textContent = equipe?'Voltar aos atendimentos':'Voltar às minhas mensagens';
     if (!encerrado) formSubmit('formMensagem',async f=>{await rpc('mensagem',{id,texto:f.get('texto'),interna:f.has('interna')});await detalhe(id);informar('Registro enviado.');});
