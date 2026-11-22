@@ -50,7 +50,7 @@ if (modalMensalidade) {
 
 const nomesMeses = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
 
-function carregarQuadroMensalidades(cobrancas, ano) {
+function carregarQuadroMensalidades(cobrancas, ano, mesVigente) {
   if (!listaMensalidades || !textoMensalidades) return;
 
   listaMensalidades.innerHTML = "";
@@ -85,11 +85,23 @@ function carregarQuadroMensalidades(cobrancas, ano) {
         cartao.style.borderColor = "#70ad7d";
         cartao.style.color = "#246b35";
       } else if (cobranca.status === "aberta" || cobranca.status === "parcial") {
-        simbolo = "!";
-        situacao = cobranca.status === "parcial" ? "Parcial" : "Em aberto";
-        cartao.style.background = "#f7dddd";
-        cartao.style.borderColor = "#c97575";
-        cartao.style.color = "#9a2929";
+        const competencia = cobranca.competencia.slice(0, 7);
+        if (competencia < mesVigente) {
+          simbolo = "!";
+          situacao = "Em atraso";
+          cartao.style.background = "#f7dddd";
+          cartao.style.borderColor = "#c97575";
+          cartao.style.color = "#9a2929";
+        } else if (competencia === mesVigente) {
+          simbolo = "•";
+          situacao = cobranca.status === "parcial" ? "Parcial" : "Em aberto";
+          cartao.style.background = "#fff3d6";
+          cartao.style.borderColor = "#d9b65c";
+          cartao.style.color = "#795400";
+        } else {
+          situacao = "Futura";
+          cartao.style.background = "#f5f5f5";
+        }
       } else {
         situacao = cobranca.status === "renegociada" ? "Em acordo" : cobranca.status || "Sem cobrança";
         cartao.style.background = "#f5f5f5";
@@ -548,7 +560,10 @@ async function carregarFinanceiroAssociado() {
       return;
     }
 
-    const anoAtual = new Date().getFullYear();
+    const mesVigente = new Date().toLocaleDateString("sv-SE", {
+      timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit"
+    });
+    const anoAtual = Number(mesVigente.slice(0, 4));
     const inicioAno = `${anoAtual}-01-01`;
     const fimAno = `${anoAtual}-12-31`;
 
@@ -564,7 +579,9 @@ async function carregarFinanceiroAssociado() {
     if (resultadoCobrancas.error) throw resultadoCobrancas.error;
 
     const cobrancas = resultadoCobrancas.data || [];
-    const abertas = cobrancas.filter(c => c.status === "aberta" || c.status === "parcial");
+    const abertas = cobrancas.filter(c =>
+      (c.status === "aberta" || c.status === "parcial") && c.competencia?.slice(0, 7) < mesVigente
+    );
     let totalAberto = 0;
     if (abertas.length > 0) {
       const resultadoPagamentos = await window.supabaseClient
@@ -587,7 +604,7 @@ async function carregarFinanceiroAssociado() {
       }, 0);
     }
 
-    carregarQuadroMensalidades(cobrancas, anoAtual);
+    carregarQuadroMensalidades(cobrancas, anoAtual, mesVigente);
     await carregarObrigacoes(usuarioId);
     await carregarAcordosEAjustes(usuarioId);
 
@@ -605,8 +622,8 @@ async function carregarFinanceiroAssociado() {
 
     textoSituacaoFinanceira.textContent =
       abertas.length === 1
-        ? `⚠️ Você está com 1 mensalidade em aberto, totalizando ${valor}.`
-        : `⚠️ Você está com ${abertas.length} mensalidades em aberto, totalizando ${valor}.`;
+        ? `⚠️ Você está com 1 mensalidade em atraso, totalizando ${valor}.`
+        : `⚠️ Você está com ${abertas.length} mensalidades em atraso, totalizando ${valor}.`;
 
   } catch (erro) {
     console.error("Erro ao carregar Meu Financeiro:", erro);

@@ -737,10 +737,15 @@ function definirEstadoMesFinanceiroDashboard(
   }
 
 
-  if (
-    status ===
-    "aberta"
-  ) {
+  if (status === "vigente") {
+    elemento.style.background = "#fff3d6";
+    elemento.style.borderColor = "#d9b65c";
+    elemento.style.color = "#795400";
+    if (areaStatus) areaStatus.textContent = "•";
+    return;
+  }
+
+  if (status === "aberta" || status === "parcial") {
 
     elemento.style.background =
       "#f7dddd";
@@ -958,6 +963,10 @@ async function carregarMensalidadesFinanceiroDashboard() {
       [];
 
 
+    const mesVigente = new Date().toLocaleDateString("sv-SE", {
+      timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit"
+    });
+
     cobrancas.forEach(
       (cobranca) => {
 
@@ -1003,50 +1012,41 @@ async function carregarMensalidadesFinanceiroDashboard() {
         }
 
 
-        definirEstadoMesFinanceiroDashboard(
-          mes,
-          cobranca.status
-        );
+        const competencia = cobranca.competencia.slice(0, 7);
+        let estado = cobranca.status;
+        if (estado === "aberta" || estado === "parcial") {
+          if (competencia > mesVigente) estado = null;
+          else if (competencia === mesVigente) estado = "vigente";
+        }
+        definirEstadoMesFinanceiroDashboard(mes, estado);
 
       }
     );
 
 
-    const mensalidadesAbertas =
-      cobrancas.filter(
-        (cobranca) =>
-          cobranca.status ===
-          "aberta"
-      );
+    const mensalidadesAbertas = cobrancas.filter(cobranca =>
+      (cobranca.status === "aberta" || cobranca.status === "parcial") &&
+      cobranca.competencia?.slice(0, 7) < mesVigente
+    );
 
-
-    const quantidadeAbertas =
-      mensalidadesAbertas.length;
-
-
-    const valorTotalAberto =
-      mensalidadesAbertas.reduce(
-        (
-          total,
-          cobranca
-        ) => {
-
-          const valor =
-            Number(
-              cobranca.valor_original ||
-              0
-            );
-
-
-          return (
-            total +
-            valor
-          );
-
-        },
-        0
-      );
-
+    const pagamentosPorCobranca = new Map();
+    const parciais = mensalidadesAbertas.filter(item => item.status === "parcial");
+    if (parciais.length) {
+      const resultadoPagamentos = await window.supabaseClient
+        .from("financeiro_pagamento_aplicacoes")
+        .select("cobranca_id, valor_aplicado")
+        .in("cobranca_id", parciais.map(item => item.id));
+      if (resultadoPagamentos.error) throw resultadoPagamentos.error;
+      for (const pagamento of resultadoPagamentos.data || []) {
+        const pago = pagamentosPorCobranca.get(pagamento.cobranca_id) || 0;
+        pagamentosPorCobranca.set(pagamento.cobranca_id, pago + Number(pagamento.valor_aplicado || 0));
+      }
+    }
+    const quantidadeAbertas = mensalidadesAbertas.length;
+    const valorTotalAberto = mensalidadesAbertas.reduce((total, cobranca) => {
+      const pago = pagamentosPorCobranca.get(cobranca.id) || 0;
+      return total + Math.max(0, Number(cobranca.valor_original || 0) - pago);
+    }, 0);
 
     if (
       resumoFinanceiroDashboard
@@ -1079,12 +1079,12 @@ async function carregarMensalidadesFinanceiroDashboard() {
         ) {
 
           resumoFinanceiroDashboard.textContent =
-            `⚠️ Você está com 1 mensalidade em aberto, totalizando ${valorFormatado}.`;
+            `⚠️ Você está com 1 mensalidade em atraso, totalizando ${valorFormatado}.`;
 
         } else {
 
           resumoFinanceiroDashboard.textContent =
-            `⚠️ Você está com ${quantidadeAbertas} mensalidades em aberto, totalizando ${valorFormatado}.`;
+            `⚠️ Você está com ${quantidadeAbertas} mensalidades em atraso, totalizando ${valorFormatado}.`;
 
         }
 
