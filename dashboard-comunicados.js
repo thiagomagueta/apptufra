@@ -826,7 +826,8 @@ async function carregarRespostasUsuario() {
         id,
         comunicado_id,
         opcao_id,
-        usuario_id
+        usuario_id,
+        confirmacao_automatica
       `)
       .eq(
         "usuario_id",
@@ -1159,6 +1160,8 @@ function criarAreaVotacao(
         respostaAtual?.opcao_id ===
         opcao.id;
 
+      radio.disabled = respostaAtual?.confirmacao_automatica === true;
+
 
       radio.style.margin =
         "0";
@@ -1290,6 +1293,13 @@ function criarAreaVotacao(
   botao.className =
     "botao-principal-app";
 
+
+  if (respostaAtual?.confirmacao_automatica) {
+    botao.disabled = true;
+    botao.textContent = "Médiuns da Corrente Principal já estão confirmados";
+    area.appendChild(botao);
+    return area;
+  }
 
   botao.textContent =
     respostaAtual
