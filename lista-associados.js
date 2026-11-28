@@ -305,6 +305,11 @@ function ordenarAssociados(
 
 
 let associadosParaFiltrar = [];
+let associadosExibidos = [];
+
+const acoesListaAssociados = document.getElementById("acoesListaAssociados");
+const avisoExportacaoAssociados = document.getElementById("avisoExportacaoAssociados");
+const botaoExcelAssociados = document.getElementById("exportarAssociadosExcel");
 
 function normalizarBuscaAssociado(valor) {
   return String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('pt-BR').trim();
@@ -372,6 +377,9 @@ function aplicarFiltrosAssociados() {
     }
     return String(a.nome_completo || "").localeCompare(String(b.nome_completo || ""), "pt-BR", { sensitivity: "base" });
   });
+  associadosExibidos = filtrados;
+  acoesListaAssociados.hidden = !filtrados.length;
+  avisoExportacaoAssociados.textContent = "";
   listaAssociados.replaceChildren(...filtrados.map(criarItemAssociado));
   mensagemSemAssociados.hidden = filtrados.length > 0;
   mensagemSemAssociados.textContent = associadosParaFiltrar.length ? 'Nenhum associado corresponde aos filtros selecionados.' : 'Nenhum associado encontrado.';
@@ -388,6 +396,84 @@ document.getElementById('limparFiltrosAssociados').addEventListener('click', () 
   document.getElementById('ordenacaoAssociados').value = 'nome';
   aplicarFiltrosAssociados();
   document.getElementById('buscaNomeAssociado').focus();
+});
+
+document.getElementById("enviarAssociadosWhatsapp").addEventListener("click", () => {
+  if (!associadosExibidos.length) return;
+
+  const nomes = associadosExibidos.map(associado => "- " + formatarNome(associado.nome_completo));
+  const mensagem = ["*Lista de Associados Ativos — TUFRA*", "", ...nomes].join("\n");
+  const url = "https://wa.me/?text=" + encodeURIComponent(mensagem);
+  const janela = window.open(url, "_blank");
+  if (janela) {
+    janela.opener = null;
+  } else {
+    window.location.href = url;
+  }
+});
+
+function dataParaExcel(data) {
+  if (!data || !/^\d{4}-\d{2}-\d{2}$/.test(data)) return null;
+  // O Excel armazena datas como dias, sem considerar o fuso horário.
+  return Date.parse(data) / 86400000 + 25569;
+}
+
+botaoExcelAssociados.addEventListener("click", async () => {
+  if (!associadosExibidos.length) return;
+
+  const associados = associadosExibidos;
+  botaoExcelAssociados.disabled = true;
+  avisoExportacaoAssociados.textContent = "Preparando a planilha...";
+
+  try {
+    const xlsx = window.XLSX;
+    if (!xlsx) throw new Error("Biblioteca de Excel indisponível.");
+
+    const periodos = await window.TufraPeriodos.carregar(true);
+    const inicioDesenvolvimento = new Map();
+    for (const { usuario_id, grupo, data_inicio } of periodos) {
+      if (["banco_terca", "corrente_terca", "banco_sabado"].includes(grupo) &&
+          !inicioDesenvolvimento.has(usuario_id)) {
+        inicioDesenvolvimento.set(usuario_id, data_inicio);
+      }
+    }
+
+    const cabecalho = [
+      "Nome completo do associado",
+      "Função",
+      "Data de entrada no TUFRA",
+      "Data de início no desenvolvimento",
+      "Data de início na corrente do desenvolvimento",
+      "Data de início na corrente da gira principal"
+    ];
+    const linhas = associados.map(associado => [
+      formatarNome(associado.nome_completo),
+      obterFuncaoPrioritaria(associado.usuario_funcoes || []),
+      dataParaExcel(associado.data_entrada_tufra),
+      dataParaExcel(inicioDesenvolvimento.get(associado.id)),
+      dataParaExcel(associado.data_corrente_desenvolvimento),
+      dataParaExcel(associado.data_corrente_principal)
+    ]);
+
+    const planilha = xlsx.utils.aoa_to_sheet([cabecalho, ...linhas]);
+    planilha["!cols"] = [44, 24, 28, 36, 48, 46].map(wch => ({ wch }));
+    linhas.forEach((linha, indice) => {
+      for (let coluna = 2; coluna < linha.length; coluna++) {
+        const celula = planilha[xlsx.utils.encode_cell({ r: indice + 1, c: coluna })];
+        if (celula) celula.z = "dd/mm/yyyy";
+      }
+    });
+
+    const arquivo = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(arquivo, planilha, "Associados ativos");
+    xlsx.writeFile(arquivo, "Associados_Ativos_TUFRA.xlsx");
+    avisoExportacaoAssociados.textContent = "Planilha gerada.";
+  } catch (erro) {
+    console.error("Erro ao exportar associados:", erro);
+    avisoExportacaoAssociados.textContent = "Não foi possível gerar a planilha. Tente novamente.";
+  } finally {
+    botaoExcelAssociados.disabled = false;
+  }
 });
 
 async function carregarAssociados() {

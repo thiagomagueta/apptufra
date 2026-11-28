@@ -65,6 +65,10 @@
       .data-principal-associado { grid-column:5; grid-row:1; }
       .seta-permissao-lista { grid-column:6; grid-row:1; }
     }
+    #acoesListaAssociados button { width:100%; border:0; cursor:pointer; }
+    #acoesListaAssociados button + button { margin-top:10px; }
+    #avisoExportacaoAssociados:not(:empty) { margin:8px 0 0; font-size:13px; }
+    #avisoExportacaoAssociados { margin:0; }
     #resultadoFiltrosAssociados { margin:14px 0 0; color:var(--cor-texto-suave); font-size:14px; }
   </style>
 </head>
@@ -152,6 +156,12 @@
       </section>
 
 
+      <section id="acoesListaAssociados" class="cartao-app" aria-label="Compartilhar lista de associados" hidden>
+        <button id="enviarAssociadosWhatsapp" class="botao-principal-app" type="button">Enviar lista pelo WhatsApp</button>
+        <button id="exportarAssociadosExcel" class="botao-principal-app" type="button">Exportar lista para Excel</button>
+        <p id="avisoExportacaoAssociados" role="status"></p>
+      </section>
+
       <a
         class="link-administrativo"
         href="adm-associados.html"
@@ -176,7 +186,11 @@
 
   <script src="app.js?v=20261027sab"></script>
 
-  <script src="lista-associados.js?v=20261101horizontal2"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+
+  <script src="desenvolvimento-periodos.js?v=1"></script>
+
+  <script src="lista-associados.js?v=20261128exportacao"></script>
 
   <script src="menu-adm.js?v=3"></script>
 
